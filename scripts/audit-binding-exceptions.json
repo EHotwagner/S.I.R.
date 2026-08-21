@@ -7,7 +7,7 @@
       "locator": "file:work/231-svg-pipeline-measurement/production-chromium-authority.json",
       "path": "work/231-svg-pipeline-measurement/production-chromium-authority.json",
       "previousSha256": "4bf9f9abb2e1d92d57e5a75dafb74923bdb7a975e12c62c0ba311249a749e861",
-      "replacementSha256": "28d94b3427903d02f60fa9f7eac6bc3599d30a742e09b90f5711919a18b8e9e6",
+      "replacementSha256": "c4b48c08555d42664ba2dfe97779508358bd1a600927c04ab638c214716879fb",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The base update required a new exact-candidate Chromium authority; the focused receipt gate verifies the renewed authority and rejects coordinated candidate or digest reseals."
     },
@@ -17,7 +17,7 @@
       "locator": "file:work/231-svg-pipeline-measurement/production-chromium-evidence.json",
       "path": "work/231-svg-pipeline-measurement/production-chromium-evidence.json",
       "previousSha256": "07ba39dee985fdc70e17956776787aa37be1939bc5d994df0904f17132ed1de1",
-      "replacementSha256": "259c9f8706a356c94d6c7264d9fb8a409d53efdb0fb97ae47887487e2b4a4cc8",
+      "replacementSha256": "f9a4404c43b26d7700a68046cbe6b59c73acbfcc323fb55c1a656bc74de7a0b1",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The base update required a new exact-candidate compact receipt; the focused receipt gate checks it against the separate renewed authority."
     },
@@ -27,7 +27,7 @@
       "locator": "file:work/231-svg-pipeline-measurement/production-chromium-authority.json",
       "path": "work/231-svg-pipeline-measurement/production-chromium-authority.json",
       "previousSha256": "7402352ff1d336cb8041ef87c0e55dc50e442856d195e5962f000831d8c6b5f5",
-      "replacementSha256": "28d94b3427903d02f60fa9f7eac6bc3599d30a742e09b90f5711919a18b8e9e6",
+      "replacementSha256": "c4b48c08555d42664ba2dfe97779508358bd1a600927c04ab638c214716879fb",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The recovery audit is authored in the same candidate that introduces the renewed authority; the focused receipt gate verifies those final bytes."
     },
@@ -37,7 +37,7 @@
       "locator": "file:work/231-svg-pipeline-measurement/production-chromium-evidence.json",
       "path": "work/231-svg-pipeline-measurement/production-chromium-evidence.json",
       "previousSha256": "6447f47262bd739a69b29e264a4c75554e1deac46069935d3e11e13282522be2",
-      "replacementSha256": "259c9f8706a356c94d6c7264d9fb8a409d53efdb0fb97ae47887487e2b4a4cc8",
+      "replacementSha256": "f9a4404c43b26d7700a68046cbe6b59c73acbfcc323fb55c1a656bc74de7a0b1",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The recovery audit is authored in the same candidate that introduces the renewed receipt; the focused gate verifies its final authority binding."
     },
@@ -47,7 +47,7 @@
       "locator": "file:docs/performance-budget.md",
       "path": "docs/performance-budget.md",
       "previousSha256": "5fb42b445999b25fe2fe4dbd80ee350099a1c145e4d44006c01ab6213d72798b",
-      "replacementSha256": "4887c60e4b595fb4754619b38f6171fbc7ea04bdac5d780280fac3ed0b440370",
+      "replacementSha256": "621525b69909efda6084683e559b6bc9e8c12854e394806974b6c008a3171a07",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The SVG pipeline measurement extends the cited performance contract; its focused exact-head fixture and protected-subject gate verifies the replacement workload contract."
     },
@@ -56,8 +56,8 @@
       "findingId": "§4.1",
       "locator": "file:scripts/measure-svg-pipeline.mjs",
       "path": "scripts/measure-svg-pipeline.mjs",
-      "previousSha256": "3fe57a84a4955ad5fad094cae59523d717a0e836ff806a7bb907629dc5737899",
-      "replacementSha256": "3fe57a84a4955ad5fad094cae59523d717a0e836ff806a7bb907629dc5737899",
+      "previousSha256": "c44057768f5d3cf6e283e5528378e06f11a01d43a2ea40bf24f251605ff1ca60",
+      "replacementSha256": "c44057768f5d3cf6e283e5528378e06f11a01d43a2ea40bf24f251605ff1ca60",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The repaired-cycle audit is authored with the sampler-free runner it reviews; the focused source inversion rejects reintroduction of the observer workload."
     },
@@ -66,8 +66,8 @@
       "findingId": "§4.1",
       "locator": "file:scripts/lib/svg-pipeline-measurement.mjs",
       "path": "scripts/lib/svg-pipeline-measurement.mjs",
-      "previousSha256": "56e5e59e60764dfe501d9ba396b9a7c245f92da14a7106e3594ce211cb9e8117",
-      "replacementSha256": "56e5e59e60764dfe501d9ba396b9a7c245f92da14a7106e3594ce211cb9e8117",
+      "previousSha256": "6901cede8f372bf28205e56526fbb649bada83797bc6b7f4bf7985cd01be29a4",
+      "replacementSha256": "6901cede8f372bf28205e56526fbb649bada83797bc6b7f4bf7985cd01be29a4",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The repaired-cycle audit is authored with the clock-sync trace extraction it reviews; the focused timing and trace-window gates verify these bytes."
     },
@@ -76,8 +76,8 @@
       "findingId": "§4.2",
       "locator": "file:work/231-svg-pipeline-measurement/raw-trace-manifest.json",
       "path": "work/231-svg-pipeline-measurement/raw-trace-manifest.json",
-      "previousSha256": "877c030967cb6528d1f7c09e8c96bcc041295ceaa49b1e18df4ca1c5f3db88d8",
-      "replacementSha256": "877c030967cb6528d1f7c09e8c96bcc041295ceaa49b1e18df4ca1c5f3db88d8",
+      "previousSha256": "011e60081ca7d4e8e79b04bdfe54fe21d0e4eb7542c14e4cfbaa81a7a8416438",
+      "replacementSha256": "011e60081ca7d4e8e79b04bdfe54fe21d0e4eb7542c14e4cfbaa81a7a8416438",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The repaired-cycle audit is authored with the exact 56-run manifest it reviews; the focused gate validates its full cross-product and every retained trace byte."
     },
@@ -86,8 +86,8 @@
       "findingId": "§4.2",
       "locator": "file:work/231-svg-pipeline-measurement/production-chromium-authority.json",
       "path": "work/231-svg-pipeline-measurement/production-chromium-authority.json",
-      "previousSha256": "28d94b3427903d02f60fa9f7eac6bc3599d30a742e09b90f5711919a18b8e9e6",
-      "replacementSha256": "28d94b3427903d02f60fa9f7eac6bc3599d30a742e09b90f5711919a18b8e9e6",
+      "previousSha256": "c4b48c08555d42664ba2dfe97779508358bd1a600927c04ab638c214716879fb",
+      "replacementSha256": "c4b48c08555d42664ba2dfe97779508358bd1a600927c04ab638c214716879fb",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The repaired-cycle audit is authored with the exact authority it reviews; the focused gate rejects candidate, digest, manifest, summary, and raw-byte drift."
     },
@@ -96,8 +96,8 @@
       "findingId": "§4.3",
       "locator": "file:scripts/svg-pipeline-fixtures.v1.json",
       "path": "scripts/svg-pipeline-fixtures.v1.json",
-      "previousSha256": "0d7f1fa5ecd6b28b6d72c7ea01c7fd0afff3dbe218d16f7424d749b6ffaad97a",
-      "replacementSha256": "0d7f1fa5ecd6b28b6d72c7ea01c7fd0afff3dbe218d16f7424d749b6ffaad97a",
+      "previousSha256": "fcde5f2f60b4395487bca13f44d1f50fe31977dea2286e2a9b8f63dae46d530d",
+      "replacementSha256": "fcde5f2f60b4395487bca13f44d1f50fe31977dea2286e2a9b8f63dae46d530d",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The repaired-cycle audit is authored with the controlled fixtures it reviews; six one-factor mutations and unique-cell checks verify these bytes."
     },
@@ -106,8 +106,8 @@
       "findingId": "§4.3",
       "locator": "file:scripts/test-svg-pipeline-measurement.mjs",
       "path": "scripts/test-svg-pipeline-measurement.mjs",
-      "previousSha256": "86b99f92db3ed0430670b75a02718c61458d93329e0a34f1aeb1a19af683216c",
-      "replacementSha256": "86b99f92db3ed0430670b75a02718c61458d93329e0a34f1aeb1a19af683216c",
+      "previousSha256": "781bfa980922a717843c9a9f75495c46eb253fec74b2268e77f6d42556b491b4",
+      "replacementSha256": "781bfa980922a717843c9a9f75495c46eb253fec74b2268e77f6d42556b491b4",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The repaired-cycle audit is authored with its focused gate; executing it proves the sampler, axis, retained-byte, and binding inversions remain live."
     },
@@ -116,8 +116,8 @@
       "findingId": "§4.3",
       "locator": "file:work/231-svg-pipeline-measurement/production-chromium-summary.json",
       "path": "work/231-svg-pipeline-measurement/production-chromium-summary.json",
-      "previousSha256": "f982901b80f286be8608046885e86282e376233bcccc5c086c01f97a048e910e",
-      "replacementSha256": "f982901b80f286be8608046885e86282e376233bcccc5c086c01f97a048e910e",
+      "previousSha256": "3deeaaf249a17b0d30160ef1915b93030bd081d5959a109aa287d3c3ab876917",
+      "replacementSha256": "3deeaaf249a17b0d30160ef1915b93030bd081d5959a109aa287d3c3ab876917",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The repaired-cycle audit is authored with the exact summary it reviews; the focused gate binds it to authority, manifest, candidate, fixture, and 56-run inventory."
     },
@@ -126,8 +126,8 @@
       "findingId": "§4.3",
       "locator": "file:feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl",
       "path": "feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl",
-      "previousSha256": "b0aa6345b52238721d861896336e3ab151ff30c4b1eb247122e7adb959b625ab",
-      "replacementSha256": "b0aa6345b52238721d861896336e3ab151ff30c4b1eb247122e7adb959b625ab",
+      "previousSha256": "0c3e90c6b840e966deacfa266890019a9c37db4ea8e1ca5e5453e31b1be0d7a5",
+      "replacementSha256": "0c3e90c6b840e966deacfa266890019a9c37db4ea8e1ca5e5453e31b1be0d7a5",
       "replacementEvidence": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- validate-checkpoint-state --cycle item-231-svg-pipeline-measurement",
       "reason": "The repaired-cycle audit is authored with the six-event checkpoint it reviews; the bundled validator fails closed on missing, malformed, contradictory, or private checkpoint state."
     }

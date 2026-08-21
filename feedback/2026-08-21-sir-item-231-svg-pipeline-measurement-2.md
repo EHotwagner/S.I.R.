@@ -5,17 +5,17 @@ workspace: S.I.R
 cycle: item-231-svg-pipeline-measurement
 lane: sdd
 toolVersion: 1.1.0
-commit: aa7e779f0a0b41daa837a35bf15afd34faae9a86
+commit: ade4a6417d339ff774d72a12460a3b0979d95a7e
 ---
 
 ## §1 Provenance and confidence
 
 - **activation:** active
 - **phases:** implementation-test-evidence, verify-ship-pr
-- **material events:** 6
+- **material events:** 7
 - **zero-event reason:** not applicable
 
-This recovery resumed issue #231 and PR #238 after blocker #220 landed. The stable checkpoint is `feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl`. SDD CLI 1.1.0, Node v26.7.0, and Google Chrome for Testing 151.0.7922.34 were exercised. The measured candidate is `be32308be393856a8031480be0de377dd40df499`; evidence commit `aa7e779f0a0b41daa837a35bf15afd34faae9a86` is an evidence-only descendant. The authority binds the Release client manifest, server assembly, fixture definition, 56 ordered raw traces, and raw summary. Confidence is limited to the production journeys and Chromium trace categories in the matrix. Worker-transfer, projection-allocation, source-isolated Elmish/React attribution, and GPU counters remain unavailable and unresolved.
+This recovery resumed issue #231 and PR #238 after blocker #220 landed. The stable checkpoint is `feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl`. SDD CLI 1.1.0, Node v26.7.0, and Google Chrome for Testing 151.0.7922.34 were exercised. The measured candidate is `946c7b3e533f2408c4d092f4c2260916ed970f51`; matrix evidence commit `31a2757600c453321b581fc2ad6e972ebccf94fa` and SDD evidence commit `ade4a6417d339ff774d72a12460a3b0979d95a7e` are evidence-only descendants. The authority binds the Release client manifest, server assembly, fixture definition, 56 ordered raw traces, and raw summary. Confidence is limited to the production journeys and Chromium trace categories in the matrix. Worker-transfer, projection-allocation, source-isolated Elmish/React attribution, and GPU counters remain unavailable and unresolved.
 
 ## §2 What worked
 
@@ -34,7 +34,7 @@ The first measurement design injected a continuous `requestAnimationFrame` sampl
 - **Expected:** Frame health and input-to-paint evidence observe production work without adding a continuous renderer workload inside the measured window.
 - **Observed:** Previous PR head `1f6de7c0b81b5bf11cb3c4022435f645948aa758` installed a continuous RAF loop with `addInitScript`. The repaired candidate derives timing from clock-sync-bounded Chromium trace events, and the focused source gate rejects reintroduction of the sampler.
 - **Evidence:** file:scripts/measure-svg-pipeline.mjs; file:scripts/lib/svg-pipeline-measurement.mjs; command:node scripts/test-svg-pipeline-measurement.mjs
-- **Version:** measurement schema v1; defective PR head 1f6de7c0b81b5bf11cb3c4022435f645948aa758; repaired candidate be32308be393856a8031480be0de377dd40df499
+- **Version:** measurement schema v1; defective PR head 1f6de7c0b81b5bf11cb3c4022435f645948aa758; repaired candidate 946c7b3e533f2408c4d092f4c2260916ed970f51
 - **Owner:** EHotwagner/S.I.R. SVG pipeline measurement harness
 - **Recurrence:** new
 - **Avoidable cost:** multiple bounded idle smoke iterations to isolate observer overhead
@@ -47,7 +47,7 @@ The first measurement design injected a continuous `requestAnimationFrame` sampl
 - **Expected:** Exact-candidate evidence remains available after a clean checkout and fails closed when any retained trace is absent or changed.
 - **Observed:** The repair committed 56 content-addressed gzip traces plus an exact fixture/journey manifest. The focused validator reads, decompresses, hashes, and parses every retained trace and rejects missing or changed bytes.
 - **Evidence:** file:work/231-svg-pipeline-measurement/raw-trace-manifest.json; file:work/231-svg-pipeline-measurement/production-chromium-authority.json; command:node scripts/test-svg-pipeline-measurement.mjs
-- **Version:** raw-trace manifest v1 and measurement authority v1; evidence commit ffdc426fe25574a6d840105c9da3029aa7615fb0
+- **Version:** raw-trace manifest v1 and measurement authority v1; evidence commit 31a2757600c453321b581fc2ad6e972ebccf94fa
 - **Owner:** EHotwagner/S.I.R. SVG pipeline evidence contract
 - **Recurrence:** seen again after `feedback/2026-08-20-sir-item-231-svg-pipeline-measurement.md §4.1` and `feedback/2026-08-21-sir-item-231-svg-pipeline-measurement.md §4.1`; both reports disclosed that raw traces were ignored or not independently inspected
 - **Avoidable cost:** one complete 56-route evidence regeneration
@@ -58,9 +58,9 @@ The first measurement design injected a continuous `requestAnimationFrame` sampl
 - **Kind:** defect
 - **Impact:** A report could claim visible-density and global-count isolation while production Chromium saw no visible-density change and exposed every additional global unit in the viewport.
 - **Expected:** Every axis remains a declared one-factor pair, but visible density is the count of production unit-glyph bounds intersecting the SVG viewport after one identical camera sequence; the visible pair changes that count and the global-count pair holds it.
-- **Observed:** Review replayed the retained candidate and found visible density 40/40 and global count 40/200 despite declared targets of 40/20 and 40/40. The repair centers the intended visible cluster, places global-only units from the map's far edge, applies the same fit plus 15 center-anchored zoom inputs, and records both viewport-intersecting and projected glyph counts. The focused eight-fixture smoke observed baseline 40/40, visible-density 20/40, and global-count 40/200; exact matrix regeneration remains the acceptance boundary.
+- **Observed:** Review replayed the retained candidate and found visible density 40/40 and global count 40/200 despite declared targets of 40/20 and 40/40. The repair centers the intended visible cluster, places global-only units from the map's far edge, applies the same fit plus 15 center-anchored zoom inputs, and records both viewport-intersecting and projected glyph counts. The exact 56-run matrix observed baseline 40/40, visible-density 20/40, and global-count 40/200 before every journey; both former escapes are rejected by focused mutations.
 - **Evidence:** file:scripts/svg-pipeline-fixtures.v1.json; file:scripts/test-svg-pipeline-measurement.mjs; file:work/231-svg-pipeline-measurement/production-chromium-summary.json; file:feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl
-- **Version:** fixture schema v1; candidate be32308be393856a8031480be0de377dd40df499
+- **Version:** fixture schema v1; candidate 946c7b3e533f2408c4d092f4c2260916ed970f51
 - **Owner:** EHotwagner/S.I.R. SVG pipeline fixtures and production runner
 - **Recurrence:** new; prior reports described declared control but did not replay production-observed structural counters
 - **Avoidable cost:** one complete 56-route false-green matrix plus a critic repair round
@@ -80,7 +80,7 @@ None. The retained gzip files are required evidence, not a temporary bypass. Una
 
 ## §8 Friction and avoidable cost
 
-Multiple bounded idle smokes isolated observer overhead. One partial matrix stopped after 21 routes when the 300-unit subject violated production constraints; a second stopped after 48 when the 80×80 import announcement did not correspond to a changed scene. The final matrix completed in about eleven minutes. No broad aggregate CI was run locally; the path-aware hosted boundary remains pending.
+Multiple bounded idle smokes isolated observer overhead. One partial matrix stopped after 21 routes when the initial 300-unit generator reused occupied cells; a second stopped after 48 when the 80×80 import announcement did not correspond to a changed scene. The repaired exact matrix completed in about fifteen and a half minutes. No broad aggregate CI was run locally; the path-aware hosted boundary remains pending.
 
 ## §9 Skill value and gaps
 
@@ -88,7 +88,7 @@ Multiple bounded idle smokes isolated observer overhead. One partial matrix stop
 
 ## §10 Outcome markers
 
-The final focused validator passed 23 gates, including all six axis inversions and raw-byte absence/change mutations. The exact production matrix passed 56/56 routes from 2026-08-21T05:08:53Z through 05:19:43Z. The retained archive contains exactly 56 traces. SDD verify is `verificationReady`; ship is `shipReady`. Hosted checks, critic confirmation, acceptance, merge, and done remain pending.
+The final focused validator passed 25 gates, including both former production-observation escapes, all six declared-axis inversions, and raw-byte absence/change mutations. The exact production matrix passed 56/56 routes from 2026-08-21T06:00:20Z through 06:15:46Z. The retained archive contains exactly 56 traces. SDD verify and ship are refreshed after the final evidence bindings. Hosted checks, critic confirmation, acceptance, merge, and done remain pending.
 
 ## §11 Falsifiable improvements
 
@@ -106,7 +106,7 @@ The final focused validator passed 23 gates, including all six axis inversions a
 | sdd-authoring | exercised | Spec, clarification, checklist, plan, tasks, evidence, verify, and ship were refreshed to the repaired contract. |
 | implementation-apis | partial | Production UI, import, projection, and trace interfaces were exercised; gameplay APIs were unchanged. |
 | dependencies-build | exercised | Locked Node dependencies and the Release client/server build completed once. |
-| testing | exercised | 23 focused gates and 56 production Chromium journeys passed. |
+| testing | exercised | 25 focused gates and 56 production Chromium journeys passed. |
 | evidence | exercised | 56 raw traces, manifest, summary, receipt, authority, and SDD bindings were validated. |
 | runtime-playtest | exercised | Production controls drove idle, playback, pan, zoom, selection, modality, and overlay journeys. |
 | performance | exercised | Eight fixtures by seven journeys measured the production SVG path. |

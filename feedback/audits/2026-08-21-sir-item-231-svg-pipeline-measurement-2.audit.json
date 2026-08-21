@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-21-sir-item-231-svg-pipeline-measurement-2.md",
-  "reportSha256": "14768974a6a2edb564558942c4240309e0e6205e1499191473b91243f2c200bd",
+  "reportSha256": "ff8c23f587179348431f4e94fab56260512bc98584715aaa4f0a957563a4d40b",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -13,12 +13,12 @@
         {
           "locator": "file:scripts/measure-svg-pipeline.mjs",
           "result": "verified",
-          "sha256": "3fe57a84a4955ad5fad094cae59523d717a0e836ff806a7bb907629dc5737899"
+          "sha256": "c44057768f5d3cf6e283e5528378e06f11a01d43a2ea40bf24f251605ff1ca60"
         },
         {
           "locator": "file:scripts/lib/svg-pipeline-measurement.mjs",
           "result": "verified",
-          "sha256": "56e5e59e60764dfe501d9ba396b9a7c245f92da14a7106e3594ce211cb9e8117"
+          "sha256": "6901cede8f372bf28205e56526fbb649bada83797bc6b7f4bf7985cd01be29a4"
         },
         {
           "locator": "command:node scripts/test-svg-pipeline-measurement.mjs",
@@ -26,8 +26,7 @@
         }
       ],
       "confidenceLimits": [
-        "Git inspection confirms the previous PR head installed the continuous addInitScript RAF sampler.",
-        "Current evidence proves the clock-sync repair and source inversion without preserving unsupported historical timing precision."
+        "The substantial production matrix was not rerun during this audit. Historical sampler contamination was independently confirmed from commit 1f6de7c0b81b5bf11cb3c4022435f645948aa758 and PR #238 review history; the repaired source and focused inversion were checked at ade4a6417d339ff774d72a12460a3b0979d95a7e."
       ]
     },
     {
@@ -38,12 +37,12 @@
         {
           "locator": "file:work/231-svg-pipeline-measurement/raw-trace-manifest.json",
           "result": "verified",
-          "sha256": "877c030967cb6528d1f7c09e8c96bcc041295ceaa49b1e18df4ca1c5f3db88d8"
+          "sha256": "011e60081ca7d4e8e79b04bdfe54fe21d0e4eb7542c14e4cfbaa81a7a8416438"
         },
         {
           "locator": "file:work/231-svg-pipeline-measurement/production-chromium-authority.json",
           "result": "verified",
-          "sha256": "28d94b3427903d02f60fa9f7eac6bc3599d30a742e09b90f5711919a18b8e9e6"
+          "sha256": "c4b48c08555d42664ba2dfe97779508358bd1a600927c04ab638c214716879fb"
         },
         {
           "locator": "command:node scripts/test-svg-pipeline-measurement.mjs",
@@ -51,8 +50,7 @@
         }
       ],
       "confidenceLimits": [
-        "Current evidence verifies the 56-trace clean-checkout archive, content addressing, decompression, parsing, cross-product equality, and missing or changed byte rejection.",
-        "The historical ignored archive is not retained, so no unsupported prior completeness count is claimed."
+        "The focused validator, rather than the substantial matrix, re-read, decompressed, parsed, and hashed all 56 retained traces at the audit head."
       ]
     },
     {
@@ -63,27 +61,26 @@
         {
           "locator": "file:scripts/svg-pipeline-fixtures.v1.json",
           "result": "verified",
-          "sha256": "0d7f1fa5ecd6b28b6d72c7ea01c7fd0afff3dbe218d16f7424d749b6ffaad97a"
+          "sha256": "fcde5f2f60b4395487bca13f44d1f50fe31977dea2286e2a9b8f63dae46d530d"
         },
         {
           "locator": "file:scripts/test-svg-pipeline-measurement.mjs",
           "result": "verified",
-          "sha256": "86b99f92db3ed0430670b75a02718c61458d93329e0a34f1aeb1a19af683216c"
+          "sha256": "781bfa980922a717843c9a9f75495c46eb253fec74b2268e77f6d42556b491b4"
         },
         {
           "locator": "file:work/231-svg-pipeline-measurement/production-chromium-summary.json",
           "result": "verified",
-          "sha256": "f982901b80f286be8608046885e86282e376233bcccc5c086c01f97a048e910e"
+          "sha256": "3deeaaf249a17b0d30160ef1915b93030bd081d5959a109aa287d3c3ab876917"
         },
         {
           "locator": "file:feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl",
           "result": "verified",
-          "sha256": "b0aa6345b52238721d861896336e3ab151ff30c4b1eb247122e7adb959b625ab"
+          "sha256": "0c3e90c6b840e966deacfa266890019a9c37db4ea8e1ca5e5453e31b1be0d7a5"
         }
       ],
       "confidenceLimits": [
-        "The retained prior summary proves the reviewer-replayed false control: the visible pair recorded 40/40 and the global pair 40/200.",
-        "The repaired eight-fixture Chromium smoke observes 40/20 for the visible pair and 40/40 for the global pair under one fixed camera sequence; a renewed exact 8 by 7 matrix remains required before final authority."
+        "The 56-run matrix and 300-unit production diagnostic were not rerun. The retained matrix was inspected directly, and the historical false-green plus 300-unit diagnostic were cross-checked through the checkpoint's cited PR #238 review record."
       ]
     }
   ]
