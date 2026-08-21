@@ -7,9 +7,9 @@
       "locator": "file:scripts/ci-route.mjs",
       "path": "scripts/ci-route.mjs",
       "previousSha256": "10da76f4b2631e57c36991f263d19a15c183716e2d68ce208a31c160ed1118af",
-      "replacementSha256": "fecbd4d08db889c6463ff7f746f74c6956da97e05479077533adad626cf369bc",
+      "replacementSha256": "de3754c5b2dbf9e9dcfcc54509aedcde509dafdd6572377413efaaa5b9433d44",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 220 changes the bounded route budget and native producer inventory; the focused route contract verifies the replacement thresholds, inventory, and fail-closed join diagnostics."
+      "reason": "Issue 220 changes the bounded route budget and typed helper inventory; the focused route contract verifies the replacement thresholds, general-browser helper, inventory, and fail-closed join diagnostics."
     },
     {
       "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
@@ -17,9 +17,9 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "b1324bd25f7a800d20ca824013726d8aa5b95b8989d97a796f4187231f7b9bac",
+      "replacementSha256": "4db3c0c8453bd97e636ca06daa9a3bb5ef4ae809603b8ff938926c56951cb288",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 220 extends the route contract with the unchanged outer budget, required headroom, one-solution native topology, source-bound spatial and fixed-delivery helper gates, strict shard JUnit validation, and pair-accounted test-granular browser sharding."
+      "reason": "Issue 220 extends the route contract with the unchanged outer budget, required headroom, source-bound spatial, general-browser, and fixed-delivery helper gates, strict shard JUnit validation, explicit verdict dependencies, deterministic reconnect ownership, and pair-accounted test-granular browser sharding."
     },
     {
       "audit": "feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json",
@@ -47,9 +47,9 @@
       "locator": "file:.github/workflows/ci.yml",
       "path": ".github/workflows/ci.yml",
       "previousSha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127",
-      "replacementSha256": "1e73d84c99e1e8198b84a5f25f99c73ac661eceb10d97cde52dffb2533bcae5b",
+      "replacementSha256": "76e15e55ed5f0505f2a1a0fbd99f37a934c4b1c5d70c04db1c88c3d667847185",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 220 adds required source-bound spatial-mutation and fixed-delivery helper jobs; the focused route contract verifies their producer dependencies, receipt join, pair capacity, and fail-closed missing/failed states."
+      "reason": "Issue 220 adds required source-bound spatial-mutation, general-browser, and fixed-delivery helper jobs; the focused route contract verifies their producer dependencies, explicit verdict needs, receipt join, pair capacity, and fail-closed missing/failed states."
     }
   ]
 }

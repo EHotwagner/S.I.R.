@@ -21,6 +21,7 @@
     "prepare-server",
     "prepare-docs",
     "spatial-mutations",
+    "browser-general-helper",
     "browser-delivery",
     "rules",
     "spatial",

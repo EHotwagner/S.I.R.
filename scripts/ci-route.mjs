@@ -13,7 +13,7 @@ export const feedbackHeadroomMilliseconds = 60_000;
 export const feedbackAcceptanceTargetMilliseconds = feedbackBudgetMilliseconds - feedbackHeadroomMilliseconds;
 export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence"];
 export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web", "prepare-server", "prepare-docs"];
-export const helperOrder = ["spatial-mutations", "browser-delivery"];
+export const helperOrder = ["spatial-mutations", "browser-general-helper", "browser-delivery"];
 export const subjectOrder = ["integrity", ...producerOrder, ...helperOrder, ...gateOrder];
 export const gateParts = {
   rules: ["native"],
@@ -21,6 +21,7 @@ export const gateParts = {
   cancellation: ["native", "web"],
   "cross-runtime": ["native", "fable"],
   browser: ["web", "server"],
+  "browser-general-helper": ["web", "server"],
   "browser-delivery": ["web", "server"],
   documentation: ["web", "docs"],
   evidence: [],
@@ -47,6 +48,7 @@ export const expectedBuildInvocations = {
   ]),
   "cross-runtime": ["build:spikes/browser-wasm-verification/BrowserWasmVerificationSpike.fsproj"],
   browser: [],
+  "browser-general-helper": [],
   "browser-delivery": [],
   documentation: [],
   evidence: [],
@@ -157,7 +159,7 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
   const expectedProducers = requiredParts.map((part) => `prepare-${part}`);
   const expectedHelpers = [
     ...(selectedGates.includes("spatial") ? ["spatial-mutations"] : []),
-    ...(selectedGates.includes("browser") ? ["browser-delivery"] : []),
+    ...(selectedGates.includes("browser") ? ["browser-general-helper", "browser-delivery"] : []),
   ];
   const expectedSubjects = ["integrity", ...expectedProducers, ...expectedHelpers, ...selectedGates];
   const byGate = new Map();

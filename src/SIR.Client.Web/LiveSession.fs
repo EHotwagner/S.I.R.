@@ -97,6 +97,6 @@ module LiveSession =
         | None -> ()
         | Some active ->
             thenBoth
-                (active.stop())
-                (fun () -> thenBoth (active.start()) (fun () -> requestResync dispatch state) (fun error -> dispatch (ConnectionFailed(string error))))
+                (active.start())
+                (fun () -> requestResync dispatch state)
                 (fun error -> dispatch (ConnectionFailed(string error)))

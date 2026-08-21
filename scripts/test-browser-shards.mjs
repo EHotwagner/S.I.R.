@@ -17,8 +17,14 @@ const configuredBrowserShards = process.env.SIR_BROWSER_SHARDS;
 const browserShards = configuredBrowserShards === undefined
   ? (process.env.CI ? Math.min(browserShardCapacity, browserPortCapacity) : 1)
   : Number(configuredBrowserShards);
-if (!Number.isSafeInteger(browserShards) || browserShards < 1 || browserShards > browserShardCapacity || browserShards > browserPortCapacity) {
+const configuredShardIndex = process.env.SIR_BROWSER_SHARD_INDEX;
+const browserShardIndex = configuredShardIndex === undefined ? null : Number(configuredShardIndex);
+const localBrowserProcesses = browserShardIndex === null ? browserShards : 1;
+if (!Number.isSafeInteger(browserShards) || browserShards < 1 || localBrowserProcesses > browserShardCapacity || browserShards > browserPortCapacity) {
   throw new Error(`SIR_BROWSER_SHARDS must be a positive integer no greater than the machine capacity (${browserShardCapacity}) or available port capacity (${browserPortCapacity}).`);
+}
+if (browserShardIndex !== null && (!Number.isSafeInteger(browserShardIndex) || browserShardIndex < 1 || browserShardIndex > browserShards)) {
+  throw new Error("SIR_BROWSER_SHARD_INDEX must be a positive integer no greater than SIR_BROWSER_SHARDS.");
 }
 const browserCohort = process.env.SIR_BROWSER_COHORT ?? "all";
 if (!["all", "general", "production-delivery"].includes(browserCohort)) {
@@ -27,10 +33,12 @@ if (!["all", "general", "production-delivery"].includes(browserCohort)) {
 
 const output = resolve(root, process.env.SIR_JUNIT_OUTPUT ?? "artifacts/test-results/browser.junit.xml");
 const shardRoot = mkdtempSync(join(tmpdir(), "sir-browser-shards-"));
-const shardReports = Array.from({ length: browserShards }, (_, offset) => join(shardRoot, `browser-${offset + 1}.junit.xml`));
+const shardIndexes = browserShardIndex === null
+  ? Array.from({ length: browserShards }, (_, offset) => offset + 1)
+  : [browserShardIndex];
+const shardReports = shardIndexes.map((index) => join(shardRoot, `browser-${index}.junit.xml`));
 
-const runShard = (offset) => new Promise((complete) => {
-  const index = offset + 1;
+const runShard = (index, report) => new Promise((complete) => {
   const args = [
     resolve(root, "node_modules/@playwright/test/cli.js"),
     "test",
@@ -45,7 +53,7 @@ const runShard = (offset) => new Promise((complete) => {
     env: {
       ...process.env,
       SIR_BROWSER_PORT: String(browserPortBase + index - 1),
-      SIR_JUNIT_OUTPUT: shardReports[offset],
+      SIR_JUNIT_OUTPUT: report,
     },
     stdio: "inherit",
   });
@@ -64,7 +72,7 @@ const mergeShardReports = (paths) => {
 };
 
 try {
-  const results = await Promise.all(shardReports.map((_, offset) => runShard(offset)));
+  const results = await Promise.all(shardReports.map((report, offset) => runShard(shardIndexes[offset], report)));
   mergeShardReports(shardReports);
   for (const result of results) {
     if (result.error) console.error(`browser shard ${result.index} could not start:`, result.error);

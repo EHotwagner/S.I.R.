@@ -251,7 +251,7 @@ NODE
       rules) gate_parts=(native) ;;
       spatial|cross-runtime) gate_parts=(native fable) ;;
       cancellation) gate_parts=(native web) ;;
-      browser|browser-delivery) gate_parts=(web server) ;;
+      browser|browser-general-helper|browser-delivery) gate_parts=(web server) ;;
       documentation) gate_parts=(web docs) ;;
     esac
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
@@ -307,7 +307,11 @@ NODE
         ;;
       browser)
         "$0" compose-browser >/dev/null
-        SIR_BROWSER_COHORT=general npm run test:browser
+        SIR_BROWSER_SHARDS=2 SIR_BROWSER_SHARD_INDEX=1 SIR_BROWSER_COHORT=general npm run test:browser
+        ;;
+      browser-general-helper)
+        "$0" compose-browser >/dev/null
+        SIR_BROWSER_SHARDS=2 SIR_BROWSER_SHARD_INDEX=2 SIR_BROWSER_COHORT=general npm run test:browser
         ;;
       browser-delivery)
         "$0" compose-browser >/dev/null
@@ -374,7 +378,7 @@ NODE
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
       "$0" verify-parts "${gate_parts[@]}" >/dev/null
     fi
-    if [[ "$gate" == browser || "$gate" == browser-delivery ]]; then "$0" verify-browser-composition >/dev/null; fi
+    if [[ "$gate" == browser || "$gate" == browser-general-helper || "$gate" == browser-delivery ]]; then "$0" verify-browser-composition >/dev/null; fi
     ;;
   *)
     echo "qualify-pr: usage route PATHS|integrity|prepare-part ID|extract-parts IDS...|verify-parts IDS...|compose-browser|verify-browser-composition|gate ID" >&2
