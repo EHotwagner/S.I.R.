@@ -22,6 +22,16 @@
       "reason": "Issue 231 extends the focused route matrix with SVG-only allowlist, broad-policy fallback, performance preparer ownership, and the unchanged 240-second/60-second-headroom contract."
     },
     {
+      "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
+      "findingId": "§4.1",
+      "locator": "file:.github/workflows/ci.yml",
+      "path": ".github/workflows/ci.yml",
+      "previousSha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127",
+      "replacementSha256": "d5aaa4bedfdbbe8f43ec79b9ea130d1318da775bae40dd62a612a934a7aefad6",
+      "replacementEvidence": "command:node scripts/test-ci-route.mjs",
+      "reason": "Issue 231 adds the fixed-function performance route to the existing web/docs preparer conditions; the focused workflow-DAG contract and mutations verify the two repaired conditions while preserving the bounded #220 topology."
+    },
+    {
       "audit": "feedback/audits/2026-08-20-sir-item-231-svg-pipeline-measurement.audit.json",
       "findingId": "§4.1",
       "locator": "file:work/231-svg-pipeline-measurement/production-chromium-authority.json",
@@ -146,10 +156,20 @@
       "findingId": "§4.3",
       "locator": "file:feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl",
       "path": "feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl",
-      "previousSha256": "0c3e90c6b840e966deacfa266890019a9c37db4ea8e1ca5e5453e31b1be0d7a5",
-      "replacementSha256": "0c3e90c6b840e966deacfa266890019a9c37db4ea8e1ca5e5453e31b1be0d7a5",
+      "previousSha256": "3511e67f7d03c1749950d3ec80a141365856fb297de85fa20fb3402b5db81ad8",
+      "replacementSha256": "3511e67f7d03c1749950d3ec80a141365856fb297de85fa20fb3402b5db81ad8",
       "replacementEvidence": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- validate-checkpoint-state --cycle item-231-svg-pipeline-measurement",
-      "reason": "The repaired-cycle audit is authored with the six-event checkpoint it reviews; the bundled validator fails closed on missing, malformed, contradictory, or private checkpoint state."
+      "reason": "The repaired-cycle audit is refreshed with the eighth checkpoint event, which preserves the hosted performance-route failure and focused repair evidence; the bundled validator fails closed on missing, malformed, contradictory, or private checkpoint state."
+    },
+    {
+      "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
+      "findingId": "§4.4",
+      "locator": "file:feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl",
+      "path": "feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl",
+      "previousSha256": "3511e67f7d03c1749950d3ec80a141365856fb297de85fa20fb3402b5db81ad8",
+      "replacementSha256": "3511e67f7d03c1749950d3ec80a141365856fb297de85fa20fb3402b5db81ad8",
+      "replacementEvidence": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- validate-checkpoint-state --cycle item-231-svg-pipeline-measurement",
+      "reason": "The actionability audit is authored against the final eighth checkpoint event; the bundled validator and structured review locator independently verify its route-repair observation."
     }
   ]
 }
