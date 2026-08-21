@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "74141fe89392756e43f6ec467d52e6798f1dc76d35c347a38ecb735920c96784"
+        "value": "ba8c724b4852cd1f7e2146959ee0d2870ba0a271bbb965fc4f95f8f47fb82e88"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "4aff25ff1d5326afa0b9c0567ff9dc9e33a6eb1dd1acce25921d4df111cdfaf1"
+        "value": "65b45ffe1664f0b64cc4618121b2b54f9638da872e5891b25f81a5f1f0e7e233"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "13d67d798c3dd9686e6d44adfa4a1d25c8ccae9a270775843a70c745bf62f2f2"
+        "value": "f662ce3e9b3061a77ff23d31930ab08dd6e54858fb08628c9eb81066bbdf17f9"
       }
     }
   ],
@@ -1388,9 +1388,13 @@
         "FR-009"
       ],
       "artifactRefs": [
+        ".github/workflows/ci.yml",
         "scripts/measure-svg-pipeline.mjs",
+        "scripts/qualify-pr.sh",
         "scripts/svg-pipeline-fixtures.v1.json",
         "scripts/test-ci-evidence-mutation.sh",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
         "scripts/test-svg-pipeline-measurement.mjs",
         "work/231-svg-pipeline-measurement/production-chromium-authority.json",
         "work/231-svg-pipeline-measurement/production-chromium-evidence.json",
@@ -1956,7 +1960,7 @@
           "path": "work/231-svg-pipeline-measurement/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "74141fe89392756e43f6ec467d52e6798f1dc76d35c347a38ecb735920c96784"
+            "value": "ba8c724b4852cd1f7e2146959ee0d2870ba0a271bbb965fc4f95f8f47fb82e88"
           },
           "schemaVersion": 1
         },
@@ -1964,7 +1968,7 @@
           "path": "work/231-svg-pipeline-measurement/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "4aff25ff1d5326afa0b9c0567ff9dc9e33a6eb1dd1acce25921d4df111cdfaf1"
+            "value": "65b45ffe1664f0b64cc4618121b2b54f9638da872e5891b25f81a5f1f0e7e233"
           },
           "schemaVersion": 1
         },
@@ -1980,14 +1984,14 @@
           "path": "work/231-svg-pipeline-measurement/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "13d67d798c3dd9686e6d44adfa4a1d25c8ccae9a270775843a70c745bf62f2f2"
+            "value": "f662ce3e9b3061a77ff23d31930ab08dd6e54858fb08628c9eb81066bbdf17f9"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "1e23c81641dfcad192fca35bb5a9903c7b2f437ffaf174abe523893eecec4ce1"
+        "value": "69659110d51bdd1fde9bc42e78e2280c54c9b16747dee4898dbac7a7df919421"
       },
       "currency": "current"
     }

@@ -416,10 +416,9 @@ jobs:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@v4
-        with: { node-version: 26.5.0, cache: npm }
+        with: { node-version: 26.5.0 }
       - uses: actions/setup-dotnet@v4
         with: { global-json-file: global.json }
-      - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
         with: { name: ci-route, path: artifacts/ci }
       - uses: actions/download-artifact@v4
@@ -449,10 +448,9 @@ jobs:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@v4
-        with: { node-version: 26.5.0, cache: npm }
+        with: { node-version: 26.5.0 }
       - uses: actions/setup-dotnet@v4
         with: { global-json-file: global.json }
-      - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
         with: { name: ci-route, path: artifacts/ci }
       - uses: actions/download-artifact@v4
@@ -482,10 +480,9 @@ jobs:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@v4
-        with: { node-version: 26.5.0, cache: npm }
+        with: { node-version: 26.5.0 }
       - uses: actions/setup-dotnet@v4
         with: { global-json-file: global.json }
-      - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
         with: { name: ci-route, path: artifacts/ci }
       - uses: actions/download-artifact@v4
@@ -515,10 +512,9 @@ jobs:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@v4
-        with: { node-version: 26.5.0, cache: npm }
+        with: { node-version: 26.5.0 }
       - uses: actions/setup-dotnet@v4
         with: { global-json-file: global.json }
-      - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
         with: { name: ci-route, path: artifacts/ci }
       - uses: actions/download-artifact@v4
@@ -548,10 +544,9 @@ jobs:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@v4
-        with: { node-version: 26.5.0, cache: npm }
+        with: { node-version: 26.5.0 }
       - uses: actions/setup-dotnet@v4
         with: { global-json-file: global.json }
-      - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
         with: { name: ci-route, path: artifacts/ci }
       - uses: actions/download-artifact@v4

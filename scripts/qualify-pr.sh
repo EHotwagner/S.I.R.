@@ -153,7 +153,18 @@ NODE
         ;;
       web)
         ./scripts/build-client.sh
-        part_paths=(src/SIR.Client.Web/.fable src/SIR.Client.Web/.fable-rules artifacts/client)
+        # Browser consumers use the exact Playwright runtime bytes installed from
+        # package-lock.json by this producer. Shipping the three-package runtime
+        # avoids repeating a full npm ci on every browser shard while the build
+        # receipt and artifact manifest still bind every transported byte.
+        part_paths=(
+          src/SIR.Client.Web/.fable
+          src/SIR.Client.Web/.fable-rules
+          artifacts/client
+          node_modules/@playwright/test
+          node_modules/playwright
+          node_modules/playwright-core
+        )
         ;;
       server)
         dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore

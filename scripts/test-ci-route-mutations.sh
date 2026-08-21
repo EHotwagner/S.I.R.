@@ -13,6 +13,7 @@ expect_red() {
   cp "$repo_root/scripts/ci-route.mjs" "$temporary/case/scripts/ci-route.mjs"
   cp "$repo_root/scripts/test-ci-route.mjs" "$temporary/case/scripts/test-ci-route.mjs"
   cp "$repo_root/.github/workflows/ci.yml" "$temporary/case/.github/workflows/ci.yml"
+  cp "$repo_root/scripts/qualify-pr.sh" "$temporary/case/scripts/qualify-pr.sh"
   cp "$repo_root/scripts/qualify-production.sh" "$temporary/case/scripts/qualify-production.sh"
   cp "$repo_root/tests/fixtures/ci-qualification/v1/contracts.json" "$temporary/case/tests/fixtures/ci-qualification/v1/contracts.json"
   sed -i "$mutation" "$temporary/case/$name"
@@ -29,5 +30,7 @@ expect_red scripts/ci-route.mjs 's/  "scripts\/finalize-svg-pipeline-evidence.mj
 expect_red .github/workflows/ci.yml "s/ || needs.route.outputs.classification == 'performance'//g;"
 expect_red .github/workflows/ci.yml 's/^  full-qualification:/  omitted-full-qualification:/;'
 expect_red .github/workflows/ci.yml 's#\./scripts/qualify-production.sh --protected#./scripts/qualify-production.sh#;'
+expect_red scripts/qualify-pr.sh '/node_modules\/playwright-core/d;'
+expect_red .github/workflows/ci.yml '/^  browser:/,/^  browser-general-helper:/ s#      - uses: actions/download-artifact@v4#      - run: npm ci --ignore-scripts\n      - uses: actions/download-artifact@v4#;'
 
-echo "CI route policy, performance scope/headroom/preparer wiring, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."
+echo "CI route policy, performance scope/headroom/preparer wiring, prepared Playwright runtime reuse, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."

@@ -245,6 +245,11 @@ assert.ok(fullQualification.indexOf("dotnet-invocation-trace.sh") < fullQualific
 assert.match(fullQualification, /verify-spatial-query\.sh --static-only/u);
 assert.match(fullQualification, /fable_target_builds=.*\.total/u);
 const focusedQualification = readFileSync(new URL("./qualify-pr.sh", import.meta.url), "utf8");
+for (const browserJob of ["browser", "browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery"]) {
+  assert.doesNotMatch(jobBody(browserJob), /npm ci/u);
+  assert.doesNotMatch(jobBody(browserJob), /cache: npm/u);
+}
+assert.match(focusedQualification, /web\)[\s\S]*node_modules\/@playwright\/test[\s\S]*node_modules\/playwright[\s\S]*node_modules\/playwright-core[\s\S]*;;/u);
 const conformanceQualification = readFileSync(new URL("./test-conformance.sh", import.meta.url), "utf8");
 const spatialMutationQualification = readFileSync(new URL("./test-spatial-subject-mutations.sh", import.meta.url), "utf8");
 const cancellationMutationQualification = readFileSync(new URL("./test-worker-cancellation-subject-mutation.sh", import.meta.url), "utf8");

@@ -41,7 +41,7 @@
       "kind": "analysis",
       "digest": {
         "algorithm": "sha256",
-        "value": "1a2beb842f0a2de5ed2cc1d1872c8fa36340e706056585e29ecb9653210c9eb9"
+        "value": "facb52fd3c0b56a814a64f621609b66901f7a59ace821a13d70fd36f5dee8f28"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +51,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "619c5177026fc7caf80326debb75c60fac4279225cf852c2f31f29fcb34a4533"
+        "value": "93313a022e7758979e3daf982ca51dba01f29edd8a709a233bcbad1514038907"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "da06b3f5db5954452ea19d6ef766bc07557c6475c357d4060a5e7f2981b11b7b"
+        "value": "e9e03a5903a8c18fd563412f54301ff75aeb486c26d78eeb5648656e5e938483"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "4aff25ff1d5326afa0b9c0567ff9dc9e33a6eb1dd1acce25921d4df111cdfaf1"
+        "value": "65b45ffe1664f0b64cc4618121b2b54f9638da872e5891b25f81a5f1f0e7e233"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -111,7 +111,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "13d67d798c3dd9686e6d44adfa4a1d25c8ccae9a270775843a70c745bf62f2f2"
+        "value": "f662ce3e9b3061a77ff23d31930ab08dd6e54858fb08628c9eb81066bbdf17f9"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -1246,24 +1246,7 @@
       "diagnosticIds": []
     }
   ],
-  "findings": [
-    {
-      "id": "VF001",
-      "severity": "warning",
-      "category": "warning",
-      "path": "work/231-svg-pipeline-measurement/evidence.yml",
-      "relatedIds": [
-        "analysis",
-        "checklist",
-        "clarifications",
-        "plan",
-        "spec",
-        "tasks"
-      ],
-      "message": "One or more evidence source snapshots no longer match current source digests.",
-      "correction": "Rerun the evidence command after reviewing the changed source artifacts."
-    }
-  ],
+  "findings": [],
   "governanceCompatibility": [
     {
       "path": ".fsgg/policy.yml",
@@ -1287,23 +1270,7 @@
       "diagnosticIds": []
     }
   ],
-  "diagnostics": [
-    {
-      "id": "evidence.staleEvidenceSource",
-      "severity": "warning",
-      "artifact": "work/231-svg-pipeline-measurement/evidence.yml",
-      "message": "One or more evidence source snapshots no longer match current source digests.",
-      "correction": "Rerun the evidence command after reviewing the changed source artifacts.",
-      "relatedIds": [
-        "analysis",
-        "checklist",
-        "clarifications",
-        "plan",
-        "spec",
-        "tasks"
-      ]
-    }
-  ],
+  "diagnostics": [],
   "readiness": "verificationReady",
   "nextAction": {
     "actionId": "verify.next.ship",
