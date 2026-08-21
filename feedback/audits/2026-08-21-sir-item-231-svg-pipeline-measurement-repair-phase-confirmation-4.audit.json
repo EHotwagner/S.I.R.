@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-21-sir-item-231-svg-pipeline-measurement-repair-phase-confirmation-4.md",
-  "reportSha256": "4040c856728b56999a1ea515b0664c22f65eb1386a895fb5afce53a5d9401e01",
+  "reportSha256": "95e2608b699f3505970d36c2cbf07a224770bc23e90653c63dcdf9ecdd04c2c2",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -17,11 +17,6 @@
         {
           "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/32513160418",
           "result": "verified"
-        },
-        {
-          "locator": "file:scripts/ci-gate-artifact-bindings.sh",
-          "result": "verified",
-          "sha256": "29210f4b5237c13a06aaf24265be3152e44b8310cc2eda7159c7c15e6e13fa2e"
         },
         {
           "locator": "command:bash scripts/test-ci-gate-artifact-isolation.sh",
@@ -44,11 +39,6 @@
         {
           "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/32513160418",
           "result": "verified"
-        },
-        {
-          "locator": "file:tests/SIR.Client.Tests/ScenarioCatalogQualification.fs",
-          "result": "verified",
-          "sha256": "0f64e0f8f69b12e4e6af9d1852c914d67f55cd7016d346456adacf2ed47b26ad"
         },
         {
           "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore",
