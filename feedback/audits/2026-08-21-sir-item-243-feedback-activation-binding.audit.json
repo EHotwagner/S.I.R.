@@ -1,0 +1,31 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-243-feedback-activation-binding.md",
+  "reportSha256": "19ce67917cc81d15f7ed0f81da3681fd671b5a140adeaa09e1560fd31e4b2f41",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- validate-checkpoints feedback/checkpoints/item-220-ci-budget-repair-phase.jsonl",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- validate feedback/2026-08-21-sir-item-220-ci-budget-repair-phase-6.md --audit feedback/audits/2026-08-21-sir-item-220-ci-budget-repair-phase-6.audit.json",
+          "result": "verified"
+        },
+        {
+          "locator": "command:python3 .agents/skills/work-board/scripts/validate-feedback-state.py --root . --cycle item-220-ci-budget-repair-phase --report feedback/2026-08-21-sir-item-220-ci-budget-repair-phase-6.md --audit feedback/audits/2026-08-21-sir-item-220-ci-budget-repair-phase-6.audit.json --phases onboarding-first-build,lifecycle-authoring-or-not-used,implementation-test-evidence,verify-ship-pr",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The focused commands establish feedback artifact coherence only; they do not requalify product or CI behavior from issue #220."
+      ]
+    }
+  ]
+}

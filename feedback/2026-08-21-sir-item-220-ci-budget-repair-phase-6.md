@@ -10,6 +10,11 @@ commit: f8bad809bb2c83d0163c967912be903fb205eae7
 
 ## §1 Provenance and confidence
 
+- **activation:** active
+- **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
+- **material events:** 7
+- **zero-event reason:** n/a
+
 This immutable addendum covers repair confirmation round 4 and the round-5 source freeze for issue EHotwagner/S.I.R.#220 and PR #242. The source commit has six checkpoints at `feedback/checkpoints/item-220-ci-budget-repair-phase.jsonl`; the seventh checkpoint accompanies this report metadata. Scaffold and package locks remain unchanged. Confidence is high for the exact hosted round-4 timing/result, its isolated cancellation-helper failure, the focused repaired mutation proof, current route contract, and SDD readiness. Exact-head hosted acceptance for `f8bad809bb2c83d0163c967912be903fb205eae7` remains intentionally pending.
 
 ## §2 What worked

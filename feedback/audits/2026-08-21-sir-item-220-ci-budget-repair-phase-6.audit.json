@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-21-sir-item-220-ci-budget-repair-phase-6.md",
-  "reportSha256": "82fcdfdf08fe814314c60e7d3812a33cfd1223f0d7ac5b933e2a0f287d0b8de0",
+  "reportSha256": "def5c40cf90185b51fbdea1a7f9945db07a14ee387bc3bf54d8d298cb34b3219",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
