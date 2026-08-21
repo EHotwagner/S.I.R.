@@ -1,0 +1,83 @@
+#!/usr/bin/env node
+import { spawn } from "node:child_process";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { availableParallelism, tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+import process from "node:process";
+import { browserShardCapacityFor } from "./browser-shard-capacity.mjs";
+import { mergeBrowserShardCases, parseBrowserShardJUnit } from "./browser-junit.mjs";
+
+const root = resolve(import.meta.dirname, "..");
+// Every shard owns one browser plus one independent server, so pair-accounted
+// capacity prevents either process cohort from oversubscribing the runner.
+const browserShardCapacity = browserShardCapacityFor(availableParallelism());
+const browserPortBase = 5100;
+const browserPortCapacity = 65_535 - browserPortBase + 1;
+const configuredBrowserShards = process.env.SIR_BROWSER_SHARDS;
+const browserShards = configuredBrowserShards === undefined
+  ? (process.env.CI ? Math.min(browserShardCapacity, browserPortCapacity) : 1)
+  : Number(configuredBrowserShards);
+const configuredShardIndex = process.env.SIR_BROWSER_SHARD_INDEX;
+const browserShardIndex = configuredShardIndex === undefined ? null : Number(configuredShardIndex);
+const localBrowserProcesses = browserShardIndex === null ? browserShards : 1;
+if (!Number.isSafeInteger(browserShards) || browserShards < 1 || localBrowserProcesses > browserShardCapacity || browserShards > browserPortCapacity) {
+  throw new Error(`SIR_BROWSER_SHARDS must be a positive integer no greater than the machine capacity (${browserShardCapacity}) or available port capacity (${browserPortCapacity}).`);
+}
+if (browserShardIndex !== null && (!Number.isSafeInteger(browserShardIndex) || browserShardIndex < 1 || browserShardIndex > browserShards)) {
+  throw new Error("SIR_BROWSER_SHARD_INDEX must be a positive integer no greater than SIR_BROWSER_SHARDS.");
+}
+const browserCohort = process.env.SIR_BROWSER_COHORT ?? "all";
+if (!["all", "general", "production-delivery"].includes(browserCohort)) {
+  throw new Error("SIR_BROWSER_COHORT must be all, general, or production-delivery.");
+}
+
+const output = resolve(root, process.env.SIR_JUNIT_OUTPUT ?? "artifacts/test-results/browser.junit.xml");
+const shardRoot = mkdtempSync(join(tmpdir(), "sir-browser-shards-"));
+const shardIndexes = browserShardIndex === null
+  ? Array.from({ length: browserShards }, (_, offset) => offset + 1)
+  : [browserShardIndex];
+const shardReports = shardIndexes.map((index) => join(shardRoot, `browser-${index}.junit.xml`));
+
+const runShard = (index, report) => new Promise((complete) => {
+  const args = [
+    resolve(root, "node_modules/@playwright/test/cli.js"),
+    "test",
+    "--config",
+    "tests/SIR.Browser.Tests/playwright.config.js",
+  ];
+  if (browserCohort === "general") args.push("--grep-invert", "@production-delivery");
+  if (browserCohort === "production-delivery") args.push("--grep", "@production-delivery");
+  if (browserShards > 1) args.push(`--shard=${index}/${browserShards}`);
+  const child = spawn(process.execPath, args, {
+    cwd: root,
+    env: {
+      ...process.env,
+      SIR_BROWSER_PORT: String(browserPortBase + index - 1),
+      SIR_JUNIT_OUTPUT: report,
+    },
+    stdio: "inherit",
+  });
+  child.on("error", (error) => complete({ index, code: 1, error }));
+  child.on("exit", (code, signal) => complete({ index, code: code ?? 1, signal }));
+});
+
+const mergeShardReports = (paths) => {
+  const groups = paths.map((path, offset) => {
+    if (!existsSync(path)) throw new Error(`browser shard did not write deterministic JUnit: ${path}`);
+    return parseBrowserShardJUnit(readFileSync(path, "utf8"), `browser shard ${offset + 1}`);
+  });
+  const report = mergeBrowserShardCases(groups);
+  mkdirSync(dirname(output), { recursive: true });
+  writeFileSync(output, report, "utf8");
+};
+
+try {
+  const results = await Promise.all(shardReports.map((report, offset) => runShard(shardIndexes[offset], report)));
+  mergeShardReports(shardReports);
+  for (const result of results) {
+    if (result.error) console.error(`browser shard ${result.index} could not start:`, result.error);
+    if (result.code !== 0) process.exitCode = result.code;
+  }
+} finally {
+  rmSync(shardRoot, { recursive: true, force: true });
+}

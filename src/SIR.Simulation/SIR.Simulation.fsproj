@@ -3,8 +3,10 @@
     <Compile Include="Substrate.fs" />
     <Compile Include="CombatRules.fsi" />
     <Compile Include="CombatRules.fs" />
-    <Compile Include="SpatialQuery.fsi" />
-    <Compile Include="SpatialQuery.fs" />
+    <Compile Include="SpatialQuery.fsi" Condition="'$(SpatialQueryImplementation)' == ''" />
+    <Compile Include="SpatialQuery.fs" Condition="'$(SpatialQueryImplementation)' == ''" />
+    <Compile Include="$([System.IO.Path]::ChangeExtension('$(SpatialQueryImplementation)', '.fsi'))" Link="SpatialQuery.fsi" Condition="'$(SpatialQueryImplementation)' != ''" />
+    <Compile Include="$(SpatialQueryImplementation)" Link="SpatialQuery.fs" Condition="'$(SpatialQueryImplementation)' != ''" />
     <Compile Include="TacticalEnvironment.fsi" />
     <Compile Include="TacticalEnvironment.fs" />
     <Compile Include="AwarenessReaction.fsi" />

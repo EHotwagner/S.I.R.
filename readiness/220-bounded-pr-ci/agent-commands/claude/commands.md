@@ -105,7 +105,7 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 
 ## T021 — Implement plan decision PD-003
 - Stage: specify
-- Purpose: Carry out lifecycle task T021 (done) covering AC-002, DEC-005, FR-003, PD-003.
+- Purpose: Carry out lifecycle task T021 (in-progress) covering AC-002, DEC-005, FR-003, PD-003.
 - Related: AC-002, DEC-005, FR-003, PD-003
 
 ## T022 — Implement plan decision PD-004
@@ -205,7 +205,7 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 
 ## T041 — Record verification evidence VO-007
 - Stage: specify
-- Purpose: Carry out lifecycle task T041 (done) covering PD-003, PD-004, VO-007.
+- Purpose: Carry out lifecycle task T041 (in-progress) covering PD-003, PD-004, VO-007.
 - Related: PD-003, PD-004, VO-007
 
 ## T042 — Handle migration posture PM-001

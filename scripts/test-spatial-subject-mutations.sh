@@ -26,6 +26,105 @@ cleanup() {
 }
 trap cleanup EXIT
 
+mutation_expected() {
+  case "$1" in
+    dependency-receipt) printf '%s' "An inspected empty cell was not retained as an occupancy-addition dependency." ;;
+    footprint-envelope) printf '%s' "Footprint evaluation ignored an occupied sample." ;;
+    semantic-edge) printf '%s' "A multi-cell diagonal cut through the blocked transition envelope." ;;
+    knowledge-cache-key) printf '%s' "Cache identity omitted requester knowledge identity or revision." ;;
+    spatial-revision-key) printf '%s' "Cache identity omitted spatial revision." ;;
+    deterministic-ordering) printf '%s' "Footprint normalization lost deterministic cell ordering." ;;
+    package-adapter) printf '%s' "Package Pathfinding.astar adapter changed." ;;
+    profile-cache-key) printf '%s' "Cache identity omitted stance, height, or facing." ;;
+    trace-work-bound) printf '%s' "Trace work was materialized beyond MaximumCrossedItems." ;;
+    *) echo "unknown spatial mutation: $1" >&2; return 2 ;;
+  esac
+}
+
+write_mutant() {
+  local name=$1
+  local target=$2
+  cp -p "$original" "$target"
+  case "$name" in
+    dependency-receipt) sed -i '/observeToken $"occupancy:{position.Col}:{position.Row}"/d' "$target" ;;
+    footprint-envelope) sed -i 's/footprint |> List.map (addCell anchor)/footprint |> List.truncate 1 |> List.map (addCell anchor)/' "$target" ;;
+    semantic-edge) sed -i 's/| SpatialModality.GroundMovement -> value.Ground/| SpatialModality.GroundMovement -> true/' "$target" ;;
+    knowledge-cache-key) sed -i 's/|{world.Identity.KnowledgeIdentity}|{world.Identity.KnowledgeRevision}//' "$target" ;;
+    spatial-revision-key) sed -i 's/|{world.Identity.SpatialRevision}//' "$target" ;;
+    deterministic-ordering) sed -i 's/List.sortBy cellKey/List.sortByDescending cellKey/' "$target" ;;
+    package-adapter) sed -i '/let packagePointPath/{n;s/maximumExpansions/(maximumExpansions - maximumExpansions)/;}' "$target" ;;
+    profile-cache-key) sed -i 's/|{request.Profile.Stance}|{request.Profile.HeightBand}|{directionCode request.Profile.Facing}//' "$target" ;;
+    trace-work-bound) sed -i 's/if (pairs |> List.sumBy (fun (origin, target) -> lineStepCount origin target + 1L)) > maximumWork then/if false then/' "$target" ;;
+  esac
+}
+
+run_prepared_mutation() {
+  local name=$1
+  local mutation_root="$temporary_dir/mutations/$name"
+  local mutant="$mutation_root/SpatialQuery.fs"
+  local artifacts="$mutation_root/artifacts"
+  local runtime="$mutation_root/runtime"
+  local log="$mutation_root/mutation.log"
+  local expected
+  expected=$(mutation_expected "$name")
+  mkdir -p "$mutation_root"
+  cp -p "$repo_root/src/SIR.Simulation/SpatialQuery.fsi" "$mutation_root/SpatialQuery.fsi"
+  write_mutant "$name" "$mutant"
+  cp -al "$temporary_dir/runtime-base" "$runtime"
+  if ! dotnet restore "$simulation_project" --locked-mode --artifacts-path "$artifacts" \
+    -p:SpatialQueryImplementation="$mutant" >"$log" 2>&1; then
+    echo "spatial subject mutation could not restore: $name" >&2
+    cat "$log" >&2
+    return 1
+  fi
+  if ! SIR_BUILD_EXCEPTION="spatial-$name" dotnet build "$simulation_project" -c Release --no-restore \
+    --artifacts-path "$artifacts" -p:SpatialQueryImplementation="$mutant" >>"$log" 2>&1; then
+    echo "spatial subject mutation could not build: $name" >&2
+    cat "$log" >&2
+    return 1
+  fi
+  cp --remove-destination "$artifacts/bin/SIR.Simulation/release/SIR.Simulation.dll" "$runtime/SIR.Simulation.dll"
+  if { SIR_BUILD_EXCEPTION="spatial-$name" dotnet "$runtime/SIR.Domain.Tests.dll" --print-spatial-query; } >>"$log" 2>&1; then
+    echo "spatial subject mutation unexpectedly passed: $name" >&2
+    return 1
+  fi
+  grep -F -- "$expected" "$log" >/dev/null || {
+    echo "spatial subject mutation failed for the wrong reason: $name" >&2
+    cat "$log" >&2
+    return 1
+  }
+}
+
+if [[ "$prepared_pr" == true ]]; then
+  mutation_names=(
+    dependency-receipt footprint-envelope semantic-edge knowledge-cache-key spatial-revision-key
+    deterministic-ordering package-adapter profile-cache-key trace-work-bound
+  )
+  concurrency=${SIR_SPATIAL_MUTATION_CONCURRENCY:-3}
+  [[ "$concurrency" =~ ^[1-9][0-9]*$ && $concurrency -le ${#mutation_names[@]} ]] || {
+    echo "SIR_SPATIAL_MUTATION_CONCURRENCY must be between 1 and ${#mutation_names[@]}" >&2
+    exit 2
+  }
+  mkdir -p "$temporary_dir/runtime-base"
+  cp -a "$repo_root/tests/SIR.Domain.Tests/bin/Release/net10.0/." "$temporary_dir/runtime-base/"
+  active_pids=()
+  failed=0
+  wait_batch() {
+    local pid
+    for pid in "${active_pids[@]}"; do wait "$pid" || failed=1; done
+    active_pids=()
+  }
+  for name in "${mutation_names[@]}"; do
+    run_prepared_mutation "$name" &
+    active_pids+=("$!")
+    if [[ ${#active_pids[@]} -eq $concurrency ]]; then wait_batch; fi
+  done
+  if [[ ${#active_pids[@]} -gt 0 ]]; then wait_batch; fi
+  [[ $failed -eq 0 ]] || exit 1
+  echo "Spatial subject mutations failed closed: dependency receipt, footprint, edge, knowledge, revision, ordering, package adapter, profile key, and trace bound."
+  exit 0
+fi
+
 expect_mutation_failure() {
   local name=$1
   local expected=$2
@@ -51,12 +150,6 @@ expect_mutation_failure() {
     exit 1
   }
 }
-
-if [[ "$prepared_pr" == true ]]; then
-  mkdir -p "$temporary_dir/runtime"
-  cp -a "$repo_root/tests/SIR.Domain.Tests/bin/Release/net10.0/." "$temporary_dir/runtime/"
-  dotnet restore "$simulation_project" --locked-mode --artifacts-path "$temporary_dir/artifacts" >/dev/null
-fi
 
 sed -i '/observeToken $"occupancy:{position.Col}:{position.Row}"/d' "$subject"
 expect_mutation_failure dependency-receipt "An inspected empty cell was not retained as an occupancy-addition dependency."

@@ -1,0 +1,65 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-220-ci-budget-repair-phase-2.md",
+  "reportSha256": "aa7e90e3c23990d0ad66525263771b24e117093fb6618216815027a77e8eebc8",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsgg-sdd analyze --work 220-bounded-pr-ci --text",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsgg-sdd verify --work 220-bounded-pr-ci --text",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsgg-sdd ship --work 220-bounded-pr-ci --text",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Verified at report commit ee0eb0c791a7cfb10079def8e88aad889cfb129c with FS.GG SDD CLI 1.0.1.",
+        "The commands verify 49 tasks, 103 ready relationships, all four readiness states, and zero stale, missing, invalid, synthetic, self-attested, or blocking evidence.",
+        "The evidence establishes current coherence and noChange outcomes; 'cheap' is qualitative and should not be interpreted as a measured elapsed-time guarantee for future repairs.",
+        "Recurrence is verified against feedback/2026-08-21-sir-item-220-ci-budget-repair-phase.md §4.1."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#220",
+          "result": "verified"
+        },
+        {
+          "locator": "command:SIR_BROWSER_SHARDS=3 npm run test:browser",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/test-spatial-subject-mutations.sh --prepared-pr",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-ci-route.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Run 32434802616 is hosted evidence from prior head 0d68fbacc5ac335a719028840d4fae0f317c976f. Its artifacts verify all substantive gates passed, pr-verdict alone failed feedback-headroom-eroded at 283553 ms versus 240000 ms, spatial totaled 132219 ms, browser totaled 123440 ms, and retryCount was zero.",
+        "The current local browser command reproduced the 14/14/13 partition, 41 total tests with one intentional skip and no failures, Chromium 151.0.7922.34, and approximately 27.3 seconds.",
+        "The prepared spatial command reproduced all nine named fail-closed mutants in 21.0 seconds, consistent with the rounded 22-second report value.",
+        "The route command reproduced the strict malformed/count-drifted/duplicate JUnit negative cases and exact capacity-reserve/spatial-overlap topology assertions.",
+        "Round-one hosted acceptance at the report head remains pending and is correctly excluded from the claim.",
+        "Prior-report and open/closed GitHub searches found no competing issue; issue #220 owns this recurring CI-budget cause and the report contributes new evidence rather than duplicating it."
+      ]
+    }
+  ]
+}

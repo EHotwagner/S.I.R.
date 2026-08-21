@@ -53,7 +53,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "dbdba47c86a1973f217b00976e914effb64098f5067d699737fa9838072691da"
+        "value": "0b89c050b3209b15e15fd44c3b1aeb3fb913a561a3e09cb42a4ef516ad3678c3"
       }
     },
     {
@@ -65,7 +65,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "b00176a02d8591ac695beaf6d6094ad4cb2504b076d6ea5ac96dc9b8504958ca"
+        "value": "b3525c9c3afa13a5f28599546e0455f5dc1fcf9157277f68e733970d5ce680d2"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "51603efdd8f28c0e801b1e7aec2458c99458549a729f335860797516c9c0b4ee"
+        "value": "11c9b8dcda48bf0c3327ce65c80be42405f15420269914d6546501b07cfbd897"
       }
     },
     {
@@ -101,7 +101,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "997daa8007aefb252e19fe9a177265edbfa64f1e9ac2747eb0f05b97ea825f2c"
+        "value": "126808eaa7785b9d2ce0a5e958d06def32ffb98358c1a42ab57f53caa231dd96"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "37293924c935723092207573771bf766fd93a30f2a17043cdc763b37511f814f"
+        "value": "3a8e291137d1cf5e1b0ceb9e89b9895672d151d0c06062f61369559b15ecda35"
       }
     }
   ],
@@ -172,8 +172,8 @@
     },
     {
       "id": "FR-003",
-      "title": "Required PR feedback MUST complete within 300 seconds from runner start to actionable deterministic join verdict on the declared \u0060ubuntu-latest\u0060 runner for the representative route matrix. (Stories: US-001, US-002; Acceptance: AC-002)",
-      "text": "Required PR feedback MUST complete within 300 seconds from runner start to actionable deterministic join verdict on the declared \u0060ubuntu-latest\u0060 runner for the representative route matrix. (Stories: US-001, US-002; Acceptance: AC-002)",
+      "title": "Required PR feedback MUST complete within 300 seconds from runner start to actionable deterministic join verdict on the declared \u0060ubuntu-latest\u0060 runner for the representative route matrix. The representative cross-cutting acceptance run MUST complete within 240 seconds, retaining at least 60 seconds of headroom for observed runner variance and bounded producer-inventory growth; retrying an over-budget head does not satisfy this requirement. (Stories: US-001, US-002; Acceptance: AC-002)",
+      "text": "Required PR feedback MUST complete within 300 seconds from runner start to actionable deterministic join verdict on the declared \u0060ubuntu-latest\u0060 runner for the representative route matrix. The representative cross-cutting acceptance run MUST complete within 240 seconds, retaining at least 60 seconds of headroom for observed runner variance and bounded producer-inventory growth; retrying an over-budget head does not satisfy this requirement. (Stories: US-001, US-002; Acceptance: AC-002)",
       "acceptanceCriteria": [
         "AC-002"
       ],
@@ -471,8 +471,8 @@
     },
     {
       "id": "DEC-005",
-      "title": "Budget the latest candidate from focused runner start to join verdict at 300,000 ms, record phase/gate/critical-path/runner-minute facts, and never mix this runner contract with gameplay performance.",
-      "decision": "Budget the latest candidate from focused runner start to join verdict at 300,000 ms, record phase/gate/critical-path/runner-minute facts, and never mix this runner contract with gameplay performance.",
+      "title": "Budget the latest candidate from focused runner start to join verdict at 300,000 ms, require the representative cross-cutting acceptance run to finish within 240,000 ms, record phase/gate/critical-path/runner-minute facts, and never mix this runner contract with gameplay performance.",
+      "decision": "Budget the latest candidate from focused runner start to join verdict at 300,000 ms, require the representative cross-cutting acceptance run to finish within 240,000 ms, record phase/gate/critical-path/runner-minute facts, and never mix this runner contract with gameplay performance.",
       "requirementRefs": [
         "FR-003",
         "FR-011"
@@ -567,7 +567,7 @@
       "id": "T003",
       "title": "Implement requirement FR-003",
       "status": "done",
-      "owner": "wren-74be",
+      "owner": "smew-f925",
       "dependencies": [],
       "requirements": [
         "FR-003"
@@ -1062,8 +1062,8 @@
     {
       "id": "T021",
       "title": "Implement plan decision PD-003",
-      "status": "done",
-      "owner": "wren-74be",
+      "status": "in-progress",
+      "owner": "smew-f925",
       "dependencies": [
         "T001"
       ],
@@ -1492,7 +1492,7 @@
       "id": "T036",
       "title": "Record verification evidence VO-002",
       "status": "done",
-      "owner": "wren-74be",
+      "owner": "smew-f925",
       "dependencies": [
         "T001"
       ],
@@ -1634,8 +1634,8 @@
     {
       "id": "T041",
       "title": "Record verification evidence VO-007",
-      "status": "done",
-      "owner": "wren-74be",
+      "status": "in-progress",
+      "owner": "smew-f925",
       "dependencies": [
         "T001"
       ],
@@ -3381,7 +3381,7 @@
           "path": "work/220-bounded-pr-ci/checklist.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "dbdba47c86a1973f217b00976e914effb64098f5067d699737fa9838072691da"
+            "value": "0b89c050b3209b15e15fd44c3b1aeb3fb913a561a3e09cb42a4ef516ad3678c3"
           },
           "schemaVersion": 1
         },
@@ -3389,7 +3389,7 @@
           "path": "work/220-bounded-pr-ci/clarifications.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "b00176a02d8591ac695beaf6d6094ad4cb2504b076d6ea5ac96dc9b8504958ca"
+            "value": "b3525c9c3afa13a5f28599546e0455f5dc1fcf9157277f68e733970d5ce680d2"
           },
           "schemaVersion": 1
         },
@@ -3405,7 +3405,7 @@
           "path": "work/220-bounded-pr-ci/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "51603efdd8f28c0e801b1e7aec2458c99458549a729f335860797516c9c0b4ee"
+            "value": "11c9b8dcda48bf0c3327ce65c80be42405f15420269914d6546501b07cfbd897"
           },
           "schemaVersion": 1
         },
@@ -3413,7 +3413,7 @@
           "path": "work/220-bounded-pr-ci/spec.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "997daa8007aefb252e19fe9a177265edbfa64f1e9ac2747eb0f05b97ea825f2c"
+            "value": "126808eaa7785b9d2ce0a5e958d06def32ffb98358c1a42ab57f53caa231dd96"
           },
           "schemaVersion": 1
         },
@@ -3421,14 +3421,14 @@
           "path": "work/220-bounded-pr-ci/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "37293924c935723092207573771bf766fd93a30f2a17043cdc763b37511f814f"
+            "value": "3a8e291137d1cf5e1b0ceb9e89b9895672d151d0c06062f61369559b15ecda35"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "e9ce7df4bdd639146d604ce5ece15a06a79bea4f3bc55aa1afb2ec862eb15779"
+        "value": "504f06aa9953d377c9cb01c54dda1ad6957f07325b3c38a36138fc90af0bc90e"
       },
       "currency": "current"
     }

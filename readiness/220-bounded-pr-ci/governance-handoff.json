@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/220-bounded-pr-ci/ship.json",
-      "digest": "sha256:907d3787ddfec13a8686c36ae5f74088960c7805b65ddb8bdc74557fbc5cf4ba",
+      "digest": "sha256:fedf704b1a95328ff04ba61c75717a7a02b46c34d6da592d505f0a9fc852318a",
       "schemaVersion": 1
     },
     {
       "path": "readiness/220-bounded-pr-ci/verify.json",
-      "digest": "sha256:4d553ff86cf2040859233755eca01c37bb80e0c9ddc1ab6bd9a731f415f78f2f",
+      "digest": "sha256:aae6f11e7a2f34b2fd16bcfd7f01765c0a486f03121297c5b8599ba8c9837fdc",
       "schemaVersion": 1
     },
     {
       "path": "readiness/220-bounded-pr-ci/work-model.json",
-      "digest": "sha256:bfbfa029a4ec76cf5815c0b1bf602d8f2142434f7506ffbb0d337c89804c2b68",
+      "digest": "sha256:bfca23c791797d1d1e270a64a3fa1ee18b78a8ba5ef74c7069b5ad23078247a8",
       "schemaVersion": 1
     }
   ],
@@ -369,7 +369,7 @@
       },
       {
         "id": "task:T021",
-        "state": "real",
+        "state": "pending",
         "rationale": null
       },
       {
@@ -469,7 +469,7 @@
       },
       {
         "id": "task:T041",
-        "state": "real",
+        "state": "pending",
         "rationale": null
       },
       {

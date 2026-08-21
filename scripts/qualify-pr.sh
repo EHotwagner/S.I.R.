@@ -120,37 +120,18 @@ NODE
     build_started=$(date +%s%3N)
     case "$part" in
       native)
-        dotnet build SIR.slnx --no-restore >"$part_root/solution-debug.log" 2>&1 &
-        solution_pid=$!
-        part_failed=0
-        # The two Release graphs share dependency outputs, so serialize them
-        # while the disjoint Debug solution graph builds in parallel.
-        dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >"$part_root/domain-release.log" 2>&1 || part_failed=1
-        dotnet build tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj -c Release --no-restore >"$part_root/rules-governance-release.log" 2>&1 || part_failed=1
-        dotnet build src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj -c Release --no-restore --no-dependencies >"$part_root/rules-governance-tool-release.log" 2>&1 || part_failed=1
-        # Domain Release prepares Domain and Simulation. Replay.Core is a direct
-        # Client.Tests dependency outside that graph, so prepare only its owner
-        # before building the client test owner without duplicate dependencies.
-        dotnet build src/SIR.Replay.Core/SIR.Replay.Core.fsproj -c Release --no-restore --no-dependencies >"$part_root/replay-core-release.log" 2>&1 || part_failed=1
-        dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore --no-dependencies >"$part_root/client-release.log" 2>&1 || part_failed=1
-        wait "$solution_pid" || part_failed=1
-        sed -n '1,240p' "$part_root/solution-debug.log"
-        sed -n '1,240p' "$part_root/domain-release.log"
-        sed -n '1,240p' "$part_root/rules-governance-release.log"
-        sed -n '1,240p' "$part_root/rules-governance-tool-release.log"
-        sed -n '1,240p' "$part_root/replay-core-release.log"
-        sed -n '1,240p' "$part_root/client-release.log"
-        [[ $part_failed -eq 0 ]] || { echo "qualify-pr: native prepare part failed" >&2; exit 1; }
+        # One Release solution graph is the native producer boundary. It compiles
+        # every declared project once and lets later solution growth remain one
+        # invocation instead of accumulating serialized owner builds.
+        dotnet build SIR.slnx -c Release --no-restore
         part_paths=(
-          tests/SIR.Domain.Tests/bin/Debug/net10.0
           tests/SIR.Domain.Tests/bin/Release/net10.0
           tests/SIR.Rules.Governance.Tests/bin/Release/net10.0
           src/SIR.Simulation/Governance.Tool/bin/Release/net10.0
-          tests/SIR.Client.Tests/bin/Debug/net10.0
           tests/SIR.Client.Tests/bin/Release/net10.0
-          tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Debug/net10.0
-          tests/SIR.ModalInput.Tests/bin/Debug/net10.0
-          tests/SIR.Match.Tests/bin/Debug/net10.0
+          tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Release/net10.0
+          tests/SIR.ModalInput.Tests/bin/Release/net10.0
+          tests/SIR.Match.Tests/bin/Release/net10.0
         )
         ;;
       fable)
@@ -270,7 +251,7 @@ NODE
       rules) gate_parts=(native) ;;
       spatial|cross-runtime) gate_parts=(native fable) ;;
       cancellation) gate_parts=(native web) ;;
-      browser) gate_parts=(web server) ;;
+      browser|browser-general-helper|browser-general-helper-2|browser-general-helper-3|browser-delivery) gate_parts=(web server) ;;
       documentation) gate_parts=(web docs) ;;
     esac
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
@@ -280,14 +261,44 @@ NODE
       "$0" verify-parts "${gate_parts[@]}" >/dev/null
     fi
     case "$gate" in
+      spatial-mutations)
+        restore_started=$(date +%s%3N)
+        set +e
+        dotnet restore tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj --locked-mode
+        spatial_mutation_status=$?
+        set -e
+        restore_completed=$(date +%s%3N)
+        build_started=$restore_completed
+        failure_stage=restore
+        if [[ $spatial_mutation_status -eq 0 ]]; then
+          failure_stage=build
+          set +e
+          SIR_BUILD_EXCEPTION=spatial-mutation-base dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
+          spatial_mutation_status=$?
+          if [[ $spatial_mutation_status -eq 0 ]]; then
+            ./scripts/test-spatial-subject-mutations.sh --prepared-pr
+            spatial_mutation_status=$?
+          fi
+          set -e
+        fi
+        build_completed=$(date +%s%3N)
+        [[ $spatial_mutation_status -eq 0 ]] && failure_stage=null
+        node - "$phase_path" "$restore_started" "$restore_completed" "$build_started" "$build_completed" "$failure_stage" <<'NODE'
+const { writeFileSync } = require("node:fs");
+const [path, restoreStarted, restoreCompleted, buildStarted, buildCompleted, failureStage] = process.argv.slice(2);
+writeFileSync(path, `${JSON.stringify({ restore: Number(restoreCompleted) - Number(restoreStarted), build: Number(buildCompleted) - Number(buildStarted), transport: 0, test: 0, failureStage: failureStage === "null" ? null : failureStage })}\n`);
+NODE
+        exit "$spatial_mutation_status"
+        ;;
+      cancellation-mutations) ./scripts/test-worker-cancellation-subject-mutation.sh --mutation-only ;;
       rules)
         SIR_RULES_PREPARED_PR=1 ./scripts/verify-rules-corpus.sh
         SIR_RULES_PREPARED_PR=1 dotnet run --project tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj -c Release --no-build --no-restore
         SIR_RULES_PREPARED_PR=1 ./scripts/test-rules-governance-tool-mutations.sh
         SIR_RULES_PREPARED_PR=1 ./scripts/generate-rules-governance.sh --check
         ;;
-      spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" --prepared-pr ;;
-      cancellation) ./scripts/test-worker-cancellation-subject-mutation.sh --prepared-pr ;;
+      spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" --prepared-pr --external-mutation-proof ;;
+      cancellation) node ./scripts/smoke-worker-roundtrip.mjs ;;
       cross-runtime)
         ./scripts/test-conformance.sh \
           --reuse-pr-build-receipt "$receipt" \
@@ -297,7 +308,23 @@ NODE
         ;;
       browser)
         "$0" compose-browser >/dev/null
-        npm run test:browser
+        SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=1 SIR_BROWSER_COHORT=general npm run test:browser
+        ;;
+      browser-general-helper)
+        "$0" compose-browser >/dev/null
+        SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=2 SIR_BROWSER_COHORT=general npm run test:browser
+        ;;
+      browser-general-helper-2)
+        "$0" compose-browser >/dev/null
+        SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=3 SIR_BROWSER_COHORT=general npm run test:browser
+        ;;
+      browser-general-helper-3)
+        "$0" compose-browser >/dev/null
+        SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=4 SIR_BROWSER_COHORT=general npm run test:browser
+        ;;
+      browser-delivery)
+        "$0" compose-browser >/dev/null
+        SIR_BROWSER_SHARDS=1 SIR_BROWSER_COHORT=production-delivery npm run test:browser
         ;;
       documentation)
         restore_started=$(date +%s%3N)
@@ -360,7 +387,7 @@ NODE
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
       "$0" verify-parts "${gate_parts[@]}" >/dev/null
     fi
-    if [[ "$gate" == browser ]]; then "$0" verify-browser-composition >/dev/null; fi
+    if [[ "$gate" == browser || "$gate" == browser-general-helper || "$gate" == browser-general-helper-2 || "$gate" == browser-general-helper-3 || "$gate" == browser-delivery ]]; then "$0" verify-browser-composition >/dev/null; fi
     ;;
   *)
     echo "qualify-pr: usage route PATHS|integrity|prepare-part ID|extract-parts IDS...|verify-parts IDS...|compose-browser|verify-browser-composition|gate ID" >&2

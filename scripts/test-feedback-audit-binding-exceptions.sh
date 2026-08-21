@@ -8,29 +8,19 @@ cd "$repo_root"
 
 mkdir -p "$test_root/feedback/audits" "$test_root/scripts"
 cp "$repo_root/feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json" "$test_root/feedback/audits/"
-cp "$repo_root/feedback/audits/2026-08-15-sir-item-184-elaborate-tactical-sample-2.audit.json" "$test_root/feedback/audits/"
-cp "$repo_root/feedback/audits/2026-08-15-SIR-186-2.audit.json" "$test_root/feedback/audits/"
-cp "$repo_root/feedback/audits/2026-08-15-SIR-186-3.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/feedback/audits/2026-08-15-SIR-186-6.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/scripts/audit-binding-exceptions.json" "$test_root/scripts/"
 cp --parents \
-  tests/SIR.Browser.Tests/visible-workflows.spec.js \
   scripts/test-conformance.sh \
-  scripts/smoke-client.mjs \
   scripts/ci-route.mjs \
   scripts/test-ci-route.mjs \
-  src/SIR.Client.Web/App.fs \
-  src/SIR.Client/MapEditorSimulator.fs \
-  docs/performance-budget.md \
-  readiness/184-scenario-catalog/scenario-catalog-native.junit.xml \
-  readiness/184-scenario-catalog/scenario-catalog-browser.junit.xml \
-  readiness/184-scenario-catalog/scenario-catalog-cross-runtime.junit.xml \
-  readiness/184-scenario-catalog/scenario-catalog-rules.junit.xml \
+  tests/SIR.Browser.Tests/production-delivery.spec.js \
+  .github/workflows/ci.yml \
   "$test_root"
 
 tool="$repo_root/.agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx"
-changed="scripts/test-conformance.sh;scripts/smoke-client.mjs;scripts/ci-route.mjs;scripts/test-ci-route.mjs;src/SIR.Client.Web/App.fs;src/SIR.Client/MapEditorSimulator.fs;docs/performance-budget.md;readiness/184-scenario-catalog/scenario-catalog-native.junit.xml;readiness/184-scenario-catalog/scenario-catalog-browser.junit.xml;readiness/184-scenario-catalog/scenario-catalog-cross-runtime.junit.xml;readiness/184-scenario-catalog/scenario-catalog-rules.junit.xml"
+changed="scripts/test-conformance.sh;scripts/ci-route.mjs;scripts/test-ci-route.mjs;tests/SIR.Browser.Tests/production-delivery.spec.js;.github/workflows/ci.yml"
 ledger="$test_root/scripts/audit-binding-exceptions.json"
 pristine="$test_root/scripts/audit-binding-exceptions.pristine.json"
 cp "$ledger" "$pristine"
@@ -115,7 +105,7 @@ run_mutant duplicate "duplicate exception ledger binding" '.exceptions += [.exce
 run_mutant overbroad "overbroad or mismatched exception" '.exceptions += [(.exceptions[0] | .findingId = "§9.9")]'
 
 cp "$pristine" "$ledger"
-jq '(.exceptions[] | select(.audit == "feedback/audits/2026-08-15-SIR-186-2.audit.json" and .locator == "file:src/SIR.Client/MapEditorSimulator.fs")).replacementEvidence = "command:./scripts/run-ci-gate.sh native artifacts/ci/results/native.json"' "$ledger" > "$ledger.next"
+jq '(.exceptions[] | select(.audit == "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json" and .locator == "file:scripts/ci-route.mjs")).replacementEvidence = "command:./scripts/run-ci-gate.sh native artifacts/ci/results/native.json"' "$ledger" > "$ledger.next"
 mv "$ledger.next" "$ledger"
 if validate_ledger_owners > "$test_root/nonexistent-owner.log" 2>&1; then
   echo "feedback audit-binding nonexistent-owner mutant unexpectedly passed" >&2

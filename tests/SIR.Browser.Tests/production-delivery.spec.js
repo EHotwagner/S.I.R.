@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { openSamples, switchWorkspace } from "./journey.js";
 
-test("Release delivery uses cache-safe compression and defers spatial diagnostics", async ({ page }) => {
+test("@production-delivery Release delivery uses cache-safe compression and defers spatial diagnostics", async ({ page }) => {
   const client = await page.context().newCDPSession(page);
   await client.send("Network.enable");
   await client.send("Network.emulateNetworkConditions", {

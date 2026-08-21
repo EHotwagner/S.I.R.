@@ -1,0 +1,44 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-220-ci-budget-repair-phase-5.md",
+  "reportSha256": "135c6267df33c13c5c619de54b0e0e152c474a4802843b825176fdb0eb5c064a",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:dotnet fsgg-sdd analyze --work 220-bounded-pr-ci --text", "result": "verified" },
+        { "locator": "command:dotnet fsgg-sdd verify --work 220-bounded-pr-ci --text", "result": "verified" },
+        { "locator": "command:dotnet fsgg-sdd ship --work 220-bounded-pr-ci --text", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "These commands establish internal lifecycle coherence, not implementation correctness or hosted acceptance."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "review:https://github.com/EHotwagner/S.I.R./pull/242#issuecomment-5364657647", "result": "verified" },
+        { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/32441258743", "result": "verified" },
+        { "locator": "issue:EHotwagner/S.I.R.#220", "result": "verified" },
+        { "locator": "command:SIR_JUNIT_OUTPUT=artifacts/test-results/browser-general-1.junit.xml SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=1 SIR_BROWSER_COHORT=general npm run test:browser", "result": "verified" },
+        { "locator": "command:SIR_JUNIT_OUTPUT=artifacts/test-results/browser-general-2.junit.xml SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=2 SIR_BROWSER_COHORT=general npm run test:browser", "result": "verified" },
+        { "locator": "command:SIR_JUNIT_OUTPUT=artifacts/test-results/browser-general-3.junit.xml SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=3 SIR_BROWSER_COHORT=general npm run test:browser", "result": "verified" },
+        { "locator": "command:SIR_JUNIT_OUTPUT=artifacts/test-results/browser-general-4.junit.xml SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=4 SIR_BROWSER_COHORT=general npm run test:browser", "result": "verified" },
+        { "locator": "command:node scripts/test-browser-global-merge.mjs artifacts/test-results/browser-general.junit.xml artifacts/test-results/browser-general-1.junit.xml artifacts/test-results/browser-general-2.junit.xml artifacts/test-results/browser-general-3.junit.xml artifacts/test-results/browser-general-4.junit.xml", "result": "verified" },
+        { "locator": "command:./scripts/test-worker-cancellation-subject-mutation.sh --mutation-only", "result": "verified" },
+        { "locator": "command:node scripts/test-ci-route.mjs", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The 276,119 ms hosted result and gate timings bind historical head 912651d456cad756b323e84763b4f3442b3edaa0.",
+        "Commit 5957277c6f34f05fc8ba64a9ac5868cc80d50fd9 has focused local proof only; exact-head hosted acceptance remains intentionally pending.",
+        "Local focused durations are not evidence of hosted timing."
+      ]
+    }
+  ]
+}

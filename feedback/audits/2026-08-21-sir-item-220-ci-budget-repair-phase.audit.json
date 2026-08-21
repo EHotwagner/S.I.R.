@@ -1,0 +1,48 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-220-ci-budget-repair-phase.md",
+  "reportSha256": "a5ff0b5c83b22ab5d67f7c338af8535320944a047904c62990f03761aa3b1045",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsgg-sdd tasks --work 220-bounded-pr-ci --text",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsgg-sdd analyze --work 220-bounded-pr-ci --text",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "This verifies current exact-head lifecycle coherence/readiness, not historical authoring chronology or hosted acceptance.",
+        "Earlier reports contain related implementationReady lifecycle outcomes, but no prior finding duplicates this corrected 49-task/103-relationship repair package; repository issue searches found no separate exact match."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:SIR_BROWSER_SHARDS=2 npm run test:browser",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-ci-route.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Focused local execution verifies balanced isolated success, not the still-pending hosted exact-head timing/acceptance or runner-level starvation behavior.",
+        "The passing route contract contains exact assertions that would reject either governing value; this read-only re-audit did not edit tracked source to rerun the two mutations.",
+        "Recurrence check confirms open issue EHotwagner/S.I.R.#220 owns the browser critical-path/capacity repair thread; the earlier bounded-CI feedback report does not duplicate the test-granular/two-process shard pattern."
+      ]
+    }
+  ]
+}

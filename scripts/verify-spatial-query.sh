@@ -3,11 +3,20 @@ set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 task_tmp=$(mktemp -d)
-trap 'rm -rf -- "$task_tmp"' EXIT
+mutation_pid=""
+cleanup() {
+  if [[ -n "$mutation_pid" ]]; then
+    kill "$mutation_pid" 2>/dev/null || true
+    wait "$mutation_pid" 2>/dev/null || true
+  fi
+  rm -rf -- "$task_tmp"
+}
+trap cleanup EXIT
 reuse_build_receipt=""
 prepared_fable=""
 static_only=false
 prepared_pr=false
+external_mutation_proof=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --reuse-pr-build-receipt)
@@ -28,15 +37,22 @@ while [[ $# -gt 0 ]]; do
       prepared_pr=true
       shift
       ;;
+    --external-mutation-proof)
+      external_mutation_proof=true
+      shift
+      ;;
     *) echo "verify-spatial-query: unknown argument: $1" >&2; exit 2 ;;
   esac
 done
 
+if [[ "$external_mutation_proof" == true && "$prepared_pr" == false ]]; then
+  echo "verify-spatial-query: --external-mutation-proof requires --prepared-pr" >&2
+  exit 2
+fi
+
 cd "$repo_root"
 
-if [[ "$prepared_pr" == true ]]; then
-  "$repo_root/scripts/test-spatial-subject-mutations.sh" --prepared-pr
-else
+if [[ "$prepared_pr" == false ]]; then
   "$repo_root/scripts/test-spatial-subject-mutations.sh"
 fi
 
@@ -106,7 +122,12 @@ expect_unreadable_client_scan_error
 SIR_SPATIAL_FORCE_GREP=1 expect_unreadable_client_scan_error
 require_clean_scan "Client code" client_has_authority_calls
 require_clean_scan "JavaScript/TypeScript" javascript_has_spatial_authority
+if [[ "$prepared_pr" == true && "$external_mutation_proof" == false ]]; then
+  "$repo_root/scripts/test-spatial-subject-mutations.sh" --prepared-pr &
+  mutation_pid=$!
+fi
 if [[ "$static_only" == true ]]; then
+  if [[ -n "$mutation_pid" ]]; then wait "$mutation_pid"; mutation_pid=""; fi
   echo "Spatial query static verification passed: mutations, unreadable-source guards, and authority scans."
   exit 0
 fi
@@ -147,5 +168,10 @@ for runtime in dotnet fable; do
 done
 
 dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-build --no-restore -- --print-spatial-performance
+
+if [[ -n "$mutation_pid" ]]; then
+  wait "$mutation_pid"
+  mutation_pid=""
+fi
 
 echo "Spatial query verification passed: exact .NET/Fable bytes, divergence guards, authority scan, and Release budgets."

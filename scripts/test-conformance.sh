@@ -100,15 +100,12 @@ else
   dotnet tool restore
   ./scripts/verify-fable-game-governance.sh
   dotnet restore SIR.slnx --locked-mode
-  dotnet build SIR.slnx --no-restore
-  # Later production worker qualification deliberately uses --no-build/--no-restore;
-  # produce its declared Release prerequisite inside this clean aggregate route.
-  dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
-  dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore
+  dotnet build SIR.slnx -c Release --no-restore
 fi
 
 dotnet_output=$(dotnet run \
   --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj \
+  -c Release \
   --no-build \
   --no-restore)
 
@@ -120,7 +117,7 @@ dotnet run \
 
 if [[ -n "$reuse_build_receipt" ]]; then
   ./scripts/verify-scenario-catalog-cross-runtime.sh \
-    --prepared-native tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Debug/net10.0/ScenarioCatalogRuntime.dll \
+    --prepared-native tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Release/net10.0/ScenarioCatalogRuntime.dll \
     --prepared-fable "$prepared_scenario_catalog_fable/ScenarioCatalogRuntime.js"
 else
   ./scripts/verify-scenario-catalog-cross-runtime.sh
@@ -128,6 +125,7 @@ fi
 
 modal_dotnet_output=$(dotnet run \
   --project tests/SIR.ModalInput.Tests/SIR.ModalInput.Tests.fsproj \
+  -c Release \
   --no-build \
   --no-restore)
 
@@ -135,6 +133,7 @@ match_arguments=()
 if [[ "$ordinary_pr_functional" == true ]]; then match_arguments=(-- --functional-cross-runtime); fi
 match_output=$(dotnet run \
   --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj \
+  -c Release \
   --no-build \
   --no-restore \
   "${match_arguments[@]}")
@@ -180,6 +179,7 @@ divergence_pattern="first divergence: fixture=$divergence_fixture byte=0"
 
 if dotnet run \
   --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj \
+  -c Release \
   --no-build \
   --no-restore \
   -- --inject-divergence "$divergence_fixture" >"$task_tmp/dotnet-divergence.log" 2>&1; then
@@ -204,6 +204,7 @@ for game_core_fixture in game-core-cell-order game-core-edge-between game-core-l
 
   if dotnet run \
     --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj \
+    -c Release \
     --no-build \
     --no-restore \
     -- --inject-divergence "$game_core_fixture" >"$task_tmp/dotnet-$game_core_fixture.log" 2>&1; then
@@ -239,6 +240,7 @@ simulation_pattern="first divergence: tick=1 phase=$simulation_phase byte=0"
 
 if dotnet run \
   --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj \
+  -c Release \
   --no-build \
   --no-restore \
   -- --inject-simulation-divergence "$simulation_phase" \
