@@ -25,7 +25,7 @@ sources:
     schemaVersion: 1
   - label: plan
     path: work/231-svg-pipeline-measurement/plan.md
-    digest: 65b45ffe1664f0b64cc4618121b2b54f9638da872e5891b25f81a5f1f0e7e233
+    digest: b364ed01a1291bf018a00c4fc6892771d6f9b6f6e55845c076059674ab3a5728
     schemaVersion: 1
 tasks:
   - id: T001

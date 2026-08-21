@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "ba8c724b4852cd1f7e2146959ee0d2870ba0a271bbb965fc4f95f8f47fb82e88"
+        "value": "0297871ff0e8f1ff87c7c0a682280d4b4e5a22a7ebdb420d3e741d2806563555"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "65b45ffe1664f0b64cc4618121b2b54f9638da872e5891b25f81a5f1f0e7e233"
+        "value": "b364ed01a1291bf018a00c4fc6892771d6f9b6f6e55845c076059674ab3a5728"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "f662ce3e9b3061a77ff23d31930ab08dd6e54858fb08628c9eb81066bbdf17f9"
+        "value": "be86b62dacdc552bae8e6d0e9801be873e9052531e09de22657870a7f40a1ed9"
       }
     }
   ],
@@ -1960,7 +1960,7 @@
           "path": "work/231-svg-pipeline-measurement/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "ba8c724b4852cd1f7e2146959ee0d2870ba0a271bbb965fc4f95f8f47fb82e88"
+            "value": "0297871ff0e8f1ff87c7c0a682280d4b4e5a22a7ebdb420d3e741d2806563555"
           },
           "schemaVersion": 1
         },
@@ -1968,7 +1968,7 @@
           "path": "work/231-svg-pipeline-measurement/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "65b45ffe1664f0b64cc4618121b2b54f9638da872e5891b25f81a5f1f0e7e233"
+            "value": "b364ed01a1291bf018a00c4fc6892771d6f9b6f6e55845c076059674ab3a5728"
           },
           "schemaVersion": 1
         },
@@ -1984,14 +1984,14 @@
           "path": "work/231-svg-pipeline-measurement/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "f662ce3e9b3061a77ff23d31930ab08dd6e54858fb08628c9eb81066bbdf17f9"
+            "value": "be86b62dacdc552bae8e6d0e9801be873e9052531e09de22657870a7f40a1ed9"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "69659110d51bdd1fde9bc42e78e2280c54c9b16747dee4898dbac7a7df919421"
+        "value": "ebd4cd5f77214717f6abae371b7de5a656c69fd2fd4c64eb651f750f265d0e25"
       },
       "currency": "current"
     }

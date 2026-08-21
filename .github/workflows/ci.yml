@@ -285,34 +285,6 @@ jobs:
 
   rules:
     if: needs.route.outputs.rules == 'true'
-    needs: [route, integrity, prepare-native]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Capture runner start
-        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
-      - uses: actions/setup-dotnet@v4
-        with: { global-json-file: global.json }
-      - uses: actions/setup-node@v4
-        with: { node-version: 26.5.0 }
-      - id: nuget-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json', 'Directory.Packages.props', '.config/dotnet-tools.json') }}
-      - uses: actions/download-artifact@v4
-        with: { name: ci-route, path: artifacts/ci }
-      - uses: actions/download-artifact@v4
-        with: { name: prepared-part-native, path: artifacts/ci/parts }
-      - run: ./scripts/run-ci-gate.sh rules artifacts/ci/results/rules.json
-        env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with: { name: gate-rules, path: artifacts/ci/results/rules.json, retention-days: 1 }
-
-  spatial:
-    if: needs.route.outputs.spatial == 'true'
     needs: [route, integrity, prepare-native, prepare-fable]
     runs-on: ubuntu-latest
     steps:
@@ -335,11 +307,18 @@ jobs:
         with: { name: prepared-part-native, path: artifacts/ci/parts }
       - uses: actions/download-artifact@v4
         with: { name: prepared-part-fable, path: artifacts/ci/parts }
+      - run: ./scripts/run-ci-gate.sh rules artifacts/ci/results/rules.json
+        env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - run: ./scripts/run-ci-gate.sh spatial artifacts/ci/results/spatial.json
         env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()
         uses: actions/upload-artifact@v4
-        with: { name: gate-spatial, path: artifacts/ci/results/spatial.json, retention-days: 1 }
+        with:
+          name: gate-rules-spatial
+          path: |
+            artifacts/ci/results/rules.json
+            artifacts/ci/results/spatial.json
+          retention-days: 1
 
   cancellation:
     if: needs.route.outputs.cancellation == 'true'
@@ -621,7 +600,7 @@ jobs:
 
   pr-verdict:
     if: always() && github.event_name == 'pull_request'
-    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, prepare-server, prepare-docs, spatial-mutations, cancellation-mutations, browser-general-helper, browser-general-helper-2, browser-general-helper-3, browser-delivery, rules, spatial, cancellation, cross-runtime, browser, documentation, evidence]
+    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, prepare-server, prepare-docs, spatial-mutations, cancellation-mutations, browser-general-helper, browser-general-helper-2, browser-general-helper-3, browser-delivery, rules, cancellation, cross-runtime, browser, documentation, evidence]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start

@@ -32,5 +32,6 @@ expect_red .github/workflows/ci.yml 's/^  full-qualification:/  omitted-full-qua
 expect_red .github/workflows/ci.yml 's#\./scripts/qualify-production.sh --protected#./scripts/qualify-production.sh#;'
 expect_red scripts/qualify-pr.sh '/node_modules\/playwright-core/d;'
 expect_red .github/workflows/ci.yml '/^  browser:/,/^  browser-general-helper:/ s#      - uses: actions/download-artifact@v4#      - run: npm ci --ignore-scripts\n      - uses: actions/download-artifact@v4#;'
+expect_red .github/workflows/ci.yml '/run-ci-gate\.sh spatial artifacts\/ci\/results\/spatial\.json/d;'
 
-echo "CI route policy, performance scope/headroom/preparer wiring, prepared Playwright runtime reuse, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."
+echo "CI route policy, performance scope/headroom/preparer wiring, prepared Playwright runtime reuse, co-scheduled rules/spatial receipts, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."

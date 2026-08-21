@@ -11,7 +11,7 @@ sourceAnalysis: readiness/231-svg-pipeline-measurement/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/231-svg-pipeline-measurement/analysis.json
-    digest: b562563637953391684a9602f32a861461e881c1cb2a9905893a103241d079fa
+    digest: 6a46a1370db401ba6755eec65dd34bb1b363f79ac2b8d5dc9dd5c23a67fdb194
     schemaVersion: 1
   - label: checklist
     path: work/231-svg-pipeline-measurement/checklist.md
@@ -23,7 +23,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/231-svg-pipeline-measurement/plan.md
-    digest: 65b45ffe1664f0b64cc4618121b2b54f9638da872e5891b25f81a5f1f0e7e233
+    digest: b364ed01a1291bf018a00c4fc6892771d6f9b6f6e55845c076059674ab3a5728
     schemaVersion: 1
   - label: spec
     path: work/231-svg-pipeline-measurement/spec.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/231-svg-pipeline-measurement/tasks.yml
-    digest: f662ce3e9b3061a77ff23d31930ab08dd6e54858fb08628c9eb81066bbdf17f9
+    digest: be86b62dacdc552bae8e6d0e9801be873e9052531e09de22657870a7f40a1ed9
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -282,7 +282,7 @@ evidence:
       passed: 25
       failed: 0
       skipped: 0
-    notes: ["Focused mutation gates include exact exit-37 propagation, missing/non-executable routed hosted-verification subjects failing closed, and receipt-bound Playwright runtime reuse with any missing runtime output or repeated consumer install rejected; the exact-candidate 8x7 production Chromium matrix passed.", every retained raw trace byte]
+    notes: ["Focused mutation gates include exact exit-37 propagation, missing/non-executable routed hosted-verification subjects failing closed, receipt-bound Playwright runtime reuse with any missing runtime output or repeated consumer install rejected, and co-scheduled rules/spatial receipts with a deleted spatial invocation rejected; the exact-candidate 8x7 production Chromium matrix passed.", every retained raw trace byte]
   - id: EV010
     kind: verification
     subject:

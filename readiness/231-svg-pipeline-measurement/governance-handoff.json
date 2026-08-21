@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/231-svg-pipeline-measurement/ship.json",
-      "digest": "sha256:ab409ce8a1d5b8532bc2e29d9f2e738cf4f24734fb1b2855fdfa903659437416",
+      "digest": "sha256:ff86c0af1dc6b0254b2e85c854547497f2bc4a1cf9cc35b0039973a1555cb86b",
       "schemaVersion": 1
     },
     {
       "path": "readiness/231-svg-pipeline-measurement/verify.json",
-      "digest": "sha256:3a5eaa87cead01f7765e84033cddef5a6c508798ff4d7461c03c0a6480f6a1fd",
+      "digest": "sha256:9d1f9ec6cedf9222e0d380e1731804d954633c99d9d28aadb676aa12dd8c25a6",
       "schemaVersion": 1
     },
     {
       "path": "readiness/231-svg-pipeline-measurement/work-model.json",
-      "digest": "sha256:93313a022e7758979e3daf982ca51dba01f29edd8a709a233bcbad1514038907",
+      "digest": "sha256:0d3dcf689ef5e9a62efc9a8f8afe03461fb39a8f179fe1967b60843c6970f826",
       "schemaVersion": 1
     }
   ],
