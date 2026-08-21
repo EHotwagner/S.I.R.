@@ -35,6 +35,12 @@ if ! grep -F 'do! yieldToWorkerMessages () |> Async.AwaitPromise' "$subject" >/d
   exit 1
 fi
 
+if [[ "$mutation_only" == true ]]; then
+  dotnet restore tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj --locked-mode >/dev/null
+  SIR_BUILD_EXCEPTION=cancellation-fixture \
+    dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >/dev/null
+fi
+
 sed -i 's/do! yieldToWorkerMessages () |> Async.AwaitPromise/()/' "$subject"
 SIR_BUILD_EXCEPTION=cancellation-mutant "$repo_root/scripts/build-client.sh" >/dev/null
 

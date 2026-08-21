@@ -117,6 +117,7 @@ assert.equal(contracts.feedbackHeadroomMilliseconds, feedbackHeadroomMillisecond
 assert.deepEqual(contracts.gateOrder, gateOrder);
 assert.deepEqual(contracts.subjectOrder, subjectOrder);
 assert.deepEqual(expectedBuildInvocations["cancellation-mutations"], [
+  "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:cancellation-fixture",
   "fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:cancellation-mutant",
   "fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:cancellation-mutant",
 ]);
@@ -223,6 +224,7 @@ assert.match(fullQualification, /fable_target_builds=.*\.total/u);
 const focusedQualification = readFileSync(new URL("./qualify-pr.sh", import.meta.url), "utf8");
 const conformanceQualification = readFileSync(new URL("./test-conformance.sh", import.meta.url), "utf8");
 const spatialMutationQualification = readFileSync(new URL("./test-spatial-subject-mutations.sh", import.meta.url), "utf8");
+const cancellationMutationQualification = readFileSync(new URL("./test-worker-cancellation-subject-mutation.sh", import.meta.url), "utf8");
 const spatialQualification = readFileSync(new URL("./verify-spatial-query.sh", import.meta.url), "utf8");
 const simulationProject = readFileSync(new URL("../src/SIR.Simulation/SIR.Simulation.fsproj", import.meta.url), "utf8");
 const browserConfiguration = readFileSync(new URL("../tests/SIR.Browser.Tests/playwright.config.js", import.meta.url), "utf8");
@@ -264,6 +266,7 @@ assert.match(focusedQualification, /spatial-mutations\)[\s\S]*test-spatial-subje
 assert.match(focusedQualification, /spatial\).*--prepared-pr --external-mutation-proof/u);
 assert.match(focusedQualification, /cancellation-mutations\).*test-worker-cancellation-subject-mutation\.sh --mutation-only/u);
 assert.match(focusedQualification, /cancellation\).*smoke-worker-roundtrip\.mjs/u);
+assert.match(cancellationMutationQualification, /mutation_only[\s\S]*SIR_BUILD_EXCEPTION=cancellation-fixture[\s\S]*dotnet build tests\/SIR\.Domain\.Tests\/SIR\.Domain\.Tests\.fsproj -c Release --no-restore[\s\S]*sed -i/u);
 assert.match(focusedQualification, /cross-runtime\)[\s\S]*--domain-only[\s\S]*--ordinary-pr-functional/u);
 assert.doesNotMatch(fullQualification, /--ordinary-pr-functional/u);
 assert.match(conformanceQualification, /--ordinary-pr-functional requires --domain-only/u);

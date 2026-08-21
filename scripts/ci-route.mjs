@@ -44,10 +44,13 @@ export const expectedBuildInvocations = {
     ].map((name) => `build:src/SIR.Simulation/SIR.Simulation.fsproj:exception:spatial-${name}:artifacts-path:isolated`),
   ],
   spatial: [],
-  "cancellation-mutations": ["cancellation-mutant"].flatMap((name) => [
+  "cancellation-mutations": [
+    "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:cancellation-fixture",
+    ...["cancellation-mutant"].flatMap((name) => [
     `fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:${name}`,
     `fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:${name}`,
-  ]),
+    ]),
+  ],
   cancellation: [],
   "cross-runtime": ["build:spikes/browser-wasm-verification/BrowserWasmVerificationSpike.fsproj"],
   browser: [],

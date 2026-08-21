@@ -7,7 +7,7 @@
       "locator": "file:scripts/ci-route.mjs",
       "path": "scripts/ci-route.mjs",
       "previousSha256": "10da76f4b2631e57c36991f263d19a15c183716e2d68ce208a31c160ed1118af",
-      "replacementSha256": "5dd77c2115f7e4d9881dffde94e4ababe37f3d761790d1f07afb5404324acd52",
+      "replacementSha256": "7d2f87350d38c829e96c27875dcc08030d4c8d83009ea8e8a2a5705ebdce1f0e",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "Issue 220 changes the bounded route budget and typed helper inventory; the focused route contract verifies the replacement thresholds, four general-browser runners, cancellation mutation helper, inventory, and fail-closed join diagnostics."
     },
@@ -17,7 +17,7 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "d02c0126c07f42c72a9a9426e88163df607a0796042cd0cab74ac7494849c747",
+      "replacementSha256": "2dadd287af9cf61d328c942fd8abfc6da25de5960f3d1200767136d36c1c22a1",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "Issue 220 extends the route contract with the unchanged outer budget, required headroom, source-bound spatial and cancellation mutation helpers, four general-browser runners, a fixed-delivery helper, strict JUnit validation, explicit verdict dependencies, deterministic reconnect ownership, and pair-accounted test-granular browser sharding."
     },
