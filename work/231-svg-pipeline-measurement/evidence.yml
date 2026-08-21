@@ -11,27 +11,27 @@ sourceAnalysis: readiness/231-svg-pipeline-measurement/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/231-svg-pipeline-measurement/analysis.json
-    digest: 449bf70c3703e779f30e18e7eaa114fb709c4d6cbd484eb84f5d01104b74b429
+    digest: 3a6d29fed2b9af02f1dc76e80a71560ecdb7f80337a3a013d64402964450a36e
     schemaVersion: 1
   - label: checklist
     path: work/231-svg-pipeline-measurement/checklist.md
-    digest: 5656091f6c375563a52a26597511aca5e3c4d4efc34713d318830bb16d054c0b
+    digest: 50d2250d36f95d3636bf9da5cdcef1c21f93d69049f6e4048c8bc24862b6e6ad
     schemaVersion: 1
   - label: clarifications
     path: work/231-svg-pipeline-measurement/clarifications.md
-    digest: db02df55139fb63fac252b663ef9ddb1d62714871dd470fea8766890e01341ba
+    digest: b801aef28cf0a56a399bb9a24de4ceb99aec6b463e29525c9fd8f4abdb68f499
     schemaVersion: 1
   - label: plan
     path: work/231-svg-pipeline-measurement/plan.md
-    digest: 8c8c53b6128cdd8ff4c8317dc308b0654f184287bdebcab3255487ae9e0ea503
+    digest: d2f03e6eba80a42e4ef258955268594e4bdcc53fe2f63422ea39c6e4ea48d059
     schemaVersion: 1
   - label: spec
     path: work/231-svg-pipeline-measurement/spec.md
-    digest: cb0a7ed85f5319f265c742444208c39e0a748d142b0e71aa2d6e0a3b1ce3121a
+    digest: cc8d58b8693270244659017978d4a746929992ae1c51d2c9d8b2a9ebeb8e0432
     schemaVersion: 1
   - label: tasks
     path: work/231-svg-pipeline-measurement/tasks.yml
-    digest: e535267282748cd57d4b10c1d60fdbbe3f367dc7bd69220bc5dadc49c58aa325
+    digest: 759383da7e794a9441fd601a5c467975f2cc0f9da44d1784f1a403a23ca16263
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -54,10 +54,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -81,10 +81,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -108,10 +108,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -135,10 +135,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -162,10 +162,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -189,10 +189,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -216,10 +216,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -243,10 +243,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -270,10 +270,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -297,10 +297,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -324,10 +324,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -351,10 +351,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -378,10 +378,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -405,10 +405,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -432,10 +432,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -459,10 +459,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -486,10 +486,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -513,10 +513,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -540,10 +540,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -567,10 +567,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -594,10 +594,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -621,10 +621,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -648,10 +648,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -675,10 +675,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
@@ -702,10 +702,10 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:4f2a0706fc0196c36b97e69d069af9647fdbfad2bed125c79157fbf7083586fc"
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 23
+      passed: 25
       failed: 0
       skipped: 0
     notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]

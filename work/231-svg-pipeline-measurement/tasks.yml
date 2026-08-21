@@ -25,7 +25,7 @@ sources:
     schemaVersion: 1
   - label: plan
     path: work/231-svg-pipeline-measurement/plan.md
-    digest: c621a98d19376f9eb73741df992ec7125a6491d9a3d16c595b4d7f628b213432
+    digest: d2f03e6eba80a42e4ef258955268594e4bdcc53fe2f63422ea39c6e4ea48d059
     schemaVersion: 1
 tasks:
   - id: T001
@@ -60,7 +60,7 @@ tasks:
     requiredEvidence: [EV003]
   - id: T004
     title: Implement requirement FR-004
-    status: pending
+    status: done
     owner: crake-c7a3
     dependencies: []
     requirements: [FR-004]
@@ -70,7 +70,7 @@ tasks:
     requiredEvidence: [EV004]
   - id: T005
     title: Implement requirement FR-005
-    status: pending
+    status: done
     owner: crake-c7a3
     dependencies: []
     requirements: [FR-005]

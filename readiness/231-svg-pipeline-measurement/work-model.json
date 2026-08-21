@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "95af795e4f17fe403f2747e4cd91951352e1c74f44dfe6fb11349ffec88c0697"
+        "value": "34e49188faf3ba90fabdf2acb3f7383063f5c76362a208a9fd933b04048f68f1"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "c621a98d19376f9eb73741df992ec7125a6491d9a3d16c595b4d7f628b213432"
+        "value": "d2f03e6eba80a42e4ef258955268594e4bdcc53fe2f63422ea39c6e4ea48d059"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "d334b164f35e7f70fa9b107f85b06d2b31ffb0999c25f9988c8c1b863673ab41"
+        "value": "759383da7e794a9441fd601a5c467975f2cc0f9da44d1784f1a403a23ca16263"
       }
     }
   ],
@@ -506,7 +506,7 @@
     {
       "id": "T004",
       "title": "Implement requirement FR-004",
-      "status": "pending",
+      "status": "done",
       "owner": "crake-c7a3",
       "dependencies": [],
       "requirements": [
@@ -533,7 +533,7 @@
     {
       "id": "T005",
       "title": "Implement requirement FR-005",
-      "status": "pending",
+      "status": "done",
       "owner": "crake-c7a3",
       "dependencies": [],
       "requirements": [
@@ -1955,7 +1955,7 @@
           "path": "work/231-svg-pipeline-measurement/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "95af795e4f17fe403f2747e4cd91951352e1c74f44dfe6fb11349ffec88c0697"
+            "value": "34e49188faf3ba90fabdf2acb3f7383063f5c76362a208a9fd933b04048f68f1"
           },
           "schemaVersion": 1
         },
@@ -1963,7 +1963,7 @@
           "path": "work/231-svg-pipeline-measurement/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "c621a98d19376f9eb73741df992ec7125a6491d9a3d16c595b4d7f628b213432"
+            "value": "d2f03e6eba80a42e4ef258955268594e4bdcc53fe2f63422ea39c6e4ea48d059"
           },
           "schemaVersion": 1
         },
@@ -1979,14 +1979,14 @@
           "path": "work/231-svg-pipeline-measurement/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "d334b164f35e7f70fa9b107f85b06d2b31ffb0999c25f9988c8c1b863673ab41"
+            "value": "759383da7e794a9441fd601a5c467975f2cc0f9da44d1784f1a403a23ca16263"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "7213b43f27ae8bc36eb66ac2e2cf7a9f627d2cd4968dd6cf30c9e25740c69c84"
+        "value": "fc1fd7d08f6eb165c1cb8757ef69d7687f80b564b35e7783f554ce94ea223b05"
       },
       "currency": "current"
     }
