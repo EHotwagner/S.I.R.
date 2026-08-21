@@ -30,26 +30,6 @@
       "replacementSha256": "e3694b59194cec88419c991f8e97f3647006ff0a7ad534895e194c4d12dd931a",
       "replacementEvidence": "command:./scripts/run-ci-gate.sh cross-runtime artifacts/ci/results/cross-runtime.json",
       "reason": "Issue 220 makes prepared native consumers Release-only; the exact-head hosted cross-runtime owner consumes the replacement without a fallback rebuild."
-    },
-    {
-      "audit": "feedback/audits/2026-08-21-sir-item-220-ci-budget-repair-phase.audit.json",
-      "findingId": "§4.1",
-      "locator": "file:readiness/220-bounded-pr-ci/analysis.json",
-      "path": "readiness/220-bounded-pr-ci/analysis.json",
-      "previousSha256": "310cfa8662644d8c6cff29e301c51c69fdd3253f2c5cbfaf3777eb8142fcf745",
-      "replacementSha256": "35b8397e22abc526cfc93ea3b0252b9e31e897c3361a3b6c3875152920cf4065",
-      "replacementEvidence": "command:dotnet fsgg-sdd analyze --work 220-bounded-pr-ci --text",
-      "reason": "The repair phase revises PD-003 and regenerates the current implementation-ready analysis; the exact replacement view is independently audited in this cycle."
-    },
-    {
-      "audit": "feedback/audits/2026-08-21-sir-item-220-ci-budget-repair-phase.audit.json",
-      "findingId": "§4.2",
-      "locator": "file:work/220-bounded-pr-ci/plan.md",
-      "path": "work/220-bounded-pr-ci/plan.md",
-      "previousSha256": "51603efdd8f28c0e801b1e7aec2458c99458549a729f335860797516c9c0b4ee",
-      "replacementSha256": "114c729fa8424a01f278e19d8cc8820d03cc8e18d9f532d9085cfce3592071cc",
-      "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "The repair phase replaces raw-CPU file-level browser sharding with the audited test-granular two-process isolation capacity and records its focused evidence."
     }
   ]
 }

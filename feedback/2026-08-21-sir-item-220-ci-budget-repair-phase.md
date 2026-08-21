@@ -33,7 +33,7 @@ The exhausted implementation treated reported CPU count as shard count and let P
 - **Impact:** The repair can proceed against a current machine-readable lifecycle package instead of relying on stale views or prose status.
 - **Expected:** The current authored plan, tasks, and generated analysis should agree under one stable work identity before source handoff.
 - **Observed:** `tasks` reports a coherent 49-task package and `analyze` reports `implementationReady` with 103 relationships and zero blocking, stale, or missing-disposition findings.
-- **Evidence:** command:dotnet fsgg-sdd tasks --work 220-bounded-pr-ci --text; command:dotnet fsgg-sdd analyze --work 220-bounded-pr-ci --text; file:readiness/220-bounded-pr-ci/analysis.json
+- **Evidence:** command:dotnet fsgg-sdd tasks --work 220-bounded-pr-ci --text; command:dotnet fsgg-sdd analyze --work 220-bounded-pr-ci --text
 - **Version:** FS.GG SDD CLI 1.0.1; cycle commit `a0ba2dbd4da44dd13881c6f2b3b2648e4c5c0565`
 - **Owner:** FS-GG.SpecDrivenDevelopment lifecycle regeneration
 - **Recurrence:** new
@@ -46,7 +46,7 @@ The exhausted implementation treated reported CPU count as shard count and let P
 - **Impact:** The growing production browser inventory can use available runner capacity without empty shards, shared-session collisions, or CPU starvation of its production servers.
 - **Expected:** Capacity should model the independently runnable processes a shard owns, and distribution should balance tests rather than depend on file sizes.
 - **Observed:** The repair maps the 41-test inventory `21/20` across two isolation-safe shards and completed the focused full browser run in 34 seconds with zero failures and one intentional skip. Inverting either `fullyParallel` or the two-process shard cost makes the route contract test fail.
-- **Evidence:** command:SIR_BROWSER_SHARDS=2 npm run test:browser; command:node scripts/test-ci-route.mjs; file:work/220-bounded-pr-ci/plan.md
+- **Evidence:** command:SIR_BROWSER_SHARDS=2 npm run test:browser; command:node scripts/test-ci-route.mjs
 - **Version:** Playwright managed Chromium 151.0.7922.34; cycle commit `a0ba2dbd4da44dd13881c6f2b3b2648e4c5c0565`
 - **Owner:** EHotwagner/S.I.R. browser qualification
 - **Recurrence:** seen again issue:EHotwagner/S.I.R.#220

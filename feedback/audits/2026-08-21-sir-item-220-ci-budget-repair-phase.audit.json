@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-21-sir-item-220-ci-budget-repair-phase.md",
-  "reportSha256": "188c2b7bf16a8dc184d19483b56f0a44c6aff94eff211c4a58cd4180c998dba4",
+  "reportSha256": "a5ff0b5c83b22ab5d67f7c338af8535320944a047904c62990f03761aa3b1045",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -17,11 +17,6 @@
         {
           "locator": "command:dotnet fsgg-sdd analyze --work 220-bounded-pr-ci --text",
           "result": "verified"
-        },
-        {
-          "locator": "file:readiness/220-bounded-pr-ci/analysis.json",
-          "result": "verified",
-          "sha256": "35b8397e22abc526cfc93ea3b0252b9e31e897c3361a3b6c3875152920cf4065"
         }
       ],
       "confidenceLimits": [
@@ -41,11 +36,6 @@
         {
           "locator": "command:node scripts/test-ci-route.mjs",
           "result": "verified"
-        },
-        {
-          "locator": "file:work/220-bounded-pr-ci/plan.md",
-          "result": "verified",
-          "sha256": "114c729fa8424a01f278e19d8cc8820d03cc8e18d9f532d9085cfce3592071cc"
         }
       ],
       "confidenceLimits": [
