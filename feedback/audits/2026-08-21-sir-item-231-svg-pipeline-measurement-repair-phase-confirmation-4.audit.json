@@ -1,0 +1,68 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-231-svg-pipeline-measurement-repair-phase-confirmation-4.md",
+  "reportSha256": "4040c856728b56999a1ea515b0664c22f65eb1386a895fb5afce53a5d9401e01",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "review:https://github.com/EHotwagner/S.I.R./pull/246#issuecomment-5373815756",
+          "result": "verified"
+        },
+        {
+          "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/32513160418",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/ci-gate-artifact-bindings.sh",
+          "result": "verified",
+          "sha256": "29210f4b5237c13a06aaf24265be3152e44b8310cc2eda7159c7c15e6e13fa2e"
+        },
+        {
+          "locator": "command:bash scripts/test-ci-gate-artifact-isolation.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Replacement exact-head hosted join remains pending, so subject-scoped local repair is verified while hosted closure is not."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "review:https://github.com/EHotwagner/S.I.R./pull/246#issuecomment-5373815756",
+          "result": "verified"
+        },
+        {
+          "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/32513160418",
+          "result": "verified"
+        },
+        {
+          "locator": "file:tests/SIR.Client.Tests/ScenarioCatalogQualification.fs",
+          "result": "verified",
+          "sha256": "0f64e0f8f69b12e4e6af9d1852c914d67f55cd7016d346456adacf2ed47b26ad"
+        },
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/test-browser-wasm-verification.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Repeated fixture construction is a verified unmeasured confounder, but its allocation/GC magnitude and causal contribution to the hosted p95 failure are not quantified.",
+        "Replacement exact-head hosted qualification remains pending; local unchanged-threshold behavior and browser-WASM evidence do not establish hosted closure."
+      ]
+    }
+  ]
+}
