@@ -1,0 +1,55 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-231-svg-pipeline-measurement-repair-phase-confirmation-2.md",
+  "reportSha256": "f0fefa876e7ab5cf19c2a17af228112c588830f067631ee60841533f92d61e9f",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "review:https://github.com/EHotwagner/S.I.R./pull/246#issuecomment-5372745179",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsgg-sdd verify --work 231-svg-pipeline-measurement --root . --json",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The affected-state failure is preserved by the immutable review; the cited command verifies the repair, not the old failure.",
+        "PR #246 still remotely points to aa9851a0ff755e3a08befa1483d6888da819177f; the local repair candidate has no hosted or same-critic confirmation yet."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "review:https://github.com/EHotwagner/S.I.R./pull/246#issuecomment-5372745179",
+          "result": "verified"
+        },
+        {
+          "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/32504440703",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-ci-route.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash scripts/test-ci-route-mutations.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Run 32504440703 does not time npm ci separately; repeated installation is verified avoidable critical-path work, not a uniquely established cause of the target miss.",
+        "No replacement hosted run exists at the report commit, so runtime reuse is not yet proven to recover the target."
+      ]
+    }
+  ]
+}
