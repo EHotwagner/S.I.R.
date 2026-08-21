@@ -17,9 +17,9 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "17071261ef27dadfa97532de6888680c6526907bf2244f56e49cadd901870d06",
+      "replacementSha256": "3faddf34b58d4c6e62db11f2d56c36b2743ecdfa8a9ac25c290ac96c465da1f5",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 231 extends the focused route matrix with SVG-only allowlist, broad-policy fallback, performance preparer ownership, and the unchanged 240-second/60-second-headroom contract."
+      "reason": "Issue 231 extends the focused route matrix with SVG-only allowlist, broad-policy fallback, performance preparer ownership, the unchanged 240-second/60-second-headroom contract, and receipt-bound Playwright runtime reuse whose missing-output and repeated-install mutations fail closed."
     },
     {
       "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
@@ -27,9 +27,9 @@
       "locator": "file:.github/workflows/ci.yml",
       "path": ".github/workflows/ci.yml",
       "previousSha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127",
-      "replacementSha256": "d5aaa4bedfdbbe8f43ec79b9ea130d1318da775bae40dd62a612a934a7aefad6",
+      "replacementSha256": "ba32ad2ecac05ea08b4482a9fc810be4713d71d422131a90b8ac187c5822fbcc",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 231 adds the fixed-function performance route to the existing web/docs preparer conditions; the focused workflow-DAG contract and mutations verify the two repaired conditions while preserving the bounded #220 topology."
+      "reason": "Issue 231 adds the fixed-function performance route and transports the lockfile-installed Playwright runtime from the web producer; the focused workflow-DAG contract rejects restored browser-consumer installs while preserving the bounded #220 topology."
     },
     {
       "audit": "feedback/audits/2026-08-20-sir-item-231-svg-pipeline-measurement.audit.json",
