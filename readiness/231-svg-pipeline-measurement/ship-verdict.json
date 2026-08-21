@@ -4,10 +4,10 @@
   "workId": "231-svg-pipeline-measurement",
   "stage": "ship",
   "status": "shipReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.1",
+  "generator": "FS.GG.SDD.Artifacts/1.1.0",
   "sourcesDigest": {
     "algorithm": "sha256",
-    "value": "64aac8d3d177e5ca627e3c55cd11fdfbcb69f49443facd9ba800a6f17f323134"
+    "value": "61d47d344ec97d75bed914d5c67bc1034e1f62ae4d8aa766402197ad73c70971"
   },
   "verificationReadiness": {
     "status": "verificationReady",

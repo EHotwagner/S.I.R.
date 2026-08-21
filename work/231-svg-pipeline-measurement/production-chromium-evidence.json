@@ -1,98 +1,285 @@
 {
-  "schema": "sir.svg-pipeline-measurement-evidence/1",
-  "candidate": {
-    "commit": "8ed4606aab4aa9623b7e94e49b7e46dfbcc6020e",
-    "tree": "1c6c80c2e2bd82b056e4289bf3a57e2464665c9a"
-  },
+  "bindingSha256": "548e67bd54c88483ef9d3f5d17047cd6ad29617d1904b50225aefe72107a337c",
   "buildIdentity": {
-    "clientManifestSha256": "656fca838cbef4b3519b0a30d16df322365c23075087de9b1fabd72a6582a908",
-    "serverAssemblySha256": "aa20ece4853716fd05de7995e7d555dd81ac278711fec859c2c6a822a5647a92"
+    "clientManifestSha256": "bfca0131a74f086b9dc1615ae3d230f528ccc34ca58e618d4921a81d3f5e74d8",
+    "serverAssemblySha256": "ddbe2f035c48a88dff4661796d53e4597ccca0efcf0ec955f909024dbb041047"
   },
-  "fixtureDefinition": {
-    "path": "scripts/svg-pipeline-fixtures.v1.json",
-    "sha256": "c01c40b0ee06db92cd255f9b8a3e4cc44063bfba26ec8d8f16a20af46a9045a9"
+  "candidate": {
+    "commit": "be32308be393856a8031480be0de377dd40df499",
+    "tree": "796b8d625356214e06715982f3bb8ddd0a50f0bb"
+  },
+  "controlledAxes": {
+    "eventRateHz": [
+      {
+        "fixture": "controlled-baseline",
+        "value": 10
+      },
+      {
+        "fixture": "controlled-event-rate",
+        "value": 40
+      }
+    ],
+    "globalUnitCount": [
+      {
+        "fixture": "controlled-baseline",
+        "value": 40
+      },
+      {
+        "fixture": "controlled-global-units",
+        "value": 200
+      }
+    ],
+    "mapExtent": [
+      {
+        "fixture": "controlled-baseline",
+        "value": [
+          20,
+          20
+        ]
+      },
+      {
+        "fixture": "controlled-map-extent",
+        "value": [
+          40,
+          40
+        ]
+      }
+    ],
+    "routeOverlayComplexity": [
+      {
+        "fixture": "controlled-baseline",
+        "value": 24
+      },
+      {
+        "fixture": "controlled-overlay-complexity",
+        "value": 96
+      }
+    ],
+    "supportingListSize": [
+      {
+        "fixture": "controlled-baseline",
+        "value": 40
+      },
+      {
+        "fixture": "controlled-supporting-list",
+        "value": 800
+      }
+    ],
+    "visibleDensity": [
+      {
+        "fixture": "controlled-baseline",
+        "value": 40
+      },
+      {
+        "fixture": "controlled-visible-density",
+        "value": 20
+      }
+    ]
+  },
+  "dispositions": {
+    "furtherAllocationWork": "unresolved",
+    "packedTransport": "unresolved",
+    "typedBuffers": "unresolved"
   },
   "environment": {
     "browser": "Google Chrome for Testing 151.0.7922.34",
+    "cpuCount": 24,
     "node": "v26.7.0",
-    "platform": "linux 7.1.8-arch1-3",
-    "cpuCount": 24
-  },
-  "matrix": {
-    "fixtureCount": 5,
-    "journeyCount": 7,
-    "runCount": 35,
-    "result": "pass",
-    "startedAt": "2026-08-20T22:46:49.344Z",
-    "completedAt": "2026-08-20T22:55:06.124Z",
-    "journeys": ["idle", "playback", "pan", "zoom", "selection", "modality-transition", "dense-overlay"],
-    "rawSummarySha256": "945a354e6bbf266c27fd3ea0b04814c038eaa7e830ef0873b848b3bc078f0239",
-    "orderedTraceDigestSha256": "0ca114e2a05af8dd1eab472352fdb040ba6b630beb28733f7e07f4052b651f58",
-    "inputToPaintMilliseconds": { "availableRunCount": 30, "unavailableRunCount": 5, "minimum": 100.1, "p95": 1532.2, "maximum": 2526.2 }
-  },
-  "pipeline": {
-    "nextBottleneck": "mainThreadScript",
-    "evidence": "largest measured aggregate at 10655.375 ms (94.0%); generic script is not source-symbol isolated",
-    "ranking": [
-      { "stage": "mainThreadScript", "milliseconds": 10655.375, "share": 0.9402 },
-      { "stage": "paint", "milliseconds": 303.96, "share": 0.0268 },
-      { "stage": "style", "milliseconds": 203.792, "share": 0.018 },
-      { "stage": "layout", "milliseconds": 166.313, "share": 0.0147 },
-      { "stage": "workerCompute", "milliseconds": 3.874, "share": 0.0003 }
-    ],
-    "unavailable": {
-      "workerTransfer": "The production client has no dedicated transfer User Timing mark yet.",
-      "projectionAllocation": "The production client has no projection/allocation User Timing mark; GC remains separately visible in the raw trace.",
-      "elmishReact": "The production client has no dedicated Elmish/React User Timing marks; generic main-thread script is reported separately."
-    }
+    "platform": "linux 7.1.8-arch1-3"
   },
   "eventRateComparison": [
     {
-      "fixture": "representative-visible-100",
-      "eventRateHz": 10,
+      "droppedFrames": 3,
       "eventIntervalMilliseconds": 100,
-      "playbackWindowMilliseconds": 250,
+      "eventRateHz": 10,
+      "fixture": "controlled-baseline",
+      "frameSamples": 13,
+      "inputToPaint": {
+        "available": true,
+        "inputType": "pointerdown",
+        "milliseconds": 15.558,
+        "paintEvent": "Paint",
+        "source": "Chromium user EventDispatch start to the first subsequent Paint or AnimationFrame presentation trace event"
+      },
+      "mainScriptMilliseconds": 127.125,
       "playbackSteps": 3,
-      "mainScriptMilliseconds": 276.041,
-      "inputToPaintMilliseconds": 614.2,
-      "frameSamples": 50,
-      "droppedFrames": 5
+      "playbackWindowMilliseconds": 250
     },
     {
-      "fixture": "representative-visible-100-high-rate",
-      "eventRateHz": 40,
+      "droppedFrames": 3,
       "eventIntervalMilliseconds": 25,
-      "playbackWindowMilliseconds": 250,
+      "eventRateHz": 40,
+      "fixture": "controlled-event-rate",
+      "frameSamples": 13,
+      "inputToPaint": {
+        "available": true,
+        "inputType": "pointerdown",
+        "milliseconds": 15.44,
+        "paintEvent": "Paint",
+        "source": "Chromium user EventDispatch start to the first subsequent Paint or AnimationFrame presentation trace event"
+      },
+      "mainScriptMilliseconds": 120.221,
       "playbackSteps": 11,
-      "mainScriptMilliseconds": 744.905,
-      "inputToPaintMilliseconds": 1532.2,
-      "frameSamples": 106,
-      "droppedFrames": 11
+      "playbackWindowMilliseconds": 250
     }
   ],
+  "fixtureDefinition": {
+    "path": "scripts/svg-pipeline-fixtures.v1.json",
+    "sha256": "d698215ddfc7ce30a40af45c441f44c62704222f970444548353f4aba0ad3271"
+  },
   "globalSmallViewportComparison": [
     {
-      "fixture": "global-small-viewport",
-      "global": { "mapExtent": [20, 20], "unitCount": 40, "supportingListSize": 40 },
-      "visible": { "visualUnits": 40, "totalDom": 3034, "nodeEstimate": 2040 },
-      "mainScriptMilliseconds": 1.039,
-      "inputLatency": { "available": false, "reason": "The idle journey has no input event; its 500 ms observation window is not interaction latency." },
-      "memory": { "warmUsed": 33189924, "stabilizedUsed": 25085512, "delta": -8104412, "warmupCycles": 2, "stabilizationCycles": 5 }
+      "fixture": "controlled-baseline",
+      "global": {
+        "mapExtent": [
+          20,
+          20
+        ],
+        "supportingListSize": 40,
+        "unitCount": 40
+      },
+      "inputLatency": {
+        "available": false,
+        "reason": "The idle journey has no input event; its observation window is not interaction latency"
+      },
+      "mainScriptMilliseconds": 0.098,
+      "memory": {
+        "delta": -4372640,
+        "stabilizationCycles": 5,
+        "stabilizedUsed": 32668180,
+        "warmUsed": 37040820,
+        "warmupCycles": 2
+      },
+      "visible": {
+        "byLayer": {
+          "annotations": 40,
+          "camera": 3079,
+          "edges": 0,
+          "effects": 0,
+          "routes": 0,
+          "selection": 1,
+          "tactical-overlays": 120,
+          "terrain": 1696,
+          "units": 1120
+        },
+        "nodeEstimate": 2088,
+        "totalDom": 3082,
+        "visualUnits": 40
+      }
     },
     {
       "fixture": "global-large-small-viewport",
-      "global": { "mapExtent": [40, 40], "unitCount": 40, "supportingListSize": 800 },
-      "visible": { "visualUnits": 40, "totalDom": 8026, "nodeEstimate": 6952 },
-      "mainScriptMilliseconds": 0.387,
-      "inputLatency": { "available": false, "reason": "The idle journey has no input event; its 500 ms observation window is not interaction latency." },
-      "memory": { "warmUsed": 63702680, "stabilizedUsed": 75117660, "delta": 11414980, "warmupCycles": 2, "stabilizationCycles": 5 }
+      "global": {
+        "mapExtent": [
+          40,
+          40
+        ],
+        "supportingListSize": 1600,
+        "unitCount": 40
+      },
+      "inputLatency": {
+        "available": false,
+        "reason": "The idle journey has no input event; its observation window is not interaction latency"
+      },
+      "mainScriptMilliseconds": 0,
+      "memory": {
+        "delta": 19160328,
+        "stabilizationCycles": 5,
+        "stabilizedUsed": 70097500,
+        "warmUsed": 50937172,
+        "warmupCycles": 2
+      },
+      "visible": {
+        "byLayer": {
+          "annotations": 40,
+          "camera": 7959,
+          "edges": 0,
+          "effects": 0,
+          "routes": 0,
+          "selection": 1,
+          "tactical-overlays": 120,
+          "terrain": 6496,
+          "units": 1120
+        },
+        "nodeEstimate": 6888,
+        "totalDom": 7962,
+        "visualUnits": 40
+      }
     }
   ],
-  "dispositions": {
-    "packedTransport": "unresolved",
-    "typedBuffers": "unresolved",
-    "furtherAllocationWork": "unresolved"
-  },
   "interpretation": "Versioned regression workloads; not a permanent supported-size ceiling.",
-  "bindingSha256": "ab09877ede90a6a793b338eef72f95e4c77bc6c99478df9dd7ba88468ce5521c"
+  "matrix": {
+    "completedAt": "2026-08-21T05:19:43.200Z",
+    "fixtureCount": 8,
+    "fixtureIds": [
+      "controlled-baseline",
+      "controlled-map-extent",
+      "controlled-visible-density",
+      "controlled-global-units",
+      "controlled-overlay-complexity",
+      "controlled-event-rate",
+      "controlled-supporting-list",
+      "global-large-small-viewport"
+    ],
+    "inputToPaintMilliseconds": {
+      "availableRunCount": 38,
+      "maximum": 398.176,
+      "minimum": 0.363,
+      "p95": 366.339,
+      "unavailableRunCount": 18
+    },
+    "journeyCount": 7,
+    "journeys": [
+      "idle",
+      "playback",
+      "pan",
+      "zoom",
+      "selection",
+      "modality-transition",
+      "dense-overlay"
+    ],
+    "orderedTraceDigestSha256": "a608c51bafdae3fe4f56d6d19a9e4ac37bcecfda20fdb7c071ea1d394629dacd",
+    "rawSummarySha256": "f982901b80f286be8608046885e86282e376233bcccc5c086c01f97a048e910e",
+    "rawTraceManifestSha256": "877c030967cb6528d1f7c09e8c96bcc041295ceaa49b1e18df4ca1c5f3db88d8",
+    "result": "pass",
+    "runCount": 56,
+    "startedAt": "2026-08-21T05:08:53.424Z"
+  },
+  "pipeline": {
+    "evidence": "largest measured aggregate at 13430.519 ms (96.7%); generic main-thread script is not source-symbol isolated",
+    "nextBottleneck": "mainThreadScript",
+    "ranking": [
+      {
+        "milliseconds": 13430.519,
+        "share": 0.9666,
+        "stage": "mainThreadScript"
+      },
+      {
+        "milliseconds": 249.889,
+        "share": 0.018,
+        "stage": "paint"
+      },
+      {
+        "milliseconds": 105.081,
+        "share": 0.0076,
+        "stage": "layout"
+      },
+      {
+        "milliseconds": 102.942,
+        "share": 0.0074,
+        "stage": "style"
+      },
+      {
+        "milliseconds": 5.765,
+        "share": 0.0004,
+        "stage": "workerCompute"
+      }
+    ],
+    "unavailable": {
+      "elmishReact": "The production client has no dedicated Elmish/React User Timing marks; generic main-thread script is reported separately",
+      "projectionAllocation": "The production client has no projection/allocation User Timing mark; GC remains separately visible in the raw trace",
+      "workerTransfer": "Chromium exposes transfer inside task slices but the production client has no dedicated transfer User Timing mark yet"
+    }
+  },
+  "schema": "sir.svg-pipeline-measurement-evidence/1"
 }

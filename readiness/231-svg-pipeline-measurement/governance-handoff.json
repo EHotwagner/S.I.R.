@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
   "contractVersion": "2.0.0",
-  "generatorVersion": "FS.GG.SDD.Artifacts/1.0.1",
+  "generatorVersion": "FS.GG.SDD.Artifacts/1.1.0",
   "workId": "231-svg-pipeline-measurement",
   "sources": [
     {
       "path": "readiness/231-svg-pipeline-measurement/ship.json",
-      "digest": "sha256:1c9efe445bae2ccb732ec4853943f7eb99da0189e1a8ad9747c816843f0c5829",
+      "digest": "sha256:0dfbb1095bc7a2ddd20a0093df86161b2bad202f3e08d571c97d05d2eb910e74",
       "schemaVersion": 1
     },
     {
       "path": "readiness/231-svg-pipeline-measurement/verify.json",
-      "digest": "sha256:3250878758098a802105291af269ce94e5c2c45d74fbcd1e0eea92990c389889",
+      "digest": "sha256:a9b4adad94d700b84c15e13bf7b160f6b37d4d6a847e545a986e0ef2eaf159cd",
       "schemaVersion": 1
     },
     {
       "path": "readiness/231-svg-pipeline-measurement/work-model.json",
-      "digest": "sha256:94536c8b9dcb14cbd618e4e1a3f7ebb5904958b16d83df2a42618e89be3e82ac",
+      "digest": "sha256:5f448e15cadf5bef93802c130dc8328d515b7878a98578ed60d7546d565285b1",
       "schemaVersion": 1
     }
   ],

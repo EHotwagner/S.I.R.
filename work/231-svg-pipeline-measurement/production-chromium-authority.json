@@ -1,15 +1,16 @@
 {
-  "schema": "sir.svg-pipeline-measurement-authority/1",
-  "candidate": {
-    "commit": "8ed4606aab4aa9623b7e94e49b7e46dfbcc6020e",
-    "tree": "1c6c80c2e2bd82b056e4289bf3a57e2464665c9a"
-  },
   "buildIdentity": {
-    "clientManifestSha256": "656fca838cbef4b3519b0a30d16df322365c23075087de9b1fabd72a6582a908",
-    "serverAssemblySha256": "aa20ece4853716fd05de7995e7d555dd81ac278711fec859c2c6a822a5647a92"
+    "clientManifestSha256": "bfca0131a74f086b9dc1615ae3d230f528ccc34ca58e618d4921a81d3f5e74d8",
+    "serverAssemblySha256": "ddbe2f035c48a88dff4661796d53e4597ccca0efcf0ec955f909024dbb041047"
   },
-  "fixtureDefinitionSha256": "c01c40b0ee06db92cd255f9b8a3e4cc44063bfba26ec8d8f16a20af46a9045a9",
-  "rawSummarySha256": "945a354e6bbf266c27fd3ea0b04814c038eaa7e830ef0873b848b3bc078f0239",
-  "orderedTraceDigestSha256": "0ca114e2a05af8dd1eab472352fdb040ba6b630beb28733f7e07f4052b651f58",
-  "runCount": 35
+  "candidate": {
+    "commit": "be32308be393856a8031480be0de377dd40df499",
+    "tree": "796b8d625356214e06715982f3bb8ddd0a50f0bb"
+  },
+  "fixtureDefinitionSha256": "d698215ddfc7ce30a40af45c441f44c62704222f970444548353f4aba0ad3271",
+  "orderedTraceDigestSha256": "a608c51bafdae3fe4f56d6d19a9e4ac37bcecfda20fdb7c071ea1d394629dacd",
+  "rawSummarySha256": "f982901b80f286be8608046885e86282e376233bcccc5c086c01f97a048e910e",
+  "rawTraceManifestSha256": "877c030967cb6528d1f7c09e8c96bcc041295ceaa49b1e18df4ca1c5f3db88d8",
+  "runCount": 56,
+  "schema": "sir.svg-pipeline-measurement-authority/1"
 }
