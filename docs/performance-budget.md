@@ -53,7 +53,7 @@ and 40 Hz.
 Supporting-list records are materialized as authoritative regions. Event rate
 paces playback inputs at 100/50/25 ms intervals inside the same 250 ms window,
 and
-visible density controls a centered unit cluster that the controlled pair
+visible density controls a camera-stable origin unit cluster that the controlled pair
 verifies against production projection output. The
 `controlled-baseline`/`global-large-small-viewport` pair holds a 480×320
 viewport, visible density of 40, overlay complexity, and event rate constant

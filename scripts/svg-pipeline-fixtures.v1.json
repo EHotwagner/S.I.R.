@@ -86,7 +86,7 @@
     },
     {
       "id": "global-large-small-viewport",
-      "mapExtent": [80, 80],
+      "mapExtent": [40, 40],
       "viewport": [480, 320],
       "visibleDensity": 40,
       "globalUnitCount": 40,

@@ -87,8 +87,13 @@ try {
       await page.locator('[data-panel-id="document"]').waitFor();
       const collapse = page.locator("#layout-panel-document-collapse");
       if (await page.locator("#editor-map-import").isHidden()) await collapse.click();
+      const sceneRevisionBeforeImport = await page.locator("#persistent-tactical-svg").getAttribute("data-scene-revision");
       await page.getByLabel("Import SIR map", { exact: true }).setInputFiles({ name: `${fixture.id}.sir-map`, mimeType: "text/plain", buffer: Buffer.from(makeMap(fixture)) });
       await page.getByRole("alert").filter({ hasText: `Imported map ${fixture.id}.sir-map.` }).waitFor();
+      await page.waitForFunction((previous) => {
+        const revision = document.querySelector("#persistent-tactical-svg")?.getAttribute("data-scene-revision");
+        return Boolean(revision && revision !== previous);
+      }, sceneRevisionBeforeImport);
       if (definitions.globalScalePair.includes(fixture.id)) await page.getByRole("button", { name: "Fit the complete map", exact: true }).click();
       await page.setViewportSize({ width: fixture.viewport[0], height: fixture.viewport[1] });
       if (definitions.globalScalePair.includes(fixture.id)) {

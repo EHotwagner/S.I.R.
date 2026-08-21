@@ -58,7 +58,7 @@ export function makeMap(fixture) {
   for (let index = 0; index < Math.min(width * height, fixture.routeOverlayComplexity); index += 1) lines.push(`terrain ${index % width} ${Math.floor(index / width) % height} ${index % 5 === 0 ? "objective" : "rough"}`);
   const visibleWidth = Math.min(width, Math.max(1, Math.ceil(Math.sqrt(fixture.visibleDensity))));
   const visibleHeight = Math.max(1, Math.ceil(fixture.visibleDensity / visibleWidth));
-  const visibleOrigin = [Math.floor((width - visibleWidth) / 2), Math.floor((height - visibleHeight) / 2)];
+  const visibleOrigin = [0, 0];
   const occupied = new Set();
   const positions = [];
   for (let index = 0; index < fixture.globalUnitCount; index += 1) {
