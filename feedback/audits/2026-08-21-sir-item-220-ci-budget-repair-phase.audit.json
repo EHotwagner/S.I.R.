@@ -1,0 +1,58 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-220-ci-budget-repair-phase.md",
+  "reportSha256": "188c2b7bf16a8dc184d19483b56f0a44c6aff94eff211c4a58cd4180c998dba4",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsgg-sdd tasks --work 220-bounded-pr-ci --text",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsgg-sdd analyze --work 220-bounded-pr-ci --text",
+          "result": "verified"
+        },
+        {
+          "locator": "file:readiness/220-bounded-pr-ci/analysis.json",
+          "result": "verified",
+          "sha256": "35b8397e22abc526cfc93ea3b0252b9e31e897c3361a3b6c3875152920cf4065"
+        }
+      ],
+      "confidenceLimits": [
+        "This verifies current exact-head lifecycle coherence/readiness, not historical authoring chronology or hosted acceptance.",
+        "Earlier reports contain related implementationReady lifecycle outcomes, but no prior finding duplicates this corrected 49-task/103-relationship repair package; repository issue searches found no separate exact match."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:SIR_BROWSER_SHARDS=2 npm run test:browser",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-ci-route.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "file:work/220-bounded-pr-ci/plan.md",
+          "result": "verified",
+          "sha256": "114c729fa8424a01f278e19d8cc8820d03cc8e18d9f532d9085cfce3592071cc"
+        }
+      ],
+      "confidenceLimits": [
+        "Focused local execution verifies balanced isolated success, not the still-pending hosted exact-head timing/acceptance or runner-level starvation behavior.",
+        "The passing route contract contains exact assertions that would reject either governing value; this read-only re-audit did not edit tracked source to rerun the two mutations.",
+        "Recurrence check confirms open issue EHotwagner/S.I.R.#220 owns the browser critical-path/capacity repair thread; the earlier bounded-CI feedback report does not duplicate the test-granular/two-process shard pattern."
+      ]
+    }
+  ]
+}
