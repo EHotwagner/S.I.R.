@@ -5,11 +5,11 @@ import { availableParallelism, tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import process from "node:process";
 import { browserShardCapacityFor } from "./browser-shard-capacity.mjs";
+import { mergeBrowserShardCases, parseBrowserShardJUnit } from "./browser-junit.mjs";
 
 const root = resolve(import.meta.dirname, "..");
-// Every isolated shard schedules both Chromium and its production server.
-// Budget those two independently runnable processes instead of treating a raw
-// CPU count as a safe shard count and starving server-side assertions.
+// Reserve one runner lane for the isolated server cohort and scale browser
+// workers over the remaining lanes. Each shard still owns its own server/port.
 const browserShardCapacity = browserShardCapacityFor(availableParallelism());
 const browserPortBase = 5100;
 const browserPortCapacity = 65_535 - browserPortBase + 1;
@@ -48,21 +48,11 @@ const runShard = (offset) => new Promise((complete) => {
 });
 
 const mergeShardReports = (paths) => {
-  const cases = paths.flatMap((path) => {
+  const groups = paths.map((path, offset) => {
     if (!existsSync(path)) throw new Error(`browser shard did not write deterministic JUnit: ${path}`);
-    return readFileSync(path, "utf8").match(/  <testcase[\s\S]*?<\/testcase>/gu) ?? [];
-  }).sort((left, right) => left.localeCompare(right));
-  const failures = cases.filter((value) => value.includes("<failure ")).length;
-  const skipped = cases.filter((value) => value.includes("<skipped/>")).length;
-  const report = [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    `<testsuites tests="${cases.length}" failures="${failures}" skipped="${skipped}">`,
-    ` <testsuite name="sir-browser" tests="${cases.length}" failures="${failures}" skipped="${skipped}">`,
-    cases.join("\n"),
-    " </testsuite>",
-    "</testsuites>",
-    "",
-  ].join("\n");
+    return parseBrowserShardJUnit(readFileSync(path, "utf8"), `browser shard ${offset + 1}`);
+  });
+  const report = mergeBrowserShardCases(groups);
   mkdirSync(dirname(output), { recursive: true });
   writeFileSync(output, report, "utf8");
 };

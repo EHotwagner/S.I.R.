@@ -3,7 +3,15 @@ set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 task_tmp=$(mktemp -d)
-trap 'rm -rf -- "$task_tmp"' EXIT
+mutation_pid=""
+cleanup() {
+  if [[ -n "$mutation_pid" ]]; then
+    kill "$mutation_pid" 2>/dev/null || true
+    wait "$mutation_pid" 2>/dev/null || true
+  fi
+  rm -rf -- "$task_tmp"
+}
+trap cleanup EXIT
 reuse_build_receipt=""
 prepared_fable=""
 static_only=false
@@ -34,9 +42,7 @@ done
 
 cd "$repo_root"
 
-if [[ "$prepared_pr" == true ]]; then
-  "$repo_root/scripts/test-spatial-subject-mutations.sh" --prepared-pr
-else
+if [[ "$prepared_pr" == false ]]; then
   "$repo_root/scripts/test-spatial-subject-mutations.sh"
 fi
 
@@ -106,7 +112,12 @@ expect_unreadable_client_scan_error
 SIR_SPATIAL_FORCE_GREP=1 expect_unreadable_client_scan_error
 require_clean_scan "Client code" client_has_authority_calls
 require_clean_scan "JavaScript/TypeScript" javascript_has_spatial_authority
+if [[ "$prepared_pr" == true ]]; then
+  "$repo_root/scripts/test-spatial-subject-mutations.sh" --prepared-pr &
+  mutation_pid=$!
+fi
 if [[ "$static_only" == true ]]; then
+  if [[ -n "$mutation_pid" ]]; then wait "$mutation_pid"; mutation_pid=""; fi
   echo "Spatial query static verification passed: mutations, unreadable-source guards, and authority scans."
   exit 0
 fi
@@ -147,5 +158,10 @@ for runtime in dotnet fable; do
 done
 
 dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-build --no-restore -- --print-spatial-performance
+
+if [[ -n "$mutation_pid" ]]; then
+  wait "$mutation_pid"
+  mutation_pid=""
+fi
 
 echo "Spatial query verification passed: exact .NET/Fable bytes, divergence guards, authority scan, and Release budgets."

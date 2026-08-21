@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/220-bounded-pr-ci/ship.json",
-      "digest": "sha256:918bfe0f241b68bc535d14dee4a0238ebc2fa08da6221c13dcb43f57cd73c9f8",
+      "digest": "sha256:c00794472c1d7ddded0f25d56c44b210e6d1cfb33dbb2cb68eb56d8e20c10d43",
       "schemaVersion": 1
     },
     {
       "path": "readiness/220-bounded-pr-ci/verify.json",
-      "digest": "sha256:26bd429df5c7acd0e4451f75ee0dfc4349c0a33b9a61462b56762ee8b9078d87",
+      "digest": "sha256:3d572e81428b61a6cbf3af2d9b4f4e54d23cc976c269167486f2663270b02975",
       "schemaVersion": 1
     },
     {
       "path": "readiness/220-bounded-pr-ci/work-model.json",
-      "digest": "sha256:38e00e4e76845130521eea81ed302bcdf00bcb86e73c45173e0e73a366795155",
+      "digest": "sha256:97b36e4d3bd62bf9d6ad055e46f56bdcf14af210a67eb80cefa9d455f7c57f9c",
       "schemaVersion": 1
     }
   ],
