@@ -1,0 +1,90 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-231-svg-pipeline-measurement-2.md",
+  "reportSha256": "14768974a6a2edb564558942c4240309e0e6205e1499191473b91243f2c200bd",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/measure-svg-pipeline.mjs",
+          "result": "verified",
+          "sha256": "3fe57a84a4955ad5fad094cae59523d717a0e836ff806a7bb907629dc5737899"
+        },
+        {
+          "locator": "file:scripts/lib/svg-pipeline-measurement.mjs",
+          "result": "verified",
+          "sha256": "56e5e59e60764dfe501d9ba396b9a7c245f92da14a7106e3594ce211cb9e8117"
+        },
+        {
+          "locator": "command:node scripts/test-svg-pipeline-measurement.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Git inspection confirms the previous PR head installed the continuous addInitScript RAF sampler.",
+        "Current evidence proves the clock-sync repair and source inversion without preserving unsupported historical timing precision."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:work/231-svg-pipeline-measurement/raw-trace-manifest.json",
+          "result": "verified",
+          "sha256": "877c030967cb6528d1f7c09e8c96bcc041295ceaa49b1e18df4ca1c5f3db88d8"
+        },
+        {
+          "locator": "file:work/231-svg-pipeline-measurement/production-chromium-authority.json",
+          "result": "verified",
+          "sha256": "28d94b3427903d02f60fa9f7eac6bc3599d30a742e09b90f5711919a18b8e9e6"
+        },
+        {
+          "locator": "command:node scripts/test-svg-pipeline-measurement.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Current evidence verifies the 56-trace clean-checkout archive, content addressing, decompression, parsing, cross-product equality, and missing or changed byte rejection.",
+        "The historical ignored archive is not retained, so no unsupported prior completeness count is claimed."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/svg-pipeline-fixtures.v1.json",
+          "result": "verified",
+          "sha256": "0d7f1fa5ecd6b28b6d72c7ea01c7fd0afff3dbe218d16f7424d749b6ffaad97a"
+        },
+        {
+          "locator": "file:scripts/test-svg-pipeline-measurement.mjs",
+          "result": "verified",
+          "sha256": "86b99f92db3ed0430670b75a02718c61458d93329e0a34f1aeb1a19af683216c"
+        },
+        {
+          "locator": "file:work/231-svg-pipeline-measurement/production-chromium-summary.json",
+          "result": "verified",
+          "sha256": "f982901b80f286be8608046885e86282e376233bcccc5c086c01f97a048e910e"
+        },
+        {
+          "locator": "file:feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl",
+          "result": "verified",
+          "sha256": "b0aa6345b52238721d861896336e3ab151ff30c4b1eb247122e7adb959b625ab"
+        }
+      ],
+      "confidenceLimits": [
+        "The checkpoint supports both stopped-matrix counts and their failure boundaries.",
+        "Current fixtures, tests, and summary verify six one-factor axes, unique valid cells, changed-scene readiness, and the final 8 by 7 passing matrix."
+      ]
+    }
+  ]
+}
