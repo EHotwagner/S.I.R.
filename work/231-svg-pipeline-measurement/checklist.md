@@ -21,8 +21,8 @@ Prose status: checklistReady
 - work/231-svg-pipeline-measurement/clarifications.md
 
 ## Source Snapshot
-- spec: work/231-svg-pipeline-measurement/spec.md sha256:1a7593c4705d8e90f805e0f1edfc2475e7f9ef7e84e2cdcfbda63822798157c8 schemaVersion:1
-- clarifications: work/231-svg-pipeline-measurement/clarifications.md sha256:9cecc8c95ec0b9d6e70f44ea798657b0a1616246883b85e81a5076750807a427 schemaVersion:1
+- spec: work/231-svg-pipeline-measurement/spec.md sha256:cb0a7ed85f5319f265c742444208c39e0a748d142b0e71aa2d6e0a3b1ce3121a schemaVersion:1
+- clarifications: work/231-svg-pipeline-measurement/clarifications.md sha256:db02df55139fb63fac252b663ef9ddb1d62714871dd470fea8766890e01341ba schemaVersion:1
 
 ## Checklist Items
 - CHK-001 [FR-001] [AC-001] blocking: Requirement FR-001 is testable and linked to acceptance coverage.

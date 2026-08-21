@@ -13,19 +13,19 @@ work:
 sources:
   - label: spec
     path: work/231-svg-pipeline-measurement/spec.md
-    digest: 1a7593c4705d8e90f805e0f1edfc2475e7f9ef7e84e2cdcfbda63822798157c8
+    digest: cb0a7ed85f5319f265c742444208c39e0a748d142b0e71aa2d6e0a3b1ce3121a
     schemaVersion: 1
   - label: clarifications
     path: work/231-svg-pipeline-measurement/clarifications.md
-    digest: 9cecc8c95ec0b9d6e70f44ea798657b0a1616246883b85e81a5076750807a427
+    digest: db02df55139fb63fac252b663ef9ddb1d62714871dd470fea8766890e01341ba
     schemaVersion: 1
   - label: checklist
     path: work/231-svg-pipeline-measurement/checklist.md
-    digest: dc48ebb81e12b9ea7cc06a81da91f2a0d5bf982b56e4c27fc2ede596ab81de93
+    digest: 5656091f6c375563a52a26597511aca5e3c4d4efc34713d318830bb16d054c0b
     schemaVersion: 1
   - label: plan
     path: work/231-svg-pipeline-measurement/plan.md
-    digest: 5fd236af12162f02a8d226dc09f0a0934f49ec6efccc33dd176a76a52768ed61
+    digest: 2ff67bd37a825a6427d096e23df52a7773e2023caa60c5a0c9ed7227a25e4548
     schemaVersion: 1
 tasks:
   - id: T001

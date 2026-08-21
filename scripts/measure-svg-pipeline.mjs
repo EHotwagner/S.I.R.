@@ -1,14 +1,18 @@
 import { chromium } from "@playwright/test";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { gzipSync } from "node:zlib";
 import { spawn } from "node:child_process";
 import { cpus, platform, release } from "node:os";
-import { resolve } from "node:path";
+import { basename, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
-import { byteDigest, digest, extractStages, makeMap, stableJson, summarize, validateDefinitions, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
+import { byteDigest, digest, extractFrameHealth, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, stableJson, summarize, validateDefinitions, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
 
 const args = process.argv.slice(2);
 const option = (name, fallback) => { const index = args.indexOf(name); return index >= 0 ? args[index + 1] : fallback; };
 const out = resolve(option("--out", "artifacts/svg-pipeline"));
+const retainDirArgument = option("--retain-dir", null);
+const retainDir = retainDirArgument ? resolve(retainDirArgument) : null;
+const retainedTracePrefix = "work/231-svg-pipeline-measurement/raw-traces";
 const selectedFixtures = option("--fixtures", "all").split(",");
 const selectedJourneys = option("--journeys", "all").split(",");
 const baseURL = option("--base-url", "http://127.0.0.1:5100");
@@ -17,6 +21,7 @@ const fixtures = definitions.fixtures.filter((fixture) => selectedFixtures.inclu
 const journeys = definitions.journeys.filter((journey) => selectedJourneys.includes("all") || selectedJourneys.includes(journey));
 if (!fixtures.length || !journeys.length) throw new Error("fixture/journey selection is empty");
 mkdirSync(out, { recursive: true });
+if (retainDir) mkdirSync(retainDir, { recursive: true });
 
 let server;
 if (!args.includes("--base-url")) {
@@ -34,6 +39,7 @@ const buildIdentity = {
 };
 const browser = await chromium.launch({ executablePath, args: ["--enable-precise-memory-info", "--js-flags=--expose-gc"] });
 const runs = [];
+const retainedRuns = [];
 
 async function switchWorkspace(page, name) {
   await page.getByRole("button", { name: "View", exact: true }).click();
@@ -41,10 +47,9 @@ async function switchWorkspace(page, name) {
 }
 
 async function perform(page, journey, fixture) {
-  const started = await page.evaluate(() => performance.now());
   const svg = page.locator("#persistent-tactical-svg");
   const box = await svg.boundingBox();
-  if (journey === "idle") { await page.waitForTimeout(500); return null; }
+  if (journey === "idle") { await page.waitForTimeout(500); return; }
   if (journey === "pan") { await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down({ button: "right" }); await page.mouse.move(box.x + box.width / 2 + 60, box.y + box.height / 2 + 30, { steps: 6 }); await page.mouse.up({ button: "right" }); }
   if (journey === "zoom") { await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.wheel(0, -240); }
   if (journey === "selection") await svg.locator("[data-unit-id]").first().click({ force: true });
@@ -65,7 +70,7 @@ async function perform(page, journey, fixture) {
     }
     await switchWorkspace(page, "Editor");
   }
-  return page.evaluate((origin) => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() => done(performance.now() - origin)))), started);
+  await page.waitForTimeout(100);
 }
 
 try {
@@ -75,7 +80,6 @@ try {
       const context = await browser.newContext({ viewport: { width: Math.max(960, fixture.viewport[0]), height: Math.max(640, fixture.viewport[1]) } });
       const page = await context.newPage();
       const cdp = await context.newCDPSession(page);
-      await page.addInitScript(() => { window.__sirFrameIntervals = []; let last = performance.now(); const sample = (now) => { window.__sirFrameIntervals.push(now - last); last = now; requestAnimationFrame(sample); }; requestAnimationFrame(sample); });
       await page.goto(baseURL);
       await switchWorkspace(page, "Editor");
       const showDocument = page.locator("#layout-show-document");
@@ -85,9 +89,9 @@ try {
       if (await page.locator("#editor-map-import").isHidden()) await collapse.click();
       await page.getByLabel("Import SIR map", { exact: true }).setInputFiles({ name: `${fixture.id}.sir-map`, mimeType: "text/plain", buffer: Buffer.from(makeMap(fixture)) });
       await page.getByRole("alert").filter({ hasText: `Imported map ${fixture.id}.sir-map.` }).waitFor();
-      if (fixture.comparisonGroup === "global-scale-small-viewport") await page.getByRole("button", { name: "Fit the complete map", exact: true }).click();
+      if (definitions.globalScalePair.includes(fixture.id)) await page.getByRole("button", { name: "Fit the complete map", exact: true }).click();
       await page.setViewportSize({ width: fixture.viewport[0], height: fixture.viewport[1] });
-      if (fixture.comparisonGroup === "global-scale-small-viewport") {
+      if (definitions.globalScalePair.includes(fixture.id)) {
         const svg = page.locator("#persistent-tactical-svg");
         const box = await svg.boundingBox();
         for (let attempt = 0; attempt < 12; attempt += 1) {
@@ -99,11 +103,13 @@ try {
         }
       }
       const controlledStructural = await page.locator("#persistent-tactical-svg").evaluate((root) => ({ totalDom: root.querySelectorAll("*").length, byLayer: Object.fromEntries([...root.querySelectorAll("[data-scene-layer]")].map((layer) => [layer.getAttribute("data-scene-layer"), layer.querySelectorAll("*").length])), visualUnits: Number(root.dataset.visualUnitCount || 0), nodeEstimate: Number(root.dataset.visualNodeEstimate || 0) }));
-      if (fixture.comparisonGroup === "global-scale-small-viewport" && controlledStructural.visualUnits !== fixture.visibleDensity) throw new Error(`${fixture.id} observed ${controlledStructural.visualUnits} visible units before the journey; expected controlled density ${fixture.visibleDensity}`);
-      await page.evaluate(() => { window.__sirFrameIntervals = []; });
+      if (definitions.globalScalePair.includes(fixture.id) && controlledStructural.visualUnits !== fixture.visibleDensity) throw new Error(`${fixture.id} observed ${controlledStructural.visualUnits} visible units before the journey; expected controlled density ${fixture.visibleDensity}`);
       const tracePath = resolve(out, `${fixture.id}--${journey}.trace.json`);
       await cdp.send("Tracing.start", { categories: "devtools.timeline,blink.user_timing,v8,disabled-by-default-devtools.timeline,disabled-by-default-v8.cpu_profiler", transferMode: "ReturnAsStream" });
-      const inputLatencyMilliseconds = await perform(page, journey, fixture);
+      await page.waitForTimeout(200);
+      await cdp.send("Tracing.recordClockSyncMarker", { syncId: "sir-journey-start" });
+      await perform(page, journey, fixture);
+      await cdp.send("Tracing.recordClockSyncMarker", { syncId: "sir-journey-end" });
       const complete = new Promise((done) => cdp.once("Tracing.tracingComplete", done));
       await cdp.send("Tracing.end");
       const { stream } = await complete;
@@ -112,21 +118,29 @@ try {
       await cdp.send("IO.close", { handle: stream });
       const traceText = chunks.join(""); writeFileSync(tracePath, traceText);
       const trace = JSON.parse(traceText);
-      const intervals = await page.evaluate(() => window.__sirFrameIntervals || []);
+      const journeyTrace = extractJourneyTrace(trace);
+      const traceSha256 = byteDigest(Buffer.from(traceText));
+      let retainedPath = tracePath;
+      if (retainDir) {
+        retainedPath = `${retainedTracePrefix}/${traceSha256}.trace.json.gz`;
+        writeFileSync(resolve(retainDir, `${traceSha256}.trace.json.gz`), gzipSync(Buffer.from(traceText), { level: 9, mtime: 0 }));
+        retainedRuns.push({ fixture: fixture.id, journey, sha256: traceSha256, path: retainedPath });
+      }
       for (let cycle = 0; cycle < definitions.warmupCycles; cycle += 1) { await perform(page, "pan", fixture); await perform(page, "zoom", fixture); await perform(page, "playback", fixture); }
       const heapWarm = await cdp.send("Runtime.getHeapUsage");
       for (let cycle = 0; cycle < definitions.stabilizationCycles; cycle += 1) { await perform(page, "pan", fixture); await perform(page, "zoom", fixture); await perform(page, "playback", fixture); }
       const heapStable = await cdp.send("Runtime.getHeapUsage");
       const structural = await page.locator("#persistent-tactical-svg").evaluate((root) => ({ totalDom: root.querySelectorAll("*").length, byLayer: Object.fromEntries([...root.querySelectorAll("[data-scene-layer]")].map((layer) => [layer.getAttribute("data-scene-layer"), layer.querySelectorAll("*").length])), visualUnits: Number(root.dataset.visualUnitCount || 0), nodeEstimate: Number(root.dataset.visualNodeEstimate || 0) }));
-      const longTasks = (trace.traceEvents || []).filter((event) => event.name === "RunTask" && Number(event.dur || 0) >= 50_000).map((event) => Number((event.dur / 1000).toFixed(3)));
-      const inputLatency = inputLatencyMilliseconds === null
-        ? { available: false, reason: "The idle journey has no input event; its 500 ms observation window is not interaction latency" }
-        : { available: true, milliseconds: Number(inputLatencyMilliseconds.toFixed(3)), source: "Playwright production interaction start through two requestAnimationFrame callbacks" };
-      runs.push({ fixture: fixture.id, fixtureDigest: digest(fixture), workload: workloadRecipe(fixture), journey, startedAt, completedAt: new Date().toISOString(), result: "pass", stages: extractStages(trace), structural: { global: { mapExtent: fixture.mapExtent, unitCount: fixture.globalUnitCount, supportingListSize: fixture.supportingListSize }, visible: controlledStructural, postMemoryCycles: structural }, frameHealth: { samples: intervals.length, droppedFrames: intervals.filter((value) => value > 25).length, longTasks, samplingWindow: "named journey only; captured before warm-up and stabilization memory cycles" }, inputLatency, memory: { warm: heapWarm, stabilized: heapStable, usedDelta: heapStable.usedSize - heapWarm.usedSize, warmupCycles: definitions.warmupCycles, stabilizationCycles: definitions.stabilizationCycles, collectionControl: "not-forced" }, trace: { path: tracePath, sha256: digest(traceText) } });
+      runs.push({ fixture: fixture.id, fixtureDigest: digest(fixture), workload: workloadRecipe(fixture), journey, startedAt, completedAt: new Date().toISOString(), result: "pass", stages: extractStages(journeyTrace), structural: { global: { mapExtent: fixture.mapExtent, unitCount: fixture.globalUnitCount, supportingListSize: fixture.supportingListSize }, visible: controlledStructural, postMemoryCycles: structural }, frameHealth: { ...extractFrameHealth(journeyTrace), samplingWindow: "clock-sync-bounded named journey only; captured before warm-up and stabilization memory cycles" }, inputLatency: extractInputToPaint(journeyTrace, journey), memory: { warm: heapWarm, stabilized: heapStable, usedDelta: heapStable.usedSize - heapWarm.usedSize, warmupCycles: definitions.warmupCycles, stabilizationCycles: definitions.stabilizationCycles, collectionControl: "not-forced" }, trace: { path: retainedPath, sha256: traceSha256 } });
       await context.close();
     }
   }
-  const artifact = { schema: "sir.svg-pipeline-measurement/1", result: "pass", candidate, buildIdentity, fixtureDefinition: { path: "scripts/svg-pipeline-fixtures.v1.json", sha256: digest(definitions) }, environment: { browserVersion, executablePath, node: process.version, platform: platform(), release: release(), cpuCount: cpus().length }, selection: { fixtures: fixtures.map((fixture) => fixture.id), journeys }, runs, summary: summarize(runs, definitions.materialShareThreshold) };
+  let rawTraceManifest = null;
+  if (retainDir) {
+    rawTraceManifest = { schema: "sir.svg-pipeline-raw-trace-manifest/1", candidate, fixtureDefinitionSha256: digest(definitions), runs: retainedRuns };
+    writeFileSync(resolve(retainDir, "..", "raw-trace-manifest.json"), stableJson(rawTraceManifest));
+  }
+  const artifact = { schema: "sir.svg-pipeline-measurement/1", result: "pass", candidate, buildIdentity, fixtureDefinition: { path: "scripts/svg-pipeline-fixtures.v1.json", sha256: digest(definitions) }, environment: { browserVersion, executableName: basename(executablePath), node: process.version, platform: platform(), release: release(), cpuCount: cpus().length }, selection: { fixtures: fixtures.map((fixture) => fixture.id), journeys }, runs, rawTraceManifest: rawTraceManifest ? { path: "work/231-svg-pipeline-measurement/raw-trace-manifest.json", sha256: digest(rawTraceManifest) } : null, summary: summarize(runs, definitions.materialShareThreshold) };
   writeFileSync(resolve(out, "summary.json"), stableJson(artifact));
   writeFileSync(resolve(out, "measurement.junit.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="${runs.length}" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-production-chromium" tests="${runs.length}" failures="0" errors="0" skipped="0">${runs.map((run) => `<testcase classname="${run.fixture}" name="${run.journey}"/>`).join("")}</testsuite></testsuites>\n`);
   console.log(`svg-pipeline: PASS runs=${runs.length} next=${artifact.summary.nextBottleneck.stage} artifact=${resolve(out, "summary.json")}`);

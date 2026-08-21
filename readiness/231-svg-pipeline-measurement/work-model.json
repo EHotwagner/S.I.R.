@@ -53,7 +53,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "dc48ebb81e12b9ea7cc06a81da91f2a0d5bf982b56e4c27fc2ede596ab81de93"
+        "value": "5656091f6c375563a52a26597511aca5e3c4d4efc34713d318830bb16d054c0b"
       }
     },
     {
@@ -65,7 +65,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "9cecc8c95ec0b9d6e70f44ea798657b0a1616246883b85e81a5076750807a427"
+        "value": "db02df55139fb63fac252b663ef9ddb1d62714871dd470fea8766890e01341ba"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "49672f6ccb163b83cbf1f2f8bdc33813c27e062a97a82eb00754949e2af13032"
+        "value": "2ff67bd37a825a6427d096e23df52a7773e2023caa60c5a0c9ed7227a25e4548"
       }
     },
     {
@@ -101,7 +101,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "1a7593c4705d8e90f805e0f1edfc2475e7f9ef7e84e2cdcfbda63822798157c8"
+        "value": "cb0a7ed85f5319f265c742444208c39e0a748d142b0e71aa2d6e0a3b1ce3121a"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "e94b229c111cd61412cd9c686ecdfdf11ad7dd5357969d94f90e59b84d9a11b4"
+        "value": "88b03ac8674665cde38db23b801cb1553557c1cffc90719fe33cbdfc46aa49ba"
       }
     }
   ],
@@ -150,8 +150,8 @@
     },
     {
       "id": "FR-002",
-      "title": "Each journey artifact MUST separately report worker compute and transfer, scene projection and allocation, Elmish update and React reconciliation, SVG style/layout/paint/compositor activity, DOM counts by layer, long tasks, dropped frames, and input latency, and MUST disclose unavailable measurement capabilities rather than merging or inventing values. (Stories: US-001, US-002; Acceptance: AC-001)",
-      "text": "Each journey artifact MUST separately report worker compute and transfer, scene projection and allocation, Elmish update and React reconciliation, SVG style/layout/paint/compositor activity, DOM counts by layer, long tasks, dropped frames, and input latency, and MUST disclose unavailable measurement capabilities rather than merging or inventing values. (Stories: US-001, US-002; Acceptance: AC-001)",
+      "title": "Each journey artifact MUST separately report worker compute and transfer, scene projection and allocation, Elmish update and React reconciliation, SVG style/layout/paint/compositor activity, DOM counts by layer, long tasks, dropped frames, and input-to-paint latency; frame and latency evidence MUST come from Chromium \u0060AnimationFrame\u0060, user \u0060EventDispatch\u0060, paint, and presentation trace events without injecting a sampling callback into the measured renderer, and unavailable capabilities MUST remain explicit rather than merged or invented. (Stories: US-001, US-002; Acceptance: AC-001)",
+      "text": "Each journey artifact MUST separately report worker compute and transfer, scene projection and allocation, Elmish update and React reconciliation, SVG style/layout/paint/compositor activity, DOM counts by layer, long tasks, dropped frames, and input-to-paint latency; frame and latency evidence MUST come from Chromium \u0060AnimationFrame\u0060, user \u0060EventDispatch\u0060, paint, and presentation trace events without injecting a sampling callback into the measured renderer, and unavailable capabilities MUST remain explicit rather than merged or invented. (Stories: US-001, US-002; Acceptance: AC-001)",
       "acceptanceCriteria": [
         "AC-001"
       ],
@@ -172,8 +172,8 @@
     },
     {
       "id": "FR-003",
-      "title": "Every artifact MUST bind the exact candidate commit/tree and build identity, fixture schema/id/digest, journey id, Chromium and runtime versions, host/capability facts, trace path/digest, start/end timestamps, and result. (Stories: US-002; Acceptance: AC-001)",
-      "text": "Every artifact MUST bind the exact candidate commit/tree and build identity, fixture schema/id/digest, journey id, Chromium and runtime versions, host/capability facts, trace path/digest, start/end timestamps, and result. (Stories: US-002; Acceptance: AC-001)",
+      "title": "Every artifact MUST bind the exact candidate commit/tree and build identity, fixture schema/id/digest, journey id, Chromium and runtime versions, host/capability facts, content-addressed retained trace path/digest, start/end timestamps, and result; a clean archive MUST contain every declared compressed trace and validation MUST fail on absent, malformed, or changed decompressed bytes. (Stories: US-002; Acceptance: AC-001)",
+      "text": "Every artifact MUST bind the exact candidate commit/tree and build identity, fixture schema/id/digest, journey id, Chromium and runtime versions, host/capability facts, content-addressed retained trace path/digest, start/end timestamps, and result; a clean archive MUST contain every declared compressed trace and validation MUST fail on absent, malformed, or changed decompressed bytes. (Stories: US-002; Acceptance: AC-001)",
       "acceptanceCriteria": [
         "AC-001"
       ],
@@ -193,8 +193,8 @@
     },
     {
       "id": "FR-004",
-      "title": "The versioned fixture matrix MUST independently vary map extent, visible density, global unit count, route/overlay complexity, event rate, and supporting-list size with declared expected scales and structural counters. (Stories: US-002, US-003; Acceptance: AC-002)",
-      "text": "The versioned fixture matrix MUST independently vary map extent, visible density, global unit count, route/overlay complexity, event rate, and supporting-list size with declared expected scales and structural counters. (Stories: US-002, US-003; Acceptance: AC-002)",
+      "title": "The versioned fixture matrix MUST independently vary map extent, visible density, global unit count, route/overlay complexity, event rate, and supporting-list size through a declared one-factor controlled pair for every axis, with declared expected scales and structural counters. (Stories: US-002, US-003; Acceptance: AC-002)",
+      "text": "The versioned fixture matrix MUST independently vary map extent, visible density, global unit count, route/overlay complexity, event rate, and supporting-list size through a declared one-factor controlled pair for every axis, with declared expected scales and structural counters. (Stories: US-002, US-003; Acceptance: AC-002)",
       "acceptanceCriteria": [
         "AC-002"
       ],
@@ -365,8 +365,8 @@
     },
     {
       "id": "DEC-002",
-      "title": "A schema-v1 summary plus raw Chromium trace is authoritative; unavailable browser capabilities remain explicit unavailable observations and never become zero-valued successes.",
-      "decision": "A schema-v1 summary plus raw Chromium trace is authoritative; unavailable browser capabilities remain explicit unavailable observations and never become zero-valued successes.",
+      "title": "A schema-v1 summary plus clean-archive-durable content-addressed raw Chromium traces is authoritative; trace-derived frame/input timing introduces no renderer sampling callback, and unavailable browser capabilities remain explicit unavailable observations rather than zero-valued successes.",
+      "decision": "A schema-v1 summary plus clean-archive-durable content-addressed raw Chromium traces is authoritative; trace-derived frame/input timing introduces no renderer sampling callback, and unavailable browser capabilities remain explicit unavailable observations rather than zero-valued successes.",
       "requirementRefs": [
         "FR-002",
         "FR-003"
@@ -1889,7 +1889,7 @@
           "path": "work/231-svg-pipeline-measurement/checklist.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "dc48ebb81e12b9ea7cc06a81da91f2a0d5bf982b56e4c27fc2ede596ab81de93"
+            "value": "5656091f6c375563a52a26597511aca5e3c4d4efc34713d318830bb16d054c0b"
           },
           "schemaVersion": 1
         },
@@ -1897,7 +1897,7 @@
           "path": "work/231-svg-pipeline-measurement/clarifications.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "9cecc8c95ec0b9d6e70f44ea798657b0a1616246883b85e81a5076750807a427"
+            "value": "db02df55139fb63fac252b663ef9ddb1d62714871dd470fea8766890e01341ba"
           },
           "schemaVersion": 1
         },
@@ -1913,7 +1913,7 @@
           "path": "work/231-svg-pipeline-measurement/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "49672f6ccb163b83cbf1f2f8bdc33813c27e062a97a82eb00754949e2af13032"
+            "value": "2ff67bd37a825a6427d096e23df52a7773e2023caa60c5a0c9ed7227a25e4548"
           },
           "schemaVersion": 1
         },
@@ -1921,7 +1921,7 @@
           "path": "work/231-svg-pipeline-measurement/spec.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "1a7593c4705d8e90f805e0f1edfc2475e7f9ef7e84e2cdcfbda63822798157c8"
+            "value": "cb0a7ed85f5319f265c742444208c39e0a748d142b0e71aa2d6e0a3b1ce3121a"
           },
           "schemaVersion": 1
         },
@@ -1929,14 +1929,14 @@
           "path": "work/231-svg-pipeline-measurement/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "e94b229c111cd61412cd9c686ecdfdf11ad7dd5357969d94f90e59b84d9a11b4"
+            "value": "88b03ac8674665cde38db23b801cb1553557c1cffc90719fe33cbdfc46aa49ba"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "3713f4bf15ed25d4db71b33afc311bccf48e86be3c49a94c192cbe9c50052318"
+        "value": "d6863989bfdfff51be9a45c4d6bf528aa56e0228b05b7a5984e47e84c4863b91"
       },
       "currency": "current"
     }

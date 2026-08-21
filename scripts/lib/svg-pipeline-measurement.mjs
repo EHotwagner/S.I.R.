@@ -30,23 +30,31 @@ export function validateDefinitions(definition) {
     ids.add(fixture.id);
     for (const axis of ["visibleDensity", "globalUnitCount", "routeOverlayComplexity", "eventRateHz", "supportingListSize"])
       if (!Number.isInteger(fixture[axis]) || fixture[axis] < 0) throw new Error(`fixture ${fixture.id} has invalid ${axis}`);
+    if (fixture.visibleDensity > fixture.globalUnitCount) throw new Error(`fixture ${fixture.id} visibleDensity exceeds globalUnitCount`);
     if (!Array.isArray(fixture.mapExtent) || fixture.mapExtent.length !== 2 || fixture.mapExtent.some((n) => !Number.isInteger(n) || n <= 0)) throw new Error(`fixture ${fixture.id} has invalid mapExtent`);
     if (!Array.isArray(fixture.viewport) || fixture.viewport.length !== 2 || fixture.viewport.some((n) => !Number.isInteger(n) || n <= 0)) throw new Error(`fixture ${fixture.id} has invalid viewport`);
   }
-  if (new Set(definition.fixtures.map((fixture) => fixture.eventRateHz)).size < 2) throw new Error("fixture matrix must vary eventRateHz");
-  const ratePair = definition.fixtures.filter((fixture) => fixture.rateComparisonGroup === "representative-event-rate");
-  const rateControl = (fixture) => Object.fromEntries(Object.entries(fixture).filter(([key]) => !["id", "eventRateHz", "rateComparisonGroup"].includes(key)));
-  if (ratePair.length !== 2 || ratePair[0].eventRateHz === ratePair[1].eventRateHz || stableJson(rateControl(ratePair[0])) !== stableJson(rateControl(ratePair[1]))) throw new Error("event-rate comparison is not controlled");
-  const pair = definition.fixtures.filter((fixture) => fixture.comparisonGroup === "global-scale-small-viewport");
+  const axes = ["mapExtent", "visibleDensity", "globalUnitCount", "routeOverlayComplexity", "eventRateHz", "supportingListSize"];
+  if (stableJson(Object.keys(definition.controlledAxes || {}).sort()) !== stableJson([...axes].sort())) throw new Error("controlled-axis inventory must cover all six workload axes");
+  const byId = new Map(definition.fixtures.map((fixture) => [fixture.id, fixture]));
+  for (const axis of axes) {
+    const pairIds = definition.controlledAxes[axis];
+    if (!Array.isArray(pairIds) || pairIds.length !== 2 || pairIds[0] === pairIds[1]) throw new Error(`${axis} comparison must name two distinct fixtures`);
+    const pair = pairIds.map((id) => byId.get(id));
+    if (pair.some((fixture) => !fixture)) throw new Error(`${axis} comparison names an unknown fixture`);
+    const controlled = (fixture) => Object.fromEntries(Object.entries(fixture).filter(([key]) => !["id", axis].includes(key)));
+    if (stableJson(pair[0][axis]) === stableJson(pair[1][axis]) || stableJson(controlled(pair[0])) !== stableJson(controlled(pair[1]))) throw new Error(`${axis} comparison is not one-factor controlled`);
+  }
+  const pair = (definition.globalScalePair || []).map((id) => byId.get(id));
   const area = (fixture) => fixture.mapExtent[0] * fixture.mapExtent[1];
-  if (pair.length !== 2 || stableJson(pair[0].viewport) !== stableJson(pair[1].viewport) || pair[0].visibleDensity !== pair[1].visibleDensity || pair[0].globalUnitCount !== pair[1].globalUnitCount || area(pair[0]) >= area(pair[1]) || pair[0].supportingListSize >= pair[1].supportingListSize) throw new Error("large-project/small-viewport comparison is not controlled");
+  if (pair.length !== 2 || pair.some((fixture) => !fixture) || stableJson(pair[0].viewport) !== stableJson(pair[1].viewport) || pair[0].visibleDensity !== pair[1].visibleDensity || pair[0].globalUnitCount !== pair[1].globalUnitCount || pair[0].eventRateHz !== pair[1].eventRateHz || pair[0].routeOverlayComplexity !== pair[1].routeOverlayComplexity || area(pair[0]) >= area(pair[1]) || pair[0].supportingListSize >= pair[1].supportingListSize) throw new Error("large-project/small-viewport comparison is not controlled");
   return definition;
 }
 
 export function makeMap(fixture) {
   const [width, height] = fixture.mapExtent;
   const lines = ["SIR-MAP 2", `size ${width} ${height}`];
-  for (let index = 0; index < Math.min(width, fixture.routeOverlayComplexity); index += 1) lines.push(`terrain ${index} ${index % height} ${index % 5 === 0 ? "objective" : "rough"}`);
+  for (let index = 0; index < Math.min(width * height, fixture.routeOverlayComplexity); index += 1) lines.push(`terrain ${index % width} ${Math.floor(index / width) % height} ${index % 5 === 0 ? "objective" : "rough"}`);
   const visibleWidth = Math.min(width, Math.max(1, Math.ceil(Math.sqrt(fixture.visibleDensity))));
   const visibleHeight = Math.max(1, Math.ceil(fixture.visibleDensity / visibleWidth));
   const visibleOrigin = [Math.floor((width - visibleWidth) / 2), Math.floor((height - visibleHeight) / 2)];
@@ -78,14 +86,60 @@ export function validateEvidenceReceipt(receipt, definitions, authority) {
       || stableJson(receipt.buildIdentity) !== stableJson(authority.buildIdentity)
       || receipt.fixtureDefinition?.sha256 !== authority.fixtureDefinitionSha256
       || receipt.matrix?.rawSummarySha256 !== authority.rawSummarySha256
+      || receipt.matrix?.rawTraceManifestSha256 !== authority.rawTraceManifestSha256
       || receipt.matrix?.orderedTraceDigestSha256 !== authority.orderedTraceDigestSha256
       || receipt.matrix?.runCount !== authority.runCount) throw new Error("evidence authority binding is stale");
   for (const value of [receipt.candidate?.commit, receipt.candidate?.tree]) if (!/^[0-9a-f]{40}$/.test(value || "") || /^0+$/.test(value)) throw new Error("evidence candidate binding is missing");
-  for (const value of [receipt.buildIdentity?.clientManifestSha256, receipt.buildIdentity?.serverAssemblySha256, receipt.matrix?.rawSummarySha256, receipt.matrix?.orderedTraceDigestSha256]) if (!hex.test(value || "") || /^0+$/.test(value)) throw new Error("evidence digest binding is missing");
+  for (const value of [receipt.buildIdentity?.clientManifestSha256, receipt.buildIdentity?.serverAssemblySha256, receipt.matrix?.rawSummarySha256, receipt.matrix?.rawTraceManifestSha256, receipt.matrix?.orderedTraceDigestSha256]) if (!hex.test(value || "") || /^0+$/.test(value)) throw new Error("evidence digest binding is missing");
   if (receipt.fixtureDefinition?.sha256 !== digest(definitions)) throw new Error("evidence fixture binding is stale");
-  if (receipt.matrix?.result !== "pass" || receipt.matrix?.runCount !== definitions.fixtures.length * definitions.journeys.length) throw new Error("evidence matrix is incomplete");
+  if (receipt.matrix?.result !== "pass"
+      || receipt.matrix?.fixtureCount !== definitions.fixtures.length
+      || receipt.matrix?.journeyCount !== definitions.journeys.length
+      || stableJson(receipt.matrix?.fixtureIds) !== stableJson(definitions.fixtures.map((fixture) => fixture.id))
+      || stableJson(receipt.matrix?.journeys) !== stableJson(definitions.journeys)
+      || receipt.matrix?.runCount !== definitions.fixtures.length * definitions.journeys.length) throw new Error("evidence matrix is incomplete");
   if (!Number.isFinite(Date.parse(receipt.matrix.startedAt)) || !Number.isFinite(Date.parse(receipt.matrix.completedAt)) || Date.parse(receipt.matrix.completedAt) < Date.parse(receipt.matrix.startedAt)) throw new Error("evidence timestamps are invalid");
   return receipt;
+}
+
+export function validateRetainedRawEvidence(receipt, authority, manifest, readRawTrace) {
+  const expectedPath = (sha256) => `work/231-svg-pipeline-measurement/raw-traces/${sha256}.trace.json.gz`;
+  if (manifest?.schema !== "sir.svg-pipeline-raw-trace-manifest/1") throw new Error("raw trace manifest schema is unsupported");
+  if (digest(manifest) !== receipt.matrix.rawTraceManifestSha256 || digest(manifest) !== authority.rawTraceManifestSha256) throw new Error("raw trace manifest binding is stale");
+  if (stableJson(manifest.candidate) !== stableJson(receipt.candidate) || manifest.fixtureDefinitionSha256 !== receipt.fixtureDefinition.sha256) throw new Error("raw trace manifest candidate or fixture binding is stale");
+  if (!Array.isArray(manifest.runs) || manifest.runs.length !== receipt.matrix.runCount || manifest.runs.length !== authority.runCount) throw new Error("raw trace manifest run inventory is incomplete");
+  const identities = new Set();
+  for (const run of manifest.runs) {
+    const identity = `${run.fixture}\u0000${run.journey}`;
+    if (identities.has(identity)) throw new Error("raw trace manifest contains a duplicate run");
+    identities.add(identity);
+    if (!/^[0-9a-f]{64}$/.test(run.sha256 || "") || run.path !== expectedPath(run.sha256)) throw new Error("raw trace content address is invalid");
+    let raw;
+    try { raw = readRawTrace(run.path); } catch { throw new Error(`raw trace is unreadable: ${run.path}`); }
+    if (byteDigest(raw) !== run.sha256) throw new Error(`raw trace digest is stale: ${run.path}`);
+    try {
+      const parsed = JSON.parse(Buffer.isBuffer(raw) ? raw.toString("utf8") : String(raw));
+      if (!Array.isArray(parsed.traceEvents)) throw new Error("missing traceEvents");
+    } catch { throw new Error(`raw trace is malformed: ${run.path}`); }
+  }
+  const expectedIdentities = receipt.matrix.fixtureIds.flatMap((fixture) => receipt.matrix.journeys.map((journey) => `${fixture}\u0000${journey}`));
+  if (stableJson([...identities].sort()) !== stableJson(expectedIdentities.sort())) throw new Error("raw trace manifest fixture/journey coverage is incomplete");
+  if (digest(manifest.runs.map(({ fixture, journey, sha256 }) => ({ fixture, journey, sha256 }))) !== receipt.matrix.orderedTraceDigestSha256) throw new Error("ordered raw trace digest is stale");
+  return manifest;
+}
+
+export function validateProductionSummary(receipt, authority, manifest, summary) {
+  if (summary?.schema !== schema || summary.result !== "pass") throw new Error("production summary schema or result is invalid");
+  if (digest(summary) !== receipt.matrix.rawSummarySha256 || digest(summary) !== authority.rawSummarySha256) throw new Error("production summary binding is stale");
+  if (stableJson(summary.candidate) !== stableJson(receipt.candidate)
+      || stableJson(summary.buildIdentity) !== stableJson(receipt.buildIdentity)
+      || summary.fixtureDefinition?.sha256 !== receipt.fixtureDefinition.sha256
+      || summary.rawTraceManifest?.sha256 !== digest(manifest)) throw new Error("production summary candidate, build, fixture, or trace-manifest binding is stale");
+  if (!Array.isArray(summary.runs) || summary.runs.length !== receipt.matrix.runCount) throw new Error("production summary run inventory is incomplete");
+  const summarized = summary.runs.map((run) => ({ fixture: run.fixture, journey: run.journey, sha256: run.trace?.sha256 }));
+  const retained = manifest.runs.map(({ fixture, journey, sha256 }) => ({ fixture, journey, sha256 }));
+  if (stableJson(summarized) !== stableJson(retained)) throw new Error("production summary raw-trace inventory is stale");
+  return summary;
 }
 
 const sumDuration = (events, names, predicate = () => true) => events.reduce((total, event) => total + (names.has(event.name) && predicate(event) ? Number(event.dur || 0) / 1000 : 0), 0);
@@ -109,6 +163,38 @@ export function extractStages(trace) {
   };
   for (const name of stageNames) if (!values[name]) values[name] = unavailable("not observed");
   return values;
+}
+
+const traceTimestamp = (event) => Number(event.ts || 0);
+
+export function extractJourneyTrace(trace, startSyncId = "sir-journey-start", endSyncId = "sir-journey-end") {
+  const events = Array.isArray(trace?.traceEvents) ? trace.traceEvents : [];
+  const marker = (syncId) => events.find((event) => event.args?.sync_id === syncId && Number.isFinite(traceTimestamp(event)) && traceTimestamp(event) > 0);
+  const start = marker(startSyncId);
+  const end = marker(endSyncId);
+  if (!start || !end || traceTimestamp(end) <= traceTimestamp(start)) throw new Error("journey trace clock-sync window is missing or invalid");
+  return { ...trace, traceEvents: events.filter((event) => event.name === "thread_name" || (traceTimestamp(event) >= traceTimestamp(start) && traceTimestamp(event) <= traceTimestamp(end))) };
+}
+
+export function extractFrameHealth(trace) {
+  const events = Array.isArray(trace?.traceEvents) ? trace.traceEvents : [];
+  const frames = events.filter((event) => event.name === "AnimationFrame" && event.ph === "b" && Number.isFinite(traceTimestamp(event)) && traceTimestamp(event) > 0).sort((a, b) => traceTimestamp(a) - traceTimestamp(b));
+  const intervals = frames.slice(1).map((event, index) => (traceTimestamp(event) - traceTimestamp(frames[index])) / 1000);
+  const durations = frames.map((event) => Number(event.args?.animation_frame_timing_info?.duration_ms)).filter(Number.isFinite);
+  const longTasks = events.filter((event) => event.name === "RunTask" && Number(event.dur || 0) >= 50_000).map((event) => Number((event.dur / 1000).toFixed(3)));
+  return { samples: frames.length, droppedFrames: durations.filter((value) => value > 25).length, frameDurationsMilliseconds: durations.map((value) => Number(value.toFixed(3))), intervalsMilliseconds: intervals.map((value) => Number(value.toFixed(3))), longTasks, source: "Chromium AnimationFrame timing records and renderer RunTask slices; no injected frame observer" };
+}
+
+export function extractInputToPaint(trace, journey) {
+  if (journey === "idle") return { available: false, reason: "The idle journey has no input event; its observation window is not interaction latency" };
+  const events = Array.isArray(trace?.traceEvents) ? trace.traceEvents : [];
+  const userInputTypes = new Set(["pointerdown", "mousedown", "wheel", "keydown", "click"]);
+  const input = events.filter((event) => event.name === "EventDispatch" && userInputTypes.has(event.args?.data?.type) && Number.isFinite(traceTimestamp(event)) && traceTimestamp(event) > 0).sort((a, b) => traceTimestamp(a) - traceTimestamp(b))[0];
+  if (!input) return { available: false, reason: "Chromium did not expose an EventDispatch slice for the journey" };
+  const inputCompleted = traceTimestamp(input) + Number(input.dur || 0);
+  const paint = events.filter((event) => (event.name === "Paint" || (event.name === "AnimationFrame::Presentation" && event.ph === "n")) && traceTimestamp(event) >= inputCompleted).sort((a, b) => traceTimestamp(a) - traceTimestamp(b))[0];
+  if (!paint) return { available: false, reason: "Chromium exposed user input but no subsequent Paint or AnimationFrame presentation inside the journey trace" };
+  return { available: true, milliseconds: Number(((traceTimestamp(paint) - traceTimestamp(input)) / 1000).toFixed(3)), inputType: input.args?.data?.type || "unknown", paintEvent: paint.name, source: "Chromium user EventDispatch start to the first subsequent Paint or AnimationFrame presentation trace event" };
 }
 
 export function summarize(runs, threshold) {

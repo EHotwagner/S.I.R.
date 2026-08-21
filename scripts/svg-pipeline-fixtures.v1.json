@@ -4,60 +4,95 @@
   "warmupCycles": 2,
   "stabilizationCycles": 5,
   "journeys": ["idle", "playback", "pan", "zoom", "selection", "modality-transition", "dense-overlay"],
+  "controlledAxes": {
+    "mapExtent": ["controlled-baseline", "controlled-map-extent"],
+    "visibleDensity": ["controlled-baseline", "controlled-visible-density"],
+    "globalUnitCount": ["controlled-baseline", "controlled-global-units"],
+    "routeOverlayComplexity": ["controlled-baseline", "controlled-overlay-complexity"],
+    "eventRateHz": ["controlled-baseline", "controlled-event-rate"],
+    "supportingListSize": ["controlled-baseline", "controlled-supporting-list"]
+  },
+  "globalScalePair": ["controlled-baseline", "global-large-small-viewport"],
   "fixtures": [
     {
-      "id": "representative-visible-100",
-      "rateComparisonGroup": "representative-event-rate",
-      "mapExtent": [20, 20],
-      "viewport": [960, 640],
-      "visibleDensity": 100,
-      "globalUnitCount": 100,
-      "routeOverlayComplexity": 24,
-      "eventRateHz": 10,
-      "supportingListSize": 100
-    },
-    {
-      "id": "representative-visible-100-high-rate",
-      "rateComparisonGroup": "representative-event-rate",
-      "mapExtent": [20, 20],
-      "viewport": [960, 640],
-      "visibleDensity": 100,
-      "globalUnitCount": 100,
-      "routeOverlayComplexity": 24,
-      "eventRateHz": 40,
-      "supportingListSize": 100
-    },
-    {
-      "id": "global-small-viewport",
-      "comparisonGroup": "global-scale-small-viewport",
+      "id": "controlled-baseline",
       "mapExtent": [20, 20],
       "viewport": [480, 320],
       "visibleDensity": 40,
       "globalUnitCount": 40,
-      "routeOverlayComplexity": 12,
-      "eventRateHz": 20,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 10,
       "supportingListSize": 40
     },
     {
-      "id": "global-large-small-viewport",
-      "comparisonGroup": "global-scale-small-viewport",
+      "id": "controlled-map-extent",
       "mapExtent": [40, 40],
       "viewport": [480, 320],
       "visibleDensity": 40,
       "globalUnitCount": 40,
-      "routeOverlayComplexity": 48,
-      "eventRateHz": 20,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 10,
+      "supportingListSize": 40
+    },
+    {
+      "id": "controlled-visible-density",
+      "mapExtent": [20, 20],
+      "viewport": [480, 320],
+      "visibleDensity": 20,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 10,
+      "supportingListSize": 40
+    },
+    {
+      "id": "controlled-global-units",
+      "mapExtent": [20, 20],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 300,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 10,
+      "supportingListSize": 40
+    },
+    {
+      "id": "controlled-overlay-complexity",
+      "mapExtent": [20, 20],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 96,
+      "eventRateHz": 10,
+      "supportingListSize": 40
+    },
+    {
+      "id": "controlled-event-rate",
+      "mapExtent": [20, 20],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 40,
+      "supportingListSize": 40
+    },
+    {
+      "id": "controlled-supporting-list",
+      "mapExtent": [20, 20],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 10,
       "supportingListSize": 800
     },
     {
-      "id": "dense-overlay-200",
-      "mapExtent": [20, 20],
-      "viewport": [960, 640],
-      "visibleDensity": 200,
-      "globalUnitCount": 200,
-      "routeOverlayComplexity": 96,
-      "eventRateHz": 40,
-      "supportingListSize": 200
+      "id": "global-large-small-viewport",
+      "mapExtent": [80, 80],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 10,
+      "supportingListSize": 1600
     }
   ]
 }
