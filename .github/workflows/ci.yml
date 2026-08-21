@@ -556,10 +556,16 @@ jobs:
         shell: bash
         run: |
           if node -e 'const route=require("./artifacts/ci/route.json"); process.exit(route.selectedGates.includes("browser") ? 0 : 1)'; then
+            set +e
             node scripts/test-browser-global-merge.mjs \
               artifacts/ci/results/browser-general.junit.xml \
               artifacts/ci/results/browser-general-1.junit.xml \
               artifacts/ci/results/browser-general-2.junit.xml
+            browser_merge_status=$?
+            set -e
+            if [[ $browser_merge_status -ne 0 ]]; then
+              rm -f artifacts/ci/results/browser-general-helper.json
+            fi
           fi
           args=()
           for gate in integrity prepare-native prepare-fable prepare-web prepare-server prepare-docs spatial-mutations browser-general-helper browser-delivery rules spatial cancellation cross-runtime browser documentation evidence; do

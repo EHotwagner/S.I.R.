@@ -17,7 +17,7 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "055bcdaa7d2b157612885b63be5da30daf311e61a9d77be301edae1897f3a374",
+      "replacementSha256": "59fce01aacf31ff840701957f1dccbb1aa7fc88e288fb068ea3fad7dca2cd4d8",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "Issue 220 extends the route contract with the unchanged outer budget, required headroom, source-bound spatial, general-browser, and fixed-delivery helper gates, strict shard JUnit validation, explicit verdict dependencies, deterministic reconnect ownership, and pair-accounted test-granular browser sharding."
     },
@@ -47,7 +47,7 @@
       "locator": "file:.github/workflows/ci.yml",
       "path": ".github/workflows/ci.yml",
       "previousSha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127",
-      "replacementSha256": "225d3d77b61c64d748ca4b659fc6876642453f67eabaa3728a9842f5fc7ba7bb",
+      "replacementSha256": "88c9ea25f89895b6623db0d73f553d7f06a46f2ab02135afefd0fc94595aaba7",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "Issue 220 adds required source-bound spatial-mutation, general-browser, and fixed-delivery helper jobs; the focused route contract verifies their producer dependencies, explicit verdict needs, receipt join, pair capacity, and fail-closed missing/failed states."
     }

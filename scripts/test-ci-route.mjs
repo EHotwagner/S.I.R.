@@ -203,6 +203,7 @@ assert.match(workflow, /pr-verdict:\n[\s\S]*?needs: \[[^\]]*spatial-mutations[^\
 assert.match(jobBody("browser"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-1\.junit\.xml/u);
 assert.match(jobBody("browser-general-helper"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-2\.junit\.xml/u);
 assert.match(jobBody("pr-verdict"), /test-browser-global-merge\.mjs[\s\S]*browser-general-1\.junit\.xml[\s\S]*browser-general-2\.junit\.xml/u);
+assert.match(jobBody("pr-verdict"), /browser_merge_status=\$\?[\s\S]*rm -f artifacts\/ci\/results\/browser-general-helper\.json/u);
 assert.match(workflow, /for gate in integrity prepare-native prepare-fable prepare-web prepare-server prepare-docs spatial-mutations browser-general-helper browser-delivery rules spatial cancellation cross-runtime browser documentation evidence/u);
 assert.match(workflow, /\.\/scripts\/qualify-production\.sh --protected/u);
 const fullQualification = readFileSync(new URL("./qualify-production.sh", import.meta.url), "utf8");
