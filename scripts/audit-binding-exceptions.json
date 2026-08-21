@@ -30,6 +30,26 @@
       "replacementSha256": "e3694b59194cec88419c991f8e97f3647006ff0a7ad534895e194c4d12dd931a",
       "replacementEvidence": "command:./scripts/run-ci-gate.sh cross-runtime artifacts/ci/results/cross-runtime.json",
       "reason": "Issue 220 makes prepared native consumers Release-only; the exact-head hosted cross-runtime owner consumes the replacement without a fallback rebuild."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-SIR-186-6.audit.json",
+      "findingId": "§4.1",
+      "locator": "file:tests/SIR.Browser.Tests/production-delivery.spec.js",
+      "path": "tests/SIR.Browser.Tests/production-delivery.spec.js",
+      "previousSha256": "0f16fa283d8b0f9ca3d38a520a00f15bfed322bf687e9b29616d5ea573da4f13",
+      "replacementSha256": "d4b156f62196830e614ba31fc2e11d12d2ab718b71db46de2102e6c56e2ca3d4",
+      "replacementEvidence": "command:node scripts/test-browser-shards.mjs",
+      "reason": "Issue 220 adds only the stable production-delivery cohort tag; the focused one-pair browser owner executes the unchanged throttled delivery assertions and rejects an empty cohort."
+    },
+    {
+      "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
+      "findingId": "§4.1",
+      "locator": "file:.github/workflows/ci.yml",
+      "path": ".github/workflows/ci.yml",
+      "previousSha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127",
+      "replacementSha256": "1e73d84c99e1e8198b84a5f25f99c73ac661eceb10d97cde52dffb2533bcae5b",
+      "replacementEvidence": "command:node scripts/test-ci-route.mjs",
+      "reason": "Issue 220 adds required source-bound spatial-mutation and fixed-delivery helper jobs; the focused route contract verifies their producer dependencies, receipt join, pair capacity, and fail-closed missing/failed states."
     }
   ]
 }
