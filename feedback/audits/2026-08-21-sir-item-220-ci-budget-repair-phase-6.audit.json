@@ -1,0 +1,55 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-220-ci-budget-repair-phase-6.md",
+  "reportSha256": "82fcdfdf08fe814314c60e7d3812a33cfd1223f0d7ac5b933e2a0f287d0b8de0",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:dotnet fsgg-sdd analyze --work 220-bounded-pr-ci --text", "result": "verified" },
+        { "locator": "command:dotnet fsgg-sdd verify --work 220-bounded-pr-ci --text", "result": "verified" },
+        { "locator": "command:dotnet fsgg-sdd ship --work 220-bounded-pr-ci --text", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The commands establish lifecycle coherence at f8bad809bb2c83d0163c967912be903fb205eae7, not implementation correctness or hosted acceptance.",
+        "This recurs from feedback/2026-08-21-sir-item-220-ci-budget-repair-phase-5.md §4.1, but the new source boundary prevents a duplicate disposition."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/32442912623", "result": "verified" },
+        { "locator": "review:https://github.com/EHotwagner/S.I.R./pull/242#issuecomment-5364827469", "result": "verified" },
+        { "locator": "issue:EHotwagner/S.I.R.#220", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The hosted measurement binds historical head a108a0da430301cb6afbd5affd6f322696f629c8, not report commit f8bad809bb2c83d0163c967912be903fb205eae7.",
+        "The run met the 240,000 ms timing target but remained red solely because cancellation-mutations failed; exact-head hosted acceptance remains pending.",
+        "Downloaded receipts verified 231,069 ms total, 68,931 ms headroom, four 10-case fragments with 39 passes and one skip, and the independent delivery pass.",
+        "Prior-report and open/closed issue review confirms recurrence under existing issue EHotwagner/S.I.R.#220 rather than a duplicate finding."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/32442912623", "result": "verified" },
+        { "locator": "review:https://github.com/EHotwagner/S.I.R./pull/242#issuecomment-5364827469", "result": "verified" },
+        { "locator": "command:npm ci && ./scripts/test-worker-cancellation-subject-mutation.sh --mutation-only", "result": "verified" },
+        { "locator": "command:node scripts/test-ci-route.mjs", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The hosted missing-fixture failure binds head a108a0da430301cb6afbd5affd6f322696f629c8; the focused repair proof binds f8bad809bb2c83d0163c967912be903fb205eae7.",
+        "The focused mutation command verified the intended cancellation diagnostic and source restoration locally; isolated hosted success at the repaired head remains pending.",
+        "Open and closed issue searches for cancellation fixture, print-replay-package, and SIR.Domain.Tests cancellation found no separate owner issue; lexical search cannot exclude differently worded historical reports."
+      ]
+    }
+  ]
+}
