@@ -7,7 +7,7 @@
       "locator": "file:work/231-svg-pipeline-measurement/production-chromium-authority.json",
       "path": "work/231-svg-pipeline-measurement/production-chromium-authority.json",
       "previousSha256": "4bf9f9abb2e1d92d57e5a75dafb74923bdb7a975e12c62c0ba311249a749e861",
-      "replacementSha256": "7402352ff1d336cb8041ef87c0e55dc50e442856d195e5962f000831d8c6b5f5",
+      "replacementSha256": "28d94b3427903d02f60fa9f7eac6bc3599d30a742e09b90f5711919a18b8e9e6",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The base update required a new exact-candidate Chromium authority; the focused receipt gate verifies the renewed authority and rejects coordinated candidate or digest reseals."
     },
@@ -17,7 +17,7 @@
       "locator": "file:work/231-svg-pipeline-measurement/production-chromium-evidence.json",
       "path": "work/231-svg-pipeline-measurement/production-chromium-evidence.json",
       "previousSha256": "07ba39dee985fdc70e17956776787aa37be1939bc5d994df0904f17132ed1de1",
-      "replacementSha256": "6447f47262bd739a69b29e264a4c75554e1deac46069935d3e11e13282522be2",
+      "replacementSha256": "259c9f8706a356c94d6c7264d9fb8a409d53efdb0fb97ae47887487e2b4a4cc8",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The base update required a new exact-candidate compact receipt; the focused receipt gate checks it against the separate renewed authority."
     },
@@ -27,7 +27,7 @@
       "locator": "file:work/231-svg-pipeline-measurement/production-chromium-authority.json",
       "path": "work/231-svg-pipeline-measurement/production-chromium-authority.json",
       "previousSha256": "7402352ff1d336cb8041ef87c0e55dc50e442856d195e5962f000831d8c6b5f5",
-      "replacementSha256": "7402352ff1d336cb8041ef87c0e55dc50e442856d195e5962f000831d8c6b5f5",
+      "replacementSha256": "28d94b3427903d02f60fa9f7eac6bc3599d30a742e09b90f5711919a18b8e9e6",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The recovery audit is authored in the same candidate that introduces the renewed authority; the focused receipt gate verifies those final bytes."
     },
@@ -37,7 +37,7 @@
       "locator": "file:work/231-svg-pipeline-measurement/production-chromium-evidence.json",
       "path": "work/231-svg-pipeline-measurement/production-chromium-evidence.json",
       "previousSha256": "6447f47262bd739a69b29e264a4c75554e1deac46069935d3e11e13282522be2",
-      "replacementSha256": "6447f47262bd739a69b29e264a4c75554e1deac46069935d3e11e13282522be2",
+      "replacementSha256": "259c9f8706a356c94d6c7264d9fb8a409d53efdb0fb97ae47887487e2b4a4cc8",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The recovery audit is authored in the same candidate that introduces the renewed receipt; the focused gate verifies its final authority binding."
     },
@@ -47,7 +47,7 @@
       "locator": "file:docs/performance-budget.md",
       "path": "docs/performance-budget.md",
       "previousSha256": "5fb42b445999b25fe2fe4dbd80ee350099a1c145e4d44006c01ab6213d72798b",
-      "replacementSha256": "16d10090187a2f370a5d4bf58e5137fd56cc1640fe4d269d2c2d6f6099ae4e48",
+      "replacementSha256": "4887c60e4b595fb4754619b38f6171fbc7ea04bdac5d780280fac3ed0b440370",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The SVG pipeline measurement extends the cited performance contract; its focused exact-head fixture and protected-subject gate verifies the replacement workload contract."
     },
