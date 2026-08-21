@@ -1,0 +1,713 @@
+schemaVersion: 1
+workId: 231-svg-pipeline-measurement
+stage: evidence
+status: evidenceReady
+sourceSpec: work/231-svg-pipeline-measurement/spec.md
+sourceClarifications: work/231-svg-pipeline-measurement/clarifications.md
+sourceChecklist: work/231-svg-pipeline-measurement/checklist.md
+sourcePlan: work/231-svg-pipeline-measurement/plan.md
+sourceTasks: work/231-svg-pipeline-measurement/tasks.yml
+sourceAnalysis: readiness/231-svg-pipeline-measurement/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/231-svg-pipeline-measurement/analysis.json
+    digest: 3f052a427d211ee6ff775d2f049db030ae26682ebbe64eb616fb5499c3daae49
+    schemaVersion: 1
+  - label: checklist
+    path: work/231-svg-pipeline-measurement/checklist.md
+    digest: 2d9d59a90a9f6db97c86ff28493c06d67d7513b9983ba871c0fbb9f63cf0db4e
+    schemaVersion: 1
+  - label: clarifications
+    path: work/231-svg-pipeline-measurement/clarifications.md
+    digest: b801aef28cf0a56a399bb9a24de4ceb99aec6b463e29525c9fd8f4abdb68f499
+    schemaVersion: 1
+  - label: plan
+    path: work/231-svg-pipeline-measurement/plan.md
+    digest: 0749c1ad799daed2e8c54d26dcd2f898c52f4d89866ddbe761a4c91b85c87c76
+    schemaVersion: 1
+  - label: spec
+    path: work/231-svg-pipeline-measurement/spec.md
+    digest: 9fac2ce1b91df41eaa5c0a11c0ea34d8b6d5796244f14cce338538cf1ec34946
+    schemaVersion: 1
+  - label: tasks
+    path: work/231-svg-pipeline-measurement/tasks.yml
+    digest: 13d67d798c3dd9686e6d44adfa4a1d25c8ccae9a270775843a70c745bf62f2f2
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV003]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV005]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV007]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV009]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV010]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV014]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV015]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV016]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV017]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV018]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV019]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-003]
+    obligationRefs: [EV020]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-004, PD-010]
+    obligationRefs: [EV021]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003]
+    obligationRefs: [EV022]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005, PD-006]
+    obligationRefs: [EV023]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV024]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV025]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-svg-pipeline-measurement.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
+      digest: "sha256:7125d72512cd95a0ef9494aa2156ca010aa84c9f76a3646cc66e8790a6069e83"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 25
+      failed: 0
+      skipped: 0
+    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+lifecycleNotes:
+  - "Next lifecycle action: verify."
