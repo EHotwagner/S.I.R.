@@ -1,0 +1,98 @@
+{
+  "schema": "sir.svg-pipeline-fixtures/1",
+  "materialShareThreshold": 0.2,
+  "warmupCycles": 2,
+  "stabilizationCycles": 5,
+  "journeys": ["idle", "playback", "pan", "zoom", "selection", "modality-transition", "dense-overlay"],
+  "controlledAxes": {
+    "mapExtent": ["controlled-baseline", "controlled-map-extent"],
+    "visibleDensity": ["controlled-baseline", "controlled-visible-density"],
+    "globalUnitCount": ["controlled-baseline", "controlled-global-units"],
+    "routeOverlayComplexity": ["controlled-baseline", "controlled-overlay-complexity"],
+    "eventRateHz": ["controlled-baseline", "controlled-event-rate"],
+    "supportingListSize": ["controlled-baseline", "controlled-supporting-list"]
+  },
+  "globalScalePair": ["controlled-baseline", "global-large-small-viewport"],
+  "fixtures": [
+    {
+      "id": "controlled-baseline",
+      "mapExtent": [30, 30],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 10,
+      "supportingListSize": 40
+    },
+    {
+      "id": "controlled-map-extent",
+      "mapExtent": [40, 40],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 10,
+      "supportingListSize": 40
+    },
+    {
+      "id": "controlled-visible-density",
+      "mapExtent": [30, 30],
+      "viewport": [480, 320],
+      "visibleDensity": 20,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 10,
+      "supportingListSize": 40
+    },
+    {
+      "id": "controlled-global-units",
+      "mapExtent": [30, 30],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 200,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 10,
+      "supportingListSize": 40
+    },
+    {
+      "id": "controlled-overlay-complexity",
+      "mapExtent": [30, 30],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 96,
+      "eventRateHz": 10,
+      "supportingListSize": 40
+    },
+    {
+      "id": "controlled-event-rate",
+      "mapExtent": [30, 30],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 40,
+      "supportingListSize": 40
+    },
+    {
+      "id": "controlled-supporting-list",
+      "mapExtent": [30, 30],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 10,
+      "supportingListSize": 800
+    },
+    {
+      "id": "global-large-small-viewport",
+      "mapExtent": [40, 40],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 10,
+      "supportingListSize": 1600
+    }
+  ]
+}

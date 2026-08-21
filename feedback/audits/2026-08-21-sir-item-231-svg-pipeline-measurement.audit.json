@@ -1,0 +1,66 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-231-svg-pipeline-measurement.md",
+  "reportSha256": "5d4981924728ba8b5da9bc1d189d2e684cc7f682549ce84e1e38de5641a74bb5",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:work/231-svg-pipeline-measurement/production-chromium-authority.json",
+          "result": "verified",
+          "sha256": "7402352ff1d336cb8041ef87c0e55dc50e442856d195e5962f000831d8c6b5f5"
+        },
+        {
+          "locator": "file:work/231-svg-pipeline-measurement/production-chromium-evidence.json",
+          "result": "verified",
+          "sha256": "6447f47262bd739a69b29e264a4c75554e1deac46069935d3e11e13282522be2"
+        },
+        {
+          "locator": "command:npm run test:svg-pipeline-measurement",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic did not rerun or independently inspect the ignored 35-route raw traces and summary; the tracked authority and compact receipt preserve their exact identities.",
+        "The report commit is an evidence-only descendant of measured candidate 8ed4606aab4aa9623b7e94e49b7e46dfbcc6020e.",
+        "Worker transfer, projection/allocation, source-isolated Elmish/React, and live GPU counters remain unavailable."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#231",
+          "result": "verified"
+        },
+        {
+          "locator": "issue-comment:5360341475",
+          "result": "verified"
+        },
+        {
+          "locator": "issue-comment:5362965431",
+          "result": "verified"
+        },
+        {
+          "locator": "issue-comment:5362966481",
+          "result": "verified"
+        },
+        {
+          "locator": "issue-comment:5363148379",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The durable evidence establishes the v1 to v2 to non-force-claim chronology, not the unpreserved original terminal diagnostic or exact recovery-engine version.",
+        "The routed increment is on closed FS-GG/.github#2698 because cross-repository dedupe requires adding uncovered evidence to the existing cause rather than opening a rival."
+      ]
+    }
+  ]
+}

@@ -40,6 +40,74 @@ retained SVG root, effects are capped at 256 and pointer-inert, and reduced
 motion substitutes short opacity emphasis for spatial animation. Any budget
 change requires an explicit rebaseline with exact-candidate evidence.
 
+## Production Chromium SVG pipeline measurement
+
+The focused `node scripts/measure-svg-pipeline.mjs` command measures the built retained SVG
+in pinned production Chromium. Its versioned workload definition is
+`scripts/svg-pipeline-fixtures.v1.json`; the schema-v1 matrix independently
+declares map extent, visible density, global unit count, route/overlay
+complexity, event rate, and supporting-list size. One baseline plus six
+one-factor variants provide a declared controlled pair for every axis; changing
+any second dimension invalidates that pair. The event-rate pair exercises 10 Hz
+and 40 Hz.
+Supporting-list records are materialized as authoritative regions. Event rate
+paces playback inputs at 100/25 ms intervals inside the same 250 ms window,
+and
+visible density controls a centered unit cluster. Every fixture receives the same
+production `Fit the complete map` action, 480×320 viewport, and 15 center-anchored
+zoom inputs; viewport-intersecting production glyph bounds must then equal the
+declared density. The
+`controlled-baseline`/`global-large-small-viewport` pair holds a 480×320
+viewport, visible density of 40, overlay complexity, and event rate constant
+while increasing global extent and supporting-list size and holding global unit
+count at 40. The separate one-factor global-unit pair measures that axis.
+The 200-unit global variant imports, renders, and simulates through the production
+route while the fixed camera retains the same 40-glyph visible working set as the
+baseline. This is a measurement fixture, not a protocol or project-size limit.
+The generator rejects map-cell exhaustion and assigns every
+unit a unique cell so the workload cannot fail for overlap instead of scale.
+These are regression workloads, not a permanent supported-size ceiling.
+
+Each exact-candidate artifact retains every raw Chromium trace as a
+content-addressed gzip file whose name is the SHA-256 of the decompressed trace.
+A tracked manifest binds every fixture/journey identity and the focused gate
+reads all retained bytes from a clean-archive-safe path, rejecting absent,
+malformed, or changed traces. The artifact separately
+reports worker compute/transfer, projection/allocation, generic main-thread
+script, source-isolated Elmish/React availability, SVG
+style/layout/paint/compositor work, DOM counts by
+layer, journey-window durations/intervals and long tasks derived from Chromium
+`AnimationFrame`/`RunTask` slices, input-to-paint derived from a user
+`EventDispatch` to the next `Paint`/presentation (explicitly unavailable for
+idle), and heap/DOM memory
+after two warm-up and five stabilization pan/zoom/playback cycles. A capability
+the browser or current production instrumentation cannot isolate is recorded as
+unavailable with a reason; it is never folded into one callback aggregate or
+invented as zero. No frame observer or animation callback is injected into the
+measured renderer. Packed transport, typed buffers, and further allocation work
+become required only when their owning available stage reaches the versioned
+20% material-share threshold. If a stage is unavailable, its decision remains
+unresolved rather than treating the missing measurement as zero or deferred.
+
+The expensive production matrix is deliberately absent from the small-PR CI
+route. Changes confined to the five SVG-specific harness files plus this
+documentation use the focused documentation/evidence route; its hosted evidence
+owner verifies the retained exact-candidate receipt and both former
+structural-control escapes without rerunning the matrix. Broad route, runner,
+test-policy, and workflow files remain conservatively cross-cutting. The
+fixed-function route retains the shared 240-second target and 60-second headroom,
+and owns the web/docs producers required by its documentation gate. Run the full matrix once at a substantial-feature merge
+boundary against the exact Release candidate and retain `summary.json` plus its
+trace files:
+
+```shell
+npm run build:client
+dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish
+cp -a artifacts/client/. artifacts/publish/
+node scripts/measure-svg-pipeline.mjs --out artifacts/svg-pipeline \
+  --retain-dir work/231-svg-pipeline-measurement/raw-traces
+```
+
 ## Physical-combat v1 budget
 
 The v1 schema caps a trace at 256 cells, area delivery at 256 cells, recipients

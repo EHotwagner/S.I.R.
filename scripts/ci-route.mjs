@@ -66,6 +66,7 @@ const classifications = {
   documentation: ["documentation", "evidence"],
   domain: ["rules", "spatial", "cross-runtime", "evidence"],
   browser: ["browser", "evidence"],
+  performance: ["documentation", "evidence"],
   "evidence-only": ["evidence"],
   "cross-cutting": [...gateOrder],
 };
@@ -76,6 +77,16 @@ const isDocumentation = (path) => under(path, "docs") || path === "scripts/build
 const isDomain = (path) => ["src/SIR.Domain", "src/SIR.Simulation", "src/SIR.Match", "tests/SIR.Domain.Tests", "tests/SIR.Domain.Fable.Tests", "tests/SIR.Match.Tests", "tests/SIR.Conformance.Shared"].some((prefix) => under(path, prefix));
 const isBrowser = (path) => ["src/SIR.Client", "src/SIR.Client.Web", "src/SIR.Server", "tests/SIR.Browser.Tests", "tests/SIR.Client.Tests", "tests/SIR.Server.Tests"].some((prefix) => under(path, prefix));
 const isEvidence = (path) => ["feedback", "readiness", "work"].some((prefix) => under(path, prefix));
+const performancePaths = new Set([
+  "scripts/finalize-svg-pipeline-evidence.mjs",
+  "scripts/lib/svg-pipeline-measurement.mjs",
+  "scripts/measure-svg-pipeline.mjs",
+  "scripts/svg-pipeline-fixtures.v1.json",
+  "scripts/test-svg-pipeline-measurement.mjs",
+]);
+const evidenceSupportPaths = new Set(["scripts/audit-binding-exceptions.json", "scripts/test-feedback-audit-binding-exceptions.sh"]);
+const isPerformance = (path) => performancePaths.has(path);
+const isEvidenceSupport = (path) => evidenceSupportPaths.has(path);
 const isCrossCutting = (path) => [".github", ".config", ".fsgg"].some((prefix) => under(path, prefix))
   || ["package.json", "package-lock.json", "global.json", "Directory.Build.props", "Directory.Packages.props", "SIR.slnx"].includes(path)
   || (under(path, "scripts") && !isDocumentation(path));
@@ -90,6 +101,8 @@ export const routeDigest = (route) => digest(routeBody(route));
 
 function classifyOne(path) {
   if (isEvidence(path)) return { classification: "evidence-only", rule: "RP-000-evidence-metadata" };
+  if (isPerformance(path)) return { classification: "performance", rule: "RP-007-performance-evidence" };
+  if (isEvidenceSupport(path)) return { classification: "evidence-only", rule: "RP-008-evidence-support" };
   if (isCrossCutting(path)) return { classification: "cross-cutting", rule: "RP-004-cross-cutting" };
   if (isDocumentation(path)) return { classification: "documentation", rule: "RP-001-documentation" };
   if (isDomain(path)) return { classification: "domain", rule: "RP-002-domain" };
@@ -104,9 +117,12 @@ export function routePaths(rawPaths, source = {}) {
   if (paths.some((path) => path.startsWith("/") || path.includes("\0") || path.split("/").includes(".."))) throw new Error("ci-route: malformed changed path");
   const facts = paths.map((path) => ({ path, ...classifyOne(path) }));
   const kinds = [...new Set(facts.map((fact) => fact.classification).filter((kind) => kind !== "evidence-only"))];
-  const classification = kinds.length === 0 ? "evidence-only" : kinds.length === 1 ? kinds[0] : "cross-cutting";
+  const performanceOnly = kinds.includes("performance") && kinds.every((kind) => ["performance", "documentation"].includes(kind));
+  const classification = kinds.length === 0 ? "evidence-only" : performanceOnly ? "performance" : kinds.length === 1 ? kinds[0] : "cross-cutting";
   const selectedGates = classifications[classification];
-  const classificationRule = classification === "cross-cutting" && kinds.length > 1
+  const classificationRule = classification === "performance" && kinds.length > 1
+    ? "RP-009-performance-documentation"
+    : classification === "cross-cutting" && kinds.length > 1
     ? "RP-006-mixed-conservative"
     : facts.find((fact) => fact.classification === classification)?.rule ?? "RP-000-evidence-metadata";
   const skippedGates = gateOrder
@@ -243,7 +259,7 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
     } else if (!producerOrder.includes(subject) && (result.artifactDigest !== null || Object.keys(result.artifactBindings ?? {}).length > 0)) failures.push({ code: "unexpected-artifact-binding", subject });
   }
   const elapsed = completedAtMilliseconds - startedAtMilliseconds;
-  const requiresRepresentativeHeadroom = route?.classification === "cross-cutting";
+  const requiresRepresentativeHeadroom = ["cross-cutting", "performance"].includes(route?.classification);
   const acceptanceTargetMilliseconds = requiresRepresentativeHeadroom ? feedbackAcceptanceTargetMilliseconds : feedbackBudgetMilliseconds;
   const requiredHeadroomMilliseconds = requiresRepresentativeHeadroom ? feedbackHeadroomMilliseconds : 0;
   if (!Number.isSafeInteger(elapsed) || elapsed < 0) failures.push({ code: "invalid-feedback-duration", subject: "timing" });

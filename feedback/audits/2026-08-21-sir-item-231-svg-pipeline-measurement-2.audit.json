@@ -1,0 +1,114 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-231-svg-pipeline-measurement-2.md",
+  "reportSha256": "c762d7440a5344bfe2f4768a1aef1b9a4270a82d2a2cef95fc87040b5a3ed500",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/measure-svg-pipeline.mjs",
+          "result": "verified",
+          "sha256": "c44057768f5d3cf6e283e5528378e06f11a01d43a2ea40bf24f251605ff1ca60"
+        },
+        {
+          "locator": "file:scripts/lib/svg-pipeline-measurement.mjs",
+          "result": "verified",
+          "sha256": "6901cede8f372bf28205e56526fbb649bada83797bc6b7f4bf7985cd01be29a4"
+        },
+        {
+          "locator": "command:node scripts/test-svg-pipeline-measurement.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The substantial production matrix was not rerun during this audit. Historical sampler contamination was independently confirmed from commit 1f6de7c0b81b5bf11cb3c4022435f645948aa758 and PR #238 review history; the repaired source and focused inversion were checked at report commit 110065d29302ff28406ce283a50218781408e3ce."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:work/231-svg-pipeline-measurement/raw-trace-manifest.json",
+          "result": "verified",
+          "sha256": "011e60081ca7d4e8e79b04bdfe54fe21d0e4eb7542c14e4cfbaa81a7a8416438"
+        },
+        {
+          "locator": "file:work/231-svg-pipeline-measurement/production-chromium-authority.json",
+          "result": "verified",
+          "sha256": "c4b48c08555d42664ba2dfe97779508358bd1a600927c04ab638c214716879fb"
+        },
+        {
+          "locator": "command:node scripts/test-svg-pipeline-measurement.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The focused validator, rather than the substantial matrix, re-read, decompressed, parsed, and hashed all 56 retained traces at the audit head."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/svg-pipeline-fixtures.v1.json",
+          "result": "verified",
+          "sha256": "fcde5f2f60b4395487bca13f44d1f50fe31977dea2286e2a9b8f63dae46d530d"
+        },
+        {
+          "locator": "file:scripts/test-svg-pipeline-measurement.mjs",
+          "result": "verified",
+          "sha256": "781bfa980922a717843c9a9f75495c46eb253fec74b2268e77f6d42556b491b4"
+        },
+        {
+          "locator": "file:work/231-svg-pipeline-measurement/production-chromium-summary.json",
+          "result": "verified",
+          "sha256": "3deeaaf249a17b0d30160ef1915b93030bd081d5959a109aa287d3c3ab876917"
+        },
+        {
+          "locator": "file:feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl",
+          "result": "verified",
+          "sha256": "3511e67f7d03c1749950d3ec80a141365856fb297de85fa20fb3402b5db81ad8"
+        }
+      ],
+      "confidenceLimits": [
+        "The 56-run matrix and 300-unit production diagnostic were not rerun. The retained matrix was inspected directly, and the historical false-green plus 300-unit diagnostic were cross-checked through the checkpoint's cited PR #238 review record."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "review:https://github.com/EHotwagner/S.I.R./pull/238#issuecomment-5366102135",
+          "result": "verified"
+        },
+        {
+          "locator": "file:feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl",
+          "result": "verified",
+          "sha256": "3511e67f7d03c1749950d3ec80a141365856fb297de85fa20fb3402b5db81ad8"
+        },
+        {
+          "locator": "command:node scripts/test-ci-route.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/test-ci-route-mutations.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The audit verified the structured historical review and focused repaired-route tests; it did not rerun the hosted workflow, broad CI, or Chromium matrix."
+      ]
+    }
+  ]
+}

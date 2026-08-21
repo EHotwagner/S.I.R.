@@ -184,7 +184,7 @@ jobs:
         with: { name: gate-prepare-fable, path: artifacts/ci/results/prepare-fable.json, retention-days: 1 }
 
   prepare-web:
-    if: needs.route.outputs.classification == 'documentation' || needs.route.outputs.classification == 'browser' || needs.route.outputs.classification == 'cross-cutting'
+    if: needs.route.outputs.classification == 'documentation' || needs.route.outputs.classification == 'browser' || needs.route.outputs.classification == 'performance' || needs.route.outputs.classification == 'cross-cutting'
     needs: route
     runs-on: ubuntu-latest
     steps:
@@ -251,7 +251,7 @@ jobs:
         with: { name: gate-prepare-server, path: artifacts/ci/results/prepare-server.json, retention-days: 1 }
 
   prepare-docs:
-    if: needs.route.outputs.classification == 'documentation' || needs.route.outputs.classification == 'cross-cutting'
+    if: needs.route.outputs.classification == 'documentation' || needs.route.outputs.classification == 'performance' || needs.route.outputs.classification == 'cross-cutting'
     needs: route
     runs-on: ubuntu-latest
     steps:

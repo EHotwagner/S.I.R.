@@ -24,7 +24,10 @@ expect_red() {
 
 expect_red scripts/ci-route.mjs 's/return { classification: "cross-cutting", rule: "RP-005-unknown-conservative" };/return { classification: "browser", rule: "RP-005-unknown-conservative" };/;'
 expect_red scripts/ci-route.mjs 's/const computedRouteDigest = routeDigest(route);/const computedRouteDigest = route?.digest;/;'
+expect_red scripts/ci-route.mjs 's/\["cross-cutting", "performance"\]/["cross-cutting"]/;'
+expect_red scripts/ci-route.mjs 's/  "scripts\/finalize-svg-pipeline-evidence.mjs",/  "scripts\/ci-route.mjs",\n  "scripts\/finalize-svg-pipeline-evidence.mjs",/;'
+expect_red .github/workflows/ci.yml "s/ || needs.route.outputs.classification == 'performance'//g;"
 expect_red .github/workflows/ci.yml 's/^  full-qualification:/  omitted-full-qualification:/;'
 expect_red .github/workflows/ci.yml 's#\./scripts/qualify-production.sh --protected#./scripts/qualify-production.sh#;'
 
-echo "CI route policy, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."
+echo "CI route policy, performance scope/headroom/preparer wiring, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."
