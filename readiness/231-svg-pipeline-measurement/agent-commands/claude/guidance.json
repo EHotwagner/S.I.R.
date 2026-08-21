@@ -3,7 +3,7 @@
   "viewVersion": "1.0",
   "workId": "231-svg-pipeline-measurement",
   "targetId": "claude",
-  "generator": "FS.GG.SDD.Artifacts/1.1.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "generated": true,
   "sources": [
     {
@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "5f448e15cadf5bef93802c130dc8328d515b7878a98578ed60d7546d565285b1"
+        "value": "192c509249c274ad654fa5266e62d4f9635c5af20e6848796f7daea4d2d19a62"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
