@@ -23,7 +23,7 @@ Focused mutation gates exposed stale evidence, invalid fixture capacity, duplica
 
 ## §3 What did not
 
-The first measurement design injected a continuous `requestAnimationFrame` sampler into the renderer it measured, so an idle trace attributed sampler activity to product main-thread work. The prior compact receipt and authority agreed with each other but did not prove the ignored raw trace archive existed or matched. The first expanded global-unit fixture also exceeded the production simulator projection capacity and reused occupied cells. A later 80×80 composite import announced success while the production scene retained its default four units. Each defect was caught before final authority, but two incomplete matrices were needed to reach an honest controlled subject.
+The first measurement design injected a continuous `requestAnimationFrame` sampler into the renderer it measured, so an idle trace attributed sampler activity to product main-thread work. The prior compact receipt and authority agreed with each other but did not prove the ignored raw trace archive existed or matched. The first expanded global-unit fixture reused occupied cells, and a later 80×80 composite import announced success while the production scene retained its default four units. The first supposedly controlled final matrix then compared declarations rather than the production-visible working set: its visible-density pair rendered 40/40 glyphs and its global-count pair rendered 40/200. Review exposed that false green; a 300-unit diagnostic subsequently imported, rendered, and simulated successfully, disproving the inferred fixed 256-unit protocol ceiling.
 
 ## §4 Findings
 
@@ -53,18 +53,18 @@ The first measurement design injected a continuous `requestAnimationFrame` sampl
 - **Avoidable cost:** one complete 56-route evidence regeneration
 - **Disposition:** product fix
 
-#### §4.3 Controlled fixtures and production readiness gates prevented invalid scale evidence
+#### §4.3 Declared one-factor fixtures did not prove a production-observed control
 
-- **Kind:** positive-pattern
-- **Impact:** Performance decisions now compare all six workload axes independently and cannot silently measure the default four-unit scene after a rejected import.
-- **Expected:** Each axis has a one-factor pair, generated units occupy unique valid cells, and a production import is accepted only after the rendered scene changes.
-- **Observed:** Validator inversions cover map extent, visible density, global unit count, overlay complexity, event rate, and supporting-list size. The first 300-unit subject exposed overlap and the fixed 256-unit projection capacity; the later 80×80 subject exposed announcement-only readiness. The final 200-unit pair and 40×40 composite crossed both prior failure boundaries and completed 56 of 56 journeys.
+- **Kind:** defect
+- **Impact:** A report could claim visible-density and global-count isolation while production Chromium saw no visible-density change and exposed every additional global unit in the viewport.
+- **Expected:** Every axis remains a declared one-factor pair, but visible density is the count of production unit-glyph bounds intersecting the SVG viewport after one identical camera sequence; the visible pair changes that count and the global-count pair holds it.
+- **Observed:** Review replayed the retained candidate and found visible density 40/40 and global count 40/200 despite declared targets of 40/20 and 40/40. The repair centers the intended visible cluster, places global-only units from the map's far edge, applies the same fit plus 15 center-anchored zoom inputs, and records both viewport-intersecting and projected glyph counts. The focused eight-fixture smoke observed baseline 40/40, visible-density 20/40, and global-count 40/200; exact matrix regeneration remains the acceptance boundary.
 - **Evidence:** file:scripts/svg-pipeline-fixtures.v1.json; file:scripts/test-svg-pipeline-measurement.mjs; file:work/231-svg-pipeline-measurement/production-chromium-summary.json; file:feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl
 - **Version:** fixture schema v1; candidate be32308be393856a8031480be0de377dd40df499
 - **Owner:** EHotwagner/S.I.R. SVG pipeline fixtures and production runner
-- **Recurrence:** seen again and strengthened after the exact-candidate controlled-workload pattern in `feedback/2026-08-20-sir-item-231-svg-pipeline-measurement.md §4.1` and `feedback/2026-08-21-sir-item-231-svg-pipeline-measurement.md §4.1`
-- **Avoidable cost:** two incomplete matrices, stopped after 21 and 48 routes before authority generation
-- **Disposition:** accepted
+- **Recurrence:** new; prior reports described declared control but did not replay production-observed structural counters
+- **Avoidable cost:** one complete 56-route false-green matrix plus a critic repair round
+- **Disposition:** product fix
 
 ## §5 Did not exercise
 
@@ -72,7 +72,7 @@ No scaffold creation, package publication, dependency upgrade, gameplay rule cha
 
 ## §6 Doc-versus-behavior contradictions
 
-None observed. The performance contract was updated with the controlled-axis, raw-retention, and observer-overhead requirements before final evidence.
+The earlier report inferred a fixed 256-unit projection ceiling and treated declared one-factor equality as production-observed control. Both contradicted production behavior. The performance contract and §4.3 now require production glyph observations and make no protocol-size claim.
 
 ## §7 Workarounds still in the tree
 
@@ -94,7 +94,7 @@ The final focused validator passed 23 gates, including all six axis inversions a
 
 - For §4.1, keep the source inversion that fails if `addInitScript`, the RAF sampler, or its global interval array returns. Acceptance is a nonzero focused-test exit on reintroduction.
 - For §4.2, require exact manifest cross-product equality and byte validation from a clean checkout. Acceptance is a nonzero focused-test exit when one gzip file is missing, changed, renamed away from its content digest, or unparsable.
-- For §4.3, keep one-factor mutations for all six axes and wait for a changed production scene revision after import. Acceptance is a nonzero run when a second axis changes or the import announcement appears without a new scene.
+- For §4.3, keep one-factor mutations for all six axes, wait for a changed production scene revision, and reject summaries unless the visible pair changes viewport-intersecting glyph count while the global pair holds it. Acceptance is a nonzero run for either exact former structural mutant.
 
 ## §12 Development-surface coverage
 

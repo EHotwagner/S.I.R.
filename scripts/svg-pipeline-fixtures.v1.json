@@ -16,7 +16,7 @@
   "fixtures": [
     {
       "id": "controlled-baseline",
-      "mapExtent": [20, 20],
+      "mapExtent": [30, 30],
       "viewport": [480, 320],
       "visibleDensity": 40,
       "globalUnitCount": 40,
@@ -36,7 +36,7 @@
     },
     {
       "id": "controlled-visible-density",
-      "mapExtent": [20, 20],
+      "mapExtent": [30, 30],
       "viewport": [480, 320],
       "visibleDensity": 20,
       "globalUnitCount": 40,
@@ -46,7 +46,7 @@
     },
     {
       "id": "controlled-global-units",
-      "mapExtent": [20, 20],
+      "mapExtent": [30, 30],
       "viewport": [480, 320],
       "visibleDensity": 40,
       "globalUnitCount": 200,
@@ -56,7 +56,7 @@
     },
     {
       "id": "controlled-overlay-complexity",
-      "mapExtent": [20, 20],
+      "mapExtent": [30, 30],
       "viewport": [480, 320],
       "visibleDensity": 40,
       "globalUnitCount": 40,
@@ -66,7 +66,7 @@
     },
     {
       "id": "controlled-event-rate",
-      "mapExtent": [20, 20],
+      "mapExtent": [30, 30],
       "viewport": [480, 320],
       "visibleDensity": 40,
       "globalUnitCount": 40,
@@ -76,7 +76,7 @@
     },
     {
       "id": "controlled-supporting-list",
-      "mapExtent": [20, 20],
+      "mapExtent": [30, 30],
       "viewport": [480, 320],
       "visibleDensity": 40,
       "globalUnitCount": 40,

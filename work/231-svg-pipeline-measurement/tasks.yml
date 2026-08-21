@@ -13,19 +13,19 @@ work:
 sources:
   - label: spec
     path: work/231-svg-pipeline-measurement/spec.md
-    digest: cb0a7ed85f5319f265c742444208c39e0a748d142b0e71aa2d6e0a3b1ce3121a
+    digest: cc8d58b8693270244659017978d4a746929992ae1c51d2c9d8b2a9ebeb8e0432
     schemaVersion: 1
   - label: clarifications
     path: work/231-svg-pipeline-measurement/clarifications.md
-    digest: db02df55139fb63fac252b663ef9ddb1d62714871dd470fea8766890e01341ba
+    digest: b801aef28cf0a56a399bb9a24de4ceb99aec6b463e29525c9fd8f4abdb68f499
     schemaVersion: 1
   - label: checklist
     path: work/231-svg-pipeline-measurement/checklist.md
-    digest: 5656091f6c375563a52a26597511aca5e3c4d4efc34713d318830bb16d054c0b
+    digest: 50d2250d36f95d3636bf9da5cdcef1c21f93d69049f6e4048c8bc24862b6e6ad
     schemaVersion: 1
   - label: plan
     path: work/231-svg-pipeline-measurement/plan.md
-    digest: 8c8c53b6128cdd8ff4c8317dc308b0654f184287bdebcab3255487ae9e0ea503
+    digest: c621a98d19376f9eb73741df992ec7125a6491d9a3d16c595b4d7f628b213432
     schemaVersion: 1
 tasks:
   - id: T001
@@ -60,8 +60,8 @@ tasks:
     requiredEvidence: [EV003]
   - id: T004
     title: Implement requirement FR-004
-    status: done
-    owner: avocet-d5c5
+    status: pending
+    owner: crake-c7a3
     dependencies: []
     requirements: [FR-004]
     decisions: []
@@ -70,8 +70,8 @@ tasks:
     requiredEvidence: [EV004]
   - id: T005
     title: Implement requirement FR-005
-    status: done
-    owner: avocet-d5c5
+    status: pending
+    owner: crake-c7a3
     dependencies: []
     requirements: [FR-005]
     decisions: []

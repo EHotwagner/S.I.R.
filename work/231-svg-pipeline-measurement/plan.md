@@ -16,9 +16,9 @@ publicOrToolFacingImpact: true
 Prose status: planned
 
 ## Source Snapshot
-- spec: work/231-svg-pipeline-measurement/spec.md sha256:cb0a7ed85f5319f265c742444208c39e0a748d142b0e71aa2d6e0a3b1ce3121a schemaVersion:1
-- clarifications: work/231-svg-pipeline-measurement/clarifications.md sha256:db02df55139fb63fac252b663ef9ddb1d62714871dd470fea8766890e01341ba schemaVersion:1
-- checklist: work/231-svg-pipeline-measurement/checklist.md sha256:5656091f6c375563a52a26597511aca5e3c4d4efc34713d318830bb16d054c0b schemaVersion:1
+- spec: work/231-svg-pipeline-measurement/spec.md sha256:cc8d58b8693270244659017978d4a746929992ae1c51d2c9d8b2a9ebeb8e0432 schemaVersion:1
+- clarifications: work/231-svg-pipeline-measurement/clarifications.md sha256:b801aef28cf0a56a399bb9a24de4ceb99aec6b463e29525c9fd8f4abdb68f499 schemaVersion:1
+- checklist: work/231-svg-pipeline-measurement/checklist.md sha256:50d2250d36f95d3636bf9da5cdcef1c21f93d69049f6e4048c8bc24862b6e6ad schemaVersion:1
 
 ## Plan Scope
 - Add a focused Node/Playwright Chromium measurement command, versioned fixture definitions, deterministic schema validation/summarization, production-browser journey coverage, focused unit tests, and exact-candidate evidence documentation.
@@ -29,12 +29,12 @@ Prose status: planned
 - PD-001 [AC-001] [FR-001] [DEC-001] complete: `scripts/measure-svg-pipeline.mjs` builds or consumes the Release publish, starts the production server, launches pinned Chromium through Playwright/CDP, imports generated maps through `#editor-map-import`, and drives the seven named journeys through visible controls.
 - PD-002 [AC-001] [FR-002] [DEC-002] complete: CDP trace `EventDispatch`, renderer task, `Paint`, and `DrawFrame` slices plus DOM/layer snapshots emit separate typed observations; no frame callback is injected into the measured renderer and unavailable stages remain explicit.
 - PD-003 [AC-001] [FR-003] complete: Schema-v1 artifacts bind git commit/tree, production-build identity, fixture/journey digests, browser/runtime/host capabilities, timestamps, and a manifest of gzip-compressed raw traces named by the SHA-256 of their decompressed bytes. The validator reads every retained byte from clean-archive paths and fails closed.
-- PD-004 [AC-002] [FR-004] [DEC-001] complete: `scripts/svg-pipeline-fixtures.v1.json` uses one baseline and six one-factor variants, with a declared controlled pair for every workload axis; the 200-unit global-count variant stays within the production simulator protocol's fixed 256-unit projection capacity, every generated unit cell is unique, and a separate composite global-scale variant serves the large-project/small-viewport comparison without weakening axis independence.
-- PD-005 [AC-002] [FR-005] complete: The composite pair fixes a 480x320 CSS-pixel viewport, 40 visible/global units, overlay complexity, and event rate while increasing extent and supporting-list scale; the separate one-factor global-unit pair measures unit-count scaling, and summaries retain observed global and live-DOM-by-layer counters separately.
+- PD-004 [AC-002] [FR-004] [DEC-001] in-progress: `scripts/svg-pipeline-fixtures.v1.json` uses one baseline and six one-factor variants, with a declared controlled pair for every workload axis; every generated unit cell is unique, camera setup uses production controls, viewport intersection reports observed visible glyphs, and production-summary validation refuses a visible-density pair that does not change that count or a global-unit pair that changes it.
+- PD-005 [AC-002] [FR-005] in-progress: The composite pair fixes a 480x320 CSS-pixel viewport, 40 viewport-intersecting units, overlay complexity, and event rate while increasing extent and supporting-list scale; the separate one-factor global-unit pair measures unit-count scaling while holding the observed visible count constant, and summaries retain imported-global, viewport-visible, and live-DOM-by-layer counters separately.
 - PD-006 [AC-003] [FR-006] [DEC-003] complete: Pan/zoom/playback runs two warm-up and five stabilization cycles, recording heap/DOM checkpoints and collection capability.
 - PD-007 [AC-004] [FR-007] complete: `scripts/lib/svg-pipeline-measurement.mjs` validates and deterministically ranks stage duration/share and structural deltas, preserving ties and unavailable observations.
 - PD-008 [AC-004] [FR-008] [DEC-004] complete: Transport/typed-buffer/allocation dispositions use the versioned 20 percent material-share rule and emit the non-ceiling interpretation in every summary.
-- PD-009 [AC-005] [FR-009] complete: `npm run measure:svg-pipeline -- --fixtures ... --journeys ... --out ...` is opt-in and absent from `scripts/ci-route.mjs` and ordinary PR workflow routing.
+- PD-009 [AC-005] [FR-009] in-progress: `node scripts/measure-svg-pipeline.mjs --fixtures ... --journeys ... --out ...` remains opt-in; harness-only changes take the fixed-function documentation/evidence route, whose hosted owner runs the focused retained-evidence validator but never regenerates the expensive Chromium matrix.
 - PD-010 [AC-005] [FR-010] complete: Focused Node tests cover schema, six one-factor controls, trace-derived timing and sampler absence, receipt-to-authority binding, every retained raw byte, unavailable capability, ranking/disposition, and malformed/stale rejection; each repaired escape receives a subject-mutation demonstration.
 
 ## Contract Impact

@@ -53,7 +53,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "5656091f6c375563a52a26597511aca5e3c4d4efc34713d318830bb16d054c0b"
+        "value": "50d2250d36f95d3636bf9da5cdcef1c21f93d69049f6e4048c8bc24862b6e6ad"
       }
     },
     {
@@ -65,7 +65,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "db02df55139fb63fac252b663ef9ddb1d62714871dd470fea8766890e01341ba"
+        "value": "b801aef28cf0a56a399bb9a24de4ceb99aec6b463e29525c9fd8f4abdb68f499"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "8c8c53b6128cdd8ff4c8317dc308b0654f184287bdebcab3255487ae9e0ea503"
+        "value": "c621a98d19376f9eb73741df992ec7125a6491d9a3d16c595b4d7f628b213432"
       }
     },
     {
@@ -101,7 +101,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "cb0a7ed85f5319f265c742444208c39e0a748d142b0e71aa2d6e0a3b1ce3121a"
+        "value": "cc8d58b8693270244659017978d4a746929992ae1c51d2c9d8b2a9ebeb8e0432"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "e535267282748cd57d4b10c1d60fdbbe3f367dc7bd69220bc5dadc49c58aa325"
+        "value": "d334b164f35e7f70fa9b107f85b06d2b31ffb0999c25f9988c8c1b863673ab41"
       }
     }
   ],
@@ -193,8 +193,8 @@
     },
     {
       "id": "FR-004",
-      "title": "The versioned fixture matrix MUST independently vary map extent, visible density, global unit count, route/overlay complexity, event rate, and supporting-list size through a declared one-factor controlled pair for every axis, with declared expected scales and structural counters. (Stories: US-002, US-003; Acceptance: AC-002)",
-      "text": "The versioned fixture matrix MUST independently vary map extent, visible density, global unit count, route/overlay complexity, event rate, and supporting-list size through a declared one-factor controlled pair for every axis, with declared expected scales and structural counters. (Stories: US-002, US-003; Acceptance: AC-002)",
+      "title": "The versioned fixture matrix MUST independently vary map extent, visible density, global unit count, route/overlay complexity, event rate, and supporting-list size through a declared one-factor controlled pair for every axis, with declared expected scales and production-observed structural counters; visible density MUST equal viewport-intersecting production unit glyphs, its pair MUST change that observed count, the global-unit pair MUST hold that observed count constant, and summary validation MUST fail closed on either escape. (Stories: US-002, US-003; Acceptance: AC-002)",
+      "text": "The versioned fixture matrix MUST independently vary map extent, visible density, global unit count, route/overlay complexity, event rate, and supporting-list size through a declared one-factor controlled pair for every axis, with declared expected scales and production-observed structural counters; visible density MUST equal viewport-intersecting production unit glyphs, its pair MUST change that observed count, the global-unit pair MUST hold that observed count constant, and summary validation MUST fail closed on either escape. (Stories: US-002, US-003; Acceptance: AC-002)",
       "acceptanceCriteria": [
         "AC-002"
       ],
@@ -345,8 +345,8 @@
   "decisions": [
     {
       "id": "DEC-001",
-      "title": "Versioned JSON fixture definitions generate maps that enter through the production import control; journeys use only production pointer, keyboard, menu, timeline, and workspace controls.",
-      "decision": "Versioned JSON fixture definitions generate maps that enter through the production import control; journeys use only production pointer, keyboard, menu, timeline, and workspace controls.",
+      "title": "Versioned JSON fixture definitions generate maps that enter through the production import control; journeys and camera setup use only production pointer, keyboard, menu, timeline, and workspace controls, and viewport-intersecting production glyph bounds provide the visible-density observation validated across controlled pairs.",
+      "decision": "Versioned JSON fixture definitions generate maps that enter through the production import control; journeys and camera setup use only production pointer, keyboard, menu, timeline, and workspace controls, and viewport-intersecting production glyph bounds provide the visible-density observation validated across controlled pairs.",
       "requirementRefs": [
         "FR-001",
         "FR-004",
@@ -506,8 +506,8 @@
     {
       "id": "T004",
       "title": "Implement requirement FR-004",
-      "status": "done",
-      "owner": "avocet-d5c5",
+      "status": "pending",
+      "owner": "crake-c7a3",
       "dependencies": [],
       "requirements": [
         "FR-004"
@@ -533,8 +533,8 @@
     {
       "id": "T005",
       "title": "Implement requirement FR-005",
-      "status": "done",
-      "owner": "avocet-d5c5",
+      "status": "pending",
+      "owner": "crake-c7a3",
       "dependencies": [],
       "requirements": [
         "FR-005"
@@ -1908,7 +1908,7 @@
       "schemaVersion": 1,
       "generator": {
         "id": "FS.GG.SDD.Artifacts",
-        "version": "1.1.0"
+        "version": "1.0.1"
       },
       "sources": [
         {
@@ -1939,7 +1939,7 @@
           "path": "work/231-svg-pipeline-measurement/checklist.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "5656091f6c375563a52a26597511aca5e3c4d4efc34713d318830bb16d054c0b"
+            "value": "50d2250d36f95d3636bf9da5cdcef1c21f93d69049f6e4048c8bc24862b6e6ad"
           },
           "schemaVersion": 1
         },
@@ -1947,7 +1947,7 @@
           "path": "work/231-svg-pipeline-measurement/clarifications.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "db02df55139fb63fac252b663ef9ddb1d62714871dd470fea8766890e01341ba"
+            "value": "b801aef28cf0a56a399bb9a24de4ceb99aec6b463e29525c9fd8f4abdb68f499"
           },
           "schemaVersion": 1
         },
@@ -1963,7 +1963,7 @@
           "path": "work/231-svg-pipeline-measurement/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "8c8c53b6128cdd8ff4c8317dc308b0654f184287bdebcab3255487ae9e0ea503"
+            "value": "c621a98d19376f9eb73741df992ec7125a6491d9a3d16c595b4d7f628b213432"
           },
           "schemaVersion": 1
         },
@@ -1971,7 +1971,7 @@
           "path": "work/231-svg-pipeline-measurement/spec.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "cb0a7ed85f5319f265c742444208c39e0a748d142b0e71aa2d6e0a3b1ce3121a"
+            "value": "cc8d58b8693270244659017978d4a746929992ae1c51d2c9d8b2a9ebeb8e0432"
           },
           "schemaVersion": 1
         },
@@ -1979,14 +1979,14 @@
           "path": "work/231-svg-pipeline-measurement/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "e535267282748cd57d4b10c1d60fdbbe3f367dc7bd69220bc5dadc49c58aa325"
+            "value": "d334b164f35e7f70fa9b107f85b06d2b31ffb0999c25f9988c8c1b863673ab41"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "95a49bd38e3b61fa28f524f683ae6ff6a949feb8398df6595db5d4a0b3392eb4"
+        "value": "7213b43f27ae8bc36eb66ac2e2cf7a9f627d2cd4968dd6cf30c9e25740c69c84"
       },
       "currency": "current"
     }

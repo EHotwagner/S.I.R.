@@ -42,7 +42,7 @@ change requires an explicit rebaseline with exact-candidate evidence.
 
 ## Production Chromium SVG pipeline measurement
 
-The focused `npm run measure:svg-pipeline` route measures the built retained SVG
+The focused `node scripts/measure-svg-pipeline.mjs` command measures the built retained SVG
 in pinned production Chromium. Its versioned workload definition is
 `scripts/svg-pipeline-fixtures.v1.json`; the schema-v1 matrix independently
 declares map extent, visible density, global unit count, route/overlay
@@ -51,17 +51,20 @@ one-factor variants provide a declared controlled pair for every axis; changing
 any second dimension invalidates that pair. The event-rate pair exercises 10 Hz
 and 40 Hz.
 Supporting-list records are materialized as authoritative regions. Event rate
-paces playback inputs at 100/50/25 ms intervals inside the same 250 ms window,
+paces playback inputs at 100/25 ms intervals inside the same 250 ms window,
 and
-visible density controls a camera-stable origin unit cluster that the controlled pair
-verifies against production projection output. The
+visible density controls a centered unit cluster. Every fixture receives the same
+production `Fit the complete map` action, 480×320 viewport, and 15 center-anchored
+zoom inputs; viewport-intersecting production glyph bounds must then equal the
+declared density. The
 `controlled-baseline`/`global-large-small-viewport` pair holds a 480×320
 viewport, visible density of 40, overlay complexity, and event rate constant
 while increasing global extent and supporting-list size and holding global unit
 count at 40. The separate one-factor global-unit pair measures that axis.
-Its 200-unit variant remains below the simulator protocol's fixed 256-unit
-projection capacity; this is a protocol-function bound, not a project-size
-support ceiling. The generator rejects map-cell exhaustion and assigns every
+The 200-unit global variant imports, renders, and simulates through the production
+route while the fixed camera retains the same 40-glyph visible working set as the
+baseline. This is a measurement fixture, not a protocol or project-size limit.
+The generator rejects map-cell exhaustion and assigns every
 unit a unique cell so the workload cannot fail for overlap instead of scale.
 These are regression workloads, not a permanent supported-size ceiling.
 
@@ -86,15 +89,19 @@ become required only when their owning available stage reaches the versioned
 20% material-share threshold. If a stage is unavailable, its decision remains
 unresolved rather than treating the missing measurement as zero or deferred.
 
-This matrix is deliberately absent from the small-PR CI route. Run it once at a
-substantial-feature merge boundary against the exact Release candidate and
-retain `summary.json` plus its trace files:
+The expensive production matrix is deliberately absent from the small-PR CI
+route. Changes confined to this fixed-function harness use the focused
+documentation/evidence route; its hosted evidence owner verifies the retained
+exact-candidate receipt and both former structural-control escapes without
+rerunning the matrix. Run the full matrix once at a substantial-feature merge
+boundary against the exact Release candidate and retain `summary.json` plus its
+trace files:
 
 ```shell
 npm run build:client
 dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish
 cp -a artifacts/client/. artifacts/publish/
-npm run measure:svg-pipeline -- --out artifacts/svg-pipeline \
+node scripts/measure-svg-pipeline.mjs --out artifacts/svg-pipeline \
   --retain-dir work/231-svg-pipeline-measurement/raw-traces
 ```
 

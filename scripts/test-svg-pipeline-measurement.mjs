@@ -2,12 +2,12 @@ import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { gunzipSync } from "node:zlib";
-import { byteDigest, digest, extractFrameHealth, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
+import { byteDigest, digest, extractFrameHealth, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 validateDefinitions(source);
 assert.equal(digest(source).length, 64);
-assert.match(makeMap(source.fixtures[0]), /^SIR-MAP 2\nsize 20 20\n/);
+assert.match(makeMap(source.fixtures[0]), /^SIR-MAP 2\nsize 30 30\n/);
 assert.equal(byteDigest(Buffer.from("abc")), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
 
 const trace = { traceEvents: [
@@ -49,7 +49,7 @@ const mutations = [
   ["memory-cycle", (value) => { value.stabilizationCycles = value.warmupCycles; }],
   ["controlled-global-pair", (value) => { value.fixtures.find((fixture) => fixture.id === "global-large-small-viewport").viewport = [481, 320]; }],
   ["axis-value", (value) => { value.fixtures[0].eventRateHz = -1; }],
-  ["fixture-capacity", (value) => { value.fixtures.find((fixture) => fixture.id === "controlled-global-units").globalUnitCount = 401; }],
+  ["fixture-capacity", (value) => { value.fixtures.find((fixture) => fixture.id === "controlled-global-units").globalUnitCount = 901; }],
   ["axis-inventory", (value) => { delete value.controlledAxes.visibleDensity; }],
 ];
 for (const [name, mutate] of mutations) {
@@ -78,13 +78,29 @@ for (const fixture of source.fixtures) {
   assert.equal(new Set(coordinates).size, fixture.globalUnitCount, `${fixture.id} must generate one unique cell per unit`);
 }
 console.log("JUSTIFIED unique-unit-cells: every workload unit occupies a distinct production map cell");
+const observedSummary = { runs: source.fixtures.flatMap((fixture) => source.journeys.map((journey) => ({
+  fixture: fixture.id,
+  journey,
+  structural: {
+    visible: { visualUnits: fixture.visibleDensity, projectedUnits: fixture.globalUnitCount },
+    cameraControl: { fitCompleteMap: true, viewport: fixture.viewport, centerAnchoredWheelSteps: 15, wheelDeltaY: -240 },
+  },
+}))) };
+validateObservedControls(observedSummary, source);
+const visibleEscape = structuredClone(observedSummary);
+for (const run of visibleEscape.runs.filter((value) => value.fixture === "controlled-visible-density")) run.structural.visible.visualUnits = 40;
+assert.throws(() => validateObservedControls(visibleEscape, source), /visible-density observation is uncontrolled/, "a declared-only visible-density pair must fail");
+const globalEscape = structuredClone(observedSummary);
+for (const run of globalEscape.runs.filter((value) => value.fixture === "controlled-global-units")) run.structural.visible.visualUnits = 200;
+assert.throws(() => validateObservedControls(globalEscape, source), /global-unit observation changes visible density/, "a global-count pair that changes the visible set must fail");
+console.log("JUSTIFIED production-observed-controls: the exact former declared-only visible-density and global-count escapes are rejected");
 const authority = JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-authority.json", import.meta.url)));
 const evidence = validateEvidenceReceipt(JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-evidence.json", import.meta.url))), source, authority);
 const rawManifest = JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/raw-trace-manifest.json", import.meta.url)));
 const productionSummary = JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-summary.json", import.meta.url)));
 const readRetained = (path) => gunzipSync(readFileSync(new URL(`../${path}`, import.meta.url)));
 validateRetainedRawEvidence(evidence, authority, rawManifest, readRetained);
-validateProductionSummary(evidence, authority, rawManifest, productionSummary);
+validateProductionSummary(evidence, authority, rawManifest, productionSummary, source);
 assert.throws(() => validateRetainedRawEvidence(evidence, authority, rawManifest, (path) => {
   const raw = readRetained(path);
   return path === rawManifest.runs[0].path ? Buffer.concat([raw, Buffer.from(" ")]) : raw;
@@ -99,5 +115,5 @@ assert.throws(() => validateEvidenceReceipt(unboundDigest, source, authority), /
 console.log("JUSTIFIED evidence-binding: coordinated candidate and digest reseals rejected by tracked authority");
 const report = process.env.SIR_SVG_PIPELINE_JUNIT || "artifacts/test-results/svg-pipeline.junit.xml";
 mkdirSync(dirname(report), { recursive: true });
-writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="23" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="23" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="fixture-capacity"/><testcase name="axis-inventory"/><testcase name="trace-timing"/><testcase name="trace-window"/><testcase name="observed-run"/><testcase name="map-extent-control"/><testcase name="visible-density-control"/><testcase name="global-unit-control"/><testcase name="overlay-control"/><testcase name="event-rate-control"/><testcase name="supporting-list-control"/><testcase name="unique-unit-cells"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/><testcase name="raw-trace-binding"/><testcase name="raw-trace-missing"/><testcase name="raw-trace-changed"/><testcase name="unreadable-input"/></testsuite></testsuites>\n');
+writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="25" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="25" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="fixture-capacity"/><testcase name="axis-inventory"/><testcase name="trace-timing"/><testcase name="trace-window"/><testcase name="observed-run"/><testcase name="map-extent-control"/><testcase name="visible-density-control"/><testcase name="global-unit-control"/><testcase name="overlay-control"/><testcase name="event-rate-control"/><testcase name="supporting-list-control"/><testcase name="unique-unit-cells"/><testcase name="production-visible-observation"/><testcase name="production-global-observation"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/><testcase name="raw-trace-binding"/><testcase name="raw-trace-missing"/><testcase name="raw-trace-changed"/><testcase name="unreadable-input"/></testsuite></testsuites>\n');
 console.log("svg-pipeline measurement unit gates: PASS");

@@ -369,6 +369,11 @@ NODE
               dotnet fsgg-sdd verify --work "$work_id" --root . --text
               evidence_status=$?
               [[ $evidence_status -eq 0 ]] || break
+              if [[ -x "work/$work_id/hosted-verification.sh" ]]; then
+                "work/$work_id/hosted-verification.sh"
+                evidence_status=$?
+                [[ $evidence_status -eq 0 ]] || break
+              fi
             done
           fi
           set -e

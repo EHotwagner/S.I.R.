@@ -58,7 +58,7 @@ export function makeMap(fixture) {
   for (let index = 0; index < Math.min(width * height, fixture.routeOverlayComplexity); index += 1) lines.push(`terrain ${index % width} ${Math.floor(index / width) % height} ${index % 5 === 0 ? "objective" : "rough"}`);
   const visibleWidth = Math.min(width, Math.max(1, Math.ceil(Math.sqrt(fixture.visibleDensity))));
   const visibleHeight = Math.max(1, Math.ceil(fixture.visibleDensity / visibleWidth));
-  const visibleOrigin = [0, 0];
+  const visibleOrigin = [Math.floor((width - visibleWidth) / 2), Math.floor((height - visibleHeight) / 2)];
   const occupied = new Set();
   const positions = [];
   for (let index = 0; index < fixture.globalUnitCount; index += 1) {
@@ -69,8 +69,8 @@ export function makeMap(fixture) {
       positions.push([column, row]);
       occupied.add(`${column},${row}`);
     } else {
-      let cell = 0;
-      while (occupied.has(`${cell % width},${Math.floor(cell / width)}`)) cell += 1;
+      let cell = width * height - 1;
+      while (occupied.has(`${cell % width},${Math.floor(cell / width)}`)) cell -= 1;
       const column = cell % width;
       const row = Math.floor(cell / width);
       positions.push([column, row]);
@@ -144,7 +144,37 @@ export function validateRetainedRawEvidence(receipt, authority, manifest, readRa
   return manifest;
 }
 
-export function validateProductionSummary(receipt, authority, manifest, summary) {
+export function validateObservedControls(summary, definitions) {
+  const fixtures = new Map(definitions.fixtures.map((fixture) => [fixture.id, fixture]));
+  const byIdentity = new Map((summary.runs || []).map((run) => [`${run.fixture}\u0000${run.journey}`, run]));
+  const runsForPair = (axis) => {
+    const [baselineId, variantId] = definitions.controlledAxes[axis];
+    return definitions.journeys.map((journey) => {
+      const baseline = byIdentity.get(`${baselineId}\u0000${journey}`);
+      const variant = byIdentity.get(`${variantId}\u0000${journey}`);
+      if (!baseline || !variant) throw new Error(`production ${axis} observation is incomplete`);
+      return { baseline, variant };
+    });
+  };
+  for (const { baseline, variant } of runsForPair("visibleDensity")) {
+    if (baseline.structural?.visible?.visualUnits === variant.structural?.visible?.visualUnits
+        || stableJson(baseline.structural?.cameraControl) !== stableJson(variant.structural?.cameraControl)) throw new Error("production visible-density observation is uncontrolled");
+  }
+  for (const { baseline, variant } of runsForPair("globalUnitCount")) {
+    if (baseline.structural?.visible?.visualUnits !== variant.structural?.visible?.visualUnits
+        || baseline.structural?.visible?.projectedUnits === variant.structural?.visible?.projectedUnits
+        || stableJson(baseline.structural?.cameraControl) !== stableJson(variant.structural?.cameraControl)) throw new Error("production global-unit observation changes visible density or fails to change projected count");
+  }
+  for (const run of summary.runs || []) {
+    const fixture = fixtures.get(run.fixture);
+    if (!fixture) throw new Error(`production structural observation names unknown fixture ${run.fixture}`);
+    if (run.structural?.visible?.visualUnits !== fixture.visibleDensity) throw new Error(`production viewport observation is stale for ${run.fixture}`);
+    if (run.structural?.visible?.projectedUnits !== fixture.globalUnitCount) throw new Error(`production projected-unit observation is stale for ${run.fixture}`);
+  }
+  return summary;
+}
+
+export function validateProductionSummary(receipt, authority, manifest, summary, definitions) {
   if (summary?.schema !== schema || summary.result !== "pass") throw new Error("production summary schema or result is invalid");
   if (digest(summary) !== receipt.matrix.rawSummarySha256 || digest(summary) !== authority.rawSummarySha256) throw new Error("production summary binding is stale");
   if (stableJson(summary.candidate) !== stableJson(receipt.candidate)
@@ -155,6 +185,7 @@ export function validateProductionSummary(receipt, authority, manifest, summary)
   const summarized = summary.runs.map((run) => ({ fixture: run.fixture, journey: run.journey, sha256: run.trace?.sha256 }));
   const retained = manifest.runs.map(({ fixture, journey, sha256 }) => ({ fixture, journey, sha256 }));
   if (stableJson(summarized) !== stableJson(retained)) throw new Error("production summary raw-trace inventory is stale");
+  validateObservedControls(summary, definitions);
   return summary;
 }
 

@@ -46,6 +46,26 @@ async function switchWorkspace(page, name) {
   await page.getByRole("menu", { name: "View commands" }).getByRole("menuitem", { name: new RegExp(`^Switch to ${name}\\b`) }).click();
 }
 
+async function observeStructure(svg) {
+  return svg.evaluate((root) => {
+    const viewport = root.getBoundingClientRect();
+    const intersectsViewport = (node) => {
+      const bounds = node.getBoundingClientRect();
+      return bounds.width > 0 && bounds.height > 0
+        && bounds.right > viewport.left && bounds.left < viewport.right
+        && bounds.bottom > viewport.top && bounds.top < viewport.bottom;
+    };
+    return {
+      totalDom: root.querySelectorAll("*").length,
+      byLayer: Object.fromEntries([...root.querySelectorAll("[data-scene-layer]")].map((layer) => [layer.getAttribute("data-scene-layer"), layer.querySelectorAll("*").length])),
+      visualUnits: [...root.querySelectorAll("[data-unit-id]")].filter(intersectsViewport).length,
+      projectedUnits: Number(root.dataset.visualUnitCount || 0),
+      nodeEstimate: Number(root.dataset.visualNodeEstimate || 0),
+      source: "production SVG glyph bounds intersecting the production SVG viewport after the fixed camera control",
+    };
+  });
+}
+
 async function perform(page, journey, fixture) {
   const svg = page.locator("#persistent-tactical-svg");
   const box = await svg.boundingBox();
@@ -94,21 +114,18 @@ try {
         const revision = document.querySelector("#persistent-tactical-svg")?.getAttribute("data-scene-revision");
         return Boolean(revision && revision !== previous);
       }, sceneRevisionBeforeImport);
-      if (definitions.globalScalePair.includes(fixture.id)) await page.getByRole("button", { name: "Fit the complete map", exact: true }).click();
+      await page.getByRole("button", { name: "Fit the complete map", exact: true }).click();
       await page.setViewportSize({ width: fixture.viewport[0], height: fixture.viewport[1] });
-      if (definitions.globalScalePair.includes(fixture.id)) {
-        const svg = page.locator("#persistent-tactical-svg");
-        const box = await svg.boundingBox();
-        for (let attempt = 0; attempt < 12; attempt += 1) {
-          const visible = await svg.evaluate((root) => Number(root.dataset.visualUnitCount || 0));
-          if (visible === workloadRecipe(fixture).targetVisibleUnits) break;
-          await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-          await page.mouse.wheel(0, visible < fixture.visibleDensity ? 240 : -240);
-          await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
-        }
+      const svg = page.locator("#persistent-tactical-svg");
+      const box = await svg.boundingBox();
+      for (let step = 0; step < 15; step += 1) {
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+        await page.mouse.wheel(0, -240);
+        await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
       }
-      const controlledStructural = await page.locator("#persistent-tactical-svg").evaluate((root) => ({ totalDom: root.querySelectorAll("*").length, byLayer: Object.fromEntries([...root.querySelectorAll("[data-scene-layer]")].map((layer) => [layer.getAttribute("data-scene-layer"), layer.querySelectorAll("*").length])), visualUnits: Number(root.dataset.visualUnitCount || 0), nodeEstimate: Number(root.dataset.visualNodeEstimate || 0) }));
-      if (definitions.globalScalePair.includes(fixture.id) && controlledStructural.visualUnits !== fixture.visibleDensity) throw new Error(`${fixture.id} observed ${controlledStructural.visualUnits} visible units before the journey; expected controlled density ${fixture.visibleDensity}`);
+      const controlledStructural = await observeStructure(svg);
+      if (controlledStructural.visualUnits !== fixture.visibleDensity) throw new Error(`${fixture.id} observed ${controlledStructural.visualUnits} viewport-intersecting production glyphs before the journey; expected controlled density ${fixture.visibleDensity}`);
+      if (controlledStructural.projectedUnits !== fixture.globalUnitCount) throw new Error(`${fixture.id} projected ${controlledStructural.projectedUnits} production glyphs before the journey; expected global count ${fixture.globalUnitCount}`);
       const tracePath = resolve(out, `${fixture.id}--${journey}.trace.json`);
       await cdp.send("Tracing.start", { categories: "devtools.timeline,blink.user_timing,v8,disabled-by-default-devtools.timeline,disabled-by-default-v8.cpu_profiler", transferMode: "ReturnAsStream" });
       await page.waitForTimeout(200);
@@ -135,8 +152,8 @@ try {
       const heapWarm = await cdp.send("Runtime.getHeapUsage");
       for (let cycle = 0; cycle < definitions.stabilizationCycles; cycle += 1) { await perform(page, "pan", fixture); await perform(page, "zoom", fixture); await perform(page, "playback", fixture); }
       const heapStable = await cdp.send("Runtime.getHeapUsage");
-      const structural = await page.locator("#persistent-tactical-svg").evaluate((root) => ({ totalDom: root.querySelectorAll("*").length, byLayer: Object.fromEntries([...root.querySelectorAll("[data-scene-layer]")].map((layer) => [layer.getAttribute("data-scene-layer"), layer.querySelectorAll("*").length])), visualUnits: Number(root.dataset.visualUnitCount || 0), nodeEstimate: Number(root.dataset.visualNodeEstimate || 0) }));
-      runs.push({ fixture: fixture.id, fixtureDigest: digest(fixture), workload: workloadRecipe(fixture), journey, startedAt, completedAt: new Date().toISOString(), result: "pass", stages: extractStages(journeyTrace), structural: { global: { mapExtent: fixture.mapExtent, unitCount: fixture.globalUnitCount, supportingListSize: fixture.supportingListSize }, visible: controlledStructural, postMemoryCycles: structural }, frameHealth: { ...extractFrameHealth(journeyTrace), samplingWindow: "clock-sync-bounded named journey only; captured before warm-up and stabilization memory cycles" }, inputLatency: extractInputToPaint(journeyTrace, journey), memory: { warm: heapWarm, stabilized: heapStable, usedDelta: heapStable.usedSize - heapWarm.usedSize, warmupCycles: definitions.warmupCycles, stabilizationCycles: definitions.stabilizationCycles, collectionControl: "not-forced" }, trace: { path: retainedPath, sha256: traceSha256 } });
+      const structural = await observeStructure(svg);
+      runs.push({ fixture: fixture.id, fixtureDigest: digest(fixture), workload: workloadRecipe(fixture), journey, startedAt, completedAt: new Date().toISOString(), result: "pass", stages: extractStages(journeyTrace), structural: { global: { mapExtent: fixture.mapExtent, unitCount: fixture.globalUnitCount, supportingListSize: fixture.supportingListSize }, visible: controlledStructural, cameraControl: { fitCompleteMap: true, viewport: fixture.viewport, centerAnchoredWheelSteps: 15, wheelDeltaY: -240 }, postMemoryCycles: structural }, frameHealth: { ...extractFrameHealth(journeyTrace), samplingWindow: "clock-sync-bounded named journey only; captured before warm-up and stabilization memory cycles" }, inputLatency: extractInputToPaint(journeyTrace, journey), memory: { warm: heapWarm, stabilized: heapStable, usedDelta: heapStable.usedSize - heapWarm.usedSize, warmupCycles: definitions.warmupCycles, stabilizationCycles: definitions.stabilizationCycles, collectionControl: "not-forced" }, trace: { path: retainedPath, sha256: traceSha256 } });
       await context.close();
     }
   }
