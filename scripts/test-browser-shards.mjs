@@ -4,9 +4,13 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { availableParallelism, tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import process from "node:process";
+import { browserShardCapacityFor } from "./browser-shard-capacity.mjs";
 
 const root = resolve(import.meta.dirname, "..");
-const browserShardCapacity = Math.max(1, availableParallelism());
+// Every isolated shard schedules both Chromium and its production server.
+// Budget those two independently runnable processes instead of treating a raw
+// CPU count as a safe shard count and starving server-side assertions.
+const browserShardCapacity = browserShardCapacityFor(availableParallelism());
 const browserPortBase = 5100;
 const browserPortCapacity = 65_535 - browserPortBase + 1;
 const configuredBrowserShards = process.env.SIR_BROWSER_SHARDS;

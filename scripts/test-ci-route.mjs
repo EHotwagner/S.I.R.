@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { canonicalArtifactBindings, expectedBuildInvocations, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, feedbackAcceptanceTargetMilliseconds, feedbackHeadroomMilliseconds, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
+import { browserProcessesPerShard, browserShardCapacityFor } from "./browser-shard-capacity.mjs";
 
 const route = (paths) => routePaths(paths, { commit: "a".repeat(40), tree: "b".repeat(40) });
 
@@ -231,7 +232,15 @@ assert.match(spatialMutationQualification, /SIR_SPATIAL_MUTATION_CONCURRENCY:-3/
 assert.match(spatialMutationQualification, /run_prepared_mutation "\$name" &/u);
 assert.match(spatialMutationQualification, /--artifacts-path "\$artifacts" -p:SpatialQueryImplementation="\$mutant"/u);
 assert.match(browserConfiguration, /workers: 1/u);
+assert.match(browserConfiguration, /fullyParallel: true/u);
 assert.match(browserConfiguration, /process\.env\.SIR_BROWSER_PORT/u);
+assert.equal(browserProcessesPerShard, 2);
+assert.equal(browserShardCapacityFor(1), 1);
+assert.equal(browserShardCapacityFor(2), 1);
+assert.equal(browserShardCapacityFor(4), 2);
+assert.equal(browserShardCapacityFor(8), 4);
+assert.throws(() => browserShardCapacityFor(0), /positive safe integer/u);
+assert.match(browserShards, /browserShardCapacityFor\(availableParallelism\(\)\)/u);
 assert.match(browserShards, /process\.env\.CI \? Math\.min\(browserShardCapacity, browserPortCapacity\) : 1/u);
 assert.match(browserShards, /--shard=\$\{index\}\/\$\{browserShards\}/u);
 assert.match(browserShards, /SIR_BROWSER_PORT: String\(browserPortBase \+ index - 1\)/u);

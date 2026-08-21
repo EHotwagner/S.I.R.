@@ -11,7 +11,7 @@ sourceAnalysis: readiness/220-bounded-pr-ci/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/220-bounded-pr-ci/analysis.json
-    digest: 179ff901e3550639dd7ee292be2822dcf8ca7fd8f39675976ae5a2eadc472ff4
+    digest: d4f7f1e32452d241b67d444f77e3837b1f8476d66ecdaea1d2edc8b2a69d80d8
     schemaVersion: 1
   - label: checklist
     path: work/220-bounded-pr-ci/checklist.md
@@ -23,7 +23,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/220-bounded-pr-ci/plan.md
-    digest: e3a42edf4c6de0b3a04633f050f60b31f38a45f81e6f033011cb3bdfae26687a
+    digest: f53710c16a218b690900a6abc70f5509e65b4df6fa0f634b705669e58256def4
     schemaVersion: 1
   - label: spec
     path: work/220-bounded-pr-ci/spec.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/220-bounded-pr-ci/tasks.yml
-    digest: a01e9720f086d160914275e61e6f19176606f3b600837e3bebfa32a12b1cde78
+    digest: 4b02c2f38db986fc3988a00483538ddec8bbea77c9ff979047fb9cdc49bf7973
     schemaVersion: 1
 evidence:
   - id: EV001

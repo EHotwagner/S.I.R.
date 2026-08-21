@@ -14,6 +14,9 @@ const browserBaseUrl = `http://127.0.0.1:${browserPort}`;
 export default defineConfig({
   testDir: import.meta.dirname,
   testMatch: "**/*.spec.js",
+  // Distribute individual tests rather than whole files. The inventory has a
+  // few large journey files, so file-level sharding leaves capacity idle.
+  fullyParallel: true,
   // One worker owns one isolated production server. CI parallelism happens by
   // sharding across separate ports, so deterministic live-session identities
   // can never collide between concurrent browser contexts.
