@@ -1,0 +1,289 @@
+{
+  "bindingSha256": "38f7b4cd349f11f1a83b6c6d2540279167b1fe318d3ae77cf312f47e33491c98",
+  "buildIdentity": {
+    "clientManifestSha256": "bfca0131a74f086b9dc1615ae3d230f528ccc34ca58e618d4921a81d3f5e74d8",
+    "serverAssemblySha256": "ddbe2f035c48a88dff4661796d53e4597ccca0efcf0ec955f909024dbb041047"
+  },
+  "candidate": {
+    "commit": "946c7b3e533f2408c4d092f4c2260916ed970f51",
+    "tree": "8c0fa69af977fc550c4ee2994e31bbcf706bb999"
+  },
+  "controlledAxes": {
+    "eventRateHz": [
+      {
+        "fixture": "controlled-baseline",
+        "value": 10
+      },
+      {
+        "fixture": "controlled-event-rate",
+        "value": 40
+      }
+    ],
+    "globalUnitCount": [
+      {
+        "fixture": "controlled-baseline",
+        "value": 40
+      },
+      {
+        "fixture": "controlled-global-units",
+        "value": 200
+      }
+    ],
+    "mapExtent": [
+      {
+        "fixture": "controlled-baseline",
+        "value": [
+          30,
+          30
+        ]
+      },
+      {
+        "fixture": "controlled-map-extent",
+        "value": [
+          40,
+          40
+        ]
+      }
+    ],
+    "routeOverlayComplexity": [
+      {
+        "fixture": "controlled-baseline",
+        "value": 24
+      },
+      {
+        "fixture": "controlled-overlay-complexity",
+        "value": 96
+      }
+    ],
+    "supportingListSize": [
+      {
+        "fixture": "controlled-baseline",
+        "value": 40
+      },
+      {
+        "fixture": "controlled-supporting-list",
+        "value": 800
+      }
+    ],
+    "visibleDensity": [
+      {
+        "fixture": "controlled-baseline",
+        "value": 40
+      },
+      {
+        "fixture": "controlled-visible-density",
+        "value": 20
+      }
+    ]
+  },
+  "dispositions": {
+    "furtherAllocationWork": "unresolved",
+    "packedTransport": "unresolved",
+    "typedBuffers": "unresolved"
+  },
+  "environment": {
+    "browser": "Google Chrome for Testing 151.0.7922.34",
+    "cpuCount": 24,
+    "node": "v26.7.0",
+    "platform": "linux 7.1.8-arch1-3"
+  },
+  "eventRateComparison": [
+    {
+      "droppedFrames": 3,
+      "eventIntervalMilliseconds": 100,
+      "eventRateHz": 10,
+      "fixture": "controlled-baseline",
+      "frameSamples": 14,
+      "inputToPaint": {
+        "available": true,
+        "inputType": "pointerdown",
+        "milliseconds": 15.242,
+        "paintEvent": "Paint",
+        "source": "Chromium user EventDispatch start to the first subsequent Paint or AnimationFrame presentation trace event"
+      },
+      "mainScriptMilliseconds": 196.244,
+      "playbackSteps": 3,
+      "playbackWindowMilliseconds": 250
+    },
+    {
+      "droppedFrames": 3,
+      "eventIntervalMilliseconds": 25,
+      "eventRateHz": 40,
+      "fixture": "controlled-event-rate",
+      "frameSamples": 14,
+      "inputToPaint": {
+        "available": true,
+        "inputType": "pointerdown",
+        "milliseconds": 15.343,
+        "paintEvent": "Paint",
+        "source": "Chromium user EventDispatch start to the first subsequent Paint or AnimationFrame presentation trace event"
+      },
+      "mainScriptMilliseconds": 192.526,
+      "playbackSteps": 11,
+      "playbackWindowMilliseconds": 250
+    }
+  ],
+  "fixtureDefinition": {
+    "path": "scripts/svg-pipeline-fixtures.v1.json",
+    "sha256": "db460f70fc7996b3c9fa37f76cae62538740bde6ea4b17b9ba9ea4e7ec719f6e"
+  },
+  "globalSmallViewportComparison": [
+    {
+      "fixture": "controlled-baseline",
+      "global": {
+        "mapExtent": [
+          30,
+          30
+        ],
+        "supportingListSize": 40,
+        "unitCount": 40
+      },
+      "inputLatency": {
+        "available": false,
+        "reason": "The idle journey has no input event; its observation window is not interaction latency"
+      },
+      "mainScriptMilliseconds": 0,
+      "memory": {
+        "delta": 80748436,
+        "stabilizationCycles": 5,
+        "stabilizedUsed": 170539236,
+        "warmUsed": 89790800,
+        "warmupCycles": 2
+      },
+      "visible": {
+        "byLayer": {
+          "annotations": 40,
+          "camera": 5119,
+          "edges": 0,
+          "effects": 0,
+          "routes": 0,
+          "selection": 1,
+          "tactical-overlays": 120,
+          "terrain": 3696,
+          "units": 1120
+        },
+        "nodeEstimate": 4088,
+        "projectedUnits": 40,
+        "source": "production SVG glyph bounds intersecting the production SVG viewport after the fixed camera control",
+        "totalDom": 5122,
+        "visualUnits": 40
+      }
+    },
+    {
+      "fixture": "global-large-small-viewport",
+      "global": {
+        "mapExtent": [
+          40,
+          40
+        ],
+        "supportingListSize": 1600,
+        "unitCount": 40
+      },
+      "inputLatency": {
+        "available": false,
+        "reason": "The idle journey has no input event; its observation window is not interaction latency"
+      },
+      "mainScriptMilliseconds": 0,
+      "memory": {
+        "delta": -54709648,
+        "stabilizationCycles": 5,
+        "stabilizedUsed": 19307108,
+        "warmUsed": 74016756,
+        "warmupCycles": 2
+      },
+      "visible": {
+        "byLayer": {
+          "annotations": 40,
+          "camera": 7959,
+          "edges": 0,
+          "effects": 0,
+          "routes": 0,
+          "selection": 1,
+          "tactical-overlays": 120,
+          "terrain": 6496,
+          "units": 1120
+        },
+        "nodeEstimate": 6888,
+        "projectedUnits": 40,
+        "source": "production SVG glyph bounds intersecting the production SVG viewport after the fixed camera control",
+        "totalDom": 7962,
+        "visualUnits": 40
+      }
+    }
+  ],
+  "interpretation": "Versioned regression workloads; not a permanent supported-size ceiling.",
+  "matrix": {
+    "completedAt": "2026-08-21T06:15:46.921Z",
+    "fixtureCount": 8,
+    "fixtureIds": [
+      "controlled-baseline",
+      "controlled-map-extent",
+      "controlled-visible-density",
+      "controlled-global-units",
+      "controlled-overlay-complexity",
+      "controlled-event-rate",
+      "controlled-supporting-list",
+      "global-large-small-viewport"
+    ],
+    "inputToPaintMilliseconds": {
+      "availableRunCount": 32,
+      "maximum": 172.895,
+      "minimum": 0.97,
+      "p95": 170.812,
+      "unavailableRunCount": 24
+    },
+    "journeyCount": 7,
+    "journeys": [
+      "idle",
+      "playback",
+      "pan",
+      "zoom",
+      "selection",
+      "modality-transition",
+      "dense-overlay"
+    ],
+    "orderedTraceDigestSha256": "fe00d0332b665327187da430bfaef6be82cea2cfc696066eb94a6d7134c57f55",
+    "rawSummarySha256": "3deeaaf249a17b0d30160ef1915b93030bd081d5959a109aa287d3c3ab876917",
+    "rawTraceManifestSha256": "011e60081ca7d4e8e79b04bdfe54fe21d0e4eb7542c14e4cfbaa81a7a8416438",
+    "result": "pass",
+    "runCount": 56,
+    "startedAt": "2026-08-21T06:00:20.888Z"
+  },
+  "pipeline": {
+    "evidence": "largest measured aggregate at 14217.343 ms (96.7%); generic main-thread script is not source-symbol isolated",
+    "nextBottleneck": "mainThreadScript",
+    "ranking": [
+      {
+        "milliseconds": 14217.343,
+        "share": 0.9671,
+        "stage": "mainThreadScript"
+      },
+      {
+        "milliseconds": 267.924,
+        "share": 0.0182,
+        "stage": "paint"
+      },
+      {
+        "milliseconds": 131.196,
+        "share": 0.0089,
+        "stage": "style"
+      },
+      {
+        "milliseconds": 78.105,
+        "share": 0.0053,
+        "stage": "layout"
+      },
+      {
+        "milliseconds": 5.784,
+        "share": 0.0004,
+        "stage": "workerCompute"
+      }
+    ],
+    "unavailable": {
+      "elmishReact": "The production client has no dedicated Elmish/React User Timing marks; generic main-thread script is reported separately",
+      "projectionAllocation": "The production client has no projection/allocation User Timing mark; GC remains separately visible in the raw trace",
+      "workerTransfer": "Chromium exposes transfer inside task slices but the production client has no dedicated transfer User Timing mark yet"
+    }
+  },
+  "schema": "sir.svg-pipeline-measurement-evidence/1"
+}

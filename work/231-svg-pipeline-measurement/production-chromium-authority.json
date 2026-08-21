@@ -1,0 +1,16 @@
+{
+  "buildIdentity": {
+    "clientManifestSha256": "bfca0131a74f086b9dc1615ae3d230f528ccc34ca58e618d4921a81d3f5e74d8",
+    "serverAssemblySha256": "ddbe2f035c48a88dff4661796d53e4597ccca0efcf0ec955f909024dbb041047"
+  },
+  "candidate": {
+    "commit": "946c7b3e533f2408c4d092f4c2260916ed970f51",
+    "tree": "8c0fa69af977fc550c4ee2994e31bbcf706bb999"
+  },
+  "fixtureDefinitionSha256": "db460f70fc7996b3c9fa37f76cae62538740bde6ea4b17b9ba9ea4e7ec719f6e",
+  "orderedTraceDigestSha256": "fe00d0332b665327187da430bfaef6be82cea2cfc696066eb94a6d7134c57f55",
+  "rawSummarySha256": "3deeaaf249a17b0d30160ef1915b93030bd081d5959a109aa287d3c3ab876917",
+  "rawTraceManifestSha256": "011e60081ca7d4e8e79b04bdfe54fe21d0e4eb7542c14e4cfbaa81a7a8416438",
+  "runCount": 56,
+  "schema": "sir.svg-pipeline-measurement-authority/1"
+}

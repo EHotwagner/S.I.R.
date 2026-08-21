@@ -7,26 +7,41 @@ trap 'rm -rf -- "$test_root"' EXIT
 cd "$repo_root"
 
 mkdir -p "$test_root/feedback/audits" "$test_root/scripts"
-cp "$repo_root/feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/feedback/audits/2026-08-15-SIR-186-6.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json" "$test_root/feedback/audits/"
+cp "$repo_root/feedback/audits/2026-08-20-sir-item-231-svg-pipeline-measurement.audit.json" "$test_root/feedback/audits/"
+cp "$repo_root/feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement.audit.json" "$test_root/feedback/audits/"
+cp "$repo_root/feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/scripts/audit-binding-exceptions.json" "$test_root/scripts/"
 cp --parents \
-  scripts/test-conformance.sh \
-  scripts/ci-route.mjs \
-  scripts/test-ci-route.mjs \
-  tests/SIR.Browser.Tests/production-delivery.spec.js \
   .github/workflows/ci.yml \
+  docs/performance-budget.md \
+  feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl \
+  scripts/ci-route.mjs \
+  scripts/lib/svg-pipeline-measurement.mjs \
+  scripts/measure-svg-pipeline.mjs \
+  scripts/svg-pipeline-fixtures.v1.json \
+  scripts/test-svg-pipeline-measurement.mjs \
+  scripts/test-ci-route.mjs \
+  work/231-svg-pipeline-measurement/production-chromium-authority.json \
+  work/231-svg-pipeline-measurement/production-chromium-evidence.json \
+  work/231-svg-pipeline-measurement/production-chromium-summary.json \
+  work/231-svg-pipeline-measurement/raw-trace-manifest.json \
   "$test_root"
 
 tool="$repo_root/.agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx"
-changed="scripts/test-conformance.sh;scripts/ci-route.mjs;scripts/test-ci-route.mjs;tests/SIR.Browser.Tests/production-delivery.spec.js;.github/workflows/ci.yml"
+changed=".github/workflows/ci.yml;docs/performance-budget.md;feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl;scripts/ci-route.mjs;scripts/lib/svg-pipeline-measurement.mjs;scripts/measure-svg-pipeline.mjs;scripts/svg-pipeline-fixtures.v1.json;scripts/test-ci-route.mjs;scripts/test-svg-pipeline-measurement.mjs;work/231-svg-pipeline-measurement/production-chromium-authority.json;work/231-svg-pipeline-measurement/production-chromium-evidence.json;work/231-svg-pipeline-measurement/production-chromium-summary.json;work/231-svg-pipeline-measurement/raw-trace-manifest.json"
 ledger="$test_root/scripts/audit-binding-exceptions.json"
 pristine="$test_root/scripts/audit-binding-exceptions.pristine.json"
 cp "$ledger" "$pristine"
 
 run_check() {
   dotnet fsi "$tool" -- check-invalidation --changed "$changed" --root "$test_root"
+}
+
+run_check_for_changed() {
+  local inventory=$1
+  dotnet fsi "$tool" -- check-invalidation --changed "$inventory" --root "$test_root"
 }
 
 validate_ledger_owners() {
@@ -62,6 +77,12 @@ validate_ledger_owners() {
           return 1
         }
         ;;
+      dotnet)
+        [[ ${#argv[@]} -eq 7 && ${argv[1]} == fsi && ${argv[2]} == .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx && ${argv[3]} == -- && ${argv[4]} == validate-checkpoint-state && ${argv[5]} == --cycle && -n ${argv[6]} ]] || {
+          echo "feedback audit-binding: unsupported dotnet owner: $command" >&2
+          return 1
+        }
+        ;;
       scripts/*)
         [[ ${#argv[@]} -eq 1 && -x ${argv[0]} ]] || {
           echo "feedback audit-binding: unavailable script owner: $command" >&2
@@ -92,6 +113,17 @@ run_mutant() {
 run_check >/dev/null
 validate_ledger_owners
 
+without_workflow=${changed#*;}
+if run_check_for_changed "$without_workflow" > "$test_root/omitted-workflow.log" 2>&1; then
+  echo "feedback audit-binding omitted-workflow mutant unexpectedly passed" >&2
+  exit 1
+fi
+grep -F "overbroad or mismatched exception feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json §4.1 file:.github/workflows/ci.yml" "$test_root/omitted-workflow.log" >/dev/null || {
+  echo "feedback audit-binding omitted-workflow mutant failed without the workflow-exception diagnostic" >&2
+  cat "$test_root/omitted-workflow.log" >&2
+  exit 1
+}
+
 printf '{' > "$ledger"
 if run_check > "$test_root/malformed.log" 2>&1; then
   echo "feedback audit-binding malformed-ledger mutant unexpectedly passed" >&2
@@ -105,14 +137,14 @@ run_mutant duplicate "duplicate exception ledger binding" '.exceptions += [.exce
 run_mutant overbroad "overbroad or mismatched exception" '.exceptions += [(.exceptions[0] | .findingId = "§9.9")]'
 
 cp "$pristine" "$ledger"
-jq '(.exceptions[] | select(.audit == "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json" and .locator == "file:scripts/ci-route.mjs")).replacementEvidence = "command:./scripts/run-ci-gate.sh native artifacts/ci/results/native.json"' "$ledger" > "$ledger.next"
+jq '.exceptions[0].replacementEvidence = "command:node scripts/does-not-exist.mjs"' "$ledger" > "$ledger.next"
 mv "$ledger.next" "$ledger"
 if validate_ledger_owners > "$test_root/nonexistent-owner.log" 2>&1; then
   echo "feedback audit-binding nonexistent-owner mutant unexpectedly passed" >&2
   exit 1
 fi
-grep -F "feedback audit-binding: unknown gate owner: native" "$test_root/nonexistent-owner.log" >/dev/null || {
-  echo "feedback audit-binding nonexistent-owner mutant failed without the owner diagnostic" >&2
+grep -F "feedback audit-binding: unavailable node owner: node scripts/does-not-exist.mjs" "$test_root/nonexistent-owner.log" >/dev/null || {
+  echo "feedback audit-binding nonexistent-owner mutant failed without the unavailable owner diagnostic" >&2
   cat "$test_root/nonexistent-owner.log" >&2
   exit 1
 }

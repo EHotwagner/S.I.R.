@@ -38,4 +38,60 @@ NODE
 git -C "$checkout" restore readiness/220-bounded-pr-ci
 dotnet fsgg-sdd verify --work 220-bounded-pr-ci --root "$checkout" --text >/dev/null
 
-echo "CI evidence clean-checkout mutation passed: tracked observed evidence verifies, a missing cited artifact fails closed, and the fixture is isolated."
+printf '%s\n' work/231-svg-pipeline-measurement/hosted-verification.sh >"$checkout/artifacts/ci/changed-paths.txt"
+(
+  cd "$checkout"
+  ./scripts/qualify-pr.sh route artifacts/ci/changed-paths.txt
+)
+
+hook="$checkout/work/231-svg-pipeline-measurement/hosted-verification.sh"
+hook_backup="$temporary/hosted-verification.sh"
+cp -p "$hook" "$hook_backup"
+fake_bin="$temporary/fake-bin"
+mkdir -p "$fake_bin"
+printf '#!/usr/bin/env bash\nexit 0\n' >"$fake_bin/dotnet"
+printf '#!/usr/bin/env bash\nexit 0\n' >"$fake_bin/npm"
+chmod +x "$fake_bin/dotnet" "$fake_bin/npm"
+
+run_hosted_dispatch() {
+  (cd "$checkout" && PATH="$fake_bin:$PATH" ./scripts/qualify-pr.sh gate evidence)
+}
+
+printf '#!/usr/bin/env bash\nexit 37\n' >"$hook"
+chmod +x "$hook"
+set +e
+run_hosted_dispatch >"$temporary/propagation.log" 2>&1
+propagation_status=$?
+set -e
+if [[ $propagation_status -ne 37 ]]; then
+  echo "ci-evidence hosted verification did not propagate exit 37 (got $propagation_status)" >&2
+  sed -n '1,160p' "$temporary/propagation.log" >&2
+  exit 1
+fi
+
+cp -p "$hook_backup" "$hook"
+chmod -x "$hook"
+if run_hosted_dispatch >"$temporary/non-executable.log" 2>&1; then
+  echo "ci-evidence mutation unexpectedly accepted a non-executable hosted verification" >&2
+  exit 1
+fi
+grep -F "qualify-pr: routed hosted verification is not executable: work/231-svg-pipeline-measurement/hosted-verification.sh" "$temporary/non-executable.log" >/dev/null || {
+  echo "ci-evidence non-executable mutation failed for the wrong reason" >&2
+  sed -n '1,160p' "$temporary/non-executable.log" >&2
+  exit 1
+}
+
+rm -- "$hook"
+if run_hosted_dispatch >"$temporary/absent.log" 2>&1; then
+  echo "ci-evidence mutation unexpectedly accepted an absent hosted verification" >&2
+  exit 1
+fi
+grep -F "qualify-pr: routed hosted verification is missing or not a regular file: work/231-svg-pipeline-measurement/hosted-verification.sh" "$temporary/absent.log" >/dev/null || {
+  echo "ci-evidence absent mutation failed for the wrong reason" >&2
+  sed -n '1,160p' "$temporary/absent.log" >&2
+  exit 1
+}
+
+cp -p "$hook_backup" "$hook"
+
+echo "CI evidence clean-checkout mutations passed: tracked observed evidence verifies, missing cited evidence fails closed, hosted verification failure propagates, and absent/non-executable routed hooks fail closed."

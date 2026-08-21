@@ -1,0 +1,32 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-231-svg-pipeline-measurement-repair-phase.md",
+  "reportSha256": "a69d77fdd12622ac9229f9223d091fdf7ae1de76fdc6f6ae654a55bdf4a9514c",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "review:https://github.com/EHotwagner/S.I.R./pull/238#issuecomment-5366363585",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash scripts/test-feedback-audit-binding-exceptions.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head HEAD",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The historical hosted run was not rerun; the exact review comment independently confirms the omitted workflow, masked nonzero, terminal failure, ownership, and dedupe facts.",
+        "The cited fixture, ledger, and workflow subjects match source commit fd6d0bcff1b08b738a347e0004525d1a082a64d2."
+      ]
+    }
+  ]
+}

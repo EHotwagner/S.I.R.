@@ -15,6 +15,14 @@ assert.equal(route(["src/SIR.Domain/Rules.fs"]).classification, "domain");
 assert.equal(route(["src/SIR.Domain/Rules.fs", "readiness/220-bounded-pr-ci/ship-verdict.json"]).classification, "domain");
 assert.equal(route(["tests/SIR.Browser.Tests/journey.js"]).classification, "browser");
 assert.deepEqual(route(["feedback/checkpoints/220.jsonl"]).selectedGates, ["evidence"]);
+const performance = route(["scripts/measure-svg-pipeline.mjs", "scripts/lib/svg-pipeline-measurement.mjs", "docs/performance-budget.md", "work/231-svg-pipeline-measurement/spec.md"]);
+assert.equal(performance.classification, "performance");
+assert.deepEqual(performance.selectedGates, ["documentation", "evidence"]);
+assert.ok(performance.facts.filter(({ classification }) => classification !== "evidence-only").every(({ classification }) => ["performance", "documentation"].includes(classification)));
+for (const broadPolicyPath of ["scripts/ci-route.mjs", "scripts/test-ci-route.mjs", "scripts/qualify-pr.sh", ".github/workflows/ci.yml"]) assert.equal(route([broadPolicyPath]).classification, "cross-cutting", `${broadPolicyPath} must remain conservative`);
+assert.equal(route(["scripts/audit-binding-exceptions.json", "feedback/audits/audit.json"]).classification, "evidence-only");
+assert.equal(route(["scripts/measure-svg-pipeline.mjs", "src/SIR.Domain/Rules.fs"]).classification, "cross-cutting");
+assert.equal(route(["scripts/measure-svg-pipeline.mjs", "scripts/ci-route.mjs"]).classification, "cross-cutting");
 assert.equal(route(["src/SIR.Domain/Rules.fs", "docs/index.md"]).classification, "cross-cutting");
 assert.equal(route(["future/feature.xyz"]).classification, "cross-cutting");
 assert.equal(route([".\\docs\\index.md"]).classification, "documentation");
@@ -22,7 +30,7 @@ assert.throws(() => route([]), /inventory is empty/u);
 assert.throws(() => route(["../secret"]), /malformed changed path/u);
 
 const domain = route(["src/SIR.Domain/Rules.fs"]);
-const producerDigests = { native: "c".repeat(64), fable: "d".repeat(64) };
+const producerDigests = { native: "c".repeat(64), fable: "d".repeat(64), web: "e".repeat(64), docs: "f".repeat(64) };
 const bindingDigest = (bindings) => createHash("sha256").update(`${JSON.stringify(bindings, null, 2)}\n`).digest("hex");
 const expectedSubjects = ["integrity", "prepare-native", "prepare-fable", "spatial-mutations", ...domain.selectedGates];
 const resultFor = (gate, status = "pass", overrides = {}) => gateResult(gate, status, { setup: 100, restore: 200, build: 300, test: 400, total: 1_000 }, {
@@ -49,6 +57,19 @@ assert.equal(joined.timing.actualHeadroomMilliseconds, 62_000);
 const nonCrossCuttingReserve = joinRoute(domain, passing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds + 1 });
 assert.equal(nonCrossCuttingReserve.result, "pass");
 assert.ok(!nonCrossCuttingReserve.failures.some(({ code }) => code === "feedback-headroom-eroded"));
+const performanceResultFor = (gate) => gateResult(gate, "pass", { setup: 100, restore: 200, build: 300, test: 400, total: 1_000 }, {
+  source: performance.source,
+  routeDigest: performance.digest,
+  artifactBindings: Object.fromEntries((gateParts[gate] ?? []).map((part) => [part, producerDigests[part]])),
+  artifactDigest: gate.startsWith("prepare-") ? producerDigests[gate.slice("prepare-".length)] : (gateParts[gate] ?? []).length > 0 ? bindingDigest(canonicalArtifactBindings(Object.fromEntries(gateParts[gate].map((part) => [part, producerDigests[part]])))) : null,
+  receiptReused: (gateParts[gate] ?? []).length > 0,
+  buildInvocations: expectedBuildInvocations[gate],
+});
+const performancePassing = ["integrity", "prepare-web", "prepare-docs", "documentation", "evidence"].map(performanceResultFor);
+assert.equal(joinRoute(performance, performancePassing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds }).result, "pass");
+const performanceHeadroomEroded = joinRoute(performance, performancePassing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds + 1 });
+assert.equal(performanceHeadroomEroded.result, "fail");
+assert.ok(performanceHeadroomEroded.failures.some(({ code, target, requiredHeadroom }) => code === "feedback-headroom-eroded" && target === feedbackAcceptanceTargetMilliseconds && requiredHeadroom === feedbackHeadroomMilliseconds));
 const crossCutting = route(["src/SIR.Domain/Rules.fs", "docs/index.md"]);
 const crossSubjects = ["integrity", ...producerOrder, "spatial-mutations", "cancellation-mutations", "browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery", ...crossCutting.selectedGates];
 const crossResultFor = (gate) => gateResult(gate, "pass", { setup: 100, restore: 200, build: 300, test: 400, total: 1_000 }, {
@@ -165,17 +186,21 @@ assert.ok(unknownScenarioOwner.failures.some(({ code, invocation }) =>
   code === "unknown-build-invocation" && invocation === "fable:tests/SIR.Client.Tests/UnknownRuntime.fsproj"));
 assert.deepEqual(contracts.timingPhases, ["queue", "setup", "restore", "build", "transport", "test", "total"]);
 assert.deepEqual(contracts.schemas, { route: routeSchema, artifactManifest: "sir.ci-artifact-manifest/v1", gateResult: gateSchema, timing: timingSchema, join: joinSchema });
-for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-mutations:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-server:", "prepare-docs:", "rules:", "spatial:", "cancellation:", "cross-runtime:", "browser:", "browser-general-helper:", "browser-general-helper-2:", "browser-general-helper-3:", "browser-delivery:", "documentation:", "evidence:", "pr-verdict:", "full-qualification:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
+for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-mutations:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-server:", "prepare-docs:", "rules:", "cancellation:", "cross-runtime:", "browser:", "browser-general-helper:", "browser-general-helper-2:", "browser-general-helper-3:", "browser-delivery:", "documentation:", "evidence:", "pr-verdict:", "full-qualification:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
 assert.match(workflow, /if: always\(\)/u);
 assert.match(workflow, /if: always\(\) && github\.event_name == 'pull_request'/u);
 assert.match(workflow, /schedule:/u);
 assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/u);
 assert.match(workflow, /hashFiles\('\*\*\/packages\.lock\.json', 'Directory\.Packages\.props', '\.config\/dotnet-tools\.json'\)/u);
-assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 22);
+assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 21);
 for (const part of ["native", "fable", "web", "server", "docs"]) assert.match(workflow, new RegExp(`qualify-pr\\.sh prepare-part ${part}`, "u"));
 assert.doesNotMatch(workflow, /^  prepare:$/mu);
 assert.doesNotMatch(workflow, /prepared-candidate/u);
-assert.match(workflow, /rules:\n[\s\S]*?needs: \[route, integrity, prepare-native\]/u);
+assert.match(workflow, /rules:\n[\s\S]*?needs: \[route, integrity, prepare-native, prepare-fable\]/u);
+assert.match(jobBody("rules"), /prepared-part-native[\s\S]*prepared-part-fable[\s\S]*run-ci-gate\.sh rules artifacts\/ci\/results\/rules\.json[\s\S]*run-ci-gate\.sh spatial artifacts\/ci\/results\/spatial\.json[\s\S]*gate-rules-spatial[\s\S]*rules\.json[\s\S]*spatial\.json/u);
+assert.doesNotMatch(workflow, /^  spatial:$/mu);
+assert.match(jobBody("prepare-web"), /classification == 'performance'/u);
+assert.match(jobBody("prepare-docs"), /classification == 'performance'/u);
 assert.match(workflow, /cancellation:\n[\s\S]*?needs: \[route, integrity, prepare-native, prepare-web\]/u);
 assert.match(workflow, /browser:\n[\s\S]*?needs: \[route, prepare-web, prepare-server\]/u);
 assert.match(workflow, /browser-general-helper:\n[\s\S]*?needs: \[route, prepare-web, prepare-server\]/u);
@@ -184,7 +209,7 @@ assert.match(workflow, /browser-general-helper-3:\n[\s\S]*?needs: \[route, prepa
 assert.match(workflow, /browser-delivery:\n[\s\S]*?needs: \[route, prepare-web, prepare-server\]/u);
 assert.match(workflow, /documentation:\n[\s\S]*?needs: \[route, integrity, prepare-web, prepare-docs\]/u);
 assert.match(jobBody("browser"), /actions\/setup-dotnet@v4/u);
-assert.doesNotMatch(jobBody("rules"), /prepared-part-(?:fable|web|server|docs)/u);
+assert.doesNotMatch(jobBody("rules"), /prepared-part-(?:web|server|docs)/u);
 assert.doesNotMatch(jobBody("spatial"), /prepared-part-(?:web|server|docs)/u);
 assert.doesNotMatch(jobBody("browser"), /prepared-part-(?:native|fable|docs)/u);
 assert.doesNotMatch(jobBody("browser-delivery"), /prepared-part-(?:native|fable|docs)/u);
@@ -207,6 +232,7 @@ assert.match(gateRunner, /spatial\|cross-runtime\) preflight_parts=\(native fabl
 assert.match(gateRunner, /cancellation\) preflight_parts=\(native web\)/u);
 assert.match(gateRunner, /browser\|browser-general-helper\|browser-general-helper-2\|browser-general-helper-3\|browser-delivery\) preflight_parts=\(web server\)/u);
 assert.match(gateRunner, /documentation\) preflight_parts=\(web docs\)/u);
+assert.match(gateRunner, /ci-gate-artifact-bindings\.sh" "\$repo_root" "\$\{preflight_parts\[@\]\}"/u);
 assert.match(workflow, /pr-verdict:\n[\s\S]*?needs: \[[^\]]*spatial-mutations[^\]]*cancellation-mutations[^\]]*browser-general-helper[^\]]*browser-general-helper-2[^\]]*browser-general-helper-3[^\]]*browser-delivery[^\]]*\]/u);
 assert.match(jobBody("browser"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-1\.junit\.xml/u);
 assert.match(jobBody("browser-general-helper"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-2\.junit\.xml/u);
@@ -222,6 +248,11 @@ assert.ok(fullQualification.indexOf("dotnet-invocation-trace.sh") < fullQualific
 assert.match(fullQualification, /verify-spatial-query\.sh --static-only/u);
 assert.match(fullQualification, /fable_target_builds=.*\.total/u);
 const focusedQualification = readFileSync(new URL("./qualify-pr.sh", import.meta.url), "utf8");
+for (const browserJob of ["browser", "browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery"]) {
+  assert.doesNotMatch(jobBody(browserJob), /npm ci/u);
+  assert.doesNotMatch(jobBody(browserJob), /cache: npm/u);
+}
+assert.match(focusedQualification, /web\)[\s\S]*node_modules\/@playwright\/test[\s\S]*node_modules\/playwright[\s\S]*node_modules\/playwright-core[\s\S]*;;/u);
 const conformanceQualification = readFileSync(new URL("./test-conformance.sh", import.meta.url), "utf8");
 const spatialMutationQualification = readFileSync(new URL("./test-spatial-subject-mutations.sh", import.meta.url), "utf8");
 const cancellationMutationQualification = readFileSync(new URL("./test-worker-cancellation-subject-mutation.sh", import.meta.url), "utf8");

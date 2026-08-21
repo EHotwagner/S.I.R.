@@ -1,0 +1,28 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-231-svg-pipeline-measurement-repair-phase-confirmation-1.md",
+  "reportSha256": "a0e579c3bfdc2164fff757ce14364fe2c37ed0baf9d47c0d53110f6bd6ba2909",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "review:https://github.com/EHotwagner/S.I.R./pull/246#issuecomment-5372458244",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash scripts/test-ci-evidence-mutation.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "GitHub issue search does not establish exhaustive comment-text coverage; PR #246, #221, #225 and issue #231 comments were inspected directly.",
+        "Replacement exact-head hosted qualification and same-critic confirmation remain pending."
+      ]
+    }
+  ]
+}
