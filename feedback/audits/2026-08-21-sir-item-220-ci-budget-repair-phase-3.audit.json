@@ -1,0 +1,36 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-21-sir-item-220-ci-budget-repair-phase-3.md",
+  "reportSha256": "26a7a837cfce9fac01c43e550973c92dba270423bd5df1cf54a1cb70d4fa2ceb",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:dotnet fsgg-sdd analyze --work 220-bounded-pr-ci --text", "result": "verified" },
+        { "locator": "command:dotnet fsgg-sdd verify --work 220-bounded-pr-ci --text", "result": "verified" },
+        { "locator": "command:dotnet fsgg-sdd ship --work 220-bounded-pr-ci --text", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The commands verify local lifecycle coherence at commit 230f7ce973a628fd2636d304f3c239bca4e14cb2; they do not establish hosted CI acceptance or merge completion."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:node scripts/test-ci-route.mjs", "result": "verified" },
+        { "locator": "command:SIR_BROWSER_SHARDS=2 SIR_BROWSER_COHORT=general npm run test:browser", "result": "verified" },
+        { "locator": "command:SIR_BROWSER_SHARDS=1 SIR_BROWSER_COHORT=production-delivery npm run test:browser", "result": "verified" },
+        { "locator": "command:./scripts/test-spatial-subject-mutations.sh --prepared-pr", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "Current-head hosted timing remains pending. The checked local evidence proves functional fan-out, capacity accounting, required-helper failure handling, browser inventory completion, and spatial mutation closure, but not hosted critical-path reduction or acceptance within 300,000 ms."
+      ]
+    }
+  ]
+}
