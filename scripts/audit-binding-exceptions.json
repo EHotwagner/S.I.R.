@@ -52,54 +52,84 @@
       "reason": "The SVG pipeline measurement extends the cited performance contract; its focused exact-head fixture and protected-subject gate verifies the replacement workload contract."
     },
     {
-      "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
+      "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
       "findingId": "§4.1",
-      "locator": "file:scripts/ci-route.mjs",
-      "path": "scripts/ci-route.mjs",
-      "previousSha256": "10da76f4b2631e57c36991f263d19a15c183716e2d68ce208a31c160ed1118af",
-      "replacementSha256": "7d2f87350d38c829e96c27875dcc08030d4c8d83009ea8e8a2a5705ebdce1f0e",
-      "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 220 changes the bounded route budget and typed helper inventory; the focused route contract verifies the replacement thresholds, four general-browser runners, cancellation mutation helper, inventory, and fail-closed join diagnostics."
+      "locator": "file:scripts/measure-svg-pipeline.mjs",
+      "path": "scripts/measure-svg-pipeline.mjs",
+      "previousSha256": "3fe57a84a4955ad5fad094cae59523d717a0e836ff806a7bb907629dc5737899",
+      "replacementSha256": "3fe57a84a4955ad5fad094cae59523d717a0e836ff806a7bb907629dc5737899",
+      "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
+      "reason": "The repaired-cycle audit is authored with the sampler-free runner it reviews; the focused source inversion rejects reintroduction of the observer workload."
     },
     {
-      "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
+      "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
       "findingId": "§4.1",
-      "locator": "file:scripts/test-ci-route.mjs",
-      "path": "scripts/test-ci-route.mjs",
-      "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "2dadd287af9cf61d328c942fd8abfc6da25de5960f3d1200767136d36c1c22a1",
-      "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 220 extends the route contract with the unchanged outer budget, required headroom, source-bound spatial and cancellation mutation helpers, four general-browser runners, a fixed-delivery helper, strict JUnit validation, explicit verdict dependencies, deterministic reconnect ownership, and pair-accounted test-granular browser sharding."
+      "locator": "file:scripts/lib/svg-pipeline-measurement.mjs",
+      "path": "scripts/lib/svg-pipeline-measurement.mjs",
+      "previousSha256": "56e5e59e60764dfe501d9ba396b9a7c245f92da14a7106e3594ce211cb9e8117",
+      "replacementSha256": "56e5e59e60764dfe501d9ba396b9a7c245f92da14a7106e3594ce211cb9e8117",
+      "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
+      "reason": "The repaired-cycle audit is authored with the clock-sync trace extraction it reviews; the focused timing and trace-window gates verify these bytes."
     },
     {
-      "audit": "feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json",
+      "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
+      "findingId": "§4.2",
+      "locator": "file:work/231-svg-pipeline-measurement/raw-trace-manifest.json",
+      "path": "work/231-svg-pipeline-measurement/raw-trace-manifest.json",
+      "previousSha256": "877c030967cb6528d1f7c09e8c96bcc041295ceaa49b1e18df4ca1c5f3db88d8",
+      "replacementSha256": "877c030967cb6528d1f7c09e8c96bcc041295ceaa49b1e18df4ca1c5f3db88d8",
+      "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
+      "reason": "The repaired-cycle audit is authored with the exact 56-run manifest it reviews; the focused gate validates its full cross-product and every retained trace byte."
+    },
+    {
+      "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
+      "findingId": "§4.2",
+      "locator": "file:work/231-svg-pipeline-measurement/production-chromium-authority.json",
+      "path": "work/231-svg-pipeline-measurement/production-chromium-authority.json",
+      "previousSha256": "28d94b3427903d02f60fa9f7eac6bc3599d30a742e09b90f5711919a18b8e9e6",
+      "replacementSha256": "28d94b3427903d02f60fa9f7eac6bc3599d30a742e09b90f5711919a18b8e9e6",
+      "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
+      "reason": "The repaired-cycle audit is authored with the exact authority it reviews; the focused gate rejects candidate, digest, manifest, summary, and raw-byte drift."
+    },
+    {
+      "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
       "findingId": "§4.3",
-      "locator": "file:scripts/test-conformance.sh",
-      "path": "scripts/test-conformance.sh",
-      "previousSha256": "74f29e715a9e2b3f282c68cf2554b5ad0648d9a7471ad604b4e1bc5e9a0de98e",
-      "replacementSha256": "e3694b59194cec88419c991f8e97f3647006ff0a7ad534895e194c4d12dd931a",
-      "replacementEvidence": "command:./scripts/run-ci-gate.sh cross-runtime artifacts/ci/results/cross-runtime.json",
-      "reason": "Issue 220 makes prepared native consumers Release-only; the exact-head hosted cross-runtime owner consumes the replacement without a fallback rebuild."
+      "locator": "file:scripts/svg-pipeline-fixtures.v1.json",
+      "path": "scripts/svg-pipeline-fixtures.v1.json",
+      "previousSha256": "0d7f1fa5ecd6b28b6d72c7ea01c7fd0afff3dbe218d16f7424d749b6ffaad97a",
+      "replacementSha256": "0d7f1fa5ecd6b28b6d72c7ea01c7fd0afff3dbe218d16f7424d749b6ffaad97a",
+      "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
+      "reason": "The repaired-cycle audit is authored with the controlled fixtures it reviews; six one-factor mutations and unique-cell checks verify these bytes."
     },
     {
-      "audit": "feedback/audits/2026-08-15-SIR-186-6.audit.json",
-      "findingId": "§4.1",
-      "locator": "file:tests/SIR.Browser.Tests/production-delivery.spec.js",
-      "path": "tests/SIR.Browser.Tests/production-delivery.spec.js",
-      "previousSha256": "0f16fa283d8b0f9ca3d38a520a00f15bfed322bf687e9b29616d5ea573da4f13",
-      "replacementSha256": "d4b156f62196830e614ba31fc2e11d12d2ab718b71db46de2102e6c56e2ca3d4",
-      "replacementEvidence": "command:node scripts/test-browser-shards.mjs",
-      "reason": "Issue 220 adds only the stable production-delivery cohort tag; the focused one-pair browser owner executes the unchanged throttled delivery assertions and rejects an empty cohort."
+      "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
+      "findingId": "§4.3",
+      "locator": "file:scripts/test-svg-pipeline-measurement.mjs",
+      "path": "scripts/test-svg-pipeline-measurement.mjs",
+      "previousSha256": "86b99f92db3ed0430670b75a02718c61458d93329e0a34f1aeb1a19af683216c",
+      "replacementSha256": "86b99f92db3ed0430670b75a02718c61458d93329e0a34f1aeb1a19af683216c",
+      "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
+      "reason": "The repaired-cycle audit is authored with its focused gate; executing it proves the sampler, axis, retained-byte, and binding inversions remain live."
     },
     {
-      "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
-      "findingId": "§4.1",
-      "locator": "file:.github/workflows/ci.yml",
-      "path": ".github/workflows/ci.yml",
-      "previousSha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127",
-      "replacementSha256": "5169d0daee5ecf0d40acd2dd5e433ba358d7d9c24ca6b0ae3e5c5f9a75720250",
-      "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 220 adds required source-bound spatial/cancellation mutation, four general-browser, and fixed-delivery helper jobs; the focused route contract verifies their producer dependencies, explicit verdict needs, complete receipt join, pair capacity, and fail-closed missing/failed states."
+      "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
+      "findingId": "§4.3",
+      "locator": "file:work/231-svg-pipeline-measurement/production-chromium-summary.json",
+      "path": "work/231-svg-pipeline-measurement/production-chromium-summary.json",
+      "previousSha256": "f982901b80f286be8608046885e86282e376233bcccc5c086c01f97a048e910e",
+      "replacementSha256": "f982901b80f286be8608046885e86282e376233bcccc5c086c01f97a048e910e",
+      "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
+      "reason": "The repaired-cycle audit is authored with the exact summary it reviews; the focused gate binds it to authority, manifest, candidate, fixture, and 56-run inventory."
+    },
+    {
+      "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
+      "findingId": "§4.3",
+      "locator": "file:feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl",
+      "path": "feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl",
+      "previousSha256": "b0aa6345b52238721d861896336e3ab151ff30c4b1eb247122e7adb959b625ab",
+      "replacementSha256": "b0aa6345b52238721d861896336e3ab151ff30c4b1eb247122e7adb959b625ab",
+      "replacementEvidence": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- validate-checkpoint-state --cycle item-231-svg-pipeline-measurement",
+      "reason": "The repaired-cycle audit is authored with the six-event checkpoint it reviews; the bundled validator fails closed on missing, malformed, contradictory, or private checkpoint state."
     }
   ]
 }
