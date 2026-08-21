@@ -364,13 +364,40 @@ const ids = new Set(route.paths.map((path) => /^work\/([^/]+)\//u.exec(path)?.[1
 for (const id of [...ids].sort()) console.log(id);
 NODE
             )
+            mapfile -t routed_hosted_verification_ids < <(node - "$route_path" <<'NODE'
+const { readFileSync } = require("node:fs");
+const route = JSON.parse(readFileSync(process.argv[2], "utf8"));
+const ids = new Set(route.paths.map((path) => /^work\/([^/]+)\/hosted-verification\.sh$/u.exec(path)?.[1]).filter(Boolean));
+for (const id of [...ids].sort()) console.log(id);
+NODE
+            )
+            declare -A routed_hosted_verification=()
+            for work_id in "${routed_hosted_verification_ids[@]}"; do
+              routed_hosted_verification["$work_id"]=true
+            done
             for work_id in "${work_ids[@]}"; do
               [[ -f "work/$work_id/evidence.yml" ]] || continue
               dotnet fsgg-sdd verify --work "$work_id" --root . --text
               evidence_status=$?
               [[ $evidence_status -eq 0 ]] || break
-              if [[ -x "work/$work_id/hosted-verification.sh" ]]; then
-                "work/$work_id/hosted-verification.sh"
+              hosted_verification="work/$work_id/hosted-verification.sh"
+              if [[ -e "$hosted_verification" || -L "$hosted_verification" || ${routed_hosted_verification[$work_id]:-false} == true ]]; then
+                if [[ ! -f "$hosted_verification" ]]; then
+                  echo "qualify-pr: routed hosted verification is missing or not a regular file: $hosted_verification" >&2
+                  evidence_status=1
+                  break
+                fi
+                if [[ ! -r "$hosted_verification" ]]; then
+                  echo "qualify-pr: routed hosted verification is not readable: $hosted_verification" >&2
+                  evidence_status=1
+                  break
+                fi
+                if [[ ! -x "$hosted_verification" ]]; then
+                  echo "qualify-pr: routed hosted verification is not executable: $hosted_verification" >&2
+                  evidence_status=1
+                  break
+                fi
+                "$hosted_verification"
                 evidence_status=$?
                 [[ $evidence_status -eq 0 ]] || break
               fi

@@ -262,10 +262,12 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-009]
     obligationRefs: [EV009]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, scripts/test-ci-evidence-mutation.sh, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
+      - kind: verification
+        path: scripts/test-ci-evidence-mutation.sh
     result: pass
     synthetic: false
     observedRun:
@@ -276,7 +278,7 @@ evidence:
       passed: 25
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates, and the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
+    notes: [Focused mutation gates include exact exit-37 propagation and missing/non-executable routed hosted-verification subjects failing closed; the exact-candidate 8x7 production Chromium matrix passed., every retained raw trace byte]
   - id: EV010
     kind: verification
     subject:

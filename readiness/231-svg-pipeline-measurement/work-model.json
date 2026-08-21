@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "34e49188faf3ba90fabdf2acb3f7383063f5c76362a208a9fd933b04048f68f1"
+        "value": "74141fe89392756e43f6ec467d52e6798f1dc76d35c347a38ecb735920c96784"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "0749c1ad799daed2e8c54d26dcd2f898c52f4d89866ddbe761a4c91b85c87c76"
+        "value": "4aff25ff1d5326afa0b9c0567ff9dc9e33a6eb1dd1acce25921d4df111cdfaf1"
       }
     },
     {
@@ -1390,6 +1390,7 @@
       "artifactRefs": [
         "scripts/measure-svg-pipeline.mjs",
         "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-ci-evidence-mutation.sh",
         "scripts/test-svg-pipeline-measurement.mjs",
         "work/231-svg-pipeline-measurement/production-chromium-authority.json",
         "work/231-svg-pipeline-measurement/production-chromium-evidence.json",
@@ -1955,7 +1956,7 @@
           "path": "work/231-svg-pipeline-measurement/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "34e49188faf3ba90fabdf2acb3f7383063f5c76362a208a9fd933b04048f68f1"
+            "value": "74141fe89392756e43f6ec467d52e6798f1dc76d35c347a38ecb735920c96784"
           },
           "schemaVersion": 1
         },
@@ -1963,7 +1964,7 @@
           "path": "work/231-svg-pipeline-measurement/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "0749c1ad799daed2e8c54d26dcd2f898c52f4d89866ddbe761a4c91b85c87c76"
+            "value": "4aff25ff1d5326afa0b9c0567ff9dc9e33a6eb1dd1acce25921d4df111cdfaf1"
           },
           "schemaVersion": 1
         },
@@ -1986,7 +1987,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "2dc12406d3177f6921020211ef17f86aa1cee5ee7e00f5b74900688f971a6624"
+        "value": "1e23c81641dfcad192fca35bb5a9903c7b2f437ffaf174abe523893eecec4ce1"
       },
       "currency": "current"
     }
