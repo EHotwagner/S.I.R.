@@ -49,7 +49,7 @@
       "mapExtent": [20, 20],
       "viewport": [480, 320],
       "visibleDensity": 40,
-      "globalUnitCount": 300,
+      "globalUnitCount": 200,
       "routeOverlayComplexity": 24,
       "eventRateHz": 10,
       "supportingListSize": 40

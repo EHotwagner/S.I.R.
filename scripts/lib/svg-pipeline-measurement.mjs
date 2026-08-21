@@ -33,6 +33,7 @@ export function validateDefinitions(definition) {
     if (fixture.visibleDensity > fixture.globalUnitCount) throw new Error(`fixture ${fixture.id} visibleDensity exceeds globalUnitCount`);
     if (!Array.isArray(fixture.mapExtent) || fixture.mapExtent.length !== 2 || fixture.mapExtent.some((n) => !Number.isInteger(n) || n <= 0)) throw new Error(`fixture ${fixture.id} has invalid mapExtent`);
     if (!Array.isArray(fixture.viewport) || fixture.viewport.length !== 2 || fixture.viewport.some((n) => !Number.isInteger(n) || n <= 0)) throw new Error(`fixture ${fixture.id} has invalid viewport`);
+    if (fixture.globalUnitCount > fixture.mapExtent[0] * fixture.mapExtent[1]) throw new Error(`fixture ${fixture.id} exceeds unique map-cell capacity`);
   }
   const axes = ["mapExtent", "visibleDensity", "globalUnitCount", "routeOverlayComplexity", "eventRateHz", "supportingListSize"];
   if (stableJson(Object.keys(definition.controlledAxes || {}).sort()) !== stableJson([...axes].sort())) throw new Error("controlled-axis inventory must cover all six workload axes");
@@ -58,11 +59,26 @@ export function makeMap(fixture) {
   const visibleWidth = Math.min(width, Math.max(1, Math.ceil(Math.sqrt(fixture.visibleDensity))));
   const visibleHeight = Math.max(1, Math.ceil(fixture.visibleDensity / visibleWidth));
   const visibleOrigin = [Math.floor((width - visibleWidth) / 2), Math.floor((height - visibleHeight) / 2)];
+  const occupied = new Set();
+  const positions = [];
   for (let index = 0; index < fixture.globalUnitCount; index += 1) {
     const visible = index < fixture.visibleDensity;
-    const relative = visible ? index : index - fixture.visibleDensity;
-    const column = visible ? visibleOrigin[0] + relative % visibleWidth : relative % width;
-    const row = visible ? visibleOrigin[1] + Math.floor(relative / visibleWidth) : Math.floor(relative / width) % height;
+    if (visible) {
+      const column = visibleOrigin[0] + index % visibleWidth;
+      const row = visibleOrigin[1] + Math.floor(index / visibleWidth);
+      positions.push([column, row]);
+      occupied.add(`${column},${row}`);
+    } else {
+      let cell = 0;
+      while (occupied.has(`${cell % width},${Math.floor(cell / width)}`)) cell += 1;
+      const column = cell % width;
+      const row = Math.floor(cell / width);
+      positions.push([column, row]);
+      occupied.add(`${column},${row}`);
+    }
+  }
+  for (let index = 0; index < fixture.globalUnitCount; index += 1) {
+    const [column, row] = positions[index];
     const scriptSize = Math.floor(fixture.supportingListSize / fixture.globalUnitCount) + (index < fixture.supportingListSize % fixture.globalUnitCount ? 1 : 0);
     const script = scriptSize > 0 ? Array(scriptSize).fill("E").join(",") : "-";
     lines.push(`unit ${index + 1} ${index % 2 ? "red" : "blue"} rifleman ${column} ${row} 1 12 12 scripted ${script}`);

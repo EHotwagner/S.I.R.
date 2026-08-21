@@ -59,6 +59,10 @@ verifies against production projection output. The
 viewport, visible density of 40, overlay complexity, and event rate constant
 while increasing global extent and supporting-list size and holding global unit
 count at 40. The separate one-factor global-unit pair measures that axis.
+Its 200-unit variant remains below the simulator protocol's fixed 256-unit
+projection capacity; this is a protocol-function bound, not a project-size
+support ceiling. The generator rejects map-cell exhaustion and assigns every
+unit a unique cell so the workload cannot fail for overlap instead of scale.
 These are regression workloads, not a permanent supported-size ceiling.
 
 Each exact-candidate artifact retains every raw Chromium trace as a

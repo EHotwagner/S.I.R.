@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "2ff67bd37a825a6427d096e23df52a7773e2023caa60c5a0c9ed7227a25e4548"
+        "value": "8c8c53b6128cdd8ff4c8317dc308b0654f184287bdebcab3255487ae9e0ea503"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "88b03ac8674665cde38db23b801cb1553557c1cffc90719fe33cbdfc46aa49ba"
+        "value": "e535267282748cd57d4b10c1d60fdbbe3f367dc7bd69220bc5dadc49c58aa325"
       }
     }
   ],
@@ -1913,7 +1913,7 @@
           "path": "work/231-svg-pipeline-measurement/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "2ff67bd37a825a6427d096e23df52a7773e2023caa60c5a0c9ed7227a25e4548"
+            "value": "8c8c53b6128cdd8ff4c8317dc308b0654f184287bdebcab3255487ae9e0ea503"
           },
           "schemaVersion": 1
         },
@@ -1929,14 +1929,14 @@
           "path": "work/231-svg-pipeline-measurement/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "88b03ac8674665cde38db23b801cb1553557c1cffc90719fe33cbdfc46aa49ba"
+            "value": "e535267282748cd57d4b10c1d60fdbbe3f367dc7bd69220bc5dadc49c58aa325"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "d6863989bfdfff51be9a45c4d6bf528aa56e0228b05b7a5984e47e84c4863b91"
+        "value": "79d807bb9b641db16d1a917d736cd7d9b87f01846673a51b6241e7858e60cb77"
       },
       "currency": "current"
     }

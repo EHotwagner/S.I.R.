@@ -48,6 +48,7 @@ const mutations = [
   ["memory-cycle", (value) => { value.stabilizationCycles = value.warmupCycles; }],
   ["controlled-global-pair", (value) => { value.fixtures.find((fixture) => fixture.id === "global-large-small-viewport").viewport = [481, 320]; }],
   ["axis-value", (value) => { value.fixtures[0].eventRateHz = -1; }],
+  ["fixture-capacity", (value) => { value.fixtures.find((fixture) => fixture.id === "controlled-global-units").globalUnitCount = 401; }],
   ["axis-inventory", (value) => { delete value.controlledAxes.visibleDensity; }],
 ];
 for (const [name, mutate] of mutations) {
@@ -71,6 +72,11 @@ for (const axis of Object.keys(source.controlledAxes)) {
   assert.throws(() => validateDefinitions(mutant), new RegExp(`${axis} comparison`), `${axis} one-factor escape must fail`);
   console.log(`JUSTIFIED ${axis}: controlled pair changes only the named executed subject and rejects a second-factor mutation`);
 }
+for (const fixture of source.fixtures) {
+  const coordinates = makeMap(fixture).split("\n").filter((line) => line.startsWith("unit ")).map((line) => line.split(" ").slice(4, 6).join(","));
+  assert.equal(new Set(coordinates).size, fixture.globalUnitCount, `${fixture.id} must generate one unique cell per unit`);
+}
+console.log("JUSTIFIED unique-unit-cells: every workload unit occupies a distinct production map cell");
 const authority = JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-authority.json", import.meta.url)));
 const evidence = validateEvidenceReceipt(JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-evidence.json", import.meta.url))), source, authority);
 const rawManifest = JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/raw-trace-manifest.json", import.meta.url)));
@@ -92,5 +98,5 @@ assert.throws(() => validateEvidenceReceipt(unboundDigest, source, authority), /
 console.log("JUSTIFIED evidence-binding: coordinated candidate and digest reseals rejected by tracked authority");
 const report = process.env.SIR_SVG_PIPELINE_JUNIT || "artifacts/test-results/svg-pipeline.junit.xml";
 mkdirSync(dirname(report), { recursive: true });
-writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="20" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="20" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="axis-inventory"/><testcase name="trace-timing"/><testcase name="observed-run"/><testcase name="map-extent-control"/><testcase name="visible-density-control"/><testcase name="global-unit-control"/><testcase name="overlay-control"/><testcase name="event-rate-control"/><testcase name="supporting-list-control"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/><testcase name="raw-trace-binding"/><testcase name="raw-trace-missing"/><testcase name="raw-trace-changed"/><testcase name="unreadable-input"/></testsuite></testsuites>\n');
+writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="23" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="23" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="fixture-capacity"/><testcase name="axis-inventory"/><testcase name="trace-timing"/><testcase name="trace-window"/><testcase name="observed-run"/><testcase name="map-extent-control"/><testcase name="visible-density-control"/><testcase name="global-unit-control"/><testcase name="overlay-control"/><testcase name="event-rate-control"/><testcase name="supporting-list-control"/><testcase name="unique-unit-cells"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/><testcase name="raw-trace-binding"/><testcase name="raw-trace-missing"/><testcase name="raw-trace-changed"/><testcase name="unreadable-input"/></testsuite></testsuites>\n');
 console.log("svg-pipeline measurement unit gates: PASS");
