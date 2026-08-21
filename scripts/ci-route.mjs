@@ -78,13 +78,10 @@ const isDomain = (path) => ["src/SIR.Domain", "src/SIR.Simulation", "src/SIR.Mat
 const isBrowser = (path) => ["src/SIR.Client", "src/SIR.Client.Web", "src/SIR.Server", "tests/SIR.Browser.Tests", "tests/SIR.Client.Tests", "tests/SIR.Server.Tests"].some((prefix) => under(path, prefix));
 const isEvidence = (path) => ["feedback", "readiness", "work"].some((prefix) => under(path, prefix));
 const performancePaths = new Set([
-  "scripts/ci-route.mjs",
   "scripts/finalize-svg-pipeline-evidence.mjs",
   "scripts/lib/svg-pipeline-measurement.mjs",
   "scripts/measure-svg-pipeline.mjs",
-  "scripts/qualify-pr.sh",
   "scripts/svg-pipeline-fixtures.v1.json",
-  "scripts/test-ci-route.mjs",
   "scripts/test-svg-pipeline-measurement.mjs",
 ]);
 const evidenceSupportPaths = new Set(["scripts/audit-binding-exceptions.json", "scripts/test-feedback-audit-binding-exceptions.sh"]);
@@ -262,7 +259,7 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
     } else if (!producerOrder.includes(subject) && (result.artifactDigest !== null || Object.keys(result.artifactBindings ?? {}).length > 0)) failures.push({ code: "unexpected-artifact-binding", subject });
   }
   const elapsed = completedAtMilliseconds - startedAtMilliseconds;
-  const requiresRepresentativeHeadroom = route?.classification === "cross-cutting";
+  const requiresRepresentativeHeadroom = ["cross-cutting", "performance"].includes(route?.classification);
   const acceptanceTargetMilliseconds = requiresRepresentativeHeadroom ? feedbackAcceptanceTargetMilliseconds : feedbackBudgetMilliseconds;
   const requiredHeadroomMilliseconds = requiresRepresentativeHeadroom ? feedbackHeadroomMilliseconds : 0;
   if (!Number.isSafeInteger(elapsed) || elapsed < 0) failures.push({ code: "invalid-feedback-duration", subject: "timing" });

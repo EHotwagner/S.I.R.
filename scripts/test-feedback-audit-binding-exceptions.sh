@@ -8,6 +8,7 @@ cd "$repo_root"
 
 mkdir -p "$test_root/feedback/audits" "$test_root/scripts"
 cp "$repo_root/feedback/audits/2026-08-15-SIR-186-6.audit.json" "$test_root/feedback/audits/"
+cp "$repo_root/feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/feedback/audits/2026-08-20-sir-item-231-svg-pipeline-measurement.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json" "$test_root/feedback/audits/"
@@ -15,10 +16,12 @@ cp "$repo_root/scripts/audit-binding-exceptions.json" "$test_root/scripts/"
 cp --parents \
   docs/performance-budget.md \
   feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl \
+  scripts/ci-route.mjs \
   scripts/lib/svg-pipeline-measurement.mjs \
   scripts/measure-svg-pipeline.mjs \
   scripts/svg-pipeline-fixtures.v1.json \
   scripts/test-svg-pipeline-measurement.mjs \
+  scripts/test-ci-route.mjs \
   work/231-svg-pipeline-measurement/production-chromium-authority.json \
   work/231-svg-pipeline-measurement/production-chromium-evidence.json \
   work/231-svg-pipeline-measurement/production-chromium-summary.json \
@@ -26,7 +29,7 @@ cp --parents \
   "$test_root"
 
 tool="$repo_root/.agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx"
-changed="docs/performance-budget.md;feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl;scripts/lib/svg-pipeline-measurement.mjs;scripts/measure-svg-pipeline.mjs;scripts/svg-pipeline-fixtures.v1.json;scripts/test-svg-pipeline-measurement.mjs;work/231-svg-pipeline-measurement/production-chromium-authority.json;work/231-svg-pipeline-measurement/production-chromium-evidence.json;work/231-svg-pipeline-measurement/production-chromium-summary.json;work/231-svg-pipeline-measurement/raw-trace-manifest.json"
+changed="docs/performance-budget.md;feedback/checkpoints/item-231-svg-pipeline-measurement.jsonl;scripts/ci-route.mjs;scripts/lib/svg-pipeline-measurement.mjs;scripts/measure-svg-pipeline.mjs;scripts/svg-pipeline-fixtures.v1.json;scripts/test-ci-route.mjs;scripts/test-svg-pipeline-measurement.mjs;work/231-svg-pipeline-measurement/production-chromium-authority.json;work/231-svg-pipeline-measurement/production-chromium-evidence.json;work/231-svg-pipeline-measurement/production-chromium-summary.json;work/231-svg-pipeline-measurement/raw-trace-manifest.json"
 ledger="$test_root/scripts/audit-binding-exceptions.json"
 pristine="$test_root/scripts/audit-binding-exceptions.pristine.json"
 cp "$ledger" "$pristine"

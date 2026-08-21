@@ -15,12 +15,14 @@ assert.equal(route(["src/SIR.Domain/Rules.fs"]).classification, "domain");
 assert.equal(route(["src/SIR.Domain/Rules.fs", "readiness/220-bounded-pr-ci/ship-verdict.json"]).classification, "domain");
 assert.equal(route(["tests/SIR.Browser.Tests/journey.js"]).classification, "browser");
 assert.deepEqual(route(["feedback/checkpoints/220.jsonl"]).selectedGates, ["evidence"]);
-const performance = route(["scripts/measure-svg-pipeline.mjs", "scripts/ci-route.mjs", "scripts/qualify-pr.sh", "docs/performance-budget.md", "work/231-svg-pipeline-measurement/spec.md"]);
+const performance = route(["scripts/measure-svg-pipeline.mjs", "scripts/lib/svg-pipeline-measurement.mjs", "docs/performance-budget.md", "work/231-svg-pipeline-measurement/spec.md"]);
 assert.equal(performance.classification, "performance");
 assert.deepEqual(performance.selectedGates, ["documentation", "evidence"]);
 assert.ok(performance.facts.filter(({ classification }) => classification !== "evidence-only").every(({ classification }) => ["performance", "documentation"].includes(classification)));
+for (const broadPolicyPath of ["scripts/ci-route.mjs", "scripts/test-ci-route.mjs", "scripts/qualify-pr.sh", ".github/workflows/ci.yml"]) assert.equal(route([broadPolicyPath]).classification, "cross-cutting", `${broadPolicyPath} must remain conservative`);
 assert.equal(route(["scripts/audit-binding-exceptions.json", "feedback/audits/audit.json"]).classification, "evidence-only");
 assert.equal(route(["scripts/measure-svg-pipeline.mjs", "src/SIR.Domain/Rules.fs"]).classification, "cross-cutting");
+assert.equal(route(["scripts/measure-svg-pipeline.mjs", "scripts/ci-route.mjs"]).classification, "cross-cutting");
 assert.equal(route(["src/SIR.Domain/Rules.fs", "docs/index.md"]).classification, "cross-cutting");
 assert.equal(route(["future/feature.xyz"]).classification, "cross-cutting");
 assert.equal(route([".\\docs\\index.md"]).classification, "documentation");
@@ -28,7 +30,7 @@ assert.throws(() => route([]), /inventory is empty/u);
 assert.throws(() => route(["../secret"]), /malformed changed path/u);
 
 const domain = route(["src/SIR.Domain/Rules.fs"]);
-const producerDigests = { native: "c".repeat(64), fable: "d".repeat(64) };
+const producerDigests = { native: "c".repeat(64), fable: "d".repeat(64), web: "e".repeat(64), docs: "f".repeat(64) };
 const bindingDigest = (bindings) => createHash("sha256").update(`${JSON.stringify(bindings, null, 2)}\n`).digest("hex");
 const expectedSubjects = ["integrity", "prepare-native", "prepare-fable", "spatial-mutations", ...domain.selectedGates];
 const resultFor = (gate, status = "pass", overrides = {}) => gateResult(gate, status, { setup: 100, restore: 200, build: 300, test: 400, total: 1_000 }, {
@@ -55,6 +57,19 @@ assert.equal(joined.timing.actualHeadroomMilliseconds, 62_000);
 const nonCrossCuttingReserve = joinRoute(domain, passing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds + 1 });
 assert.equal(nonCrossCuttingReserve.result, "pass");
 assert.ok(!nonCrossCuttingReserve.failures.some(({ code }) => code === "feedback-headroom-eroded"));
+const performanceResultFor = (gate) => gateResult(gate, "pass", { setup: 100, restore: 200, build: 300, test: 400, total: 1_000 }, {
+  source: performance.source,
+  routeDigest: performance.digest,
+  artifactBindings: Object.fromEntries((gateParts[gate] ?? []).map((part) => [part, producerDigests[part]])),
+  artifactDigest: gate.startsWith("prepare-") ? producerDigests[gate.slice("prepare-".length)] : (gateParts[gate] ?? []).length > 0 ? bindingDigest(canonicalArtifactBindings(Object.fromEntries(gateParts[gate].map((part) => [part, producerDigests[part]])))) : null,
+  receiptReused: (gateParts[gate] ?? []).length > 0,
+  buildInvocations: expectedBuildInvocations[gate],
+});
+const performancePassing = ["integrity", "prepare-web", "prepare-docs", "documentation", "evidence"].map(performanceResultFor);
+assert.equal(joinRoute(performance, performancePassing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds }).result, "pass");
+const performanceHeadroomEroded = joinRoute(performance, performancePassing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds + 1 });
+assert.equal(performanceHeadroomEroded.result, "fail");
+assert.ok(performanceHeadroomEroded.failures.some(({ code, target, requiredHeadroom }) => code === "feedback-headroom-eroded" && target === feedbackAcceptanceTargetMilliseconds && requiredHeadroom === feedbackHeadroomMilliseconds));
 const crossCutting = route(["src/SIR.Domain/Rules.fs", "docs/index.md"]);
 const crossSubjects = ["integrity", ...producerOrder, "spatial-mutations", "cancellation-mutations", "browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery", ...crossCutting.selectedGates];
 const crossResultFor = (gate) => gateResult(gate, "pass", { setup: 100, restore: 200, build: 300, test: 400, total: 1_000 }, {
@@ -182,6 +197,8 @@ for (const part of ["native", "fable", "web", "server", "docs"]) assert.match(wo
 assert.doesNotMatch(workflow, /^  prepare:$/mu);
 assert.doesNotMatch(workflow, /prepared-candidate/u);
 assert.match(workflow, /rules:\n[\s\S]*?needs: \[route, integrity, prepare-native\]/u);
+assert.match(jobBody("prepare-web"), /classification == 'performance'/u);
+assert.match(jobBody("prepare-docs"), /classification == 'performance'/u);
 assert.match(workflow, /cancellation:\n[\s\S]*?needs: \[route, integrity, prepare-native, prepare-web\]/u);
 assert.match(workflow, /browser:\n[\s\S]*?needs: \[route, prepare-web, prepare-server\]/u);
 assert.match(workflow, /browser-general-helper:\n[\s\S]*?needs: \[route, prepare-web, prepare-server\]/u);

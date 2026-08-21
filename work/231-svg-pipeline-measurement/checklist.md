@@ -21,7 +21,7 @@ Prose status: checklistReady
 - work/231-svg-pipeline-measurement/clarifications.md
 
 ## Source Snapshot
-- spec: work/231-svg-pipeline-measurement/spec.md sha256:cc8d58b8693270244659017978d4a746929992ae1c51d2c9d8b2a9ebeb8e0432 schemaVersion:1
+- spec: work/231-svg-pipeline-measurement/spec.md sha256:9fac2ce1b91df41eaa5c0a11c0ea34d8b6d5796244f14cce338538cf1ec34946 schemaVersion:1
 - clarifications: work/231-svg-pipeline-measurement/clarifications.md sha256:b801aef28cf0a56a399bb9a24de4ceb99aec6b463e29525c9fd8f4abdb68f499 schemaVersion:1
 
 ## Checklist Items

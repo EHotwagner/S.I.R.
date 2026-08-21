@@ -16,9 +16,9 @@ publicOrToolFacingImpact: true
 Prose status: planned
 
 ## Source Snapshot
-- spec: work/231-svg-pipeline-measurement/spec.md sha256:cc8d58b8693270244659017978d4a746929992ae1c51d2c9d8b2a9ebeb8e0432 schemaVersion:1
+- spec: work/231-svg-pipeline-measurement/spec.md sha256:9fac2ce1b91df41eaa5c0a11c0ea34d8b6d5796244f14cce338538cf1ec34946 schemaVersion:1
 - clarifications: work/231-svg-pipeline-measurement/clarifications.md sha256:b801aef28cf0a56a399bb9a24de4ceb99aec6b463e29525c9fd8f4abdb68f499 schemaVersion:1
-- checklist: work/231-svg-pipeline-measurement/checklist.md sha256:50d2250d36f95d3636bf9da5cdcef1c21f93d69049f6e4048c8bc24862b6e6ad schemaVersion:1
+- checklist: work/231-svg-pipeline-measurement/checklist.md sha256:2d9d59a90a9f6db97c86ff28493c06d67d7513b9983ba871c0fbb9f63cf0db4e schemaVersion:1
 
 ## Plan Scope
 - Add a focused Node/Playwright Chromium measurement command, versioned fixture definitions, deterministic schema validation/summarization, production-browser journey coverage, focused unit tests, and exact-candidate evidence documentation.
@@ -34,7 +34,7 @@ Prose status: planned
 - PD-006 [AC-003] [FR-006] [DEC-003] complete: Pan/zoom/playback runs two warm-up and five stabilization cycles, recording heap/DOM checkpoints and collection capability.
 - PD-007 [AC-004] [FR-007] complete: `scripts/lib/svg-pipeline-measurement.mjs` validates and deterministically ranks stage duration/share and structural deltas, preserving ties and unavailable observations.
 - PD-008 [AC-004] [FR-008] [DEC-004] complete: Transport/typed-buffer/allocation dispositions use the versioned 20 percent material-share rule and emit the non-ceiling interpretation in every summary.
-- PD-009 [AC-005] [FR-009] complete: `node scripts/measure-svg-pipeline.mjs --fixtures ... --journeys ... --out ...` remains opt-in; harness-only changes take the fixed-function documentation/evidence route, whose hosted owner runs the focused retained-evidence validator but never regenerates the expensive Chromium matrix.
+- PD-009 [AC-005] [FR-009] complete: `node scripts/measure-svg-pipeline.mjs --fixtures ... --journeys ... --out ...` remains opt-in. Changes confined to the five SVG-specific harness files plus documentation take the fixed-function documentation/evidence route; its hosted owner runs the focused retained-evidence validator but never regenerates the expensive Chromium matrix. Broad route, runner, test-policy, and workflow files remain cross-cutting. Both performance and cross-cutting routes enforce the 240-second target and 60-second headroom, and workflow assertions/mutants require the performance route's web/docs producers.
 - PD-010 [AC-005] [FR-010] complete: Focused Node tests cover schema, six one-factor controls, trace-derived timing and sampler absence, receipt-to-authority binding, every retained raw byte, unavailable capability, ranking/disposition, and malformed/stale rejection; each repaired escape receives a subject-mutation demonstration.
 
 ## Contract Impact

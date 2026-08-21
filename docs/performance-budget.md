@@ -90,10 +90,13 @@ become required only when their owning available stage reaches the versioned
 unresolved rather than treating the missing measurement as zero or deferred.
 
 The expensive production matrix is deliberately absent from the small-PR CI
-route. Changes confined to this fixed-function harness use the focused
-documentation/evidence route; its hosted evidence owner verifies the retained
-exact-candidate receipt and both former structural-control escapes without
-rerunning the matrix. Run the full matrix once at a substantial-feature merge
+route. Changes confined to the five SVG-specific harness files plus this
+documentation use the focused documentation/evidence route; its hosted evidence
+owner verifies the retained exact-candidate receipt and both former
+structural-control escapes without rerunning the matrix. Broad route, runner,
+test-policy, and workflow files remain conservatively cross-cutting. The
+fixed-function route retains the shared 240-second target and 60-second headroom,
+and owns the web/docs producers required by its documentation gate. Run the full matrix once at a substantial-feature merge
 boundary against the exact Release candidate and retain `summary.json` plus its
 trace files:
 

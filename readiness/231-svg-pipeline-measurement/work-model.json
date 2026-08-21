@@ -53,7 +53,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "50d2250d36f95d3636bf9da5cdcef1c21f93d69049f6e4048c8bc24862b6e6ad"
+        "value": "2d9d59a90a9f6db97c86ff28493c06d67d7513b9983ba871c0fbb9f63cf0db4e"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "d2f03e6eba80a42e4ef258955268594e4bdcc53fe2f63422ea39c6e4ea48d059"
+        "value": "0749c1ad799daed2e8c54d26dcd2f898c52f4d89866ddbe761a4c91b85c87c76"
       }
     },
     {
@@ -101,7 +101,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "cc8d58b8693270244659017978d4a746929992ae1c51d2c9d8b2a9ebeb8e0432"
+        "value": "9fac2ce1b91df41eaa5c0a11c0ea34d8b6d5796244f14cce338538cf1ec34946"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "759383da7e794a9441fd601a5c467975f2cc0f9da44d1784f1a403a23ca16263"
+        "value": "13d67d798c3dd9686e6d44adfa4a1d25c8ccae9a270775843a70c745bf62f2f2"
       }
     }
   ],
@@ -301,8 +301,8 @@
     },
     {
       "id": "FR-009",
-      "title": "The harness MUST be independently runnable and focused, support selecting fixtures/journeys and an artifact directory, and MUST not be wired into the small-PR CI route. (Stories: US-002; Acceptance: AC-005)",
-      "text": "The harness MUST be independently runnable and focused, support selecting fixtures/journeys and an artifact directory, and MUST not be wired into the small-PR CI route. (Stories: US-002; Acceptance: AC-005)",
+      "title": "The full production Chromium matrix MUST be independently runnable and focused, support selecting fixtures/journeys and an artifact directory, and MUST not run in the small-PR CI route; SVG-harness-only changes MAY use a fixed-function documentation/evidence route that revalidates retained evidence, MUST keep broad CI policy/runner files conservatively cross-cutting, and MUST retain the 240-second target with 60 seconds of headroom. (Stories: US-002; Acceptance: AC-005)",
+      "text": "The full production Chromium matrix MUST be independently runnable and focused, support selecting fixtures/journeys and an artifact directory, and MUST not run in the small-PR CI route; SVG-harness-only changes MAY use a fixed-function documentation/evidence route that revalidates retained evidence, MUST keep broad CI policy/runner files conservatively cross-cutting, and MUST retain the 240-second target with 60 seconds of headroom. (Stories: US-002; Acceptance: AC-005)",
       "acceptanceCriteria": [
         "AC-005"
       ],
@@ -1939,7 +1939,7 @@
           "path": "work/231-svg-pipeline-measurement/checklist.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "50d2250d36f95d3636bf9da5cdcef1c21f93d69049f6e4048c8bc24862b6e6ad"
+            "value": "2d9d59a90a9f6db97c86ff28493c06d67d7513b9983ba871c0fbb9f63cf0db4e"
           },
           "schemaVersion": 1
         },
@@ -1963,7 +1963,7 @@
           "path": "work/231-svg-pipeline-measurement/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "d2f03e6eba80a42e4ef258955268594e4bdcc53fe2f63422ea39c6e4ea48d059"
+            "value": "0749c1ad799daed2e8c54d26dcd2f898c52f4d89866ddbe761a4c91b85c87c76"
           },
           "schemaVersion": 1
         },
@@ -1971,7 +1971,7 @@
           "path": "work/231-svg-pipeline-measurement/spec.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "cc8d58b8693270244659017978d4a746929992ae1c51d2c9d8b2a9ebeb8e0432"
+            "value": "9fac2ce1b91df41eaa5c0a11c0ea34d8b6d5796244f14cce338538cf1ec34946"
           },
           "schemaVersion": 1
         },
@@ -1979,14 +1979,14 @@
           "path": "work/231-svg-pipeline-measurement/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "759383da7e794a9441fd601a5c467975f2cc0f9da44d1784f1a403a23ca16263"
+            "value": "13d67d798c3dd9686e6d44adfa4a1d25c8ccae9a270775843a70c745bf62f2f2"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "fc1fd7d08f6eb165c1cb8757ef69d7687f80b564b35e7783f554ce94ea223b05"
+        "value": "2dc12406d3177f6921020211ef17f86aa1cee5ee7e00f5b74900688f971a6624"
       },
       "currency": "current"
     }
