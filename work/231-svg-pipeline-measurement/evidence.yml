@@ -11,7 +11,7 @@ sourceAnalysis: readiness/231-svg-pipeline-measurement/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/231-svg-pipeline-measurement/analysis.json
-    digest: facb52fd3c0b56a814a64f621609b66901f7a59ace821a13d70fd36f5dee8f28
+    digest: b562563637953391684a9602f32a861461e881c1cb2a9905893a103241d079fa
     schemaVersion: 1
   - label: checklist
     path: work/231-svg-pipeline-measurement/checklist.md
