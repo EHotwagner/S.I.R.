@@ -16,6 +16,7 @@ reuse_build_receipt=""
 prepared_fable=""
 static_only=false
 prepared_pr=false
+external_mutation_proof=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --reuse-pr-build-receipt)
@@ -36,9 +37,18 @@ while [[ $# -gt 0 ]]; do
       prepared_pr=true
       shift
       ;;
+    --external-mutation-proof)
+      external_mutation_proof=true
+      shift
+      ;;
     *) echo "verify-spatial-query: unknown argument: $1" >&2; exit 2 ;;
   esac
 done
+
+if [[ "$external_mutation_proof" == true && "$prepared_pr" == false ]]; then
+  echo "verify-spatial-query: --external-mutation-proof requires --prepared-pr" >&2
+  exit 2
+fi
 
 cd "$repo_root"
 
@@ -112,7 +122,7 @@ expect_unreadable_client_scan_error
 SIR_SPATIAL_FORCE_GREP=1 expect_unreadable_client_scan_error
 require_clean_scan "Client code" client_has_authority_calls
 require_clean_scan "JavaScript/TypeScript" javascript_has_spatial_authority
-if [[ "$prepared_pr" == true ]]; then
+if [[ "$prepared_pr" == true && "$external_mutation_proof" == false ]]; then
   "$repo_root/scripts/test-spatial-subject-mutations.sh" --prepared-pr &
   mutation_pid=$!
 fi

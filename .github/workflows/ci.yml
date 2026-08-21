@@ -75,6 +75,26 @@ jobs:
         uses: actions/upload-artifact@v4
         with: { name: gate-integrity, path: artifacts/ci/results/integrity.json, retention-days: 1 }
 
+  spatial-mutations:
+    if: needs.route.outputs.spatial == 'true'
+    needs: route
+    runs-on: ubuntu-latest
+    steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+      - uses: actions/setup-dotnet@v4
+        with: { global-json-file: global.json }
+      - uses: actions/setup-node@v4
+        with: { node-version: 26.5.0 }
+      - uses: actions/download-artifact@v4
+        with: { name: ci-route, path: artifacts/ci }
+      - run: ./scripts/run-ci-gate.sh spatial-mutations artifacts/ci/results/spatial-mutations.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: gate-spatial-mutations, path: artifacts/ci/results/spatial-mutations.json, retention-days: 1 }
+
   prepare-native:
     if: needs.route.outputs.classification == 'domain' || needs.route.outputs.classification == 'cross-cutting'
     needs: route
@@ -366,7 +386,7 @@ jobs:
 
   browser:
     if: needs.route.outputs.browser == 'true'
-    needs: [route, integrity, prepare-web, prepare-server]
+    needs: [route, prepare-web, prepare-server]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -389,6 +409,32 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v4
         with: { name: gate-browser, path: artifacts/ci/results/browser.json, retention-days: 1 }
+
+  browser-delivery:
+    if: needs.route.outputs.browser == 'true'
+    needs: [route, prepare-web, prepare-server]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+      - uses: actions/setup-node@v4
+        with: { node-version: 26.5.0, cache: npm }
+      - uses: actions/setup-dotnet@v4
+        with: { global-json-file: global.json }
+      - run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@v4
+        with: { name: ci-route, path: artifacts/ci }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-web, path: artifacts/ci/parts }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-server, path: artifacts/ci/parts }
+      - run: ./scripts/run-ci-gate.sh browser-delivery artifacts/ci/results/browser-delivery.json
+        env: { PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium }
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: gate-browser-delivery, path: artifacts/ci/results/browser-delivery.json, retention-days: 1 }
 
   documentation:
     if: needs.route.outputs.documentation == 'true'
@@ -452,7 +498,7 @@ jobs:
 
   pr-verdict:
     if: always() && github.event_name == 'pull_request'
-    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, prepare-server, prepare-docs, rules, spatial, cancellation, cross-runtime, browser, documentation, evidence]
+    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, prepare-server, prepare-docs, spatial-mutations, browser-delivery, rules, spatial, cancellation, cross-runtime, browser, documentation, evidence]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -470,7 +516,7 @@ jobs:
         shell: bash
         run: |
           args=()
-          for gate in integrity prepare-native prepare-fable prepare-web prepare-server prepare-docs rules spatial cancellation cross-runtime browser documentation evidence; do
+          for gate in integrity prepare-native prepare-fable prepare-web prepare-server prepare-docs spatial-mutations browser-delivery rules spatial cancellation cross-runtime browser documentation evidence; do
             if [[ -f "artifacts/ci/results/$gate.json" ]]; then args+=(--result "$gate=artifacts/ci/results/$gate.json"); fi
           done
           node scripts/ci-route.mjs join \

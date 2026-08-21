@@ -13,13 +13,15 @@ export const feedbackHeadroomMilliseconds = 60_000;
 export const feedbackAcceptanceTargetMilliseconds = feedbackBudgetMilliseconds - feedbackHeadroomMilliseconds;
 export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence"];
 export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web", "prepare-server", "prepare-docs"];
-export const subjectOrder = ["integrity", ...producerOrder, ...gateOrder];
+export const helperOrder = ["spatial-mutations", "browser-delivery"];
+export const subjectOrder = ["integrity", ...producerOrder, ...helperOrder, ...gateOrder];
 export const gateParts = {
   rules: ["native"],
   spatial: ["native", "fable"],
   cancellation: ["native", "web"],
   "cross-runtime": ["native", "fable"],
   browser: ["web", "server"],
+  "browser-delivery": ["web", "server"],
   documentation: ["web", "docs"],
   evidence: [],
 };
@@ -31,16 +33,21 @@ export const expectedBuildInvocations = {
   "prepare-server": ["producer:server", "publish:src/SIR.Server/SIR.Server.fsproj"],
   "prepare-docs": ["build:src/SIR.Client/SIR.Client.fsproj", "build:src/SIR.Match/SIR.Match.fsproj", "producer:docs"],
   rules: [],
-  spatial: [
-    "dependency-receipt", "footprint-envelope", "semantic-edge", "knowledge-cache-key", "spatial-revision-key",
-    "deterministic-ordering", "package-adapter", "profile-cache-key", "trace-work-bound",
-  ].map((name) => `build:src/SIR.Simulation/SIR.Simulation.fsproj:exception:spatial-${name}:artifacts-path:isolated`),
+  "spatial-mutations": [
+    "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:spatial-mutation-base",
+    ...[
+      "dependency-receipt", "footprint-envelope", "semantic-edge", "knowledge-cache-key", "spatial-revision-key",
+      "deterministic-ordering", "package-adapter", "profile-cache-key", "trace-work-bound",
+    ].map((name) => `build:src/SIR.Simulation/SIR.Simulation.fsproj:exception:spatial-${name}:artifacts-path:isolated`),
+  ],
+  spatial: [],
   cancellation: ["cancellation-mutant"].flatMap((name) => [
     `fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:${name}`,
     `fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:${name}`,
   ]),
   "cross-runtime": ["build:spikes/browser-wasm-verification/BrowserWasmVerificationSpike.fsproj"],
   browser: [],
+  "browser-delivery": [],
   documentation: [],
   evidence: [],
 };
@@ -148,7 +155,11 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
   const selectedGates = Array.isArray(route?.selectedGates) ? route.selectedGates : [];
   const requiredParts = [...new Set(selectedGates.flatMap((gate) => gateParts[gate] ?? []))];
   const expectedProducers = requiredParts.map((part) => `prepare-${part}`);
-  const expectedSubjects = ["integrity", ...expectedProducers, ...selectedGates];
+  const expectedHelpers = [
+    ...(selectedGates.includes("spatial") ? ["spatial-mutations"] : []),
+    ...(selectedGates.includes("browser") ? ["browser-delivery"] : []),
+  ];
+  const expectedSubjects = ["integrity", ...expectedProducers, ...expectedHelpers, ...selectedGates];
   const byGate = new Map();
   for (const result of results) {
     const subject = typeof result?.gate === "string" ? result.gate : "unknown";

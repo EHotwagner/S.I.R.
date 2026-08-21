@@ -8,8 +8,8 @@ import { browserShardCapacityFor } from "./browser-shard-capacity.mjs";
 import { mergeBrowserShardCases, parseBrowserShardJUnit } from "./browser-junit.mjs";
 
 const root = resolve(import.meta.dirname, "..");
-// Reserve one runner lane for the isolated server cohort and scale browser
-// workers over the remaining lanes. Each shard still owns its own server/port.
+// Every shard owns one browser plus one independent server, so pair-accounted
+// capacity prevents either process cohort from oversubscribing the runner.
 const browserShardCapacity = browserShardCapacityFor(availableParallelism());
 const browserPortBase = 5100;
 const browserPortCapacity = 65_535 - browserPortBase + 1;
@@ -19,6 +19,10 @@ const browserShards = configuredBrowserShards === undefined
   : Number(configuredBrowserShards);
 if (!Number.isSafeInteger(browserShards) || browserShards < 1 || browserShards > browserShardCapacity || browserShards > browserPortCapacity) {
   throw new Error(`SIR_BROWSER_SHARDS must be a positive integer no greater than the machine capacity (${browserShardCapacity}) or available port capacity (${browserPortCapacity}).`);
+}
+const browserCohort = process.env.SIR_BROWSER_COHORT ?? "all";
+if (!["all", "general", "production-delivery"].includes(browserCohort)) {
+  throw new Error("SIR_BROWSER_COHORT must be all, general, or production-delivery.");
 }
 
 const output = resolve(root, process.env.SIR_JUNIT_OUTPUT ?? "artifacts/test-results/browser.junit.xml");
@@ -33,6 +37,8 @@ const runShard = (offset) => new Promise((complete) => {
     "--config",
     "tests/SIR.Browser.Tests/playwright.config.js",
   ];
+  if (browserCohort === "general") args.push("--grep-invert", "@production-delivery");
+  if (browserCohort === "production-delivery") args.push("--grep", "@production-delivery");
   if (browserShards > 1) args.push(`--shard=${index}/${browserShards}`);
   const child = spawn(process.execPath, args, {
     cwd: root,

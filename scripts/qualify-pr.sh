@@ -251,7 +251,7 @@ NODE
       rules) gate_parts=(native) ;;
       spatial|cross-runtime) gate_parts=(native fable) ;;
       cancellation) gate_parts=(native web) ;;
-      browser) gate_parts=(web server) ;;
+      browser|browser-delivery) gate_parts=(web server) ;;
       documentation) gate_parts=(web docs) ;;
     esac
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
@@ -261,13 +261,42 @@ NODE
       "$0" verify-parts "${gate_parts[@]}" >/dev/null
     fi
     case "$gate" in
+      spatial-mutations)
+        restore_started=$(date +%s%3N)
+        set +e
+        dotnet restore tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj --locked-mode
+        spatial_mutation_status=$?
+        set -e
+        restore_completed=$(date +%s%3N)
+        build_started=$restore_completed
+        failure_stage=restore
+        if [[ $spatial_mutation_status -eq 0 ]]; then
+          failure_stage=build
+          set +e
+          SIR_BUILD_EXCEPTION=spatial-mutation-base dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
+          spatial_mutation_status=$?
+          if [[ $spatial_mutation_status -eq 0 ]]; then
+            ./scripts/test-spatial-subject-mutations.sh --prepared-pr
+            spatial_mutation_status=$?
+          fi
+          set -e
+        fi
+        build_completed=$(date +%s%3N)
+        [[ $spatial_mutation_status -eq 0 ]] && failure_stage=null
+        node - "$phase_path" "$restore_started" "$restore_completed" "$build_started" "$build_completed" "$failure_stage" <<'NODE'
+const { writeFileSync } = require("node:fs");
+const [path, restoreStarted, restoreCompleted, buildStarted, buildCompleted, failureStage] = process.argv.slice(2);
+writeFileSync(path, `${JSON.stringify({ restore: Number(restoreCompleted) - Number(restoreStarted), build: Number(buildCompleted) - Number(buildStarted), transport: 0, test: 0, failureStage: failureStage === "null" ? null : failureStage })}\n`);
+NODE
+        exit "$spatial_mutation_status"
+        ;;
       rules)
         SIR_RULES_PREPARED_PR=1 ./scripts/verify-rules-corpus.sh
         SIR_RULES_PREPARED_PR=1 dotnet run --project tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj -c Release --no-build --no-restore
         SIR_RULES_PREPARED_PR=1 ./scripts/test-rules-governance-tool-mutations.sh
         SIR_RULES_PREPARED_PR=1 ./scripts/generate-rules-governance.sh --check
         ;;
-      spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" --prepared-pr ;;
+      spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" --prepared-pr --external-mutation-proof ;;
       cancellation) ./scripts/test-worker-cancellation-subject-mutation.sh --prepared-pr ;;
       cross-runtime)
         ./scripts/test-conformance.sh \
@@ -278,7 +307,11 @@ NODE
         ;;
       browser)
         "$0" compose-browser >/dev/null
-        npm run test:browser
+        SIR_BROWSER_COHORT=general npm run test:browser
+        ;;
+      browser-delivery)
+        "$0" compose-browser >/dev/null
+        SIR_BROWSER_SHARDS=1 SIR_BROWSER_COHORT=production-delivery npm run test:browser
         ;;
       documentation)
         restore_started=$(date +%s%3N)
@@ -341,7 +374,7 @@ NODE
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
       "$0" verify-parts "${gate_parts[@]}" >/dev/null
     fi
-    if [[ "$gate" == browser ]]; then "$0" verify-browser-composition >/dev/null; fi
+    if [[ "$gate" == browser || "$gate" == browser-delivery ]]; then "$0" verify-browser-composition >/dev/null; fi
     ;;
   *)
     echo "qualify-pr: usage route PATHS|integrity|prepare-part ID|extract-parts IDS...|verify-parts IDS...|compose-browser|verify-browser-composition|gate ID" >&2

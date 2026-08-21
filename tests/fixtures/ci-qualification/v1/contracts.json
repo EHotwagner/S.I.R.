@@ -20,6 +20,8 @@
     "prepare-web",
     "prepare-server",
     "prepare-docs",
+    "spatial-mutations",
+    "browser-delivery",
     "rules",
     "spatial",
     "cancellation",

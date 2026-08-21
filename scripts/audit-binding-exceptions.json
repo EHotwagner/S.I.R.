@@ -7,7 +7,7 @@
       "locator": "file:scripts/ci-route.mjs",
       "path": "scripts/ci-route.mjs",
       "previousSha256": "10da76f4b2631e57c36991f263d19a15c183716e2d68ce208a31c160ed1118af",
-      "replacementSha256": "b08c87f41d2da88c05b03e26583441d2b74b4474a71d648726db9e639298dc57",
+      "replacementSha256": "fecbd4d08db889c6463ff7f746f74c6956da97e05479077533adad626cf369bc",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "Issue 220 changes the bounded route budget and native producer inventory; the focused route contract verifies the replacement thresholds, inventory, and fail-closed join diagnostics."
     },
@@ -17,9 +17,9 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "624c3323bbafc3d28571b6b0af9b81831aa5675b48347b2e94d7cdd6eef4df2a",
+      "replacementSha256": "b1324bd25f7a800d20ca824013726d8aa5b95b8989d97a796f4187231f7b9bac",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 220 extends the route contract with the unchanged outer budget, required headroom, one-solution native topology, overlapping isolated spatial mutation proof, strict shard JUnit validation, and test-granular server-reserved browser sharding."
+      "reason": "Issue 220 extends the route contract with the unchanged outer budget, required headroom, one-solution native topology, source-bound spatial and fixed-delivery helper gates, strict shard JUnit validation, and pair-accounted test-granular browser sharding."
     },
     {
       "audit": "feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json",
