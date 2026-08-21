@@ -17,9 +17,9 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "20b1e8340bde9866807aaf6bb993bf8135ee33cea4292f98c9bd0832a6f4a54b",
+      "replacementSha256": "624c3323bbafc3d28571b6b0af9b81831aa5675b48347b2e94d7cdd6eef4df2a",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 220 extends the route contract with the unchanged outer budget, required headroom, one-solution native topology, isolated bounded spatial mutation workers, and test-granular isolation-safe browser sharding."
+      "reason": "Issue 220 extends the route contract with the unchanged outer budget, required headroom, one-solution native topology, overlapping isolated spatial mutation proof, strict shard JUnit validation, and test-granular server-reserved browser sharding."
     },
     {
       "audit": "feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json",
