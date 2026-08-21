@@ -405,10 +405,17 @@ jobs:
       - uses: actions/download-artifact@v4
         with: { name: prepared-part-server, path: artifacts/ci/parts }
       - run: ./scripts/run-ci-gate.sh browser artifacts/ci/results/browser.json
-        env: { PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium }
+        env:
+          PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
+          SIR_JUNIT_OUTPUT: artifacts/ci/results/browser-general-1.junit.xml
       - if: always()
         uses: actions/upload-artifact@v4
-        with: { name: gate-browser, path: artifacts/ci/results/browser.json, retention-days: 1 }
+        with:
+          name: gate-browser
+          path: |
+            artifacts/ci/results/browser.json
+            artifacts/ci/results/browser-general-1.junit.xml
+          retention-days: 1
 
   browser-general-helper:
     if: needs.route.outputs.browser == 'true'
@@ -431,10 +438,17 @@ jobs:
       - uses: actions/download-artifact@v4
         with: { name: prepared-part-server, path: artifacts/ci/parts }
       - run: ./scripts/run-ci-gate.sh browser-general-helper artifacts/ci/results/browser-general-helper.json
-        env: { PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium }
+        env:
+          PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
+          SIR_JUNIT_OUTPUT: artifacts/ci/results/browser-general-2.junit.xml
       - if: always()
         uses: actions/upload-artifact@v4
-        with: { name: gate-browser-general-helper, path: artifacts/ci/results/browser-general-helper.json, retention-days: 1 }
+        with:
+          name: gate-browser-general-helper
+          path: |
+            artifacts/ci/results/browser-general-helper.json
+            artifacts/ci/results/browser-general-2.junit.xml
+          retention-days: 1
 
   browser-delivery:
     if: needs.route.outputs.browser == 'true'
@@ -541,6 +555,12 @@ jobs:
       - name: Join required gate receipts
         shell: bash
         run: |
+          if node -e 'const route=require("./artifacts/ci/route.json"); process.exit(route.selectedGates.includes("browser") ? 0 : 1)'; then
+            node scripts/test-browser-global-merge.mjs \
+              artifacts/ci/results/browser-general.junit.xml \
+              artifacts/ci/results/browser-general-1.junit.xml \
+              artifacts/ci/results/browser-general-2.junit.xml
+          fi
           args=()
           for gate in integrity prepare-native prepare-fable prepare-web prepare-server prepare-docs spatial-mutations browser-general-helper browser-delivery rules spatial cancellation cross-runtime browser documentation evidence; do
             if [[ -f "artifacts/ci/results/$gate.json" ]]; then args+=(--result "$gate=artifacts/ci/results/$gate.json"); fi
