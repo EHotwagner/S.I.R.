@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "ed095d9dd3be1fec02224120ea9e191e61dc05187021d0e39a687d4176d95ca2"
+        "value": "aa47f969a37fee95f06c5e481d76446bd6a92762b5fa48cd5f4e4e4e3914270d"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "7cdae9e259763f822bb24eded9262f59d1ecf3ad3c4e682a4a3c9de4f71997b2"
+        "value": "1d453bd95517267e5c6c5ff1d90380b3d1c29c9de25f3e4f9d4aebe9df34cac2"
       }
     }
   ],
@@ -3405,7 +3405,7 @@
           "path": "work/220-bounded-pr-ci/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "ed095d9dd3be1fec02224120ea9e191e61dc05187021d0e39a687d4176d95ca2"
+            "value": "aa47f969a37fee95f06c5e481d76446bd6a92762b5fa48cd5f4e4e4e3914270d"
           },
           "schemaVersion": 1
         },
@@ -3421,14 +3421,14 @@
           "path": "work/220-bounded-pr-ci/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "7cdae9e259763f822bb24eded9262f59d1ecf3ad3c4e682a4a3c9de4f71997b2"
+            "value": "1d453bd95517267e5c6c5ff1d90380b3d1c29c9de25f3e4f9d4aebe9df34cac2"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "43252f0893de1c2a08ef57358a745dab2a73c9e37e03f9ba7c99ae7dcaa83b3b"
+        "value": "a9717817a819c7269ba326356cb77538e9f4ecfdfd896f2da28884c0b5feaf2e"
       },
       "currency": "current"
     }

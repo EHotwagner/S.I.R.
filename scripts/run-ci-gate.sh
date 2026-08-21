@@ -25,7 +25,7 @@ case "$subject" in
   rules) preflight_parts=(native) ;;
   spatial|cross-runtime) preflight_parts=(native fable) ;;
   cancellation) preflight_parts=(native web) ;;
-  browser|browser-general-helper|browser-delivery) preflight_parts=(web server) ;;
+  browser|browser-general-helper|browser-general-helper-2|browser-general-helper-3|browser-delivery) preflight_parts=(web server) ;;
   documentation) preflight_parts=(web docs) ;;
 esac
 if [[ ${#preflight_parts[@]} -gt 0 ]]; then

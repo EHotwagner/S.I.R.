@@ -13,7 +13,7 @@ export const feedbackHeadroomMilliseconds = 60_000;
 export const feedbackAcceptanceTargetMilliseconds = feedbackBudgetMilliseconds - feedbackHeadroomMilliseconds;
 export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence"];
 export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web", "prepare-server", "prepare-docs"];
-export const helperOrder = ["spatial-mutations", "browser-general-helper", "browser-delivery"];
+export const helperOrder = ["spatial-mutations", "cancellation-mutations", "browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery"];
 export const subjectOrder = ["integrity", ...producerOrder, ...helperOrder, ...gateOrder];
 export const gateParts = {
   rules: ["native"],
@@ -22,6 +22,8 @@ export const gateParts = {
   "cross-runtime": ["native", "fable"],
   browser: ["web", "server"],
   "browser-general-helper": ["web", "server"],
+  "browser-general-helper-2": ["web", "server"],
+  "browser-general-helper-3": ["web", "server"],
   "browser-delivery": ["web", "server"],
   documentation: ["web", "docs"],
   evidence: [],
@@ -42,13 +44,16 @@ export const expectedBuildInvocations = {
     ].map((name) => `build:src/SIR.Simulation/SIR.Simulation.fsproj:exception:spatial-${name}:artifacts-path:isolated`),
   ],
   spatial: [],
-  cancellation: ["cancellation-mutant"].flatMap((name) => [
+  "cancellation-mutations": ["cancellation-mutant"].flatMap((name) => [
     `fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:${name}`,
     `fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:${name}`,
   ]),
+  cancellation: [],
   "cross-runtime": ["build:spikes/browser-wasm-verification/BrowserWasmVerificationSpike.fsproj"],
   browser: [],
   "browser-general-helper": [],
+  "browser-general-helper-2": [],
+  "browser-general-helper-3": [],
   "browser-delivery": [],
   documentation: [],
   evidence: [],
@@ -159,7 +164,8 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
   const expectedProducers = requiredParts.map((part) => `prepare-${part}`);
   const expectedHelpers = [
     ...(selectedGates.includes("spatial") ? ["spatial-mutations"] : []),
-    ...(selectedGates.includes("browser") ? ["browser-general-helper", "browser-delivery"] : []),
+    ...(selectedGates.includes("cancellation") ? ["cancellation-mutations"] : []),
+    ...(selectedGates.includes("browser") ? ["browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery"] : []),
   ];
   const expectedSubjects = ["integrity", ...expectedProducers, ...expectedHelpers, ...selectedGates];
   const byGate = new Map();
