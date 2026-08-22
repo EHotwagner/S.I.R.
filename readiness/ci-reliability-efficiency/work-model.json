@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "a9cd820d000645681b98a4a1121e9432d7fe8ffa1cda874ebb330c6562021a50"
+        "value": "2326c2293d81e55e499bb3380e7ec2e79c3dc88712177e61a9ff507e485d7182"
       }
     },
     {
@@ -5175,7 +5175,7 @@
           "path": "work/ci-reliability-efficiency/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "a9cd820d000645681b98a4a1121e9432d7fe8ffa1cda874ebb330c6562021a50"
+            "value": "2326c2293d81e55e499bb3380e7ec2e79c3dc88712177e61a9ff507e485d7182"
           },
           "schemaVersion": 1
         },
@@ -5206,7 +5206,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "73b0907d7b14b75dc7ff7937ddfe11a8fb32e53182e34fc82bc81f4f5a74ef65"
+        "value": "2c06330ea75edcce329813204bff3628e0412108b54cac1bc676d9ee87955f18"
       },
       "currency": "current"
     }

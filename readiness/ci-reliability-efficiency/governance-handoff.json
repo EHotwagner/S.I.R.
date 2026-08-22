@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/ci-reliability-efficiency/ship.json",
-      "digest": "sha256:c1c5141fe5eb7330cd51218a7f852a07c55c7d8cd6a7b16f66740b8af4c63363",
+      "digest": "sha256:35d528f566d3697c4e3402c668f35168a7b7b03695976215f351e5ddd0e45edd",
       "schemaVersion": 1
     },
     {
       "path": "readiness/ci-reliability-efficiency/verify.json",
-      "digest": "sha256:7ead119106340baac3d61b4660b90ac019f20ebfb497bddc4ba349b557c8fe2a",
+      "digest": "sha256:505b17b72da4412df8ec3695ed5e0dcbc476b7d2b86da5de94468829fcb4e9ce",
       "schemaVersion": 1
     },
     {
       "path": "readiness/ci-reliability-efficiency/work-model.json",
-      "digest": "sha256:08d3b680e76f80df56d72da3e7ea4bb45c15a96528536c5c1e769ff11e58f808",
+      "digest": "sha256:fbce1c093322443c36cf657eeae7eda6b367492141df6c04e1b93c376032c02d",
       "schemaVersion": 1
     }
   ],
