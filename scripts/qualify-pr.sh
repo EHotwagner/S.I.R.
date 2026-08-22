@@ -376,7 +376,7 @@ writeFileSync(path, `${JSON.stringify({ restore: Number(restoreCompleted) - Numb
 NODE
         exit "$spatial_mutation_status"
         ;;
-      cancellation-mutations) ./scripts/test-worker-cancellation-subject-mutation.sh --mutation-only ;;
+      cancellation-mutations) ./scripts/test-worker-cancellation-subject-mutation.sh --mutation-only --prepared-native ;;
       rules)
         SIR_RULES_PREPARED_PR=1 ./scripts/verify-rules-corpus.sh
         SIR_RULES_PREPARED_PR=1 dotnet run --project tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj -c Release --no-build --no-restore

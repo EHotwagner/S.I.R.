@@ -8,6 +8,7 @@ original="$temporary_dir/Worker.fs"
 log="$temporary_dir/mutation.log"
 prepared_pr=false
 mutation_only=false
+prepared_native=false
 if [[ "${1:-}" == "--prepared-pr" ]]; then
   prepared_pr=true
   shift
@@ -16,7 +17,14 @@ if [[ "${1:-}" == "--mutation-only" ]]; then
   mutation_only=true
   shift
 fi
-[[ $# -eq 0 ]] || { echo "test-worker-cancellation-subject-mutation: usage [--prepared-pr|--mutation-only]" >&2; exit 2; }
+if [[ "${1:-}" == "--prepared-native" ]]; then
+  prepared_native=true
+  shift
+fi
+[[ $# -eq 0 && ( "$prepared_native" == false || "$mutation_only" == true ) ]] || {
+  echo "test-worker-cancellation-subject-mutation: usage [--prepared-pr|--mutation-only [--prepared-native]]" >&2
+  exit 2
+}
 cp -p "$subject" "$original"
 
 restore_subject() {
@@ -36,9 +44,16 @@ if ! grep -F 'do! yieldToWorkerMessages () |> Async.AwaitPromise' "$subject" >/d
 fi
 
 if [[ "$mutation_only" == true ]]; then
-  dotnet restore tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj --locked-mode >/dev/null
-  SIR_BUILD_EXCEPTION=cancellation-fixture \
-    dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >/dev/null
+  if [[ "$prepared_native" == true ]]; then
+    [[ -f tests/SIR.Domain.Tests/bin/Release/net10.0/SIR.Domain.Tests.dll ]] || {
+      echo "Prepared native cancellation fixture is missing." >&2
+      exit 1
+    }
+  else
+    dotnet restore tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj --locked-mode >/dev/null
+    SIR_BUILD_EXCEPTION=cancellation-fixture \
+      dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >/dev/null
+  fi
 fi
 
 sed -i 's/do! yieldToWorkerMessages () |> Async.AwaitPromise/()/' "$subject"
