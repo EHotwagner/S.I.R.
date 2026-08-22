@@ -43,5 +43,6 @@ expect_red .github/workflows/ci.yml '/SIR_CI_PREFLIGHT_REUSED:/d;'
 expect_red scripts/qualify-pr.sh '/artifacts\/publish/d;'
 expect_red scripts/qualify-pr.sh '/build-docs.sh --prepare-site-only/d;'
 expect_red scripts/qualify-pr.sh 's/ --reuse-site-build//;'
+expect_red .github/workflows/ci.yml "/^  browser:/,/^  browser-general-helper:/ {/Microsoft.NETCore.App 10.0./d;}"
 
 echo "CI route policy, production-review freshness/preparer wiring, performance scope/headroom, prepared Playwright runtime reuse, co-scheduled rules/spatial receipts, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."

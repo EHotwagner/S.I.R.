@@ -12,7 +12,7 @@ export const feedbackBudgetMilliseconds = 300_000;
 export const feedbackHeadroomMilliseconds = 60_000;
 export const feedbackAcceptanceTargetMilliseconds = feedbackBudgetMilliseconds - feedbackHeadroomMilliseconds;
 export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence"];
-export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web"];
+export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web", "prepare-docs"];
 export const helperOrder = ["spatial-mutations", "cancellation-mutations", "browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery"];
 export const subjectOrder = ["integrity", ...producerOrder, ...helperOrder, ...gateOrder];
 export const gateParts = {
@@ -25,7 +25,7 @@ export const gateParts = {
   "browser-general-helper-2": ["web", "native"],
   "browser-general-helper-3": ["web", "native"],
   "browser-delivery": ["web", "native"],
-  documentation: ["web", "native"],
+  documentation: ["web", "docs"],
   evidence: [],
 };
 export const expectedBuildInvocations = {
@@ -33,6 +33,7 @@ export const expectedBuildInvocations = {
   "prepare-native": ["build:SIR.slnx", "producer:native"],
   "prepare-fable": ["fable:tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj", "fable:tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj", "fable:tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj", "producer:fable"],
   "prepare-web": ["fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj", "fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj", "producer:web"],
+  "prepare-docs": ["producer:docs"],
   rules: [],
   "spatial-mutations": [
     "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:spatial-mutation-base",

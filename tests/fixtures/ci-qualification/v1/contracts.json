@@ -18,6 +18,7 @@
     "prepare-native",
     "prepare-fable",
     "prepare-web",
+    "prepare-docs",
     "spatial-mutations",
     "cancellation-mutations",
     "browser-general-helper",

@@ -7,9 +7,9 @@
       "locator": "file:scripts/ci-route.mjs",
       "path": "scripts/ci-route.mjs",
       "previousSha256": "10da76f4b2631e57c36991f263d19a15c183716e2d68ce208a31c160ed1118af",
-      "replacementSha256": "0432d50c1f0d2fe14b0cb5d4464bd71e486713f4ebd0028c6306b53389eadc25",
+      "replacementSha256": "19b9b9209d7450fa4b723128a6f33c93551b206c130dae075be5f0d6ee003414",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "The CI reliability design advances the route schema to v2, preserves the explicit production-review freshness edge, and consolidates redundant producers and domain runners while retaining stable subject receipts, conservative broad-policy routing, the 240-second boundary, producer inventory, and fail-closed joins; the focused route contract verifies the replacement bytes."
+      "reason": "The CI reliability design advances the route schema to v2, preserves the explicit production-review freshness edge, and adds a content-addressed documentation producer that runs in parallel with the native, Fable, and web producers while retaining stable subject receipts, conservative broad-policy routing, the 240-second boundary, producer inventory, and fail-closed joins; the focused route contract verifies the replacement bytes."
     },
     {
       "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
@@ -17,9 +17,9 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "ae66b81e29452be4d11d1346cb001c14b66b13cb8dda9cf3cdd39470432ab3ae",
+      "replacementSha256": "0beb5d5546437834b61e2e4137b40b974e94367325f56d6b65cec2160259e067",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "The CI reliability design extends the route matrix with source-to-production-review freshness, consolidated ordinary domain execution, an independently parallel performance-sensitive cross-runtime measurement, parallel source-mutation helpers, native-owned server and prebuilt documentation projection inputs, protected-stage receipt topology, and the existing performance, artifact, build-owner, and fail-closed join contracts; focused mutations cover every new edge."
+      "reason": "The CI reliability design extends the route matrix with source-to-production-review freshness, consolidated ordinary domain execution, an independently parallel performance-sensitive cross-runtime measurement, parallel source-mutation helpers, a dedicated documentation projection producer, runtime-only browser shard setup, protected-stage receipt topology, and the existing performance, artifact, build-owner, and fail-closed join contracts; focused mutations cover every new edge."
     },
     {
       "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
@@ -27,9 +27,9 @@
       "locator": "file:.github/workflows/ci.yml",
       "path": ".github/workflows/ci.yml",
       "previousSha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127",
-      "replacementSha256": "9b73e67e081281f5fac1449e0c926cba23748b07eab7a2d7a43dd9ed5fd925c1",
+      "replacementSha256": "d3aa13baeb689c35530b9bcd8ae16090173b36719cd93269b9dea53369a668dc",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "The CI reliability design retains the bounded PR topology, consolidates server and documentation preparation into the native producer, co-schedules independently receipted ordinary domain gates, keeps performance-sensitive cross-runtime and the two source-mutation cohorts on parallel runners to preserve measurement validity and feedback headroom, co-schedules evidence, preserves protected preflight/core/checkpoint/join jobs, and invokes the exact-run cost observer after the PR verdict while preserving the stable full-qualification context; the workflow-DAG, cost-inventory, and receipt mutations reject missing or weakened edges."
+      "reason": "The CI reliability design retains the bounded PR topology, keeps server preparation in the native producer, starts documentation projection as an independent parallel producer, verifies the hosted .NET 10 runtime instead of installing an unused SDK on browser-only shards, co-schedules independently receipted ordinary domain gates, preserves protected preflight/core/checkpoint/join jobs, and invokes the exact-run cost observer after the PR verdict while preserving the stable full-qualification context; the workflow-DAG, cost-inventory, runtime, and receipt mutations reject missing or weakened edges."
     },
     {
       "audit": "feedback/audits/2026-08-20-sir-item-231-svg-pipeline-measurement.audit.json",

@@ -237,6 +237,41 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with: { name: gate-prepare-web, path: artifacts/ci/results/prepare-web.json, retention-days: 1 }
 
+  prepare-docs:
+    if: needs.route.outputs.documentation == 'true'
+    needs: route
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with: { global-json-file: global.json }
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: 26.5.0 }
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with: { name: ci-route, path: artifacts/ci }
+      - run: ./scripts/qualify-pr.sh prepare-part docs
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: prepared-part-docs
+          compression-level: 0
+          retention-days: 1
+          path: |
+            artifacts/ci/parts/docs.tar
+            artifacts/ci/parts/docs.tar.index.json
+            artifacts/ci/parts/docs.receipt.path
+            artifacts/ci/parts/docs.manifest.path
+            artifacts/ci/parts/docs.timing.json
+            artifacts/ci/parts/receipts
+            artifacts/ci/parts/manifests
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with: { name: gate-prepare-docs, path: artifacts/ci/results/prepare-docs.json, retention-days: 1 }
+
   domain-conformance:
     if: needs.route.outputs.rules == 'true' || needs.route.outputs.spatial == 'true' || needs.route.outputs.cancellation == 'true'
     needs: [route, integrity, prepare-native, prepare-fable, prepare-web]
@@ -344,8 +379,8 @@ jobs:
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0 }
-      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with: { global-json-file: global.json }
+      - name: Verify hosted .NET 10 runtime
+        run: dotnet --list-runtimes | grep -F 'Microsoft.NETCore.App 10.0.'
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: ci-route, path: artifacts/ci }
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -377,8 +412,8 @@ jobs:
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0 }
-      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with: { global-json-file: global.json }
+      - name: Verify hosted .NET 10 runtime
+        run: dotnet --list-runtimes | grep -F 'Microsoft.NETCore.App 10.0.'
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: ci-route, path: artifacts/ci }
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -410,8 +445,8 @@ jobs:
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0 }
-      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with: { global-json-file: global.json }
+      - name: Verify hosted .NET 10 runtime
+        run: dotnet --list-runtimes | grep -F 'Microsoft.NETCore.App 10.0.'
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: ci-route, path: artifacts/ci }
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -443,8 +478,8 @@ jobs:
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0 }
-      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with: { global-json-file: global.json }
+      - name: Verify hosted .NET 10 runtime
+        run: dotnet --list-runtimes | grep -F 'Microsoft.NETCore.App 10.0.'
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: ci-route, path: artifacts/ci }
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -476,8 +511,8 @@ jobs:
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0 }
-      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with: { global-json-file: global.json }
+      - name: Verify hosted .NET 10 runtime
+        run: dotnet --list-runtimes | grep -F 'Microsoft.NETCore.App 10.0.'
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: ci-route, path: artifacts/ci }
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -492,7 +527,7 @@ jobs:
 
   documentation:
     if: needs.route.outputs.documentation == 'true'
-    needs: [route, integrity, prepare-web, prepare-native]
+    needs: [route, integrity, prepare-web, prepare-docs]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -500,32 +535,23 @@ jobs:
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
-      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with: { global-json-file: global.json }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0, cache: npm }
-      - id: nuget-cache
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json', 'Directory.Packages.props', '.config/dotnet-tools.json') }}
       - run: npm ci --ignore-scripts
-      - run: dotnet tool restore
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: ci-route, path: artifacts/ci }
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: prepared-part-web, path: artifacts/ci/parts }
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with: { name: prepared-part-native, path: artifacts/ci/parts }
+        with: { name: prepared-part-docs, path: artifacts/ci/parts }
       - run: ./scripts/run-ci-gate.sh documentation artifacts/ci/results/documentation.json
-        env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with: { name: gate-documentation, path: artifacts/ci/results/documentation.json, retention-days: 1 }
 
   pr-verdict:
     if: always() && github.event_name == 'pull_request'
-    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, spatial-mutations, cancellation-mutations, browser-general-helper, browser-general-helper-2, browser-general-helper-3, browser-delivery, domain-conformance, cross-runtime, browser, documentation]
+    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, prepare-docs, spatial-mutations, cancellation-mutations, browser-general-helper, browser-general-helper-2, browser-general-helper-3, browser-delivery, domain-conformance, cross-runtime, browser, documentation]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -558,7 +584,7 @@ jobs:
             fi
           fi
           args=()
-          for gate in integrity prepare-native prepare-fable prepare-web spatial-mutations cancellation-mutations browser-general-helper browser-general-helper-2 browser-general-helper-3 browser-delivery rules spatial cancellation cross-runtime browser documentation evidence; do
+          for gate in integrity prepare-native prepare-fable prepare-web prepare-docs spatial-mutations cancellation-mutations browser-general-helper browser-general-helper-2 browser-general-helper-3 browser-delivery rules spatial cancellation cross-runtime browser documentation evidence; do
             if [[ -f "artifacts/ci/results/$gate.json" ]]; then args+=(--result "$gate=artifacts/ci/results/$gate.json"); fi
           done
           node scripts/ci-route.mjs join \

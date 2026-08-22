@@ -138,7 +138,6 @@ NODE
         # every declared project once and lets later solution growth remain one
         # invocation instead of accumulating serialized owner builds.
         dotnet build SIR.slnx -c Release --no-restore
-        ./scripts/build-docs.sh --prepare-site-only
         mkdir -p artifacts/publish
         cp -a src/SIR.Server/bin/Release/net10.0/. artifacts/publish/
         node scripts/prune-linux-runtime-closure.mjs \
@@ -161,7 +160,6 @@ NODE
           src/SIR.Wasm/bin/Release/net10.0
           src/SIR.Match/bin/Release/net10.0
           src/SIR.Client/bin/Release/net10.0
-          artifacts/site
         )
         ;;
       fable)
@@ -204,15 +202,8 @@ NODE
         part_paths=(artifacts/publish)
         ;;
       docs)
-        dotnet build src/SIR.Match/SIR.Match.fsproj -c Release --no-restore
-        dotnet build src/SIR.Client/SIR.Client.fsproj -c Release --no-restore
-        part_paths=(
-          src/SIR.Domain/bin/Release/net10.0
-          src/SIR.Simulation/bin/Release/net10.0
-          src/SIR.Wasm/bin/Release/net10.0
-          src/SIR.Match/bin/Release/net10.0
-          src/SIR.Client/bin/Release/net10.0
-        )
+        ./scripts/build-docs.sh --prepare-site-only
+        part_paths=(artifacts/site)
         ;;
     esac
     build_completed=$(date +%s%3N)
@@ -304,11 +295,11 @@ NODE
       spatial|cross-runtime) gate_parts=(native fable) ;;
       cancellation) gate_parts=(native web) ;;
       browser|browser-general-helper|browser-general-helper-2|browser-general-helper-3|browser-delivery) gate_parts=(web native) ;;
-      documentation) gate_parts=(web native) ;;
+      documentation) gate_parts=(web docs) ;;
     esac
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
       receipt_part=${gate_parts[0]}
-      [[ "$gate" == documentation ]] && receipt_part=native
+      [[ "$gate" == documentation ]] && receipt_part=docs
       receipt=$(<"$ci_root/parts/$receipt_part.receipt.path")
       "$0" verify-parts "${gate_parts[@]}" >/dev/null
     fi
@@ -379,19 +370,6 @@ NODE
         SIR_BROWSER_SHARDS=1 SIR_BROWSER_COHORT=production-delivery npm run test:browser
         ;;
       documentation)
-        restore_started=$(date +%s%3N)
-        set +e
-        dotnet restore SIR.slnx --locked-mode
-        restore_status=$?
-        set -e
-        restore_completed=$(date +%s%3N)
-        failure_stage=test
-        [[ $restore_status -eq 0 ]] || failure_stage=restore
-        node - "$phase_path" "$restore_started" "$restore_completed" "$failure_stage" <<'NODE'
-const { writeFileSync } = require("node:fs");
-writeFileSync(process.argv[2], `${JSON.stringify({ restore: Number(process.argv[4]) - Number(process.argv[3]), build: 0, transport: 0, failureStage: process.argv[5] })}\n`);
-NODE
-        [[ $restore_status -eq 0 ]] || exit "$restore_status"
         ./scripts/build-docs.sh --reuse-build-receipt "$receipt" --reuse-build-owner scripts/qualify-pr.sh --prepared-pr --reuse-site-build
         ;;
       evidence)

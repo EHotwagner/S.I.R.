@@ -99,7 +99,7 @@ const performanceResultFor = (gate) => gateResult(gate, "pass", { setup: 100, re
   receiptReused: (gateParts[gate] ?? []).length > 0,
   buildInvocations: expectedBuildInvocations[gate],
 });
-const performancePassing = ["integrity", "prepare-native", "prepare-web", "documentation", "evidence"].map(performanceResultFor);
+const performancePassing = ["integrity", "prepare-web", "prepare-docs", "documentation", "evidence"].map(performanceResultFor);
 assert.equal(joinRoute(performance, performancePassing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds }).result, "pass");
 const performanceHeadroomEroded = joinRoute(performance, performancePassing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds + 1 });
 assert.equal(performanceHeadroomEroded.result, "fail");
@@ -220,15 +220,15 @@ assert.ok(unknownScenarioOwner.failures.some(({ code, invocation }) =>
   code === "unknown-build-invocation" && invocation === "fable:tests/SIR.Client.Tests/UnknownRuntime.fsproj"));
 assert.deepEqual(contracts.timingPhases, ["queue", "setup", "restore", "build", "transport", "test", "total"]);
 assert.deepEqual(contracts.schemas, { route: routeSchema, artifactManifest: "sir.ci-artifact-manifest/v2", gateResult: gateSchema, timing: timingSchema, join: joinSchema });
-for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-mutations:", "prepare-native:", "prepare-fable:", "prepare-web:", "domain-conformance:", "cross-runtime:", "browser:", "browser-general-helper:", "browser-general-helper-2:", "browser-general-helper-3:", "browser-delivery:", "documentation:", "pr-verdict:", "cost-observer:", "protected-preflight:", "full-qualification:", "protected-verdict:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
+for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-mutations:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-docs:", "domain-conformance:", "cross-runtime:", "browser:", "browser-general-helper:", "browser-general-helper-2:", "browser-general-helper-3:", "browser-delivery:", "documentation:", "pr-verdict:", "cost-observer:", "protected-preflight:", "full-qualification:", "protected-verdict:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
 assert.match(workflow, /if: always\(\)/u);
 assert.match(workflow, /if: always\(\) && github\.event_name == 'pull_request'/u);
 assert.match(workflow, /schedule:/u);
 assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/u);
 assert.match(workflow, /hashFiles\('\*\*\/packages\.lock\.json', 'Directory\.Packages\.props', '\.config\/dotnet-tools\.json'\)/u);
-assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 19);
-for (const part of ["native", "fable", "web"]) assert.match(workflow, new RegExp(`qualify-pr\\.sh prepare-part ${part}`, "u"));
-assert.doesNotMatch(workflow, /qualify-pr\.sh prepare-part (?:server|docs)/u);
+assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 20);
+for (const part of ["native", "fable", "web", "docs"]) assert.match(workflow, new RegExp(`qualify-pr\\.sh prepare-part ${part}`, "u"));
+assert.doesNotMatch(workflow, /qualify-pr\.sh prepare-part server/u);
 assert.match(jobBody("prepare-native"), /classification != 'evidence-only'/u);
 assert.doesNotMatch(workflow, /^  prepare:$/mu);
 assert.doesNotMatch(workflow, /prepared-candidate/u);
@@ -240,15 +240,17 @@ assert.match(jobBody("cross-runtime"), /needs: \[route, integrity, prepare-nativ
 assert.doesNotMatch(workflow, /^  spatial:$/mu);
 assert.match(jobBody("prepare-web"), /classification == 'performance'/u);
 for (const browserJob of ["browser", "browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery"]) assert.match(jobBody(browserJob), /needs: \[route, prepare-web, prepare-native\]/u);
-assert.match(workflow, /documentation:\n[\s\S]*?needs: \[route, integrity, prepare-web, prepare-native\]/u);
-assert.match(jobBody("browser"), /actions\/setup-dotnet@[0-9a-f]{40} # v6\.0\.0/u);
+assert.match(workflow, /documentation:\n[\s\S]*?needs: \[route, integrity, prepare-web, prepare-docs\]/u);
 for (const browserJob of ["browser", "browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery"]) {
+  assert.doesNotMatch(jobBody(browserJob), /actions\/setup-dotnet@/u);
+  assert.match(jobBody(browserJob), /dotnet --list-runtimes \| grep -F 'Microsoft\.NETCore\.App 10\.0\.'/u);
   assert.match(jobBody(browserJob), /prepared-part-web/u);
   assert.match(jobBody(browserJob), /prepared-part-native/u);
   assert.doesNotMatch(jobBody(browserJob), /prepared-part-(?:fable|server|docs)/u);
 }
-assert.match(jobBody("documentation"), /prepared-part-native/u);
+assert.match(jobBody("documentation"), /prepared-part-docs/u);
 assert.match(jobBody("documentation"), /prepared-part-web/u);
+assert.doesNotMatch(jobBody("documentation"), /prepared-part-native/u);
 assert.match(jobBody("spatial-mutations"), /needs: route/u);
 assert.match(jobBody("spatial-mutations"), /run-ci-gate\.sh spatial-mutations/u);
 assert.doesNotMatch(jobBody("spatial-mutations"), /prepared-part-|needs: \[[^\]]*prepare-/u);
@@ -259,17 +261,17 @@ const gateRunner = readFileSync(new URL("./run-ci-gate.sh", import.meta.url), "u
 assert.match(gateRunner, /spatial\|cross-runtime\) preflight_parts=\(native fable\)/u);
 assert.match(gateRunner, /cancellation\) preflight_parts=\(native web\)/u);
 assert.match(gateRunner, /browser\|browser-general-helper\|browser-general-helper-2\|browser-general-helper-3\|browser-delivery\) preflight_parts=\(web native\)/u);
-assert.match(gateRunner, /documentation\) preflight_parts=\(web native\)/u);
+assert.match(gateRunner, /documentation\) preflight_parts=\(web docs\)/u);
 assert.match(gateRunner, /SIR_CI_PREFLIGHT_REUSED/u);
 assert.match(gateRunner, /ci-gate-artifact-bindings\.sh" "\$repo_root" "\$\{preflight_parts\[@\]\}"/u);
-assert.match(workflow, /pr-verdict:\n[\s\S]*?needs: \[[^\]]*spatial-mutations[^\]]*cancellation-mutations[^\]]*browser-general-helper[^\]]*browser-general-helper-2[^\]]*browser-general-helper-3[^\]]*browser-delivery[^\]]*domain-conformance[^\]]*cross-runtime[^\]]*\]/u);
+assert.match(workflow, /pr-verdict:\n[\s\S]*?needs: \[[^\]]*prepare-docs[^\]]*spatial-mutations[^\]]*cancellation-mutations[^\]]*browser-general-helper[^\]]*browser-general-helper-2[^\]]*browser-general-helper-3[^\]]*browser-delivery[^\]]*domain-conformance[^\]]*cross-runtime[^\]]*\]/u);
 assert.match(jobBody("browser"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-1\.junit\.xml/u);
 assert.match(jobBody("browser-general-helper"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-2\.junit\.xml/u);
 assert.match(jobBody("browser-general-helper-2"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-3\.junit\.xml/u);
 assert.match(jobBody("browser-general-helper-3"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-4\.junit\.xml/u);
 assert.match(jobBody("pr-verdict"), /test-browser-global-merge\.mjs[\s\S]*browser-general-1\.junit\.xml[\s\S]*browser-general-2\.junit\.xml[\s\S]*browser-general-3\.junit\.xml[\s\S]*browser-general-4\.junit\.xml/u);
 assert.match(jobBody("pr-verdict"), /browser_merge_status=\$\?[\s\S]*rm -f artifacts\/ci\/results\/browser-general-helper\.json/u);
-assert.match(workflow, /for gate in integrity prepare-native prepare-fable prepare-web spatial-mutations cancellation-mutations browser-general-helper browser-general-helper-2 browser-general-helper-3 browser-delivery rules spatial cancellation cross-runtime browser documentation evidence/u);
+assert.match(workflow, /for gate in integrity prepare-native prepare-fable prepare-web prepare-docs spatial-mutations cancellation-mutations browser-general-helper browser-general-helper-2 browser-general-helper-3 browser-delivery rules spatial cancellation cross-runtime browser documentation evidence/u);
 assert.match(workflow, /\.\/scripts\/qualify-production\.sh --protected/u);
 const fullQualification = readFileSync(new URL("./qualify-production.sh", import.meta.url), "utf8");
 assert.ok(fullQualification.indexOf("dotnet restore SIR.slnx --locked-mode") < fullQualification.indexOf("test-conformance.sh"));
@@ -299,7 +301,10 @@ const matchQualification = readFileSync(new URL("../tests/SIR.Match.Tests/Progra
 const focusedNativeProducer = /      native\)\n(?<body>[\s\S]*?)\n        ;;/u.exec(focusedQualification);
 assert.ok(focusedNativeProducer?.groups?.body, "focused native producer block is missing");
 assert.equal(focusedNativeProducer.groups.body.match(/dotnet build SIR\.slnx -c Release --no-restore/gu)?.length, 1);
-assert.match(focusedNativeProducer.groups.body, /build-docs\.sh --prepare-site-only[\s\S]*artifacts\/site/u);
+assert.doesNotMatch(focusedNativeProducer.groups.body, /build-docs\.sh|artifacts\/site/u);
+const focusedDocsProducer = /      docs\)\n(?<body>[\s\S]*?)\n        ;;/u.exec(focusedQualification);
+assert.ok(focusedDocsProducer?.groups?.body, "focused docs producer block is missing");
+assert.match(focusedDocsProducer.groups.body, /build-docs\.sh --prepare-site-only[\s\S]*artifacts\/site/u);
 assert.match(focusedQualification, /documentation\)[\s\S]*build-docs\.sh[^\n]*--prepared-pr --reuse-site-build/u);
 assert.match(buildDocs, /--prepare-site-only[\s\S]*build_site_projection[\s\S]*--reuse-site-build[\s\S]*prepared site projection is missing index\.html/u);
 assert.doesNotMatch(focusedQualification, /find src tests -type d.*-name obj/u);
