@@ -995,8 +995,18 @@ let persistentSceneSvg
                         ]
                     ]
                     let unitGlyphs =
+                        // The cached glyphs BAKE IN unit.PresentationColumn/Row, which are
+                        // interpolated coordinates.  Replay ramps PresentationAlpha 0.25 -> 1.0
+                        // at a CONSTANT tick, so without alpha in the key every step of that
+                        // ramp reuses the first frame's geometry: the units stop moving on
+                        // screen while the freshly built wrapper keeps publishing the true
+                        // data-presentation-column, which is the only attribute any test reads.
+                        // A stale-geometry cache that stays green is worse than no cache.
                         retainTacticalUnitGlyphs
-                            (revisions.UnitsContent + ":" + visualSystem.Identity + ":" + tier)
+                            (revisions.UnitsContent
+                             + ":" + visualSystem.Identity
+                             + ":" + tier
+                             + ":" + string presentationAlpha)
                             (fun () ->
                                 visibleUnits
                                 |> Array.map (fun unit ->
@@ -1596,8 +1606,28 @@ let tacticalSceneOwner =
                 System.Object.ReferenceEquals(previous.Model.EditorView, current.Model.EditorView)
                 || { previous.Model.EditorView with Camera = current.Model.EditorView.Camera }
                    = current.Model.EditorView
+            // The layer revisions above count PRIMITIVES, not their content.  A
+            // route that goes from preview to planned keeps the route count at
+            // two, keeps the simulator projection's RevisionIdentity (which is
+            // the EDITOR digest) and keeps the tick -- so every revision term is
+            // unchanged and the scene never re-renders.  Measured: committing a
+            // second unit's route succeeded in the model and the SVG went on
+            // drawing it as a preview, so `route-planned` never reached the DOM
+            // and the whole thing read like the domain had rejected the commit.
+            //
+            // The accepted scene's SOURCES are compared by identity for the same
+            // reason model.Editor is: exact under Elmish, O(1), and impossible to
+            // leave a fact out of.  Simulator is the one this was measured on;
+            // Planning and Shell own the other two workspaces' accepted scenes
+            // through exactly the same mechanism and are included so the hole is
+            // closed rather than moved.
+            let acceptedSourceAccepted =
+                System.Object.ReferenceEquals(previous.Model.Simulator, current.Model.Simulator)
+                && System.Object.ReferenceEquals(previous.Model.Planning, current.Model.Planning)
+                && System.Object.ReferenceEquals(previous.Model.Shell, current.Model.Shell)
             previousLayers = currentLayers
             && previous.PresentationAlpha = current.PresentationAlpha
+            && acceptedSourceAccepted
             && editorAccepted
             && editorViewAccepted
             && cameraAccepted)
