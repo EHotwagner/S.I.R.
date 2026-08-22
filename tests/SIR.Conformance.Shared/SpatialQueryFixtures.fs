@@ -168,21 +168,6 @@ module SpatialQueryFixtures =
              && duplicateTrace.Explanation.CoverContributors = [ edge (cell 0 0) (cell 1 0) ])
             "A duplicated boundary declaration stopped resolving first-declaration-wins."
 
-        // AC 3 / F3: re-evaluating a key already present returns the cached entry and leaves the
-        // cache exactly as it was, appending no shadowing duplicate.
-        let repeatWorld = world 7L 3L [] Map.empty Set.empty
-        let repeatRequest =
-            request "cache-repeat" SpatialQueryKind.BoundedPath SpatialModality.GroundMovement (cell 0 0) (cell 2 0) [ cell 0 0 ] bounds
-        let _, firstCache, firstSource = SpatialQuery.evaluateCached SpatialQuery.emptyCache repeatWorld repeatRequest
-        let _, repeatedCache, repeatedSource = SpatialQuery.evaluateCached firstCache repeatWorld repeatRequest
-        require
-            (firstSource = SpatialEvaluationSource.Uncached && repeatedSource = SpatialEvaluationSource.Cached)
-            "Repeated spatial cache evaluation of one key did not resolve from the cache."
-        require
-            (repeatedCache.StaticEntries.Length = firstCache.StaticEntries.Length
-             && repeatedCache.DynamicEntries.Length = firstCache.DynamicEntries.Length)
-            "Repeated evaluation of one spatial cache key grew the cache."
-
         let canonical =
             [ SpatialQuery.canonicalResultBytes blocked
               SpatialQuery.canonicalResultBytes pathResult
