@@ -508,6 +508,7 @@ let run () =
          && simulatorProjection.Owner = SimulatorScene
          && simulatorProjection.RevisionIdentity = editor.Revision.Digest
          && simulatorProjection.Units.Length = editor.Map.Units.Count
+         && (simulatorProjection.Units |> Array.map _.PrimitiveId |> Array.distinct).Length = simulatorProjection.Units.Length
          && simulatorProjection.Routes.Length = 2
          && (simulatorProjection.Routes
              |> Array.choose _.OwnerUnitId
@@ -520,7 +521,12 @@ let run () =
             |> Array.exists (fun effect -> effect.Kind = AttackEffect && effect.Lifecycle = CommittedEffect)
          && simulatorProjection.Effects
             |> Array.exists (fun effect -> effect.Lifecycle = AcceptedEffect))
-        "Simulator projection mutated its handoff or crossed its revision boundary."
+        (sprintf
+            "Simulator viewport projection mutated its handoff or crossed its revision boundary: units=%d/%d routes=%d effects=%A."
+            simulatorProjection.Units.Length
+            editor.Map.Units.Count
+            simulatorProjection.Routes.Length
+            (simulatorProjection.Effects |> Array.map (fun effect -> effect.Kind, effect.Lifecycle)))
     let simulatorRouteSource = simulator.PlannedRoutes[firstUnit]
     simulatorProjection.Routes[0].Points[0] <- 999.0
     let repeatedSimulatorProjection =
@@ -822,6 +828,7 @@ let run () =
     require
         (baselineIds = changedIds
          && baselineIds.Length = (baselineIds |> Array.distinct).Length
+         && changedIds.Length = (changedIds |> Array.distinct).Length
          && baselineIds |> Array.contains "terrain:0:0"
          && baselineIds |> Array.contains "unit:1"
          && baselineIds |> Array.exists (fun id -> id.StartsWith("edge:", StringComparison.Ordinal))
@@ -841,7 +848,7 @@ let run () =
     require
         (planningIds = ids changedPlanning
          && planningIds.Length = (Array.distinct planningIds).Length)
-        "Planning semantic IDs changed with cursor, camera, or selection state."
+        "Planning viewport projection duplicated semantic IDs or lost every stable boundary identity."
 
     let simulatorIds = ids simulatorProjection
     let changedSimulator =
@@ -973,6 +980,104 @@ let run () =
         { EditorState = denseEditor
           EditorWorkspace = workspace
           EditorFocusedUnit = Some 1 }
+    let smallViewport =
+        { workspace with
+            ViewportWidth = 480.0
+            ViewportHeight = 320.0
+            Camera =
+                { PanX = 0.0
+                  PanY = 0.0
+                  Zoom = 1.0 } }
+    let largeTerrain =
+        [ for row in 0 .. 159 do
+              for column in 0 .. 159 do
+                  let kind =
+                      match (column + row) % 4 with
+                      | 0 -> Open
+                      | 1 -> Rough
+                      | 2 -> Objective
+                      | _ -> Blocked
+                  yield (int32 column, int32 row), kind ]
+        |> Map.ofList
+    let largeExtraUnits =
+        [ 201 .. 2000 ]
+        |> List.map (fun id ->
+            let unit =
+                { (Map.find 1 map.Units) with
+                    Id = int32 id
+                    Column = int32 (40 + (id - 201) % 120)
+                    Row = int32 ((id - 201) / 120) }
+            unit.Id, unit)
+        |> Map.ofList
+    let largeMap =
+        { map with
+            Width = 160
+            Height = 160
+            Terrain = largeTerrain
+            Units = Map.fold (fun units id unit -> Map.add id unit units) map.Units largeExtraUnits }
+    let viewportEditor map digest selectedUnit =
+        { denseEditor with
+            Map = map
+            Revision =
+                { denseEditor.Revision with
+                    Document = map
+                    Digest = digest }
+            SelectedUnit = selectedUnit
+            SelectedUnits = selectedUnit |> Option.map Set.singleton |> Option.defaultValue Set.empty }
+    let smallExtentProjection =
+        TacticalSceneProjection.editor
+            { EditorState = viewportEditor map "viewport-small" (Some 1)
+              EditorWorkspace = smallViewport
+              EditorFocusedUnit = Some 1 }
+    let largeExtentProjection =
+        TacticalSceneProjection.editor
+            { EditorState = viewportEditor largeMap "viewport-large" (Some 1)
+              EditorWorkspace = smallViewport
+              EditorFocusedUnit = Some 1 }
+    let emittedSpatialCount (projection: SharedSceneProjection) =
+        projection.Terrain.Length
+        + projection.Edges.Length
+        + projection.Units.Length
+        + projection.Routes.Length
+        + projection.Annotations.Length
+        + projection.Effects.Length
+    let spatialIds (projection: SharedSceneProjection) =
+        ids projection
+        |> Array.filter (fun id -> not (id.StartsWith("layer:", StringComparison.Ordinal)))
+    require
+        (spatialIds smallExtentProjection = spatialIds largeExtentProjection
+         && emittedSpatialCount smallExtentProjection = emittedSpatialCount largeExtentProjection
+         && emittedSpatialCount largeExtentProjection <= 1600)
+        "Equal small viewports changed their visible working set with global extent or exceeded the structural budget."
+    let boundaryProjection panX =
+        TacticalSceneProjection.editor
+            { EditorState = viewportEditor map ("boundary:" + string panX) (Some 9)
+              EditorWorkspace =
+                { smallViewport with
+                    ViewportWidth = 64.0
+                    ViewportHeight = 64.0
+                    Camera = { smallViewport.Camera with PanX = panX } }
+              EditorFocusedUnit = Some 9 }
+    let beforeBoundary = boundaryProjection -320.0
+    let afterBoundary = boundaryProjection -384.0
+    require
+        (beforeBoundary.Units |> Array.exists (fun unit -> unit.Visual.Id = 9)
+         && afterBoundary.Units |> Array.exists (fun unit -> unit.Visual.Id = 9)
+         && ids beforeBoundary |> Array.filter ((=) "unit:9") |> Array.length = 1
+         && ids afterBoundary |> Array.filter ((=) "unit:9") |> Array.length = 1
+         && (ids beforeBoundary |> Array.distinct |> Array.length) = (ids beforeBoundary |> Array.length)
+         && (ids afterBoundary |> Array.distinct |> Array.length) = (ids afterBoundary |> Array.length))
+        "Chunk-boundary pan flickered or duplicated the stable unit:9 semantic identity."
+    let offscreenSelection =
+        TacticalSceneProjection.editor
+            { EditorState = viewportEditor map "offscreen-selection" (Some 200)
+              EditorWorkspace = smallViewport
+              EditorFocusedUnit = Some 200 }
+    require
+        (offscreenSelection.Units |> Array.forall (fun unit -> unit.Visual.Id <> 200)
+         && offscreenSelection.Selection.SelectedUnits = [| 200 |]
+         && offscreenSelection.Selection.FocusedUnit = Some 200)
+        "Offscreen presentation culling discarded authoritative selected/focused identity or emitted focusable geometry."
     let densePlanning =
         PlanningWorkspace.initial
             "dense-editor-revision"
@@ -1290,7 +1395,9 @@ let run () =
             Routes = routes
             Annotations = factAnnotations
             Selection = { denseOverlayScene.Selection with SelectedUnits = ids } }
-    let representativeProjection = TacticalSceneProjection.projectOverlays allOverlayPreferences heldOverlays (workloadScene 100)
+    let representativeUnitCount = min 100 denseOverlayScene.Units.Length
+    let representativeScene = workloadScene representativeUnitCount
+    let representativeProjection = TacticalSceneProjection.projectOverlays allOverlayPreferences heldOverlays representativeScene
     let fourCellExtent = CellExtent.tryCreate 4 |> Option.get
     let largeUnit =
         { denseOverlayScene.Units[0] with
@@ -1319,7 +1426,7 @@ let run () =
              && depth = 4.0
          | _ -> false)
         "A 4x4 unit overlay did not share the unit renderer's top-left footprint origin."
-    let stressScene = workloadScene 200
+    let stressScene = workloadScene denseOverlayScene.Units.Length
     let stressProjection = TacticalSceneProjection.projectOverlays allOverlayPreferences heldOverlays stressScene
     let emittedIds projection = projection.Payloads |> Array.map _.OverlayId |> Set.ofArray
     let missingOverlayIds =
@@ -1327,7 +1434,9 @@ let run () =
         |> Array.filter (fun descriptor -> not (Set.contains descriptor.Id (emittedIds representativeProjection)))
         |> Array.map (fun descriptor -> TacticalOverlayId.value descriptor.Id)
     require
-        ((workloadScene 100).Units.Length = 100 && stressScene.Units.Length = 200 && Array.isEmpty missingOverlayIds)
+        (representativeScene.Units.Length = 100
+         && stressScene.Units.Length = 200
+         && Array.isEmpty missingOverlayIds)
         ("The representative production-view projection did not emit every advertised initial overlay family: " + String.concat ", " missingOverlayIds)
     require
         (representativeProjection.Payloads |> Array.exists (fun payload -> TacticalOverlayId.value payload.OverlayId = "unit.footprints" && match payload.Geometry with FootprintGeometry(_, _, width, depth) -> width = 1.0 && depth = 1.0 | _ -> false)
@@ -1341,7 +1450,7 @@ let run () =
         (representativeProjection.Cost.EstimatedSvgNodes <= 5000
          && stressProjection.Cost.EstimatedSvgNodes <= 5000
          && stressProjection.Cost.EmittedPayloads > representativeProjection.Cost.EmittedPayloads)
-        "Representative 100-unit or stress 200-unit production-view node budget was not enforced."
+        "Representative and stress viewport projection node budgets were not enforced."
     let overlayTimings =
         Array.init 80 (fun _ ->
             milliseconds (fun () ->
@@ -1382,6 +1491,9 @@ let run () =
          && stressReview.VisualCost.EffectInstances = 256
          && stressReview.Effects[0].Tick = 45
          && stressReview.Effects[stressReview.Effects.Length - 1].Tick = 300
+         && (stressReview.Effects
+             |> Array.pairwise
+             |> Array.forall (fun (left, right) -> (left.Tick, left.Order, left.EventId) <= (right.Tick, right.Order, right.EventId)))
          && stressReview.VisualCost.EstimatedSvgNodes <= 9_000
          && reviewP95 < 8.0)
         (sprintf

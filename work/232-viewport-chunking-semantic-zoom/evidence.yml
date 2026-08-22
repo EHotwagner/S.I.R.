@@ -1,0 +1,53 @@
+schemaVersion: 1
+evidence:
+  - id: EV022
+    kind: deferral
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV022]
+    artifacts: [readiness/232-viewport-chunking-semantic-zoom/performance-evidence.json]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: "The declared viewport-visible-v1 timing budget (p95 <=16 ms, p99 <=32 ms, zero catch-up frames) is NOT met on the exact candidate. Measured over 8 fixtures x 7 journeys (56 production Chromium runs) - playback 9 dropped frames, p95 213.8 ms, p99 259.7 ms; modality-transition 23 dropped frames, p95 39.5 ms, p99 56.3 ms; pan p95 20.2 ms; zoom p95 17.1 ms; selection input-to-paint 22.0 ms. The structural half of the intent is satisfied and separately gated. This is a deferral rather than a pass because a pass would misstate the measurement, and a synthetic pass would not satisfy the obligation anyway."
+    owner: EHotwagner/S.I.R. client presentation, blocked upstream on FS-GG/FS.GG.Rendering#1256
+    scope: "The timing clauses of performance intent viewport-visible-work-v1 only - p95, p99 and catch-up frames on the playback, modality-transition, pan, zoom and selection journeys. The structural cost budgets of the same intent are met and are not deferred."
+    laterLifecycleVisibility: "Re-measure with the same command once the transition-aware Elmish host adapter tracked at FS-GG/FS.GG.Rendering#1256 is delivered and consumable; the timing half of this intent must not be claimed anywhere until that re-measurement is green."
+    performanceBudget:
+      artifactPath: readiness/232-viewport-chunking-semantic-zoom/performance-evidence.json
+      intent:
+        id: viewport-visible-work-v1
+        disposition: active
+        targetFps: 60
+        workloadIds: [viewport-visible-v1]
+        workloadDefinitionDigests: ["viewport-visible-v1=sha256:7335f5a84cded141d3a04a0d395b6d5ec8f78d34178d2196c02d4935384dff24"]
+        maximumExpectedScale: "160x160 map; 2,000 units/routes/annotations; 256 active effects; fixed 480x320 viewport"
+        maxP95Ms: 16
+        maxP99Ms: 32
+        maxCatchUpFrames: 0
+        structuralCostBudgets: ["queried-chunks<=24", "emitted-spatial-primitives<=1600", "semantic-duplicates=0", "offscreen-focusable-svg=0"]
+        requiredCapability: production-chromium-trace
+        liveCompositorRequired: true
+        evidenceRefs: [readiness/232-viewport-chunking-semantic-zoom/performance-evidence.json]
+        rationale: "Copied verbatim from the canonical performanceIntent in work/232-viewport-chunking-semantic-zoom/spec.md. The cited artifact records MEASURED values only; the producing harness hardcodes result:pass with no budget comparison (S.I.R.#268), so its verdict field is recorded for traceability and is explicitly not relied upon."
+      targetFps: 60
+      workloadIds: [viewport-visible-v1]
+      stressWorkloadIds: []
+      workloadDefinitionDigests: ["viewport-visible-v1=sha256:7335f5a84cded141d3a04a0d395b6d5ec8f78d34178d2196c02d4935384dff24"]
+      currencyToken: item-232-avocet-305e-measured
+      maxP95Ms: 16
+      maxP99Ms: 32
+      maxCatchUpFrames: 0
+      measurementScope: "production-chromium-trace; 8 fixtures x 7 journeys = 56 runs; Chromium AnimationFrame timing records and renderer RunTask slices, no injected frame observer; command=node scripts/measure-svg-pipeline.mjs --out artifacts/232-svg --fixtures all --journeys all; measured budget breaches on playback, modality-transition, pan, zoom and selection"
+      requiredCapability: production-chromium-trace
+      liveCompositorRequired: true
+    notes: [The timing half of this intent is blocked upstream; the structural half is met and separately gated.]
+lifecycleNotes:
+  - "Next lifecycle action: complete the remaining obligation declarations, then verify."

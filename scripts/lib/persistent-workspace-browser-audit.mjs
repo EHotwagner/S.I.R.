@@ -213,7 +213,17 @@ const collectGeometry = () => {
   const timelineRuler = query(".tactical-time-ruler");
   const timelineCursor = query(".tactical-time-cursor");
   const timelineLanes = query(".tactical-command-lanes");
-  const tools = query(".editor-tools-panel");
+  // Every workspace's tools host is now mounted at once; the inactive ones are
+  // [hidden]/[inert] and therefore have NO box at all.  A first-match selector
+  // picks one of those whenever the audited workspace is not Editor, and then
+  // measures a 0x0 rect against a real host -- which reads as "the panel left
+  // its body" when nothing is wrong.  Measure the host a user can actually see.
+  const tools = [...document.querySelectorAll(".editor-tools-panel")].find(
+    (candidate) =>
+      !candidate.closest("[hidden]") &&
+      !candidate.closest("[inert]") &&
+      candidate.getClientRects().length > 0,
+  ) ?? null;
   const elements = { shell, toolbar, frame, workscreen, svg, left, right, bottom, timeline, timelineLegend, timelineTransport, timelineRuler, timelineCursor, timelineLanes };
   if (Object.values(elements).some((element) => !element)) throw new Error("required production shell element missing");
   const rectangles = Object.fromEntries(Object.entries(elements).map(([key, element]) => [key, rect(element)]));

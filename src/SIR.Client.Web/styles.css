@@ -1233,6 +1233,19 @@ body {
   border: 0;
 }
 
+/* Semantic zoom keeps footprint, faction, selection, and alerts legible while
+   progressively suppressing glyph/status/heading detail. DOM identity and
+   accessible selection facts remain stable across all three tiers. */
+#sir-replay-app #persistent-tactical-svg[data-semantic-tier="overview"] .semantic-unit-detail,
+#sir-replay-app #persistent-tactical-svg[data-semantic-tier="tactical"] .semantic-unit-detail {
+  display: none;
+}
+#sir-replay-app #persistent-tactical-svg[data-semantic-tier="tactical"] [data-semantic-selected="true"] .semantic-unit-detail,
+#sir-replay-app #persistent-tactical-svg[data-semantic-tier="tactical"] [data-unit-id]:hover .semantic-unit-detail,
+#sir-replay-app #persistent-tactical-svg[data-semantic-tier="tactical"] [data-unit-id]:focus-visible .semantic-unit-detail {
+  display: inline;
+}
+
 @media (prefers-reduced-motion: reduce) {
   #sir-replay-app *,
   #sir-replay-app *::before,

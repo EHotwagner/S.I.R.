@@ -2,12 +2,13 @@ import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { gunzipSync } from "node:zlib";
-import { byteDigest, digest, extractFrameHealth, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
+import { byteDigest, digest, extractFrameHealth, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateCullingMeasurementContract, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 validateDefinitions(source);
 assert.equal(digest(source).length, 64);
-assert.match(makeMap(source.fixtures[0]), /^SIR-MAP 2\nsize 30 30\n/);
+assert.match(makeMap(source.fixtures[0]), /^SIR-MAP 4\nsize 30 30\n/);
+assert.match(makeMap(source.fixtures[0]), /^unit 1 blue rifleman \d+ \d+ 1 12 12 scripted \S+ N N$/m);
 assert.equal(byteDigest(Buffer.from("abc")), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
 
 const trace = { traceEvents: [
@@ -40,8 +41,22 @@ assert.equal(extractInputToPaint(journeyTrace, "idle").available, false);
 assert.throws(() => extractJourneyTrace({ traceEvents: [] }), /clock-sync window/, "missing journey window must fail closed");
 const runnerSource = readFileSync(new URL("./measure-svg-pipeline.mjs", import.meta.url), "utf8");
 assert.doesNotMatch(runnerSource, /addInitScript|__sirFrameIntervals|requestAnimationFrame\(sample\)|const sample\s*=/, "measurement must not inject a frame sampler into the traced renderer");
+assert.doesNotMatch(runnerSource, /cpu_profiler/, "measurement must not start an unused CPU profiler inside the measured journey window");
 assert.match(runnerSource, /sceneRevisionBeforeImport[\s\S]*revision !== previous/, "measurement must wait for the imported production scene, not only its announcement");
+validateCullingMeasurementContract(runnerSource);
+const resizeStatement = "await page.setViewportSize({ width: fixture.viewport[0], height: fixture.viewport[1] });";
+const fitStatement = 'await page.locator(\'button[aria-label="Fit the complete map"]\').evaluate((button) => button.click());';
+const fitBeforeResize = runnerSource.replace(resizeStatement, "").replace(fitStatement, `${fitStatement}\n      ${resizeStatement}`);
+assert.throws(() => validateCullingMeasurementContract(fitBeforeResize), /resize before Fit/, "Fit-before-resize mutation must fail");
+const fitBeforeObservedResize = runnerSource.replace(/      await page\.waitForFunction\(\(\) => \{[\s\S]*?^      \}\);\n/m, "");
+assert.throws(() => validateCullingMeasurementContract(fitBeforeObservedResize), /matching SVG and CSS viewport dimensions/, "Fit-before-observed-resize mutation must fail");
+const globalEquality = runnerSource.replace("controlledStructural.emittedUnits !== fixture.visibleDensity", "controlledStructural.globalPrimitives !== fixture.visibleDensity");
+assert.throws(() => validateCullingMeasurementContract(globalEquality), /emitted-visible equality/, "global-equality mutation must fail");
+const repeatedSelectionRoot = runnerSource.replace("selectionRootConstructions > 1", "selectionRootConstructions > 2");
+assert.throws(() => validateCullingMeasurementContract(repeatedSelectionRoot), /selection root reconstruction/, "repeated-selection-root mutation must fail");
+console.log("JUSTIFIED culling-measurement-contract: resize-order, observed-resize, selection-root, and obsolete global-equality mutations rejected");
 console.log("JUSTIFIED trace-timing: Chromium trace events provide frame and input-to-paint evidence without an injected sampler");
+console.log("JUSTIFIED trace-observer-effect: unused CPU-profiler startup is rejected from the measured journey window");
 
 const mutations = [
   ["schema", (value) => { value.schema = "unknown"; }],
@@ -82,7 +97,12 @@ const observedSummary = { runs: source.fixtures.flatMap((fixture) => source.jour
   fixture: fixture.id,
   journey,
   structural: {
-    visible: { visualUnits: fixture.visibleDensity, projectedUnits: fixture.globalUnitCount },
+    visible: {
+      visualUnits: fixture.visibleDensity,
+      emittedUnits: fixture.visibleDensity,
+      candidatePrimitives: fixture.visibleDensity + fixture.routeOverlayComplexity,
+      globalPrimitives: fixture.mapExtent[0] * fixture.mapExtent[1] + fixture.globalUnitCount,
+    },
     cameraControl: { fitCompleteMap: true, viewport: fixture.viewport, centerAnchoredWheelSteps: 15, wheelDeltaY: -240 },
   },
 }))) };
@@ -92,7 +112,7 @@ for (const run of visibleEscape.runs.filter((value) => value.fixture === "contro
 assert.throws(() => validateObservedControls(visibleEscape, source), /visible-density observation is uncontrolled/, "a declared-only visible-density pair must fail");
 const globalEscape = structuredClone(observedSummary);
 for (const run of globalEscape.runs.filter((value) => value.fixture === "controlled-global-units")) run.structural.visible.visualUnits = 200;
-assert.throws(() => validateObservedControls(globalEscape, source), /global-unit observation changes visible density/, "a global-count pair that changes the visible set must fail");
+assert.throws(() => validateObservedControls(globalEscape, source), /global-unit observation changes emitted-visible work/, "a global-count pair that changes the visible set must fail");
 console.log("JUSTIFIED production-observed-controls: the exact former declared-only visible-density and global-count escapes are rejected");
 const authority = JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-authority.json", import.meta.url)));
 const evidence = validateEvidenceReceipt(JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-evidence.json", import.meta.url))), source, authority);

@@ -3,15 +3,15 @@
   "densityScenes": [
     {
       "units": 100,
-      "inputToPaintMilliseconds": 37.10000002384186,
+      "inputToPaintMilliseconds": 28.400000035762787,
       "animationFrameIntervalMilliseconds": 16.700000000000045,
-      "usedJsHeapBytes": 29419484
+      "usedJsHeapBytes": 27472886
     },
     {
       "units": 200,
-      "inputToPaintMilliseconds": 61.299999952316284,
+      "inputToPaintMilliseconds": 43.89999997615814,
       "animationFrameIntervalMilliseconds": 16.700000000000045,
-      "usedJsHeapBytes": 15403666
+      "usedJsHeapBytes": 39238634
     }
   ]
 }

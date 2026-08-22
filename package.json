@@ -29,6 +29,7 @@
     "review:persistent-workspace-m9": "node scripts/generate-persistent-workspace-m9-review.mjs",
     "review:tactical-visual": "node scripts/generate-tactical-visual-review.mjs",
     "test:map-editor-qualification": "node scripts/test-map-editor-qualification.mjs",
+    "test:composed-app-surface-inversions": "node scripts/test-composed-app-surface-inversions.mjs",
     "test:production-review-freshness-mutations": "bash scripts/test-production-review-freshness-mutations.sh",
     "test:planning-m5-qualification": "node scripts/test-planning-workspace-m5-qualification.mjs",
     "test:simulator-m6-qualification": "node scripts/test-simulator-workspace-m6-qualification.mjs",

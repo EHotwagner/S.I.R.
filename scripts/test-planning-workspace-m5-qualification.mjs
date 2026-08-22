@@ -1,11 +1,19 @@
 import { readFile } from "node:fs/promises";
 
-const [app, styles, projection, planning] = await Promise.all([
+const [appRoot, styles, projection, planning, tacticalSharedControls, tacticalScenePresentation] = await Promise.all([
   readFile("src/SIR.Client.Web/App.fs", "utf8"),
   readFile("src/SIR.Client.Web/styles.css", "utf8"),
   readFile("src/SIR.Client/TacticalSceneProjection.fs", "utf8"),
   readFile("src/SIR.Client/PlanningWorkspace.fs", "utf8"),
+  readFile("src/SIR.Client.Web/TacticalSharedControls.fs", "utf8"),
+  readFile("src/SIR.Client.Web/TacticalScenePresentation.fs", "utf8"),
 ]);
+
+// The tactical scene owner is an explicit view boundary extracted from App
+// (SIR.Client.Web.fsproj compiles it just before App.fs).  Qualify the composed
+// ownership surface, exactly as M0 and M7 already do, so relocating a view can
+// never mask a removed control while App.fs remains the root Elmish shell.
+const app = `${appRoot}\n${tacticalSharedControls}\n${tacticalScenePresentation}`;
 
 const require = (condition, message) => {
   if (!condition) throw new Error(`Planning M5 qualification failed: ${message}`);

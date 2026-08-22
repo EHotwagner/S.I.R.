@@ -153,6 +153,224 @@ let readDesktopToolbar () : string = jsNative
 [<Emit("window.localStorage.setItem('sir.desktop-toolbar.v1', $0)")>]
 let writeDesktopToolbar (_: string) : unit = jsNative
 
+/// Browser-owned latest-value scheduler for high-frequency presentation work.
+/// The returned object owns at most one animation-frame handle.  Hidden-page
+/// transitions cancel pending work; the next visible enqueue starts a fresh
+/// frame rather than replaying stale presentation state.
+type PresentationFrameScheduler<'value> = interface end
+
+[<Emit("""
+(() => {
+  let frame = 0;
+  let pending;
+  let hasPending = false;
+  let disposed = false;
+  let accepted = 0;
+  let scheduled = 0;
+  const accept = $0;
+  const cancel = () => {
+    if (frame !== 0) window.cancelAnimationFrame(frame);
+    frame = 0;
+    pending = undefined;
+    hasPending = false;
+  };
+  const run = () => {
+    frame = 0;
+    if (disposed || document.visibilityState === 'hidden' || !hasPending) return;
+    const value = pending;
+    pending = undefined;
+    hasPending = false;
+    accepted += 1;
+    accept(value);
+  };
+  const schedule = () => {
+    if (!disposed && document.visibilityState !== 'hidden' && frame === 0 && hasPending) {
+      scheduled += 1;
+      frame = window.requestAnimationFrame(run);
+    }
+  };
+  const visibility = () => {
+    if (document.visibilityState === 'hidden') cancel();
+    else schedule();
+  };
+  document.addEventListener('visibilitychange', visibility);
+  return {
+    enqueue(value) { pending = value; hasPending = true; schedule(); },
+    flush() {
+      if (disposed || !hasPending) return;
+      if (frame !== 0) window.cancelAnimationFrame(frame);
+      frame = 0;
+      const value = pending;
+      pending = undefined;
+      hasPending = false;
+      accepted += 1;
+      accept(value);
+    },
+    cancel,
+    dispose() {
+      if (disposed) return;
+      disposed = true;
+      cancel();
+      document.removeEventListener('visibilitychange', visibility);
+    },
+    counters() { return `${scheduled}:${accepted}:${frame === 0 ? 0 : 1}:${hasPending ? 1 : 0}`; }
+  };
+})()
+""")>]
+let createPresentationFrameScheduler
+    (_accept: 'value -> unit)
+    : PresentationFrameScheduler<'value> =
+    jsNative
+
+[<Emit("$0.enqueue($1)")>]
+let enqueuePresentationFrame
+    (_scheduler: PresentationFrameScheduler<'value>)
+    (_value: 'value)
+    : unit =
+    jsNative
+
+[<Emit("$0.flush()")>]
+let flushPresentationFrame
+    (_scheduler: PresentationFrameScheduler<'value>)
+    : unit =
+    jsNative
+
+[<Emit("$0.cancel()")>]
+let cancelPresentationFrame
+    (_scheduler: PresentationFrameScheduler<'value>)
+    : unit =
+    jsNative
+
+[<Emit("$0.dispose()")>]
+let disposePresentationFrameScheduler
+    (_scheduler: PresentationFrameScheduler<'value>)
+    : unit =
+    jsNative
+
+[<Emit("$0.counters()")>]
+let presentationFrameCounters
+    (_scheduler: PresentationFrameScheduler<'value>)
+    : string =
+    jsNative
+
+[<Emit("""
+(() => {
+  const root = document.getElementById('persistent-tactical-svg');
+  const camera = document.getElementById('persistent-scene-camera');
+  if (!root || !camera) return;
+  const panX = Number.isFinite($0) ? $0 : 0;
+  const panY = Number.isFinite($1) ? $1 : 0;
+  const zoom = Number.isFinite($2) && $2 > 0 ? $2 : 1;
+  camera.setAttribute('transform', `translate(${panX} ${panY}) scale(${zoom})`);
+  root.dataset.cameraPanX = String(panX);
+  root.dataset.cameraPanY = String(panY);
+  root.dataset.cameraZoom = String(zoom);
+  root.dataset.presentationCamera = `${panX}:${panY}:${zoom}`;
+})()
+""")>]
+let presentTacticalCamera
+    (_panX: float)
+    (_panY: float)
+    (_zoom: float)
+    : unit =
+    jsNative
+
+[<Emit("""
+(() => {
+  const root = document.getElementById('persistent-tactical-svg');
+  if (!root) return false;
+  const expected = `${$0}:${$1}:${$2}`;
+  return root.dataset.presentationCamera === expected;
+})()
+""")>]
+let isTacticalCameraPresented
+    (_panX: float)
+    (_panY: float)
+    (_zoom: float)
+    : bool =
+    jsNative
+
+[<Emit("""
+(() => {
+  const root = document.getElementById('persistent-tactical-svg');
+  if (!root) return $0;
+  const panX = Number(root.dataset.cameraPanX);
+  const panY = Number(root.dataset.cameraPanY);
+  const zoom = Number(root.dataset.cameraZoom);
+  if (!Number.isFinite(panX) || !Number.isFinite(panY) || !Number.isFinite(zoom) || zoom <= 0) return $0;
+  return { PanX: panX, PanY: panY, Zoom: zoom };
+})()
+""")>]
+let currentTacticalCamera
+    (_fallback: BattlefieldCamera)
+    : BattlefieldCamera =
+    jsNative
+
+/// Observe the retained SVG's own box, not the window: the sidebars and the
+/// bottom panel resize it without a window resize ever firing.
+///
+/// Two things here are deliberate and were learned the hard way.  First, the
+/// element is MEASURED SYNCHRONOUSLY as soon as it exists, so the model does not
+/// spend its first frames on the 960x640 default while the real box is already
+/// known.  Second, `ResizeObserver` is optional: a host without it (the headless
+/// qualification DOM is one) previously threw out of the subscription's start,
+/// which the subscription runner caught and reported, leaving viewport size
+/// permanently frozen and every resize assertion silently unobservable.  The
+/// window fallback is worse but it is not nothing.
+[<Emit("""
+(() => {
+  const accept = $0;
+  let disposed = false;
+  let frame = 0;
+  let element;
+  let lastWidth = 0;
+  let lastHeight = 0;
+  const offer = (width, height) => {
+    if (disposed) return;
+    if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) return;
+    if (width === lastWidth && height === lastHeight) return;
+    lastWidth = width;
+    lastHeight = height;
+    accept([width, height]);
+  };
+  const measure = () => {
+    if (disposed || !element) return;
+    const rect = element.getBoundingClientRect();
+    if (rect) offer(rect.width, rect.height);
+  };
+  const observer =
+    typeof ResizeObserver === 'function'
+      ? new ResizeObserver((entries) => {
+          const rect = entries[entries.length - 1]?.contentRect;
+          if (rect) offer(rect.width, rect.height);
+        })
+      : null;
+  const onWindowResize = observer ? null : () => measure();
+  const connect = () => {
+    if (disposed) return;
+    element = document.getElementById('persistent-tactical-svg');
+    if (!element) { frame = window.requestAnimationFrame(connect); return; }
+    frame = 0;
+    measure();
+    if (observer) observer.observe(element);
+    else window.addEventListener('resize', onWindowResize);
+  };
+  connect();
+  return {
+    Dispose() {
+      disposed = true;
+      if (frame !== 0) window.cancelAnimationFrame(frame);
+      if (observer) observer.disconnect();
+      else if (onWindowResize) window.removeEventListener('resize', onWindowResize);
+    }
+  };
+})()
+""")>]
+let observeTacticalViewport
+    (_accept: float * float -> unit)
+    : IDisposable =
+    jsNative
+
 let downloadExperiment report =
     let content = Lab.export report
     emitJsStatement content """
