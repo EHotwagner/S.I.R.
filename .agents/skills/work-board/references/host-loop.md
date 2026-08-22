@@ -78,7 +78,29 @@ A critic may file review-discovered work only when
 materiality, distinct root cause, dedupe, and actionability are evidenced; nonmaterial observations
 must not create issues, board rows, blocker edges, or follow-up entries. Post the exact-SHA
 `fsgg:review-accepted:v1` marker only after these pre-merge checks pass; the worker may not merge
-before it observes that marker. If material findings remain after round three, verify the escalation
+before it observes that marker.
+
+**Then record the acceptance the engine gates on.** The marker is human-readable review evidence;
+`landable` reads the structured `fsgg.coord.review-decision/v2` ledger, and refuses a PR that carries
+only the marker. Host acceptance is a record you write, not a marker you post:
+
+```sh
+scripts/fsgg-coord review record <ref> accept.json --pr <n>   # kind: acceptance, verdict: accepted
+```
+
+Three things about that draft are invisible from its field names, and each costs a wasted round:
+
+- **`critic` carries the CRITIC's worker id, not yours.** Every record in one review generation must
+  bind the same critic; your own id is refused with `every record in one review generation must bind
+  the same critic`, which reads like a complaint about the critic's record rather than your own.
+- **`precedingReview` must equal the `complete` wait event's `evidenceRef`, exactly** — the critic
+  record's comment URL is the natural value for both.
+- **You author no digest, `revision`, `previousDigest`, `claimGeneration` or `baseSha`.** The engine
+  derives all five from live state and discards the draft's values, so a placeholder is correct. An
+  acceptance draft is also pre-validated against the resulting chain before anything is posted, so a
+  wrong draft costs an error message rather than a corrupted ledger.
+
+The full contract is [`docs/coordination-engine-contracts.md`](../../../../docs/coordination-engine-contracts.md). If material findings remain after round three, verify the escalation
 marker, close the ordinary PR without merging, and automatically enter the repair phase; do not post
 acceptance, merge, or permit round four on the exhausted chain.
 
