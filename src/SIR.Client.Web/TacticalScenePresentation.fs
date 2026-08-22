@@ -405,6 +405,10 @@ let persistentSceneSvg
         svg.custom ("data-effect-count", projection |> Option.map _.Effects.Length |> Option.defaultValue 0 |> string)
         svg.custom ("data-effect-limit", string visualSystem.MaximumActiveEffects)
         svg.custom ("data-visual-unit-count", string visibleUnits.Length)
+        // The visible working set and the accepted scene's total are now
+        // different numbers, and a reader that can only see the first cannot
+        // tell "culled correctly" from "lost units".  Report both.
+        svg.custom ("data-visual-global-unit-count", string candidateUnitCount)
         svg.custom ("data-visual-node-estimate", projection |> Option.map _.VisualCost.EstimatedSvgNodes |> Option.defaultValue 0 |> string)
         svg.custom ("data-layer-order", String.concat ">" visualSystem.LayerOrder)
         unbox<ISvgAttribute> (prop.style [

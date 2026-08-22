@@ -87,7 +87,26 @@ requireTruth(telemetry.schema === "sir-tactical-visual-telemetry-v1" && telemetr
 for (const scene of manifest.densityScenes) {
   const budget = scene.units === 100 ? manifest.budgets.representative100 : manifest.budgets.stress200;
   const measured = telemetry.densityScenes.find(({ units }) => units === scene.units);
-  requireTruth(scene.workload.renderedUnits === scene.units, `${scene.units}-unit production render drifted`);
+  // The accepted scene still carries every unit; the DOM carries the visible
+  // working set.  Assert BOTH -- an emitted count equal to the global one would
+  // mean culling stopped working, and an empty one would mean it culled the
+  // scene away.  This is the "emitted-visible equality plus separately reported
+  // candidate/global growth" the viewport-visible-v1 budget requires.
+  requireTruth(scene.workload.globalUnits === scene.units, `${scene.units}-unit accepted scene drifted`);
+  requireTruth(
+    scene.workload.renderedUnits > 0 && scene.workload.renderedUnits <= scene.workload.globalUnits,
+    `${scene.units}-unit visible working set drifted`,
+  );
+  requireTruth(
+    scene.workload.emittedPrimitives > 0 &&
+      scene.workload.emittedPrimitives <= scene.workload.candidatePrimitives &&
+      // Chunk COUNT budgets belong to the viewport-visible-v1 fixture (480x320
+      // over 160x160); this board frames the whole map at 1440x900, so only the
+      // accounting invariants are meaningful here, not that fixture's ceiling.
+      scene.workload.queriedChunks > 0 &&
+      ["overview", "tactical", "detail"].includes(scene.workload.semanticTier),
+    `${scene.units}-unit viewport chunk accounting drifted`,
+  );
   requireTruth(
     scene.workload.effects > 0 &&
       scene.workload.currentAttackEffects > 0 &&
