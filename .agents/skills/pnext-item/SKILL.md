@@ -193,8 +193,10 @@ scripts/fsgg-coord review record <ref> accept.json   --pr <n>   # host: kind acc
 
 You author no digest and no generation: `review record` derives `revision`, `previousDigest`,
 `claimGeneration`, `baseSha` and `digest` from live state and discards whatever the draft supplied.
-`scripts/fsgg-coord review <ref> --pr <n>` is the authoritative next-action oracle for this protocol
-and needs your live claim. Every field, vocabulary and invariant is in
+`scripts/fsgg-coord review <ref> --pr <n>` is the authoritative next-action oracle for this protocol.
+It needs a live claim marker to EXIST on the item, not for you to hold it — a critic that holds no
+claim can run it and can post its own `review record`. (The engine's holder check,
+`live claim belongs to worker '...', not '...'`, gates `delivery`, not review.) Every field, vocabulary and invariant is in
 [`docs/coordination-engine-contracts.md`](../../../docs/coordination-engine-contracts.md).
 
 ## 6. Merge and obligations
