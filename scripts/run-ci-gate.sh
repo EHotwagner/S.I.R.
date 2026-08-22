@@ -49,7 +49,7 @@ fi
 rm -f -- "$extract_path"
 
 trace_dir=""
-if [[ "$subject" != integrity && "$subject" != evidence ]]; then
+if [[ "$subject" != integrity && "$subject" != evidence && "$subject" != review-contract ]]; then
   trace_dir=$(mktemp -d /tmp/sir-ci-gate-dotnet-trace.XXXXXX)
   trace_log="$trace_dir/invocations.log"
   real_dotnet=$(command -v dotnet)
@@ -66,6 +66,10 @@ if [[ $preflight_status -ne 0 ]]; then
 else
   case "$subject" in
     integrity) "$repo_root/scripts/qualify-pr.sh" integrity ;;
+    # review-contract holds docs/coordination-engine-contracts.md to the coordination engine it
+    # documents (S.I.R.#255). It is pure — it loads FS.GG.Coord.Core and runs `facts`, and performs
+    # no board IO — so it needs no qualification harness and runs directly.
+    review-contract) "$repo_root/scripts/test-review-contract-coherence.sh" ;;
     *) "$repo_root/scripts/qualify-pr.sh" gate "$subject" ;;
   esac
   exit_code=$?

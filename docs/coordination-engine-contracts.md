@@ -60,8 +60,15 @@ All three pass, because both sides of the comparison come from the caller. A met
 
 The general form: **a pure function is parameterised on exactly the facts its callers establish, so it
 is blind to precisely the facts you most need from its caller.** Before you trust a contract recovered
-in-process, ask what the production route passes IN, and go read that. For this engine that means
-`ilspycmd` over `FS.GG.Coord.Cli.Client` — see the last section.
+in-process, ask what the production route passes IN, and go read that. For this engine the production
+route is the **CLI command gates** in `FS.GG.Coord.Cli.Client` — `authorizeReviewRecordWait`, the
+derived-subject check, the comment-URL equality checks, `liveAcceptanceBinding` — and they are
+reachable only with `ilspycmd`, not from the encoders and validators in `FS.GG.Coord.Core`.
+
+Three separate errors in an earlier revision of this page came from that one seam — the wrong
+`subject`, a false claim that the review oracle needs a claim you hold, and a set of comment-URL rules
+described as mere non-emptiness. All three were written from the Core encoders and validators, none of
+which can see what the CLI enforces.
 
 Everything below marked **production-only** is a rule the in-process validator does not enforce and
 cannot reveal.
@@ -118,9 +125,30 @@ All nine keys are required.
 }
 ```
 
+The `enter` event is checked by **two different layers**, and neither one enforces the other's rules.
+Knowing which is which matters, because only the first is reachable from `dotnet fsi`:
+
+**`ReviewWait.validate` — the pure validator** (measured against it directly):
+
+- **`expiresAt - enteredAt` must be at most 24 hours**, or
+  `a review wait may be bounded for at most 24 hours`. There is no way to open a longer window.
+- `expiresAt` must be strictly later than `enteredAt`, or `expiresAt must be later than enteredAt`.
+- It does **not** check that the window is anywhere near *now*: a receipt entered 30 days in the
+  future, or expiring 10 days in the past, passes this layer.
+
+**The CLI gate — production-only**, and the reason the previous bullet is not the whole story:
+
 - `item` must equal the canonical ref exactly — `<owner>/<repo>#<number>`.
 - `kind` is `initial-review` or `repair-confirmation`. Nothing else parses.
-- `enteredAt` must not be more than five minutes in the future; `expiresAt` must be in the future.
+- `claimGeneration` must equal the **current** claim marker's comment id, or
+  `receipt claimGeneration is not current`.
+- `enteredAt` must not be more than five minutes in the future (`enteredAt is implausibly in the
+  future`), and `expiresAt` must be in the future (`receipt is already expired`).
+
+An earlier revision of this page listed only the CLI rules, attributed them to the validator, and
+omitted the 24-hour ceiling entirely — a reader sizing a two-day window would have been refused by a
+rule the page said did not exist. That is this page's own subject matter happening to this page; see
+the rule at the top.
 
 ### The `complete`, `cancel` and `timeout` events
 
@@ -151,8 +179,10 @@ Exactly five keys. There is no `item`, no `kind`, and no `claimGeneration` on a 
 > review wait expiry` and the generation cannot be completed at all — it can only be cancelled or
 > timed out and re-entered. The window is whatever you put in `expiresAt`, and the claim lease
 > defaults to 120 minutes, so a wait window sized to match the lease leaves no margin for a slow
-> review. Size `expiresAt` for the review you expect, complete it as soon as the critic's record is
-> posted, and do not let a passing review sit uncompleted.
+> review. **The window is capped at 24 hours** — `a review wait may be bounded for at most 24 hours` —
+> so "open a very long window" is not available to you. Size `expiresAt` for the review you expect
+> within that ceiling, complete it as soon as the critic's record is posted, and do not let a passing
+> review sit uncompleted.
 >
 > **Measured on a real review:** wait opened 21:51:44Z, critic record posted 22:03:19Z — 11 minutes
 > 35 seconds, against a 240-minute window, roughly 20x headroom. The margin is not there for slow
@@ -161,7 +191,18 @@ Exactly five keys. There is no `item`, no `kind`, and no `claimGeneration` on a 
 
 ## `review record` — schema `fsgg.coord.review-decision/v2`
 
-The posted comment body is `<!-- fsgg:review-decision/v2 -->`, a newline, then the sealed JSON.
+**The file you hand the CLI is BARE JSON. Do not put the marker line in it.** The marker is what the
+engine POSTS; it is not what the engine READS. `review record <ref> draft.json --pr <n>` parses
+`draft.json` with `Driver.decodeStructuredReview`, which is a JSON parser — give it a leading
+`<!-- … -->` line and it refuses with a message that names neither the marker nor the file:
+
+```
+'<' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0.
+```
+
+The same holds for `review wait`. Every JSON document on this page is the file content; the
+`<!-- fsgg:review-decision/v2 -->` / `<!-- fsgg:review-wait/v1 -->` line is prepended by the engine
+when it posts the comment.
 
 ### `subject` is NOT the item ref — and it differs from the wait event's `item`
 
@@ -292,6 +333,49 @@ scripts/fsgg-coord review record <ref> accept.json   --pr <n>
 scripts/fsgg-coord landable <n> --repo "S.I.R." --wait
 ```
 
+### A complete acceptance draft
+
+Step 4 is the one a host has to author from scratch, so here it is whole. Every value is either fixed,
+copied from the critic's record, or read off the `review record` result that produced it.
+
+```json
+{
+  "schema": "fsgg.coord.review-decision/v2",
+  "subject": "EHotwagner/S.I.R.#255/pr/259",
+  "revision": 1,
+  "headSha": "72d40c045b25bf3c9c426bf5a81ace6b735ebea0",
+  "critic": "osprey-bbbe",
+  "verdict": "accepted",
+  "acceptedExceptions": [],
+  "routeApplicability": "not-meaningful",
+  "routeEvidence": ["host acceptance is a ledger act, not a runtime observation"],
+  "policyVersion": "structured-decisions/1",
+  "kind": "acceptance",
+  "round": 0,
+  "initialReview": "https://github.com/EHotwagner/S.I.R./pull/259#issuecomment-5382832710",
+  "precedingReview": "https://github.com/EHotwagner/S.I.R./pull/259#issuecomment-5382832710",
+  "timestamp": "2026-08-23T00:00:00Z",
+  "digest": ""
+}
+```
+
+Field by field, because three of these are not guessable:
+
+- `subject` — the `/pr/<n>` form. Not the item ref. See above.
+- `revision` and `digest` — present because the parser requires the keys; the values are discarded.
+  `1` and `""` are correct placeholders whatever the real revision turns out to be.
+- `critic` — **the critic's worker id, not yours.** Copy it from the record you are accepting.
+- `acceptedExceptions` — required, and almost always `[]`. It records exceptions the host is
+  knowingly accepting; an empty list means none, which is the normal case.
+- `routeApplicability` / `routeEvidence` — required on every record, including acceptance. **The host
+  did not execute a route comparison; the critic did.** Attesting to a comparison you did not run
+  would be false, so use `not-meaningful` with exactly one entry saying what the acceptance actually
+  is. Do not copy the critic's four-part evidence into your own record.
+- `initialReview` and `precedingReview` — **production-only**: both must be exact comment URLs, and
+  `precedingReview` must additionally equal the `complete` wait event's `evidenceRef`. Using the
+  critic record's `commentUrl` for all three satisfies every rule at once.
+- `round` — `0`. Nothing on the production path reads it; see the invariants above.
+
 `review record` on an acceptance draft pre-validates the resulting chain **before** posting, and
 refuses with `resulting accepted chain is invalid: …` rather than writing a bad record. A wrong
 acceptance draft costs an error message, not a corrupted ledger.
@@ -306,7 +390,15 @@ expected and does not mean anything failed.
 
 ## `scripts/fsgg-coord review <ref> --pr <n>` is the oracle
 
-It requires a **live claim on the item**, so you can only run it for work you hold. It returns one
+It requires a **live claim marker to EXIST on the item** — not that you hold it. The engine reads the
+winning marker to derive `claimGeneration` and never compares its worker id to `$FSGG_WORKER`, so a
+critic holding no claim can run this, and can post its own `review record`. **Measured:** critic
+`osprey-bbbe`, holding no claim on `S.I.R.#255`, recorded revision 1 on PR #259 while a different
+worker held the claim.
+
+The engine does have a holder check — `live claim belongs to worker '%s', not '%s'` — and applies it to
+`delivery`, not to review. Do not assume from that message's existence that review is gated the same
+way; it is not. It returns one
 typed state and one next action — `DispatchCritic`, `ResumeImplementer`, `DispatchSuccessor`,
 `AwaitChecks`, `RequestHostAcceptance`, `EnterRepairPhase`, `EnterCriticSuccession`, `Accept`,
 `AuthorizeDelivery`, `Park` — bound to a freshness token that a changed head invalidates. Prefer it
@@ -362,5 +454,18 @@ facts — which is how an earlier revision of this page documented the wrong `su
 to learn the invariants; use `ilspycmd` over `FS.GG.Coord.Cli.Client` to learn what the production route
 passes into it. You need both, and the second is the one people skip.
 
-`scripts/test-review-contract-coherence.sh` holds this page to that standard: it drives the documented
-path against the real engine assembly and fails when any load-bearing claim here is inverted.
+`scripts/test-review-contract-coherence.sh` holds this page to that standard, and it is precise about
+how far that goes:
+
+- **Derived claims** — the required and optional draft-key lists, the vocabulary table, both wait
+  examples' key sets, the engine-overwrites table, the route-evidence cardinalities, the initial-record
+  round, the `reviewGeneration` shape, the authorization table, and the two subject forms — are
+  **parsed out of this document** and compared against the live engine. Falsify one here and the gate
+  reds, because its expectation is this text.
+- **Literal-only claims** — the traps, the warnings, the quoted refusal strings, and everything else
+  stated as prose with no machine form — are checked for presence only. Rewriting such a sentence to
+  say the opposite while keeping its key phrase would not be caught.
+
+An earlier revision claimed it "fails when any load-bearing claim here is inverted". It did not: seven
+documented claims were falsified and it stayed green. The distinction above is the repair, and stating
+it honestly is part of the repair rather than a caveat on it.

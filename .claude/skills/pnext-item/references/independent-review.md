@@ -49,7 +49,7 @@ durable wait entry written through `fsgg-coord review wait`. A PR carrying a per
 no ledger is refused with:
 
 ```
-PR #N carries no valid host review-acceptance marker (`fsgg.coord.review-decision/v2`) —
+PR #N carries no valid host review-acceptance marker (`fsgg:review-decision/v2`) —
 the review chain is absent, incomplete, or malformed.
 ```
 
@@ -97,7 +97,12 @@ head invalidates. Prefer it over inferring the protocol from prose, including th
 The complete contract — every required and optional draft key, both vocabularies, every ledger
 invariant in the validator's own words, the wait-window expiry trap, and how to settle a question this
 prose does not answer — is [`docs/coordination-engine-contracts.md`](../../../../docs/coordination-engine-contracts.md),
-which `scripts/test-review-contract-coherence.sh` holds to the engine on every CI run.
+which `scripts/test-review-contract-coherence.sh` holds to the engine — it parses that document's
+own tables and key lists and compares them against the pinned engine, so falsifying a documented claim
+reds the gate. Run it directly, or as `scripts/run-ci-gate.sh review-contract`, which is the named
+subject it is dispatchable under. **The workflow row that invokes that subject on every PR lives in
+`.github/workflows/ci.yml`, which this change does not touch** — until that row lands the gate is
+dispatchable and green but not automatic, so run it by hand when you change the contract.
 
 
 Every item gets one independent critique cycle before merge. The implementer and critic are different
