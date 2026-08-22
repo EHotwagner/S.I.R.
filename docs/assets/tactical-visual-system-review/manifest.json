@@ -25,7 +25,7 @@
     "browserUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
     "browserVersion": "Chrome/151.0.7922.34"
   },
-  "productionBundleSha256": "c9c4f15a06c879e9c0850254c6a0bb70b4a4e9b08d531595c8b9929b47394a81",
+  "productionBundleSha256": "960e1cadb0895ce6c4bd8172692a0b7c96be1cc273b82292f1642ba022cb42eb",
   "productionStylesSha256": "8467b289da91600fb79195d1bff06b707d2e910a6ecf65a7d98b92331b23ae1f",
   "before": {
     "path": "../persistent-workspace-m9-review/field-focus.png",

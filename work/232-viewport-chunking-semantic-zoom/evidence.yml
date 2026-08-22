@@ -16,9 +16,9 @@ evidence:
     sourceRefs: []
     result: deferred
     synthetic: false
-    rationale: "The declared viewport-visible-v1 timing budget (p95 <=16 ms, p99 <=32 ms, zero catch-up frames) is NOT met on the exact candidate. Measured over 8 fixtures x 7 journeys (56 production Chromium runs): playback 9 dropped frames, p95 213.8 ms, p99 259.7 ms; modality-transition 23 dropped frames, p95 39.5 ms, p99 56.3 ms; pan p95 20.2 ms; zoom p95 17.1 ms; selection input-to-paint 22.0 ms. The structural half of the intent is satisfied and separately gated. This is a deferral rather than a pass because a pass would misstate the measurement, and a synthetic pass would not satisfy the obligation anyway."
+    rationale: "The declared viewport-visible-v1 timing budget (p95 <=16 ms, p99 <=32 ms, zero catch-up frames) is NOT met on the exact candidate. Measured over 8 fixtures x 7 journeys (56 production Chromium runs) - playback 9 dropped frames, p95 213.8 ms, p99 259.7 ms; modality-transition 23 dropped frames, p95 39.5 ms, p99 56.3 ms; pan p95 20.2 ms; zoom p95 17.1 ms; selection input-to-paint 22.0 ms. The structural half of the intent is satisfied and separately gated. This is a deferral rather than a pass because a pass would misstate the measurement, and a synthetic pass would not satisfy the obligation anyway."
     owner: EHotwagner/S.I.R. client presentation, blocked upstream on FS-GG/FS.GG.Rendering#1256
-    scope: "The timing clauses of performance intent viewport-visible-work-v1 only: p95, p99 and catch-up frames on the playback, modality-transition, pan, zoom and selection journeys. The structural cost budgets of the same intent are met and are not deferred."
+    scope: "The timing clauses of performance intent viewport-visible-work-v1 only - p95, p99 and catch-up frames on the playback, modality-transition, pan, zoom and selection journeys. The structural cost budgets of the same intent are met and are not deferred."
     laterLifecycleVisibility: "Re-measure with the same command once the transition-aware Elmish host adapter tracked at FS-GG/FS.GG.Rendering#1256 is delivered and consumable; the timing half of this intent must not be claimed anywhere until that re-measurement is green."
     performanceBudget:
       artifactPath: readiness/232-viewport-chunking-semantic-zoom/performance-evidence.json

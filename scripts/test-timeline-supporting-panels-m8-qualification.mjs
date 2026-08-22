@@ -53,7 +53,7 @@ for (const required of [
   require(app.includes(required), `persistent ownership token is missing: ${required}`);
 }
 for (const required of [
-  'elif panelId = "samples" then FeatureLoader.samples',
+  'elif panelId = "samples" then Some FeatureLoader.samples',
   "let samplesPanel model dispatch =",
   "FeatureLoader.stateFor FeatureLoader.samples model.ClientFeatures",
   "renderSamplesFeature root",
