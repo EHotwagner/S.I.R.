@@ -18,6 +18,41 @@ related:
 
 # Performance Budget
 
+## Viewport-visible retained-SVG budget
+
+The `viewport-visible-v1` workload fixes a 480×320 CSS-pixel viewport over a
+160×160 project with up to 2,000 units/routes/annotations and 256 active
+effects. Its definition digest is
+`sha256:7335f5a84cded141d3a04a0d395b6d5ec8f78d34178d2196c02d4935384dff24`.
+Presentation uses deterministic 8×8-cell chunks and a two-cell overscan. An
+inclusive boundary rule assigns intersecting geometry to every touched chunk;
+stable `ScenePrimitiveId` values deduplicate the query result.
+
+The production SVG reports queried chunks, chunk candidates, emitted spatial
+primitives, and global primitives separately. Acceptance requires at most 24
+queried chunks, at most 1,600 emitted spatial primitives, zero duplicate
+semantic IDs, and zero offscreen focusable SVG nodes. Equal small viewports on
+40×40/200-unit and 160×160/2,000-unit pure fixtures must emit the same visible
+working set. These fixture sizes are regression workloads, not project-size
+ceilings; simulation, validation, pathfinding, disclosure, replay, and export
+continue to consume complete authoritative state.
+
+Semantic zoom derives three deterministic tiers from finite projected cell
+size: overview below 20 px, tactical from 20 px to below 48 px, and detail at
+48 px or above. Footprint, faction stroke, selection, and alert markers remain
+in every tier. Tactical detail promotes on selection, hover, or keyboard focus;
+overview suppresses detail because the projected geometry cannot carry it.
+Selection/focus IDs and complete disclosed facts remain in the roster,
+inspector, and SVG accessibility description even while geometry is culled.
+
+Release pure qualification owns deterministic structure, boundary continuity,
+identity, accessibility-state, and fail-capable mutation checks. The built
+Chromium journey owns production DOM/CSS and interaction assertions. The
+retained exact-candidate pipeline evidence from item #231 owns live
+style/layout/paint/compositor capability; headless qualification makes no
+compositor or swapchain claim. The frame targets remain p95 ≤16 ms and p99 ≤32
+ms at 60 fps, with no catch-up frames.
+
 ## Tactical visual-system budget
 
 The shared production SVG reports its unit count, estimated node count, active

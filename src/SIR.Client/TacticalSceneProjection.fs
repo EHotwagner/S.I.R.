@@ -292,6 +292,18 @@ module TacticalSceneProjection =
     [<Literal>]
     let private MaximumEffectInstances = 256
 
+    [<Literal>]
+    let private ViewportChunkCells = 8.0
+
+    [<Literal>]
+    let private ViewportOverscanCells = 2.0
+
+    [<Literal>]
+    let private DefaultViewportWidth = 960.0
+
+    [<Literal>]
+    let private DefaultViewportHeight = 640.0
+
     let visualSystem paletteId reducedMotion unitCount =
         let palette =
             ReplayPalettes.all
@@ -441,23 +453,29 @@ module TacticalSceneProjection =
         | Blocked -> "blocked"
         | Objective -> "objective"
 
-    let private terrainOfMap (map: MapDefinition) =
-        let width = max 0 (int map.Width)
-        let height = max 0 (int map.Height)
-        Array.init (width * height) (fun index ->
-            let column = int32 (index % width)
-            let row = int32 (index / width)
-            let terrain =
-                map.Terrain
-                |> Map.tryFind (column, row)
-                |> Option.defaultValue Open
-            { PrimitiveId =
-                primitive
-                    "terrain"
-                    (invariant column + ":" + invariant row)
-              Column = column
-              Row = row
-              Kind = terrainName terrain })
+    let private terrainOfMap (minimumColumn, maximumColumn, minimumRow, maximumRow) (map: MapDefinition) =
+        let minimumColumn = max 0 minimumColumn
+        let minimumRow = max 0 minimumRow
+        let maximumColumn = min (int map.Width - 1) maximumColumn
+        let maximumRow = min (int map.Height - 1) maximumRow
+        if maximumColumn < minimumColumn || maximumRow < minimumRow then [||]
+        else
+          [| for rowValue in minimumRow .. maximumRow do
+               for columnValue in minimumColumn .. maximumColumn do
+                let column = int32 columnValue
+                let row = int32 rowValue
+                let terrain =
+                    map.Terrain
+                    |> Map.tryFind (column, row)
+                    |> Option.defaultValue Open
+                yield
+                    { PrimitiveId =
+                        primitive
+                            "terrain"
+                            (invariant column + ":" + invariant row)
+                      Column = column
+                      Row = row
+                      Kind = terrainName terrain } |]
 
     let private copyEdge (edge: EdgeVisual) : EdgeVisual =
         { Id = edge.Id
@@ -637,6 +655,134 @@ module TacticalSceneProjection =
           EffectInstances = effects.Length
           EstimatedSvgNodes = 32 + terrainNodes + edges.Length + unitNodes + routes.Length + annotations.Length + effectNodes }
 
+    let private finite fallback value =
+        if Double.IsNaN value || Double.IsInfinity value then fallback else value
+
+    let private inclusiveChunkRange minimum maximum =
+        let minimum = min minimum maximum
+        let maximum = max minimum maximum
+        let first = int (Math.Floor(minimum / ViewportChunkCells))
+        let last = int (Math.Floor(maximum / ViewportChunkCells))
+        let exactMinimum = minimum / ViewportChunkCells
+        let first =
+            if minimum <> maximum && exactMinimum = Math.Floor exactMinimum then first - 1
+            else first
+        first, last
+
+    let private viewportCellQuery viewportWidth viewportHeight (camera: BattlefieldCamera) =
+        let zoom = max 0.000001 (finite 1.0 camera.Zoom)
+        let width = max 1.0 (finite DefaultViewportWidth viewportWidth)
+        let height = max 1.0 (finite DefaultViewportHeight viewportHeight)
+        let minimumX = (0.0 - finite 0.0 camera.PanX) / zoom / Battlefield.CellSize - ViewportOverscanCells
+        let minimumY = (0.0 - finite 0.0 camera.PanY) / zoom / Battlefield.CellSize - ViewportOverscanCells
+        let maximumX = (width - finite 0.0 camera.PanX) / zoom / Battlefield.CellSize + ViewportOverscanCells
+        let maximumY = (height - finite 0.0 camera.PanY) / zoom / Battlefield.CellSize + ViewportOverscanCells
+        let firstColumn, lastColumn = inclusiveChunkRange minimumX maximumX
+        let firstRow, lastRow = inclusiveChunkRange minimumY maximumY
+        firstColumn * int ViewportChunkCells,
+        (lastColumn + 1) * int ViewportChunkCells - 1,
+        firstRow * int ViewportChunkCells,
+        (lastRow + 1) * int ViewportChunkCells - 1
+
+    let private intersectsChunkQuery (queryColumnMinimum, queryColumnMaximum, queryRowMinimum, queryRowMaximum) (minimumX, minimumY, maximumX, maximumY) =
+        let firstColumn, lastColumn = inclusiveChunkRange minimumX maximumX
+        let firstRow, lastRow = inclusiveChunkRange minimumY maximumY
+        firstColumn <= queryColumnMaximum
+        && lastColumn >= queryColumnMinimum
+        && firstRow <= queryRowMaximum
+        && lastRow >= queryRowMinimum
+
+    let private pointBounds (points: float array) =
+        if points.Length < 2 then None
+        else
+            let pairs =
+                points
+                |> Array.chunkBySize 2
+                |> Array.choose (fun pair ->
+                    if
+                        pair.Length = 2
+                        && not (Double.IsNaN pair[0] || Double.IsInfinity pair[0])
+                        && not (Double.IsNaN pair[1] || Double.IsInfinity pair[1])
+                    then Some(pair[0], pair[1])
+                    else None)
+            if Array.isEmpty pairs then None
+            else
+                Some(
+                    pairs |> Array.minBy fst |> fst,
+                    pairs |> Array.minBy snd |> snd,
+                    pairs |> Array.maxBy fst |> fst,
+                    pairs |> Array.maxBy snd |> snd
+                )
+
+    let private geometryBounds = function
+        | FootprintGeometry(centerX, centerY, width, depth) -> Some(centerX - width / 2.0, centerY - depth / 2.0, centerX + width / 2.0, centerY + depth / 2.0)
+        | DirectionGeometry(originX, originY, _, _) -> Some(originX - 1.0, originY - 1.0, originX + 1.0, originY + 1.0)
+        | PathGeometry(points, _, _) -> pointBounds points
+        | AreaGeometry(centerX, centerY, radius) -> Some(centerX - radius, centerY - radius, centerX + radius, centerY + radius)
+        | TraceGeometry(points, impactX, impactY) -> pointBounds (Array.append points [| impactX; impactY |])
+        | StatusGeometry(anchorX, anchorY, _, _, _) -> Some(anchorX, anchorY, anchorX, anchorY)
+
+    let private viewportProjection viewportWidth viewportHeight (projection: SharedSceneProjection) =
+        let zoom = max 0.000001 (finite 1.0 projection.Camera.Zoom)
+        let width = max 1.0 (finite DefaultViewportWidth viewportWidth)
+        let height = max 1.0 (finite DefaultViewportHeight viewportHeight)
+        let minimumX = (0.0 - finite 0.0 projection.Camera.PanX) / zoom / Battlefield.CellSize - ViewportOverscanCells
+        let minimumY = (0.0 - finite 0.0 projection.Camera.PanY) / zoom / Battlefield.CellSize - ViewportOverscanCells
+        let maximumX = (width - finite 0.0 projection.Camera.PanX) / zoom / Battlefield.CellSize + ViewportOverscanCells
+        let maximumY = (height - finite 0.0 projection.Camera.PanY) / zoom / Battlefield.CellSize + ViewportOverscanCells
+        let firstColumn, lastColumn = inclusiveChunkRange minimumX maximumX
+        let firstRow, lastRow = inclusiveChunkRange minimumY maximumY
+        let query = firstColumn, lastColumn, firstRow, lastRow
+        let intersects = intersectsChunkQuery query
+        let terrain =
+            projection.Terrain
+            |> Array.filter (fun cell -> intersects (float cell.Column, float cell.Row, float cell.Column + 1.0, float cell.Row + 1.0))
+        let edges =
+            projection.Edges
+            |> Array.filter (fun edge -> intersects (float edge.StartColumn, float edge.StartRow, float edge.EndColumn, float edge.EndRow))
+        let units =
+            projection.Units
+            |> Array.filter (fun unit ->
+                intersects (
+                    unit.PresentationColumn,
+                    unit.PresentationRow,
+                    unit.PresentationColumn + float (CellExtent.value unit.Visual.FootprintWidth),
+                    unit.PresentationRow + float (CellExtent.value unit.Visual.FootprintDepth)
+                ))
+        let unitBounds =
+            projection.Units
+            |> Array.map (fun unit -> unit.Visual.Id, (unit.PresentationColumn, unit.PresentationRow, unit.PresentationColumn + float (CellExtent.value unit.Visual.FootprintWidth), unit.PresentationRow + float (CellExtent.value unit.Visual.FootprintDepth)))
+            |> Map.ofArray
+        let routes =
+            projection.Routes
+            |> Array.filter (fun route -> pointBounds route.Points |> Option.exists intersects)
+        let annotations =
+            projection.Annotations
+            |> Array.filter (fun annotation ->
+                annotation.Geometry
+                |> Option.bind geometryBounds
+                |> Option.orElseWith (fun () ->
+                    match annotation.Column, annotation.Row with
+                    | Some column, Some row -> Some(float column, float row, float column + 1.0, float row + 1.0)
+                    | _ -> annotation.SubjectUnitId |> Option.bind (fun id -> Map.tryFind id unitBounds))
+                |> Option.forall intersects)
+        let effects =
+            projection.Effects
+            |> Array.filter (fun effect ->
+                [| effect.SourcePoint; effect.TargetPoint |]
+                |> Array.choose id
+                |> Array.collect (fun (x, y) -> [| x; y |])
+                |> pointBounds
+                |> Option.forall intersects)
+        { projection with
+            Terrain = terrain
+            Edges = edges
+            Units = units
+            Routes = routes
+            Annotations = annotations
+            Effects = effects
+            VisualCost = visualCost terrain edges units routes annotations effects }
+
     let private camera (value: BattlefieldCamera) =
         { PanX = value.PanX
           PanY = value.PanY
@@ -759,7 +905,9 @@ module TacticalSceneProjection =
     let editor (input: EditorProjectionInput) =
         let frame = MapEditor.frame input.EditorState
         let units = unitsOfFrame frame
-        let terrain = terrainOfMap input.EditorState.Map
+        let terrain =
+            input.EditorState.Map
+            |> terrainOfMap (viewportCellQuery input.EditorWorkspace.ViewportWidth input.EditorWorkspace.ViewportHeight input.EditorWorkspace.Camera)
         let edges = frame.Edges |> Array.map copyEdge
         let annotations =
             Array.append
@@ -784,31 +932,33 @@ module TacticalSceneProjection =
             |> Array.sortBy fst
             |> Array.mapi (fun order (domain, state) ->
                 editorLayer domain state order)
-        { Owner = EditorScene
-          RevisionIdentity = input.EditorState.Revision.Digest
-          Tick = input.EditorState.Tick
-          Board = frame.Board
-          Terrain = terrain
-          Edges = edges
-          Units = units
-          Routes = [||]
-          Annotations = annotations
-          Effects = effects
-          VisualCost = visualCost terrain edges units [||] annotations effects
-          Disclosure = disclosure SandboxDisclosure
-          Camera = camera input.EditorWorkspace.Camera
-          Selection =
-            selection
-                selected
-                focused
-                selectedRegion
-                None
-                None
-                (selectedRegion
-                 |> Option.map (fun id ->
-                     [| primitive "region" (invariant id) |])
-                 |> Option.defaultValue [||])
-          Layers = layers }
+        let projection =
+            { Owner = EditorScene
+              RevisionIdentity = input.EditorState.Revision.Digest
+              Tick = input.EditorState.Tick
+              Board = frame.Board
+              Terrain = terrain
+              Edges = edges
+              Units = units
+              Routes = [||]
+              Annotations = annotations
+              Effects = effects
+              VisualCost = visualCost terrain edges units [||] annotations effects
+              Disclosure = disclosure SandboxDisclosure
+              Camera = camera input.EditorWorkspace.Camera
+              Selection =
+                selection
+                    selected
+                    focused
+                    selectedRegion
+                    None
+                    None
+                    (selectedRegion
+                     |> Option.map (fun id ->
+                         [| primitive "region" (invariant id) |])
+                     |> Option.defaultValue [||])
+              Layers = layers }
+        viewportProjection input.EditorWorkspace.ViewportWidth input.EditorWorkspace.ViewportHeight projection
 
     let private planningUnit
         (map: MapDefinition)
@@ -1009,7 +1159,9 @@ module TacticalSceneProjection =
                 | Some(command, primitiveId) ->
                     Some command, [| primitiveId |]
                 | None -> None, [||]
-        let terrain = terrainOfMap input.PlanningMap
+        let terrain =
+            input.PlanningMap
+            |> terrainOfMap (viewportCellQuery DefaultViewportWidth DefaultViewportHeight input.PlanningCamera)
         let edges = edgesOfMap input.PlanningMap
         let annotations =
             Array.concat
@@ -1035,31 +1187,33 @@ module TacticalSceneProjection =
                             Geometry = None
                             Text = Disclosed disclosure }))
                   |> Option.defaultValue [||] ]
-        { Owner = PlanningScene
-          RevisionIdentity =
-            input.PlanningState.MapRevision
-            + ":"
-            + input.PlanningState.Digest
-          Tick = input.PlanningState.AuthoringTick
-          Board = boardOfMap input.PlanningMap
-          Terrain = terrain
-          Edges = edges
-          Units = units
-          Routes = routes
-          Annotations = annotations
-          Effects = [||]
-          VisualCost = visualCost terrain edges units routes annotations [||]
-          Disclosure = disclosure SandboxDisclosure
-          Camera = camera input.PlanningCamera
-          Selection =
-            selection
-                selected
-                focused
-                None
-                selectedCommand
-                None
-                selectedCommandPrimitive
-          Layers = Array.copy standardLayers }
+        let projection =
+            { Owner = PlanningScene
+              RevisionIdentity =
+                input.PlanningState.MapRevision
+                + ":"
+                + input.PlanningState.Digest
+              Tick = input.PlanningState.AuthoringTick
+              Board = boardOfMap input.PlanningMap
+              Terrain = terrain
+              Edges = edges
+              Units = units
+              Routes = routes
+              Annotations = annotations
+              Effects = [||]
+              VisualCost = visualCost terrain edges units routes annotations [||]
+              Disclosure = disclosure SandboxDisclosure
+              Camera = camera input.PlanningCamera
+              Selection =
+                selection
+                    selected
+                    focused
+                    None
+                    selectedCommand
+                    None
+                    selectedCommandPrimitive
+              Layers = Array.copy standardLayers }
+        viewportProjection DefaultViewportWidth DefaultViewportHeight projection
 
     let private overlayRoute (overlay: OverlayVisual) : SceneRouteProjection =
         let normalized = overlay.Kind.ToLowerInvariant()
@@ -1149,7 +1303,9 @@ module TacticalSceneProjection =
                 (input.SimulatorSelectedUnit |> Option.toList)
                 input.SimulatorFocusedUnit
                 units
-        let terrain = terrainOfMap input.SimulatorHandoff.RuntimeMap
+        let terrain =
+            input.SimulatorHandoff.RuntimeMap
+            |> terrainOfMap (viewportCellQuery DefaultViewportWidth DefaultViewportHeight input.SimulatorCamera)
         let edges = frame.Edges |> Array.map copyEdge
         let routes = frame.Overlays |> Array.map simulatorOverlayRoute
         let annotations =
@@ -1169,28 +1325,30 @@ module TacticalSceneProjection =
         let effects =
             Array.append (effectsOfFrame false units frame) (routeEffects frame.Tick routes)
             |> retainEffects
-        { Owner = SimulatorScene
-          RevisionIdentity = input.SimulatorHandoff.Revision.Digest
-          Tick = input.SimulatorHandoff.Tick
-          Board = frame.Board
-          Terrain = terrain
-          Edges = edges
-          Units = units
-          Routes = routes
-          Annotations = annotations
-          Effects = effects
-          VisualCost = visualCost terrain edges units routes annotations effects
-          Disclosure = disclosure SandboxDisclosure
-          Camera = camera input.SimulatorCamera
-          Selection =
-            selection
-                selected
-                focused
-                None
-                None
-                None
-                [||]
-          Layers = Array.copy standardLayers }
+        let projection =
+            { Owner = SimulatorScene
+              RevisionIdentity = input.SimulatorHandoff.Revision.Digest
+              Tick = input.SimulatorHandoff.Tick
+              Board = frame.Board
+              Terrain = terrain
+              Edges = edges
+              Units = units
+              Routes = routes
+              Annotations = annotations
+              Effects = effects
+              VisualCost = visualCost terrain edges units routes annotations effects
+              Disclosure = disclosure SandboxDisclosure
+              Camera = camera input.SimulatorCamera
+              Selection =
+                selection
+                    selected
+                    focused
+                    None
+                    None
+                    None
+                    [||]
+              Layers = Array.copy standardLayers }
+        viewportProjection DefaultViewportWidth DefaultViewportHeight projection
 
     let acceptReview (model: Model) =
         match model.Source, model.Mode, model.Verification, model.Inspection with
@@ -1291,31 +1449,33 @@ module TacticalSceneProjection =
             Array.concat [| overlayAnnotations; eventAnnotations; [| verificationAnnotation |] |]
         let edges = frame.Edges |> Array.map copyEdge
         let effects = effectsOfFrame true units frame
-        { Owner = ReviewScene
-          RevisionIdentity = input.AcceptedReview.AcceptedRevisionIdentity
-          Tick = frame.Tick
-          Board = frame.Board
-          Terrain = [||]
-          Edges = edges
-          Units = units
-          Routes = projectedRoutes
-          Annotations = projectedAnnotations
-          Effects = effects
-          VisualCost = visualCost [||] edges units projectedRoutes projectedAnnotations effects
-          Disclosure = disclosure frame.Disclosure
-          Camera = camera input.ReviewCamera
-          Selection =
-            selection
-                selected
-                focused
-                None
-                None
-                selectedEvent
-                (selectedEvent
-                 |> Option.map (fun id ->
-                     [| primitive "review-event" (invariant id) |])
-                 |> Option.defaultValue [||])
-          Layers = Array.copy standardLayers }
+        let projection =
+            { Owner = ReviewScene
+              RevisionIdentity = input.AcceptedReview.AcceptedRevisionIdentity
+              Tick = frame.Tick
+              Board = frame.Board
+              Terrain = [||]
+              Edges = edges
+              Units = units
+              Routes = projectedRoutes
+              Annotations = projectedAnnotations
+              Effects = effects
+              VisualCost = visualCost [||] edges units projectedRoutes projectedAnnotations effects
+              Disclosure = disclosure frame.Disclosure
+              Camera = camera input.ReviewCamera
+              Selection =
+                selection
+                    selected
+                    focused
+                    None
+                    None
+                    selectedEvent
+                    (selectedEvent
+                     |> Option.map (fun id ->
+                         [| primitive "review-event" (invariant id) |])
+                     |> Option.defaultValue [||])
+              Layers = Array.copy standardLayers }
+        viewportProjection DefaultViewportWidth DefaultViewportHeight projection
 
     /// Interpolates only presentation coordinates for semantic units present
     /// in both accepted Review frames. Current committed identity, tick,
