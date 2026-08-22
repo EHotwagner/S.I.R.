@@ -21,6 +21,12 @@ transcript that proves nothing look like proof:
 
 Nothing else is altered. Output is otherwise verbatim, trimmed only where noted with `…`.
 
+That sentence was not true when this file was first committed: the Probe D1 transcript silently
+dropped one matching line (`123:` of the snapshot) with no trim marker, which a second independent
+audit caught by re-running the fixture's own regenerate command. The line is restored below. The
+conclusions D1 carries never depended on it, which is exactly why the omission was easy to make and
+worth recording rather than quietly repairing.
+
 ## What was captured, and where
 
 | | |
@@ -28,8 +34,8 @@ Nothing else is altered. Output is otherwise verbatim, trimmed only where noted 
 | Captured | 2026-08-22 (UTC) |
 | Machine | Linux, single host; `/bin/sh` is a symlink to `bash` |
 | Claude Code | 2.1.240 (`claude --version`) |
-| Codex CLI | as installed at `~/.local/lib/node_modules/@openai/codex` (`CODEX_MANAGED_BY_NPM=1`) |
-| .NET roots present | `/usr/share/dotnet` (`6.0.428`, `10.0.400`), `$HOME/.dotnet` (`10.0.302`) |
+| Codex CLI | 0.149.0 (`codex --version` → `codex-cli 0.149.0`), installed at `~/.local/lib/node_modules/@openai/codex` |
+| .NET roots present | `/usr/share/dotnet` (`6.0.428`, `10.0.400`), `<HOME>/.dotnet` (`10.0.302`) |
 | Cited by | `feedback/2026-08-22-sir-item-256-agent-toolchain-wiring.md` §4.2, §4.3 |
 
 ## Probe A — Claude Code `settings.json` `env` does not expand variables
@@ -133,6 +139,7 @@ Captured (file was 192 lines):
 ```
 192
 3:unalias -a 2>/dev/null || true
+123:if ! (unalias rg 2>/dev/null; command -v rg) >/dev/null 2>&1; then
 138:unalias find 2>/dev/null || true
 139:unalias grep 2>/dev/null || true
 169:unalias pkill 2>/dev/null || true

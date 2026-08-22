@@ -156,9 +156,13 @@ bash — Node's `execFileSync("dotnet", …)` and `spawn("dotnet", …)`, which 
 non-interactively does **not** read `BASH_ENV`) — sees only the inherited `PATH`.
 
 This does not reach the repository's own entry points, and that was checked rather than assumed:
-**`build.sh` and all 48 shell scripts under `scripts/` are `#!/usr/bin/env bash`**, so each gets its
-own `BASH_ENV` pass and step 0 repairs its `PATH` before it runs any Node tool or `npm` script.
-Whatever they spawn inherits the repaired `PATH`.
+**`build.sh` and every shell script under `scripts/` are `#!/usr/bin/env bash`** — the sole exception
+being `scripts/agent-env.sh` itself, which carries no shebang because it is sourced, not run. (No
+count is written here on purpose: a pinned number rots, and this one already did, reading `48` after
+the suite added a forty-ninth. `scripts/test-agent-env.sh` asserts the property by iterating the
+directory, so it cannot go stale.) Each therefore gets its own `BASH_ENV` pass, and step 0 repairs
+its `PATH` before it runs any Node tool or `npm` script. Whatever they spawn inherits the repaired
+`PATH`.
 
 The residual, stated at its true width — an earlier version of this page claimed it was narrower,
 which the independent review of S.I.R.#256 measured and disproved (finding M1). In the one shell
