@@ -1,7 +1,7 @@
 schemaVersion: 1
 workId: ci-reliability-efficiency
 stage: evidence
-status: needsEvidenceCorrection
+status: evidenceReady
 sourceSpec: work/ci-reliability-efficiency/spec.md
 sourceClarifications: work/ci-reliability-efficiency/clarifications.md
 sourceChecklist: work/ci-reliability-efficiency/checklist.md
@@ -1601,7 +1601,7 @@ evidence:
       skipped: 0
     notes: [Exact-head hosted PR run 32571089354 and focused fail-closed workflow controls passed.]
   - id: EV055
-    kind: missing
+    kind: deferral
     subject:
       type: task
       id: T055
@@ -1612,11 +1612,15 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001, PD-015]
     obligationRefs: [EV055]
-    artifacts: []
+    artifacts: [work/ci-reliability-efficiency/local-qualification.md]
     sourceRefs: []
-    result: missing
+    result: deferred
     synthetic: false
-    notes: [Evidence required before verify.]
+    rationale: "Protected-main, scheduled, and Pages receipts can only be observed after the candidate crosses the protected merge boundary; a pull-request run cannot establish those event identities honestly."
+    owner: repository maintainer
+    scope: "Final exact-candidate protected-main, scheduled, and Pages observations required by VO-010."
+    laterLifecycleVisibility: "Run the protected and scheduled workflows after merge, confirm the exact qualified Pages handoff, then replace this deferral with observed evidence before final SDD ship closure."
+    notes: []
   - id: EV056
     kind: verification
     subject:

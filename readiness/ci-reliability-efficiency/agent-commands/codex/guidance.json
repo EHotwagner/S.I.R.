@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "f2886369c7e3fb83dfd13cb953b27572d7e4ea2c204939f5a0842bba558235b2"
+        "value": "129591e5c2c5b7cb4e2e03c8f4771c7624ffcacd66c8774833983b880c4c935d"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -885,5 +885,16 @@
       "kind": "skills"
     }
   ],
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "id": "agents.staleGeneratedGuidance",
+      "severity": "warning",
+      "artifact": "readiness/ci-reliability-efficiency/agent-commands/codex/guidance.json",
+      "message": "Generated agent guidance for target \u0027codex\u0027 no longer matches the current normalized work model.",
+      "correction": "Regenerate agent guidance so the generated view matches the current work model.",
+      "relatedIds": [
+        "codex"
+      ]
+    }
+  ]
 }
