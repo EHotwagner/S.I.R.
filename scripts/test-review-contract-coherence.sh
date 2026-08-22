@@ -324,23 +324,42 @@ check "doc:generation-token-shape"
   (sprintf "document's shape %s does not render to the engine's token" (str "generationTokenShape"))
 
 let auth = expected.GetProperty "authorization"
+
+// THE WAIT-STATE COLUMN IS TRANSCRIBED, NOT DERIVED, AND THAT IS DECLARED RATHER THAN HIDDEN.
+// Which wait state authorizes which record kind is decided by `authorizeReviewRecordWait` in the CLI,
+// behind a live GitHub transport. Nothing in FS.GG.Coord.Core knows it, so this script cannot derive
+// it. An earlier revision "checked" it against `if kindName = "initial" then "Waiting" else "Waiting"`
+// — a constant compared to itself, which is exactly the transcribed-expectation defect this gate was
+// rebuilt to remove. The table below is an honest transcription of the decompiled CLI switch, and it
+// is named as such; the TOKEN column beside it really is derived, from generationToken.
+let cliWaitState kind = match kind with | "acceptance" -> "Completed" | _ -> "Waiting"
+
 for kindName, waitKind, round in
-    [ "initial", ReviewWait.Kind.InitialReview, 0
-      "confirmation", ReviewWait.Kind.RepairConfirmation, 2
-      "escalation", ReviewWait.Kind.RepairConfirmation, 2
-      "repair-phase", ReviewWait.Kind.RepairConfirmation, 2 ] do
+    [ "initial", Some ReviewWait.Kind.InitialReview, 0
+      "confirmation", Some ReviewWait.Kind.RepairConfirmation, 2
+      "escalation", Some ReviewWait.Kind.RepairConfirmation, 2
+      "repair-phase", Some ReviewWait.Kind.RepairConfirmation, 2
+      // The acceptance row is authorized by a COMPLETED wait and carries no generation token. An
+      // earlier revision simply never iterated it, so its whole row could be falsified undetected.
+      "acceptance", None, 0 ] do
   let mutable row = Unchecked.defaultof<JsonElement>
   if auth.TryGetProperty(kindName, &row) then
-    let toks = row.GetProperty("token").EnumerateArray() |> Seq.map (fun e -> e.GetString()) |> List.ofSeq
-    let documented = match toks with t :: _ -> t | [] -> "<none>"
-    let rendered = documented.Replace("<headSha>", "HEAD").Replace("<round>", string round)
-    let engineToken = ReviewWait.generationToken "HEAD" waitKind round
     let documentedState = row.GetProperty("waitState").GetString()
-    let engineState = if kindName = "initial" then "Waiting" else "Waiting"
-    check (sprintf "doc:authorization:%s" kindName)
-      (rendered = engineToken && documentedState = engineState)
-      (sprintf "document renders %s in state %s; engine expects %s in state %s"
-         rendered documentedState engineToken engineState)
+    let stateOk = documentedState = cliWaitState kindName
+    let tokenOk, detail =
+      match waitKind with
+      | None ->
+          // No token is expected on this row; the document must not claim one.
+          let toks = row.GetProperty("token").EnumerateArray() |> Seq.map (fun e -> e.GetString()) |> List.ofSeq
+          (List.isEmpty toks), "the acceptance row must carry no generation token"
+      | Some wk ->
+          let toks = row.GetProperty("token").EnumerateArray() |> Seq.map (fun e -> e.GetString()) |> List.ofSeq
+          let documented = match toks with t :: _ -> t | [] -> "<none>"
+          let rendered = documented.Replace("<headSha>", "HEAD").Replace("<round>", string round)
+          let engineToken = ReviewWait.generationToken "HEAD" wk round
+          (rendered = engineToken), (sprintf "document renders %s; engine's token is %s" rendered engineToken)
+    check (sprintf "doc:authorization:%s" kindName) (stateOk && tokenOk)
+      (sprintf "wait state documented %s, CLI requires %s; %s" documentedState (cliWaitState kindName) detail)
   else
     failures <- failures + 1
     printfn "  FAILED  doc:authorization:%s\n            the document has no row for this record kind" kindName
@@ -457,6 +476,10 @@ mutate_and_expect_red "D7 authorization table gives \`initial\` the wrong token"
   '| `initial` | `Waiting` | `repair-confirmation` | `<headSha>:repair-confirmation:0` |'
 mutate_and_expect_red "S1 the record subject reverts to the canonical item ref" \
   'EHotwagner/S.I.R.#255/pr/259` |' 'EHotwagner/S.I.R.#255` |'
+mutate_and_expect_red "S4 the acceptance row wait state is falsified" \
+  '| `acceptance` | `Completed` |' '| `acceptance` | `Waiting` |'
+mutate_and_expect_red "S5 an ordinary row wait state is falsified" \
+  '| `confirmation` | `Waiting` |' '| `confirmation` | `Completed` |'
 mutate_and_expect_red "S3 the wait-window ceiling is overstated" \
   'must be at most 24 hours' 'must be at most 48 hours'
 mutate_and_expect_red "S2 route-evidence cardinality weakened" \
@@ -495,11 +518,18 @@ for lit in "${literals[@]}"; do
   grep -qF -- "$lit" "$doc" || { echo "    missing: $lit" >&2; missing=1; }
 done
 [[ $missing -eq 0 ]] || { echo "the document no longer states a claim this gate defends." >&2; exit 1; }
-for lit in "${literals[@]}"; do
-  grep -vF -- "$lit" "$doc" > "$tmp/lm.md" || true
-  grep -qF -- "$lit" "$tmp/lm.md" && { echo "  SURVIVED  deleting '$lit' left it present" >&2; exit 1; }
-done
-echo "  ok      all ${#literals[@]} literal-only claims present, each reds when deleted"
+echo "  ok      all ${#literals[@]} literal-only claims present"
+#
+# NO INVERSION IS CLAIMED HERE, AND THAT IS THE POINT.
+#
+# An earlier revision "proved" these reds-when-inverted with a loop that deleted every line containing
+# a literal and then checked the literal was gone. That exercises grep, not this gate: the deletion and
+# the assertion are the same operation, so it could never fail. A tautology dressed as evidence -- the
+# precise failure this gate exists to catch, committed by the gate itself.
+#
+# The real limit is that these claims have no machine form. Rewriting a trap's sentence to say the
+# opposite while keeping its key phrase would NOT be caught, and no amount of substring checking will
+# change that. Presence is what can be checked, so presence is what is claimed.
 
 echo
 echo "review-contract coherence passed: every DERIVED claim in docs/coordination-engine-contracts.md is"

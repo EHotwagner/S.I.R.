@@ -470,13 +470,29 @@ how far that goes:
 
 - **Derived claims** — the required and optional draft-key lists, the vocabulary table, both wait
   examples' key sets, the engine-overwrites table, the route-evidence cardinalities, the initial-record
-  round, the `reviewGeneration` shape, the authorization table, and the two subject forms — are
-  **parsed out of this document** and compared against the live engine. Falsify one here and the gate
-  reds, because its expectation is this text.
+  round, the `reviewGeneration` shape, the wait-window ceiling, the authorization table's **token**
+  column, and the two subject forms — are **parsed out of this document** and compared against the live
+  engine. Falsify one here and the gate reds, because its expectation is this text.
+- **Transcribed claims** — the authorization table's **wait-state** column. Which wait state authorizes
+  which record kind is decided by `authorizeReviewRecordWait` in the CLI, behind a live GitHub
+  transport, so nothing in `FS.GG.Coord.Core` knows it and the gate cannot derive it. The gate compares
+  the column against an explicit transcription of the decompiled switch, and labels it as one. Falsify
+  the column here and the gate still reds; falsify the *engine* and it would not notice.
 - **Literal-only claims** — the traps, the warnings, the quoted refusal strings, and everything else
   stated as prose with no machine form — are checked for presence only. Rewriting such a sentence to
-  say the opposite while keeping its key phrase would not be caught.
+  say the opposite while keeping its key phrase would not be caught, and the gate claims no inversion
+  over them.
 
 An earlier revision claimed it "fails when any load-bearing claim here is inverted". It did not: seven
 documented claims were falsified and it stayed green. The distinction above is the repair, and stating
 it honestly is part of the repair rather than a caveat on it.
+
+**The repair itself then reproduced the defect twice, in miniature, and both are worth recording.**
+The rebuilt gate iterated only four of the authorization table's five rows, so the `acceptance` row
+could be falsified undetected; and it "checked" the wait-state column against
+`if kindName = "initial" then "Waiting" else "Waiting"` — a constant compared with itself, which is
+precisely the transcribed-expectation pattern the rebuild existed to remove. It also "proved" the
+literal-only claims red-when-deleted with a loop that deleted every line containing a literal and then
+checked the literal was gone: an assertion and its own mutation being the same operation. All three
+were found by review of the repair, not by the repair's own sweep. **A gate's inversion evidence is
+itself a claim that can be vacuous, and it needs the same scrutiny as the thing it defends.**
