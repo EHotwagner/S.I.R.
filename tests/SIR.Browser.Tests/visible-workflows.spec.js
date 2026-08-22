@@ -488,7 +488,6 @@ test("large-project viewport chunking and semantic zoom bound the production SVG
   await expect(tacticalUnit).toHaveAttribute("data-semantic-selected", "true");
   await expect(battlefield.locator("#persistent-layer-terrain")).toHaveAttribute("data-layer-constructions", terrainConstructionsBeforeSelection);
   await expect(battlefield).toHaveAttribute("data-editor-projection-constructions", projectionConstructionsBeforeSelection);
-  console.log("toolbar comparator fields", await page.locator(".tactical-compact-toolbar").getAttribute("data-toolbar-comparator-changed-fields"));
   await expect(page.locator(".tactical-compact-toolbar")).toHaveAttribute("data-toolbar-constructions", toolbarConstructionsBeforeSelection);
   await expect(page.getByLabel("Unified tactical timeline")).toHaveAttribute("data-timeline-constructions", timelineConstructionsBeforeSelection);
   await expect(battlefield.locator("#persistent-layer-units")).toHaveAttribute("data-geometry-constructions", unitGeometryBeforeSelection);
