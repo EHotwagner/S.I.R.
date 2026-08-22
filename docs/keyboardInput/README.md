@@ -74,7 +74,10 @@ Do not treat this archive as a supported S.I.R or current FS.GG API.
 
 - [`historical/src/Input/`](historical/src/Input/) is the complete retired
   package at its last revision before deletion: project file, implementation,
-  public signature, and package README.
+  public signature, and package README. The archived project is intentionally
+  non-packable: its retired Scene and SkiaViewer source dependencies are not
+  part of this reference snapshot, and this archive must not publish a new
+  `FS.GG.UI.Input` package.
 - [`historical/tests/Input.Tests/`](historical/tests/Input.Tests/) is its
   complete test project, including the representative modal YAML configuration.
 - [`context/adr-0028-keyboard-input-config-boundary.md`](context/adr-0028-keyboard-input-config-boundary.md)
