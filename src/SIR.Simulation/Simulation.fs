@@ -212,11 +212,30 @@ module Simulation =
             (abs (int64 right.Col - int64 left.Col))
             (abs (int64 right.Row - int64 left.Row))
 
-    let private blockingEdge board left right =
+    /// Indexes a board's semantic edges by exact canonical edge, keeping the FIRST declaration.
+    ///
+    /// The scans this replaces are all `List.tryFind`/`List.exists` over `Board.Edges`, and
+    /// `tryFind` answers with the FIRST match. `Map.ofList` keeps the LAST, so a board that
+    /// declared the same canonical edge twice would resolve differently through a map built that
+    /// way. `MapScale.fs` already stores its edges keyed this way; these call sites had not
+    /// adopted it. Use the index for keyed lookup only - never enumerate it to build output,
+    /// because canonical simulation bytes depend on `Board.Edges`' own order.
+    let private indexBoardEdges (edges: SemanticEdge list) =
+        (Map.empty, edges)
+        ||> List.fold (fun index semantic ->
+            if Map.containsKey semantic.Edge index then index else Map.add semantic.Edge semantic index)
+
+    /// The subset of `indexBoardEdges` that blocks movement, keyed the same way.
+    let private indexBlockingEdges (edges: SemanticEdge list) =
+        (Map.empty, edges)
+        ||> List.fold (fun index semantic ->
+            if not semantic.BlocksMovement || Map.containsKey semantic.Edge index then index
+            else Map.add semantic.Edge semantic index)
+
+    let private blockingEdge (blockingEdges: Map<Edge, SemanticEdge>) left right =
         Edges.edgeBetween left right
         |> Option.bind (fun crossed ->
-            board.Edges
-            |> List.tryFind (fun semantic -> semantic.BlocksMovement && semantic.Edge = crossed)
+            Map.tryFind crossed blockingEdges
             |> Option.map (fun semantic -> semantic.Edge))
 
     let private spatialIdentity tick =
@@ -263,20 +282,20 @@ module Simulation =
           vertical, destination ]
 
     /// Equal-cost Chebyshev movement with a strict no-corner-cutting semantic-edge rule.
-    let private movementBlocker board origin destination =
+    let private movementBlocker board blockingEdges origin destination =
         if not (inBounds board destination) || chebyshevDistance origin destination <> 1L then
             None
         elif origin.Col = destination.Col || origin.Row = destination.Row then
-            blockingEdge board origin destination
+            blockingEdge blockingEdges origin destination
         else
             diagonalEdges origin destination
-            |> List.tryPick (fun (left, right) -> blockingEdge board left right)
+            |> List.tryPick (fun (left, right) -> blockingEdge blockingEdges left right)
 
-    let private authoritativeMovementBlocker world board origin destination =
+    let private authoritativeMovementBlocker world board blockingEdges origin destination =
         let request = spatialRequest "simulation-movement" SpatialQueryKind.MovementCost SpatialModality.GroundMovement origin destination
         let result, _ = SpatialQuery.evaluate world request
         if result.Outcome = SpatialOutcome.Found && result.Path = [ origin; destination ] then None
-        else movementBlocker board origin destination
+        else movementBlocker board blockingEdges origin destination
 
     let private tryUnit id state = Map.tryFind id state.Units
 
@@ -285,6 +304,9 @@ module Simulation =
 
     let private movementPhase (state: SimulationState) inputs =
         let movementWorld = spatialWorld state.Tick state.Board
+        // Built once per phase. `Board` is immutable across this phase, and the blocker probe runs
+        // per move candidate and again per diagonal corner pair.
+        let blockingEdges = indexBlockingEdges state.Board.Edges
         let moves =
             inputs
             |> List.choose (function
@@ -297,7 +319,7 @@ module Simulation =
                 match tryUnit unitId state with
                 | None -> None
                 | Some unit ->
-                    match authoritativeMovementBlocker movementWorld state.Board unit.Cell destination with
+                    match authoritativeMovementBlocker movementWorld state.Board blockingEdges unit.Cell destination with
                     | Some edge -> Some(unit, destination, Some edge)
                     | None when
                         inBounds state.Board destination
@@ -338,19 +360,37 @@ module Simulation =
 
         committed, events
 
-    let private observationPhase state inputs =
+    /// Runs the observation phase over a caller-supplied projected spatial world.
+    ///
+    /// The world is supplied rather than built inside the fold because it is loop-invariant: the
+    /// fold's only state write is `{ current with Observations = observed }`, and it reads neither
+    /// `Tick` nor `Board`. Building it per observation pair cost a full `Board.Edges` traversal -
+    /// a fresh `SpatialBoundary` record and an interpolated `RevisionToken` string per edge, plus
+    /// a validated `SpatialAuthorityIdentity` - before any line-of-sight work ran.
+    ///
+    /// `worldFor` is a function, not a value, for two reasons. It defers construction so a tick
+    /// with no observations builds no world at all, and it lets a fixture count how many times a
+    /// world is actually constructed for a multi-observation tick. The counter belongs to the
+    /// caller: this module keeps no mutable state, which is what makes the simulation
+    /// deterministic and Fable-safe.
+    let observationPhaseWith worldFor state inputs =
         let observations =
             inputs
             |> List.choose (function
                 | Observe(observerId, targetId) -> Some(observerId, targetId)
                 | _ -> None)
 
+        if List.isEmpty observations then state, []
+        else
+
+        let world = worldFor ()
+
         ((state, []), observations)
         ||> List.fold (fun (current, events) (observerId, targetId) ->
             match tryUnit observerId current, tryUnit targetId current with
             | Some observer, Some target ->
                 let request = spatialRequest "simulation-observation" SpatialQueryKind.ExactLineOfSight SpatialModality.Vision observer.Cell target.Cell
-                let visibility, _ = SpatialQuery.evaluate (spatialWorld current.Tick current.Board) request
+                let visibility, _ = SpatialQuery.evaluate world request
                 let visible = visibility.Outcome = SpatialOutcome.Found && visibility.Visible
 
                 if visible then
@@ -363,7 +403,12 @@ module Simulation =
             | _ -> current, events)
         |> fun (next, events) -> next, List.rev events
 
-    let private attentionAndEngagementPhase state inputs =
+    let private observationPhase (state: SimulationState) inputs =
+        observationPhaseWith (fun () -> spatialWorld state.Tick state.Board) state inputs
+
+    let private attentionAndEngagementPhase (state: SimulationState) inputs =
+        // `Board` is immutable across this phase; only units and engagements change.
+        let boardEdges = indexBoardEdges state.Board.Edges
         ((state, []), inputs)
         ||> List.fold (fun (current, events) input ->
             match input with
@@ -388,7 +433,7 @@ module Simulation =
                     EngagementChanged(unitId, engagementId, engagement.Phase, engagement.Reason) :: events
                 | _ -> current, events
             | PrepareEdgeReaction(unitId, engagementId, edge, requiredAttention) ->
-                let semantic = current.Board.Edges |> List.tryFind (fun candidate -> candidate.Edge = edge)
+                let semantic = Map.tryFind edge boardEdges
                 match tryUnit unitId current, semantic with
                 | Some _, Some declared ->
                     match AwarenessReaction.declareEngagement engagementId unitId (EngagementTarget.GuardedEdge(declared.EdgeId, declared.SpatialRevision, declared.Edge)) requiredAttention with
@@ -486,10 +531,23 @@ module Simulation =
             |> List.choose (function UnitMoved(unitId, origin, destination) -> Some(unitId, origin, destination) | _ -> None)
         let mutable engagements = state.Engagements
         let mutable candidates = []
+        // Exact-key authority set for guarded edges, built once per phase. `stillAuthoritative`
+        // and `targetValid` below asked the SAME question - `EdgeId`, `SpatialRevision` and `Edge`
+        // all matching a declared board edge - and each answered it with its own full
+        // `List.exists` over `Board.Edges`, so one engagement scanned the whole board twice.
+        let guardedEdgeAuthority =
+            (Set.empty, state.Board.Edges)
+            ||> List.fold (fun authority edge -> Set.add (edge.EdgeId, edge.SpatialRevision, edge.Edge) authority)
         for KeyValue(ownerId, engagement) in state.Engagements do
             match Map.tryFind ownerId state.Units with
             | None -> ()
             | Some owner ->
+                // Decided ONCE and consumed by both `trigger` and `targetValid`.
+                let guardedStillAuthoritative =
+                    match engagement.Target with
+                    | EngagementTarget.GuardedEdge(edgeId, revision, guarded) ->
+                        Set.contains (edgeId, revision, guarded) guardedEdgeAuthority
+                    | _ -> true
                 let trigger =
                     match engagement.Target with
                     | EngagementTarget.CoveredArea cells ->
@@ -503,11 +561,8 @@ module Simulation =
                         | Some contact, Some subject when contact.Level = AwarenessLevel.Acquired ->
                             Some(target, subject.Cell, ReactionTriggerKind.ValidTargetExposed)
                         | _ -> None
-                    | EngagementTarget.GuardedEdge(edgeId, revision, guarded) ->
-                        let stillAuthoritative =
-                            state.Board.Edges
-                            |> List.exists (fun edge -> edge.EdgeId = edgeId && edge.SpatialRevision = revision && edge.Edge = guarded)
-                        if not stillAuthoritative then None
+                    | EngagementTarget.GuardedEdge(_, _, guarded) ->
+                        if not guardedStillAuthoritative then None
                         else
                             moved
                             |> List.tryPick (fun (sourceId, origin, destination) ->
@@ -515,10 +570,7 @@ module Simulation =
                                 | Some crossed when sourceId <> ownerId && state.Units[sourceId].Side <> owner.Side && crossed = guarded ->
                                     Some(sourceId, destination, ReactionTriggerKind.GuardedEdgeCrossed)
                                 | _ -> None)
-                let targetValid =
-                    match engagement.Target with
-                    | EngagementTarget.GuardedEdge(edgeId, revision, guarded) -> state.Board.Edges |> List.exists (fun edge -> edge.EdgeId = edgeId && edge.SpatialRevision = revision && edge.Edge = guarded)
-                    | _ -> true
+                let targetValid = guardedStillAuthoritative
                 let maintained =
                     if not targetValid then { engagement with Phase = EngagementPhase.Interrupted; RemainingTicks = 0; Reason = ReactionReason.TargetInvalidated }
                     else AwarenessReaction.advanceEngagement (owner.AttentionDirection = engagement.RequiredAttention) (owner.WeaponPosture = WeaponPosture.Prepared) (not owner.Incapacitated) trigger.IsSome engagement
