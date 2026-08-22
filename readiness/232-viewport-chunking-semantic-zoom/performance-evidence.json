@@ -1,0 +1,109 @@
+{
+  "blockedOn": "FS-GG/FS.GG.Rendering#1256 (transition-aware Elmish host adapter)",
+  "breachingJourneys": [
+    "modality-transition",
+    "pan",
+    "playback",
+    "selection",
+    "zoom"
+  ],
+  "commit": "9a13ecc9a33b4575dc283d5c0d95e58c6996c52b",
+  "declaredBudget": {
+    "maxCatchUpFrames": 0,
+    "maxP95Ms": 16,
+    "maxP99Ms": 32
+  },
+  "intentId": "viewport-visible-work-v1",
+  "journeys": {
+    "dense-overlay": {
+      "budgetBreaches": [],
+      "droppedFrames": 0,
+      "frameIntervalP95Ms": null,
+      "frameIntervalP99Ms": null,
+      "maxInputToPaintMs": null,
+      "runs": 8,
+      "worstFrameIntervalMs": null
+    },
+    "idle": {
+      "budgetBreaches": [],
+      "droppedFrames": 0,
+      "frameIntervalP95Ms": null,
+      "frameIntervalP99Ms": null,
+      "maxInputToPaintMs": null,
+      "runs": 8,
+      "worstFrameIntervalMs": null
+    },
+    "modality-transition": {
+      "budgetBreaches": [
+        "catch-up-frames",
+        "p95",
+        "p99"
+      ],
+      "droppedFrames": 23,
+      "frameIntervalP95Ms": 39.528,
+      "frameIntervalP99Ms": 56.262,
+      "maxInputToPaintMs": 15.113,
+      "runs": 8,
+      "worstFrameIntervalMs": 56.262
+    },
+    "pan": {
+      "budgetBreaches": [
+        "p95"
+      ],
+      "droppedFrames": 0,
+      "frameIntervalP95Ms": 20.237,
+      "frameIntervalP99Ms": 21.657,
+      "maxInputToPaintMs": 5.571,
+      "runs": 8,
+      "worstFrameIntervalMs": 21.657
+    },
+    "playback": {
+      "budgetBreaches": [
+        "catch-up-frames",
+        "p95",
+        "p99"
+      ],
+      "droppedFrames": 9,
+      "frameIntervalP95Ms": 213.761,
+      "frameIntervalP99Ms": 259.701,
+      "maxInputToPaintMs": 15.202,
+      "runs": 8,
+      "worstFrameIntervalMs": 259.701
+    },
+    "selection": {
+      "budgetBreaches": [
+        "input-to-paint-p95"
+      ],
+      "droppedFrames": 0,
+      "frameIntervalP95Ms": null,
+      "frameIntervalP99Ms": null,
+      "maxInputToPaintMs": 21.976,
+      "runs": 8,
+      "worstFrameIntervalMs": null
+    },
+    "zoom": {
+      "budgetBreaches": [
+        "p95"
+      ],
+      "droppedFrames": 0,
+      "frameIntervalP95Ms": 17.074,
+      "frameIntervalP99Ms": 17.095,
+      "maxInputToPaintMs": 0.295,
+      "runs": 8,
+      "worstFrameIntervalMs": 17.095
+    }
+  },
+  "producerVerdictField": "pass",
+  "producerVerdictNote": "The producing harness hardcodes result:\"pass\" with no budget comparison anywhere (S.I.R.#268). This evidence derives from MEASURED values only; the producer verdict is recorded for traceability and is not relied upon.",
+  "producerVerdictTrusted": false,
+  "satisfiesDeclaredBudget": false,
+  "schema": "sir.viewport-visible-performance-evidence/1",
+  "source": {
+    "command": "node scripts/measure-svg-pipeline.mjs --out artifacts/232-svg --fixtures all --journeys all",
+    "fixtures": 8,
+    "producerSchema": "sir.svg-pipeline-measurement/1",
+    "runs": 56
+  },
+  "workId": "232-viewport-chunking-semantic-zoom",
+  "workloadId": "viewport-visible-v1"
+}
