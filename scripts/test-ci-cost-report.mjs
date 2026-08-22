@@ -25,9 +25,11 @@ const report = summarize(run, jobs, artifacts, receipts);
 assert.equal(report.schema, "sir.ci-cost-report/v1");
 assert.equal(report.result, "complete");
 assert.equal(report.workflowWallMilliseconds, 10_000);
-assert.deepEqual(report.totals, { jobs: 2, apiRunnerMilliseconds: 8_000, receiptRunnerMilliseconds: 4_000, unreceiptedOrActionMilliseconds: 4_000, artifacts: 1, artifactBytes: 200 });
+assert.deepEqual(report.totals, { jobs: 2, skippedJobs: 0, apiRunnerMilliseconds: 8_000, receiptRunnerMilliseconds: 4_000, unreceiptedOrActionMilliseconds: 4_000, artifacts: 1, artifactBytes: 200 });
 assert.equal(report.jobs[0].steps[0].durationMilliseconds, 1_000);
 assert.deepEqual(report.exclusions, []);
+assert.equal(report.baselineComparison.result, "pass");
+assert.deepEqual(report.baselineComparison.observed, { runnerMilliseconds: 8_000, artifactBytes: 200, verdictMilliseconds: 8_000 });
 
 const activeObserver = { id: 3, name: "cost-observer / observe", status: "in_progress", conclusion: null, started_at: "2026-08-22T00:00:09Z", completed_at: null, steps: [] };
 const sameRunReport = summarize(run, { jobs: [...jobs.jobs, activeObserver] }, artifacts, receipts, { activeObserverJobName: "cost-observer / observe" });
@@ -38,12 +40,22 @@ assert.throws(() => summarize(run, { jobs: [...jobs.jobs, activeObserver] }, art
 assert.throws(() => summarize(run, jobs, artifacts, receipts, { activeObserverJobName: "cost-observer \/ observe" }), /active observer identity mismatch/u);
 assert.throws(() => summarize(run, { jobs: [...jobs.jobs, activeObserver, { ...activeObserver, id: 4 }] }, artifacts, receipts, { activeObserverJobName: "cost-observer / observe" }), /active observer identity mismatch/u);
 
+const skipped = { id: 5, name: "protected-preflight", status: "completed", conclusion: "skipped", started_at: null, completed_at: null, steps: [] };
+const skippedReport = summarize(run, { jobs: [...jobs.jobs, skipped] }, artifacts, receipts);
+assert.equal(skippedReport.totals.jobs, 2);
+assert.equal(skippedReport.totals.skippedJobs, 1);
+assert.deepEqual(skippedReport.exclusions, [{ id: 5, name: "protected-preflight", status: "completed", reason: "completed skipped job allocated no runner" }]);
+assert.throws(() => summarize(run, { jobs: [...jobs.jobs, { ...skipped, status: "queued" }] }, artifacts, receipts), /incomplete skipped job inventory/u);
+
 const mismatched = structuredClone(receipts);
 mismatched[0].value.source.commit = "e".repeat(40);
 assert.equal(summarize(run, jobs, artifacts, mismatched).result, "incomplete");
 assert.equal(summarize(run, jobs, artifacts, receipts.slice(0, 1)).reconciliation.expectedReceiptShape, false);
 assert.throws(() => summarize(run, { jobs: [] }, artifacts, receipts), /incomplete job timing inventory/u);
 assert.throws(() => summarize(run, jobs, { artifacts: [{ id: 1, name: "bad", size_in_bytes: -1 }] }, receipts), /invalid artifact byte inventory/u);
+const overRunnerBudget = structuredClone(jobs);
+overRunnerBudget.jobs[0].completed_at = "2026-08-22T01:00:00Z";
+assert.equal(summarize(run, overRunnerBudget, artifacts, receipts).baselineComparison.result, "fail");
 
 const observer = readFileSync(new URL("../.github/workflows/ci-cost-observer.yml", import.meta.url), "utf8");
 assert.match(observer, /workflow_run:\n    workflows: \[CI\]\n    types: \[completed\]/u);

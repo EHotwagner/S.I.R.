@@ -6,7 +6,7 @@ mode=${1:-}
 shift || true
 ci_root="$repo_root/artifacts/ci"
 route_path=${SIR_CI_ROUTE:-$ci_root/route.json}
-phase_path="$ci_root/phase-timing.json"
+phase_path=${SIR_CI_PHASE_PATH:-$ci_root/phase-timing.json}
 
 mkdir -p "$ci_root/results" "$ci_root/prepared"
 cd "$repo_root"
@@ -138,6 +138,11 @@ NODE
         # every declared project once and lets later solution growth remain one
         # invocation instead of accumulating serialized owner builds.
         dotnet build SIR.slnx -c Release --no-restore
+        mkdir -p artifacts/publish
+        cp -a src/SIR.Server/bin/Release/net10.0/. artifacts/publish/
+        node scripts/prune-linux-runtime-closure.mjs \
+          --root artifacts/publish \
+          --output "$part_root/native-server-runtime-closure.json"
         node scripts/prune-linux-runtime-closure.mjs \
           --root tests/SIR.Match.Tests/bin/Release/net10.0 \
           --output "$part_root/native-runtime-closure.json"
@@ -149,6 +154,12 @@ NODE
           tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Release/net10.0
           tests/SIR.ModalInput.Tests/bin/Release/net10.0
           tests/SIR.Match.Tests/bin/Release/net10.0
+          artifacts/publish
+          src/SIR.Domain/bin/Release/net10.0
+          src/SIR.Simulation/bin/Release/net10.0
+          src/SIR.Wasm/bin/Release/net10.0
+          src/SIR.Match/bin/Release/net10.0
+          src/SIR.Client/bin/Release/net10.0
         )
         ;;
       fable)
@@ -252,7 +263,8 @@ NODE
       done < <(jq -r '.outputs[].path' "$receipt")
     done
     extract_completed=$(date +%s%3N)
-    node - "$ci_root/extract-timing.json" "$extract_started" "$extract_completed" <<'NODE'
+      extract_timing_path=${SIR_CI_EXTRACT_TIMING_PATH:-$ci_root/extract-timing.json}
+      node - "$extract_timing_path" "$extract_started" "$extract_completed" <<'NODE'
 const { writeFileSync } = require("node:fs");
 writeFileSync(process.argv[2], `${JSON.stringify({ transport: Number(process.argv[4]) - Number(process.argv[3]) })}\n`);
 NODE
@@ -267,7 +279,7 @@ NODE
     ;;
   compose-browser)
     web_manifest=$(<"$ci_root/parts/web.manifest.path")
-    server_manifest=$(<"$ci_root/parts/server.manifest.path")
+    server_manifest=$(<"$ci_root/parts/native.manifest.path")
     rm -rf -- artifacts/publish/wwwroot
     mkdir -p artifacts/publish/wwwroot
     cp -a artifacts/client/. artifacts/publish/wwwroot/
@@ -277,7 +289,7 @@ NODE
     ;;
   verify-browser-composition)
     web_manifest=$(<"$ci_root/parts/web.manifest.path")
-    server_manifest=$(<"$ci_root/parts/server.manifest.path")
+    server_manifest=$(<"$ci_root/parts/native.manifest.path")
     node scripts/ci-artifact-manifest.mjs verify-browser-composition \
       --web-manifest "$web_manifest" --server-manifest "$server_manifest" \
       --client artifacts/client --publish artifacts/publish --output "$ci_root/browser-composition.json"
@@ -289,12 +301,12 @@ NODE
       rules) gate_parts=(native) ;;
       spatial|cross-runtime) gate_parts=(native fable) ;;
       cancellation) gate_parts=(native web) ;;
-      browser|browser-general-helper|browser-general-helper-2|browser-general-helper-3|browser-delivery) gate_parts=(web server) ;;
-      documentation) gate_parts=(web docs) ;;
+      browser|browser-general-helper|browser-general-helper-2|browser-general-helper-3|browser-delivery) gate_parts=(web native) ;;
+      documentation) gate_parts=(web native) ;;
     esac
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
       receipt_part=${gate_parts[0]}
-      [[ "$gate" == documentation ]] && receipt_part=docs
+      [[ "$gate" == documentation ]] && receipt_part=native
       receipt=$(<"$ci_root/parts/$receipt_part.receipt.path")
       "$0" verify-parts "${gate_parts[@]}" >/dev/null
     fi

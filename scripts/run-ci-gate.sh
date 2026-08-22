@@ -5,7 +5,9 @@ repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 subject=${1:?run-ci-gate: subject id is required}
 output=${2:?run-ci-gate: output path is required}
 route_path=${SIR_CI_ROUTE:-$repo_root/artifacts/ci/route.json}
-phase_path="$repo_root/artifacts/ci/phase-timing.json"
+phase_path=${SIR_CI_PHASE_PATH:-$repo_root/artifacts/ci/phase-$subject.json}
+extract_path=${SIR_CI_EXTRACT_TIMING_PATH:-$repo_root/artifacts/ci/extract-$subject.json}
+export SIR_CI_PHASE_PATH="$phase_path"
 runner_started=${SIR_CI_RUNNER_START_MS:-$(date +%s%3N)}
 command_started=$(date +%s%3N)
 rm -f -- "$phase_path"
@@ -25,18 +27,18 @@ case "$subject" in
   rules) preflight_parts=(native) ;;
   spatial|cross-runtime) preflight_parts=(native fable) ;;
   cancellation) preflight_parts=(native web) ;;
-  browser|browser-general-helper|browser-general-helper-2|browser-general-helper-3|browser-delivery) preflight_parts=(web server) ;;
-  documentation) preflight_parts=(web docs) ;;
+  browser|browser-general-helper|browser-general-helper-2|browser-general-helper-3|browser-delivery) preflight_parts=(web native) ;;
+  documentation) preflight_parts=(web native) ;;
 esac
-if [[ ${#preflight_parts[@]} -gt 0 ]]; then
+if [[ ${#preflight_parts[@]} -gt 0 && "${SIR_CI_PREFLIGHT_REUSED:-false}" != true ]]; then
   set +e
-  "$repo_root/scripts/qualify-pr.sh" extract-parts "${preflight_parts[@]}"
+  SIR_CI_EXTRACT_TIMING_PATH="$extract_path" "$repo_root/scripts/qualify-pr.sh" extract-parts "${preflight_parts[@]}"
   preflight_status=$?
   set -e
 fi
 pre_transport_ms=0
-if [[ -f "$repo_root/artifacts/ci/extract-timing.json" ]]; then
-  pre_transport_ms=$(node -e 'process.stdout.write(String(JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8")).transport ?? 0))' "$repo_root/artifacts/ci/extract-timing.json")
+if [[ -f "$extract_path" ]]; then
+  pre_transport_ms=$(node -e 'process.stdout.write(String(JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8")).transport ?? 0))' "$extract_path")
 elif [[ $preflight_status -ne 0 ]]; then
   pre_transport_ms=$(( $(date +%s%3N) - command_started ))
   node - "$phase_path" "$pre_transport_ms" <<'NODE'
@@ -44,7 +46,7 @@ const { writeFileSync } = require("node:fs");
 writeFileSync(process.argv[2], `${JSON.stringify({ restore: 0, build: 0, transport: 0, failureStage: "transport" })}\n`);
 NODE
 fi
-rm -f -- "$repo_root/artifacts/ci/extract-timing.json"
+rm -f -- "$extract_path"
 
 trace_dir=""
 if [[ "$subject" != integrity && "$subject" != evidence ]]; then
@@ -75,8 +77,8 @@ completed=$(date +%s%3N)
 restore_ms=0
 build_ms=0
 post_transport_ms=0
-if [[ -f "$repo_root/artifacts/ci/extract-timing.json" ]]; then
-  post_transport_ms=$(node -e 'process.stdout.write(String(JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8")).transport ?? 0))' "$repo_root/artifacts/ci/extract-timing.json")
+if [[ -f "$extract_path" ]]; then
+  post_transport_ms=$(node -e 'process.stdout.write(String(JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8")).transport ?? 0))' "$extract_path")
 fi
 transport_ms=$((pre_transport_ms + post_transport_ms))
 phase_setup_ms=0

@@ -4,6 +4,8 @@ import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export const schema = "sir.ci-cost-report/v1";
+export const baselines = Object.freeze({ runnerMilliseconds: 1_518_000, artifactBytes: 351_337_554, verdictMilliseconds: 240_000 });
+const targets = Object.freeze({ runnerMilliseconds: Math.floor(baselines.runnerMilliseconds * 0.8), artifactBytes: Math.floor(baselines.artifactBytes * 0.8), verdictMilliseconds: baselines.verdictMilliseconds });
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
 const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 const milliseconds = (started, completed) => {
@@ -80,11 +82,14 @@ export function summarize(run, jobsPayload, artifactsPayload, receiptInventory =
     steps: (job.steps ?? []).map((step) => ({ name: step.name, conclusion: step.conclusion, durationMilliseconds: milliseconds(step.started_at, step.completed_at) })),
   })).sort((left, right) => String(left.name).localeCompare(String(right.name)) || Number(left.id) - Number(right.id));
   const activeObserverJobName = options.activeObserverJobName ?? null;
+  const invalidSkippedJobs = allJobs.filter(({ conclusion, status }) => conclusion === "skipped" && status !== "completed");
+  if (invalidSkippedJobs.length > 0) throw new Error("ci-cost-report: incomplete skipped job inventory");
+  const skippedJobs = allJobs.filter(({ conclusion, status }) => conclusion === "skipped" && status === "completed");
   const excludedActiveObservers = activeObserverJobName === null
     ? []
     : allJobs.filter(({ name, status, durationMilliseconds }) => name === activeObserverJobName && status !== "completed" && durationMilliseconds === null);
   if (activeObserverJobName !== null && excludedActiveObservers.length !== 1) throw new Error("ci-cost-report: active observer identity mismatch");
-  const jobs = allJobs.filter((job) => !excludedActiveObservers.includes(job));
+  const jobs = allJobs.filter((job) => !skippedJobs.includes(job) && !excludedActiveObservers.includes(job));
   if (jobs.length === 0 || jobs.some(({ durationMilliseconds }) => durationMilliseconds === null)) throw new Error("ci-cost-report: incomplete job timing inventory");
   const artifacts = (artifactsPayload.artifacts ?? artifactsPayload.items ?? []).filter(({ expired }) => expired !== true).map((artifact) => ({
     id: artifact.id,
@@ -112,6 +117,8 @@ export function summarize(run, jobsPayload, artifactsPayload, receiptInventory =
     : protectedStages.length === 2 && joins.some(({ schema: receiptSchema }) => receiptSchema === "sir.protected-join/v1");
   const apiRunnerMilliseconds = jobs.reduce((sum, job) => sum + job.durationMilliseconds, 0);
   const receiptRunnerMilliseconds = [...gateReceipts, ...protectedStages].reduce((sum, receipt) => sum + (Number.isSafeInteger(receipt.durationMilliseconds) ? receipt.durationMilliseconds : 0), 0);
+  const verdictMilliseconds = joins.reduce((maximum, receipt) => Number.isSafeInteger(receipt.durationMilliseconds) ? Math.max(maximum, receipt.durationMilliseconds) : maximum, 0);
+  const artifactBytes = artifacts.reduce((sum, artifact) => sum + artifact.sizeInBytes, 0);
   const started = Date.parse(run.created_at ?? "");
   const completed = Date.parse(run.updated_at ?? "");
   const reportBody = {
@@ -120,16 +127,30 @@ export function summarize(run, jobsPayload, artifactsPayload, receiptInventory =
     source: { repository: run.repository?.full_name ?? null, workflowRunId: run.id, attempt: run.run_attempt, event: run.event, headSha: run.head_sha, headBranch: run.head_branch, conclusion: run.conclusion },
     workflowWallMilliseconds: Number.isFinite(started) && Number.isFinite(completed) && completed >= started ? completed - started : null,
     jobs,
-    exclusions: excludedActiveObservers.map(({ id, name, status }) => ({ id, name, status, reason: "current reusable observer cannot complete before observing its own run" })),
+    exclusions: [
+      ...skippedJobs.map(({ id, name, status }) => ({ id, name, status, reason: "completed skipped job allocated no runner" })),
+      ...excludedActiveObservers.map(({ id, name, status }) => ({ id, name, status, reason: "current reusable observer cannot complete before observing its own run" })),
+    ],
     artifacts,
     receipts: candidateReceipts,
     totals: {
       jobs: jobs.length,
+      skippedJobs: skippedJobs.length,
       apiRunnerMilliseconds,
       receiptRunnerMilliseconds,
       unreceiptedOrActionMilliseconds: apiRunnerMilliseconds - receiptRunnerMilliseconds,
       artifacts: artifacts.length,
-      artifactBytes: artifacts.reduce((sum, artifact) => sum + artifact.sizeInBytes, 0),
+      artifactBytes,
+    },
+    baselineComparison: {
+      baselines,
+      targets,
+      observed: { runnerMilliseconds: apiRunnerMilliseconds, artifactBytes, verdictMilliseconds },
+      reductionsPercent: {
+        runner: Number((((baselines.runnerMilliseconds - apiRunnerMilliseconds) / baselines.runnerMilliseconds) * 100).toFixed(3)),
+        artifacts: Number((((baselines.artifactBytes - artifactBytes) / baselines.artifactBytes) * 100).toFixed(3)),
+      },
+      result: apiRunnerMilliseconds <= targets.runnerMilliseconds && artifactBytes <= targets.artifactBytes && verdictMilliseconds > 0 && verdictMilliseconds <= targets.verdictMilliseconds ? "pass" : "fail",
     },
     reconciliation: { expectedReceiptShape, mismatchedReceiptCount: mismatchedReceipts.length, status: expectedReceiptShape && mismatchedReceipts.length === 0 ? "complete" : "incomplete" },
   };
