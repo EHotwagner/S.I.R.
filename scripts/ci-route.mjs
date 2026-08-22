@@ -33,7 +33,7 @@ export const expectedBuildInvocations = {
   "prepare-native": ["build:SIR.slnx", "producer:native"],
   "prepare-fable": ["fable:tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj", "fable:tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj", "fable:tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj", "producer:fable"],
   "prepare-web": ["fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj", "fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj", "producer:web"],
-  "prepare-docs": ["producer:docs"],
+  "prepare-docs": ["build:src/SIR.Match/SIR.Match.fsproj", "build:src/SIR.Client/SIR.Client.fsproj", "producer:docs"],
   rules: [],
   "spatial-mutations": [
     "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:spatial-mutation-base",

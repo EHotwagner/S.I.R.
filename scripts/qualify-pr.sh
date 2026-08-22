@@ -202,6 +202,8 @@ NODE
         part_paths=(artifacts/publish)
         ;;
       docs)
+        dotnet build src/SIR.Match/SIR.Match.fsproj -c Release --no-restore
+        dotnet build src/SIR.Client/SIR.Client.fsproj -c Release --no-restore
         ./scripts/build-docs.sh --prepare-site-only
         part_paths=(artifacts/site)
         ;;

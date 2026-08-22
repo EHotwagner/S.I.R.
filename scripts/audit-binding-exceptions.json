@@ -7,7 +7,7 @@
       "locator": "file:scripts/ci-route.mjs",
       "path": "scripts/ci-route.mjs",
       "previousSha256": "10da76f4b2631e57c36991f263d19a15c183716e2d68ce208a31c160ed1118af",
-      "replacementSha256": "19b9b9209d7450fa4b723128a6f33c93551b206c130dae075be5f0d6ee003414",
+      "replacementSha256": "0ed8d76a9f237b78cce7dd84656bc26e64e62f9bd3c9ff73813fa2a456ee9b46",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "The CI reliability design advances the route schema to v2, preserves the explicit production-review freshness edge, and adds a content-addressed documentation producer that runs in parallel with the native, Fable, and web producers while retaining stable subject receipts, conservative broad-policy routing, the 240-second boundary, producer inventory, and fail-closed joins; the focused route contract verifies the replacement bytes."
     },
@@ -17,7 +17,7 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "0beb5d5546437834b61e2e4137b40b974e94367325f56d6b65cec2160259e067",
+      "replacementSha256": "4e5809bee3a24c47857149cd01f5e866af21632c5a695e9dfd98048f954893d4",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "The CI reliability design extends the route matrix with source-to-production-review freshness, consolidated ordinary domain execution, an independently parallel performance-sensitive cross-runtime measurement, parallel source-mutation helpers, a dedicated documentation projection producer, runtime-only browser shard setup, protected-stage receipt topology, and the existing performance, artifact, build-owner, and fail-closed join contracts; focused mutations cover every new edge."
     },

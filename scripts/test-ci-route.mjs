@@ -206,6 +206,11 @@ assert.deepEqual(expectedBuildInvocations["prepare-fable"], [
   "fable:tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj",
   "producer:fable",
 ]);
+assert.deepEqual(expectedBuildInvocations["prepare-docs"], [
+  "build:src/SIR.Match/SIR.Match.fsproj",
+  "build:src/SIR.Client/SIR.Client.fsproj",
+  "producer:docs",
+]);
 const duplicatedScenarioOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-fable" ? {
   ...result,
   buildInvocations: [...result.buildInvocations, "fable:tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj"],
@@ -304,7 +309,7 @@ assert.equal(focusedNativeProducer.groups.body.match(/dotnet build SIR\.slnx -c 
 assert.doesNotMatch(focusedNativeProducer.groups.body, /build-docs\.sh|artifacts\/site/u);
 const focusedDocsProducer = /      docs\)\n(?<body>[\s\S]*?)\n        ;;/u.exec(focusedQualification);
 assert.ok(focusedDocsProducer?.groups?.body, "focused docs producer block is missing");
-assert.match(focusedDocsProducer.groups.body, /build-docs\.sh --prepare-site-only[\s\S]*artifacts\/site/u);
+assert.match(focusedDocsProducer.groups.body, /dotnet build src\/SIR\.Match\/SIR\.Match\.fsproj -c Release --no-restore[\s\S]*dotnet build src\/SIR\.Client\/SIR\.Client\.fsproj -c Release --no-restore[\s\S]*build-docs\.sh --prepare-site-only[\s\S]*artifacts\/site/u);
 assert.match(focusedQualification, /documentation\)[\s\S]*build-docs\.sh[^\n]*--prepared-pr --reuse-site-build/u);
 assert.match(buildDocs, /--prepare-site-only[\s\S]*build_site_projection[\s\S]*--reuse-site-build[\s\S]*prepared site projection is missing index\.html/u);
 assert.doesNotMatch(focusedQualification, /find src tests -type d.*-name obj/u);
