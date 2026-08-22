@@ -1,0 +1,125 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-22-sir-item-252-audit-binding-ledger-currency.md",
+  "reportSha256": "a0c72a86014f7c2e5e9982c39d456687846ab5583467b42c4fa455f58790c286",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-ci-integrity-plan.mjs",
+          "result": "verified",
+          "sha256": "d293bf623635eecdebf1eda748df10fe4cb5f811a02539f4b6bd336dbafa3b20"
+        },
+        {
+          "locator": "file:.github/workflows/ci.yml",
+          "result": "verified",
+          "sha256": "0f8ab5d9f577acb460b30e5a588b4ca3d4cbfcc411c44eddc8f8f45b698ec181"
+        },
+        {
+          "locator": "command:node scripts/test-ci-integrity-plan.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head HEAD",
+          "result": "verified"
+        },
+        {
+          "locator": "file:.agents/skills/fs-gg-feedback-report/scripts/FeedbackReportTool.fs",
+          "result": "verified",
+          "sha256": "94406cddf8169482ba12e90566cacc044ba2bbeb01ea199f53727698a042e200"
+        },
+        {
+          "locator": "file:scripts/audit-binding-exceptions.json",
+          "result": "verified",
+          "sha256": "6762e40d8eda92111e816ffbaf90b0a07a162b2d5429a4f48ba30e91084e0a0e"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#252",
+          "result": "verified"
+        },
+        {
+          "locator": "file:.claude/skills/pnext-item/SKILL.md",
+          "result": "verified",
+          "sha256": "e83687f31ad81c34010157fad1fd9a959df126249acf38616bd6839b12a63646"
+        }
+      ],
+      "confidenceLimits": [
+        "The verify-paths command no longer reproduces the SKIP: repairing it was the fix, so it now returns FSGG-PATHS OK. The observation stays inspectable through SKILL.md line 185, which carries the sentence the finding falsifies."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:gh pr view 254 --repo EHotwagner/S.I.R. --json comments",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The finding's Observed originally asserted that ReviewWait.validate returned Ok. That is an in-process API result with no artifact in the repository or on the board, and no locator reaches it; the report has been softened to the acceptance the ledger records, and the original assertion is not evidenced here.",
+        "The projection's literal refusal string (an expected generation ending :initial-review:0 against the :initial-review:1 supplied) is not engine-recorded anywhere. The cancel entry's evidenceRef is the implementer's prose, not the engine's refusal. The outcome is engine-recorded; the exact refusal text is not, and the command that produced it is non-reproducing because the protocol state has advanced with the head.",
+        "The locator was graded by running it exactly as written rather than a near-neighbour. It exhibits enter at generation 1c34852...:initial-review:1 (comment 5382794822), cancel of that generation 37 seconds later (5382797353, evidenceRef 'superseded: initial review round is 0-based; see PR #254'), and re-enter at :initial-review:0 (5382797762), plus five further enter/cancel records at :0 across three heads, so the 0-based invariant is reachable from this listing alone without trusting any account."
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/checkpoints/item-252-audit-binding-ledger-currency.jsonl",
+          "result": "verified",
+          "sha256": "5ef6ad4525729af800e6def44ce0c3ab94b3520baddf50008454cfaa0a30bcbc"
+        },
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- validate-checkpoint-state --cycle item-252-audit-binding-ledger-currency",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#255",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#252",
+          "result": "verified"
+        },
+        {
+          "locator": "command:gh api graphql -f query='{repository(owner:\"EHotwagner\",name:\"S.I.R.\"){pullRequest(number:254){userContentEdits(first:20){nodes{editedAt diff}}}}}'",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    }
+  ]
+}
