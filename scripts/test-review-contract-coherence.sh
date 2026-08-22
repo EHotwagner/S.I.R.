@@ -141,6 +141,10 @@ else: problems.append("could not parse the meaningful route-evidence cardinality
 if n and n.group(1) in words: out["notMeaningfulEvidenceCount"] = words[n.group(1)]
 else: problems.append("could not parse the not-meaningful route-evidence cardinality")
 
+m = re.search(r"must be at most (\d+) hours", doc)
+if m: out["waitWindowMaxHours"] = int(m.group(1))
+else: problems.append("could not parse the review-wait window ceiling")
+
 m = re.search(r'an `initial` record must carry `"round": (\d+)`', inv)
 if m: out["initialRound"] = int(m.group(1))
 else: problems.append("could not parse the initial-record round claim")
@@ -349,6 +353,20 @@ check "doc:overwritten-fields"
   (sortedEq (strs "overwrittenFields") [ "revision"; "previousDigest"; "claimGeneration"; "baseSha"; "digest" ])
   (sprintf "document's overwrite table lists [%s]" (j (strs "overwrittenFields")))
 
+// The wait window ceiling, derived from the document and checked against the pure validator.
+let validWindow (hours: float) =
+  let entered = DateTimeOffset.UtcNow
+  let r : ReviewWait.WaitReceipt =
+    { receipt with EnteredAt = entered; ExpiresAt = entered.AddHours hours }
+  match ReviewWait.validate (ReviewWait.Transition.Enter r) with Ok _ -> true | Error _ -> false
+let ceiling = float (num "waitWindowMaxHours")
+check "doc:wait-window-ceiling"
+  (validWindow ceiling && not (validWindow (ceiling + 1.0)))
+  (sprintf "document says the window is capped at %g hours; the validator disagrees" ceiling)
+check "doc:wait-window-must-be-positive"
+  (not (validWindow 0.0) && not (validWindow -1.0))
+  "the validator no longer requires expiresAt to be later than enteredAt"
+
 // ---- engine facts the document does not parameterise ----
 check "engine:digest-ignores-its-own-field"
   (StructuredDecision.reviewDigest { baseRec with Digest = "" }
@@ -439,6 +457,8 @@ mutate_and_expect_red "D7 authorization table gives \`initial\` the wrong token"
   '| `initial` | `Waiting` | `repair-confirmation` | `<headSha>:repair-confirmation:0` |'
 mutate_and_expect_red "S1 the record subject reverts to the canonical item ref" \
   'EHotwagner/S.I.R.#255/pr/259` |' 'EHotwagner/S.I.R.#255` |'
+mutate_and_expect_red "S3 the wait-window ceiling is overstated" \
+  'must be at most 24 hours' 'must be at most 48 hours'
 mutate_and_expect_red "S2 route-evidence cardinality weakened" \
   'requires **exactly four** `routeEvidence` entries' \
   'requires **exactly five** `routeEvidence` entries'
