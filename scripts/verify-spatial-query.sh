@@ -67,11 +67,12 @@ search_fixed_quiet() {
 }
 
 client_has_authority_calls() {
+  local scan_root=${1:-src/SIR.Client.Web}
   if command -v rg >/dev/null 2>&1 && [[ "${SIR_SPATIAL_FORCE_GREP:-0}" != 1 ]]; then
-    rg -n 'Los\.lineOfSightBy|Pathfinding\.astar|Edges\.edgeBetween|SpatialQuery\.evaluate' src/SIR.Client.Web -g '*.fs' >/dev/null
+    rg -n 'Los\.lineOfSightBy|Pathfinding\.astar|Edges\.edgeBetween|SpatialQuery\.evaluate' "$scan_root" -g '*.fs' >/dev/null
   else
     grep -RInE --include='*.fs' --exclude-dir='.fable' --exclude-dir='.fable-rules' --exclude-dir=bin --exclude-dir=obj \
-      'Los\.lineOfSightBy|Pathfinding\.astar|Edges\.edgeBetween|SpatialQuery\.evaluate' src/SIR.Client.Web >/dev/null
+      'Los\.lineOfSightBy|Pathfinding\.astar|Edges\.edgeBetween|SpatialQuery\.evaluate' "$scan_root" >/dev/null
   fi
 }
 
@@ -101,17 +102,19 @@ require_clean_scan() {
 }
 
 expect_unreadable_client_scan_error() {
-  local source=src/SIR.Client.Web/RulesExplorer.fs
-  local original_mode
+  local fixture="$task_tmp/unreadable-client-scan"
+  local source="$fixture/RulesExplorer.fs"
   local status
-  original_mode=$(stat -c '%a' "$source")
+  rm -rf "$fixture"
+  mkdir -p "$fixture"
+  cp src/SIR.Client.Web/RulesExplorer.fs "$source"
   chmod 000 "$source"
-  if client_has_authority_calls; then
+  if client_has_authority_calls "$fixture"; then
     status=0
   else
     status=$?
   fi
-  chmod "$original_mode" "$source"
+  chmod u+rw "$source"
   if [[ $status -le 1 ]]; then
     echo "Client authority scan did not fail closed for unreadable source (search exited $status)" >&2
     exit 1
