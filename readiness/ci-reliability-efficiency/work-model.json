@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "660eca8441b8bcd709a8344fe6302d5af48919c07cbcd56ed76d847079523977"
+        "value": "a9cd820d000645681b98a4a1121e9432d7fe8ffa1cda874ebb330c6562021a50"
       }
     },
     {
@@ -5128,7 +5128,7 @@
       "schemaVersion": 1,
       "generator": {
         "id": "FS.GG.SDD.Artifacts",
-        "version": "1.1.0"
+        "version": "1.0.1"
       },
       "sources": [
         {
@@ -5175,7 +5175,7 @@
           "path": "work/ci-reliability-efficiency/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "660eca8441b8bcd709a8344fe6302d5af48919c07cbcd56ed76d847079523977"
+            "value": "a9cd820d000645681b98a4a1121e9432d7fe8ffa1cda874ebb330c6562021a50"
           },
           "schemaVersion": 1
         },
@@ -5206,7 +5206,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "3c93b86551aa5d91262544bcb0712c538facfd14568bc3621671899c2ff4e02a"
+        "value": "73b0907d7b14b75dc7ff7937ddfe11a8fb32e53182e34fc82bc81f4f5a74ef65"
       },
       "currency": "current"
     }

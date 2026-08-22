@@ -4,10 +4,10 @@
   "workId": "ci-reliability-efficiency",
   "stage": "ship",
   "status": "shipReady",
-  "generator": "FS.GG.SDD.Artifacts/1.1.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sourcesDigest": {
     "algorithm": "sha256",
-    "value": "5b058c6d555337d2b2644be70034ae7e7325154d01e9ed0b089de33fbb90632e"
+    "value": "f68358cac6ac70c5665f31d5d471a0eaf2b25f332d010a100e66284dc35df722"
   },
   "verificationReadiness": {
     "status": "verificationReady",

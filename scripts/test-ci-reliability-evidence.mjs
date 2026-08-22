@@ -7,7 +7,8 @@ const evidence = JSON.parse(readFileSync(evidencePath, "utf8"));
 
 assert.equal(evidence.schema, "sir.ci-hosted-evidence/v1");
 assert.equal(evidence.repository, "EHotwagner/S.I.R.");
-assert.equal(evidence.workflow.runId, 32571089354);
+assert.ok(Number.isSafeInteger(evidence.workflow.runId) && evidence.workflow.runId > 0);
+assert.equal(evidence.workflow.url, `https://github.com/EHotwagner/S.I.R./actions/runs/${evidence.workflow.runId}`);
 assert.equal(evidence.workflow.attempt, 1);
 assert.equal(evidence.workflow.event, "pull_request");
 assert.equal(evidence.workflow.status, "completed");

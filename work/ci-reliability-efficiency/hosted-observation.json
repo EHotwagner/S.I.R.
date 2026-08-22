@@ -3,20 +3,20 @@
   "repository": "EHotwagner/S.I.R.",
   "workflow": {
     "id": 322497650,
-    "runId": 32571089354,
+    "runId": 32572941237,
     "attempt": 1,
     "event": "pull_request",
     "status": "completed",
     "conclusion": "success",
     "headBranch": "item/247-ci-reliability-efficiency",
-    "headSha": "6ef206926fdd2412d28e575ccb71bddc61277b70",
-    "treeSha": "e7ff17456f9bb1c5f23d00b6bca9703bf6ffe163",
-    "url": "https://github.com/EHotwagner/S.I.R./actions/runs/32571089354"
+    "headSha": "71212b653e5a8c65d04bdab049cebcb71d9c34da",
+    "treeSha": "ff2152fe0d1f9d0d83b051f1fd9a58c1824094ea",
+    "url": "https://github.com/EHotwagner/S.I.R./actions/runs/32572941237"
   },
   "verdict": {
-    "artifactId": 9475373410,
+    "artifactId": 9475842379,
     "artifactName": "pr-verdict",
-    "payloadSha256": "c14764e9cd8779e8627b6ff7e1634feaec3e4ee65d2911c81dec1004217ff22f",
+    "payloadSha256": "0f5edfb1d952e7aa01f53f91bdf8152b55eeb7dbe09c7cf0142d3c178fbcdb66",
     "schema": "sir.ci-join/v1",
     "result": "pass",
     "classification": "cross-cutting",
@@ -31,22 +31,22 @@
     ],
     "skippedGateCount": 0,
     "failedGateCount": 0,
-    "elapsedMilliseconds": 239690,
+    "elapsedMilliseconds": 232147,
     "acceptanceTargetMilliseconds": 240000,
-    "actualHeadroomMilliseconds": 60310,
+    "actualHeadroomMilliseconds": 67853,
     "retryCount": 0
   },
   "cost": {
-    "artifactId": 9475377201,
+    "artifactId": 9475844896,
     "artifactName": "ci-cost-report",
-    "payloadSha256": "3d4dfe913f1a78e8f0471e33f4d2567ded5247eda884a25bc4c3652b2fa70013",
-    "reportDigest": "7f0332f0a9cc224a33a9cf8adc16700312c4bcf93610d01930134ba8384d88f1",
+    "payloadSha256": "6d97b319f2b660912521ffc9aa1d093ffd364e03d94b3103df4856c31e2a3a92",
+    "reportDigest": "c6cede456d952e5107d8ea13f8e24ece36fe83d68df116249178133c174e1760",
     "schema": "sir.ci-cost-report/v1",
     "result": "complete",
-    "apiRunnerMilliseconds": 1161000,
-    "artifactBytes": 106979278,
-    "runnerReductionPercent": 23.518,
-    "artifactReductionPercent": 69.551,
+    "apiRunnerMilliseconds": 1182000,
+    "artifactBytes": 106980560,
+    "runnerReductionPercent": 22.134,
+    "artifactReductionPercent": 69.55,
     "baselineComparison": "pass",
     "reconciliation": "complete",
     "mismatchedReceiptCount": 0
@@ -61,10 +61,10 @@
     "verdictMilliseconds": 240000
   },
   "preparedArtifactBytes": {
-    "native": 39223426,
-    "fable": 4077529,
-    "web": 31312610,
-    "docs": 32347022,
-    "total": 106960587
+    "native": 39223632,
+    "fable": 4077735,
+    "web": 31312817,
+    "docs": 32347228,
+    "total": 106961412
   }
 }

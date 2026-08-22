@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
   "contractVersion": "2.0.0",
-  "generatorVersion": "FS.GG.SDD.Artifacts/1.1.0",
+  "generatorVersion": "FS.GG.SDD.Artifacts/1.0.1",
   "workId": "ci-reliability-efficiency",
   "sources": [
     {
       "path": "readiness/ci-reliability-efficiency/ship.json",
-      "digest": "sha256:236a6ae4437960ee8b74c4f69d966c34a3a50a7429b682f7eb25373a07eba197",
+      "digest": "sha256:c1c5141fe5eb7330cd51218a7f852a07c55c7d8cd6a7b16f66740b8af4c63363",
       "schemaVersion": 1
     },
     {
       "path": "readiness/ci-reliability-efficiency/verify.json",
-      "digest": "sha256:81ab19ac85ec15d73f2fc08e2a9416882351af5bd189ed940b0d67026be987cf",
+      "digest": "sha256:7ead119106340baac3d61b4660b90ac019f20ebfb497bddc4ba349b557c8fe2a",
       "schemaVersion": 1
     },
     {
       "path": "readiness/ci-reliability-efficiency/work-model.json",
-      "digest": "sha256:129591e5c2c5b7cb4e2e03c8f4771c7624ffcacd66c8774833983b880c4c935d",
+      "digest": "sha256:08d3b680e76f80df56d72da3e7ea4bb45c15a96528536c5c1e769ff11e58f808",
       "schemaVersion": 1
     }
   ],

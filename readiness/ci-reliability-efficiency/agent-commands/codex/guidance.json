@@ -3,7 +3,7 @@
   "viewVersion": "1.0",
   "workId": "ci-reliability-efficiency",
   "targetId": "codex",
-  "generator": "FS.GG.SDD.Artifacts/1.1.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "generated": true,
   "sources": [
     {
@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "129591e5c2c5b7cb4e2e03c8f4771c7624ffcacd66c8774833983b880c4c935d"
+        "value": "08d3b680e76f80df56d72da3e7ea4bb45c15a96528536c5c1e769ff11e58f808"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
