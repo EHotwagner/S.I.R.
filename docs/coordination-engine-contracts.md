@@ -36,6 +36,36 @@ premise: the ledger was never going to accept those values in the first place, b
 them. **No invented value can reach the ledger through this path.** The append-only chain is built for
 you, and a tampered digest is caught with `revision N digest does not match its structured inputs`.
 
+## The rule this page was written by, and once got wrong
+
+**Converging against a pure validator cannot discover the facts the production route supplies to it.**
+
+Most of this page was established by calling `StructuredDecision.validateReviewLedger` and reading the
+invariants it names. That method is cheap, it cannot drift from the engine, and it is still the right
+place to start — but it has one limit, and missing it put a wrong `subject` in an earlier revision of
+this very document.
+
+`validateReviewLedger` takes `expectedSubject` as a **parameter**. It validates whatever subject you
+hand it. So it can never tell you what the production route derives — and the production route derives
+something you would not guess:
+
+```
+validator told the canonical ref  "EHotwagner/S.I.R.#255"            -> accepted
+validator told the production form "EHotwagner/S.I.R.#255/pr/259"    -> accepted
+validator told the string          "not-even-a-ref"                  -> accepted
+```
+
+All three pass, because both sides of the comparison come from the caller. A method that accepts
+`not-even-a-ref` as a subject is not going to tell you the subject rule.
+
+The general form: **a pure function is parameterised on exactly the facts its callers establish, so it
+is blind to precisely the facts you most need from its caller.** Before you trust a contract recovered
+in-process, ask what the production route passes IN, and go read that. For this engine that means
+`ilspycmd` over `FS.GG.Coord.Cli.Client` — see the last section.
+
+Everything below marked **production-only** is a rule the in-process validator does not enforce and
+cannot reveal.
+
 ## The two traps that cost a round
 
 **1. The acceptance record carries the CRITIC's identity, not yours.** `critic` is not "who wrote this
@@ -123,10 +153,38 @@ Exactly five keys. There is no `item`, no `kind`, and no `claimGeneration` on a 
 > defaults to 120 minutes, so a wait window sized to match the lease leaves no margin for a slow
 > review. Size `expiresAt` for the review you expect, complete it as soon as the critic's record is
 > posted, and do not let a passing review sit uncompleted.
+>
+> **Measured on a real review:** wait opened 21:51:44Z, critic record posted 22:03:19Z — 11 minutes
+> 35 seconds, against a 240-minute window, roughly 20x headroom. The margin is not there for slow
+> reviewing; it is there for a critic that stalls, is respawned, or hands off. Size it for the failure,
+> not for the happy path.
 
 ## `review record` — schema `fsgg.coord.review-decision/v2`
 
 The posted comment body is `<!-- fsgg:review-decision/v2 -->`, a newline, then the sealed JSON.
+
+### `subject` is NOT the item ref — and it differs from the wait event's `item`
+
+**production-only.** This is the single most likely thing to get wrong, because the adjacent document
+uses the other convention.
+
+| document | field | value | example |
+|---|---|---|---|
+| `review wait` | `item` | the canonical item ref | `EHotwagner/S.I.R.#255` |
+| `review record` | `subject` | the canonical ref **plus `/pr/<n>`** | `EHotwagner/S.I.R.#255/pr/259` |
+
+Two neighbouring artifacts in one protocol, two different spellings of the same item. The record's form
+is derived by the CLI as `$"{target.Canonical}/pr/{pr}"`, and a draft carrying anything else is refused:
+
+```
+fsgg-coord-engine: review record: subject must be 'EHotwagner/S.I.R.#255/pr/259'.
+```
+
+`validateReviewLedger` will happily accept the wrong one, because of the rule at the top of this page.
+
+Note for a rebase: the `/pr/<n>` subject is bound to the PR, not the head, so it **survives a rebase**.
+The `reviewGeneration` token does not — it embeds the head SHA. After a rebase you need a fresh
+`enter`/`record`/`complete` cycle, but the subject string is unchanged.
 
 ### Draft keys
 
@@ -159,9 +217,19 @@ and `baseSha`) are required to be *present* and are then *ignored*.
 These come from `StructuredDecision.validateReviewLedger`, quoted in its own words:
 
 - `initial review round must be zero` — an `initial` record must carry `"round": 0`.
+- **An `acceptance` record's `round` is inert.** No production path reads it: the wait gate's acceptance
+  arm never calls `generationMatches`, and the chain projection SYNTHESISES `ReviewChain.Rounds` by
+  counting `confirmation` records and emitting `1..N` rather than reading any record's field. Write
+  `0`. The corollary is worth knowing: **the round ceiling counts confirmations**, so neither the
+  initial record nor the acceptance record consumes a round.
 - `every record in one review generation must bind the same critic` — see trap 1 above.
 - `acceptance records must carry verdict accepted`.
-- Non-initial records must set both `initialReview` and `precedingReview`, each non-empty.
+- Non-initial records must set both `initialReview` and `precedingReview`, each non-empty — and
+  **production-only**, each must be an exact comment URL, not merely a non-empty token:
+  `initialReview must equal the actual current generation's initial comment URL` and
+  `precedingReview must equal the actual immediately preceding structured comment URL`. The
+  in-process validator checks only non-emptiness, so it will pass a draft the CLI refuses. Take both
+  URLs from the `commentUrl` that `review record` printed for the records concerned.
 - `claimGeneration and baseSha belong to the acceptance record` — they must be absent from the
   initial record. (You are not supplying them anyway; the engine does.)
 - `routeApplicability: "meaningful"` requires **exactly four** `routeEvidence` entries;
@@ -229,7 +297,12 @@ refuses with `resulting accepted chain is invalid: …` rather than writing a ba
 acceptance draft costs an error message, not a corrupted ledger.
 
 On success `review record` prints a `fsgg.coord.review-record-result/v2` document carrying
-`commentId`, `commentUrl`, `digest` and `revision`. Keep the `commentUrl` — the next step needs it.
+`commentId`, `commentUrl`, `digest`, `revision` and `subject`. **Keep the `commentUrl`** — the
+`complete` wait event and every later record's `initialReview`/`precedingReview` all need it.
+
+Its `effectiveChainValidated` field is literally `kind == acceptance`: it reports whether this record's
+kind triggered the full accepted-chain pre-validation. `false` on an initial or confirmation record is
+expected and does not mean anything failed.
 
 ## `scripts/fsgg-coord review <ref> --pr <n>` is the oracle
 
@@ -282,6 +355,12 @@ StructuredDecision.validateReviewLedger subject records    // every invariant, i
 
 Converging against the validator is how the invariants on this page were established. It is cheaper
 than reading IL and it cannot drift from the engine, because it *is* the engine.
+
+**But read the rule at the top of this page before you trust what it tells you.** A pure function is
+parameterised on the facts its caller establishes, so converging against it is blind to exactly those
+facts — which is how an earlier revision of this page documented the wrong `subject`. Use the validator
+to learn the invariants; use `ilspycmd` over `FS.GG.Coord.Cli.Client` to learn what the production route
+passes into it. You need both, and the second is the one people skip.
 
 `scripts/test-review-contract-coherence.sh` holds this page to that standard: it drives the documented
 path against the real engine assembly and fails when any load-bearing claim here is inverted.
