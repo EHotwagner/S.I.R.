@@ -41,5 +41,7 @@ expect_red .github/workflows/ci.yml '/gates+=(spatial)/d;'
 expect_red .github/workflows/ci.yml '/run-ci-gate.sh cross-runtime artifacts\/ci\/results\/cross-runtime.json/d;'
 expect_red .github/workflows/ci.yml '/SIR_CI_PREFLIGHT_REUSED:/d;'
 expect_red scripts/qualify-pr.sh '/artifacts\/publish/d;'
+expect_red scripts/qualify-pr.sh '/build-docs.sh --prepare-site-only/d;'
+expect_red scripts/qualify-pr.sh 's/ --reuse-site-build//;'
 
 echo "CI route policy, production-review freshness/preparer wiring, performance scope/headroom, prepared Playwright runtime reuse, co-scheduled rules/spatial receipts, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."

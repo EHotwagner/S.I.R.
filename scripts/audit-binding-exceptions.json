@@ -17,9 +17,9 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "ea5956445fa1c9c3f86c6b5e8dbf0a95be05f9a45a2f1429557f770c476962c7",
+      "replacementSha256": "ae66b81e29452be4d11d1346cb001c14b66b13cb8dda9cf3cdd39470432ab3ae",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "The CI reliability design extends the route matrix with source-to-production-review freshness, consolidated ordinary domain execution, an independently parallel performance-sensitive cross-runtime measurement, parallel source-mutation helpers, native-owned server and documentation inputs, protected-stage receipt topology, and the existing performance, artifact, build-owner, and fail-closed join contracts; focused mutations cover every new edge."
+      "reason": "The CI reliability design extends the route matrix with source-to-production-review freshness, consolidated ordinary domain execution, an independently parallel performance-sensitive cross-runtime measurement, parallel source-mutation helpers, native-owned server and prebuilt documentation projection inputs, protected-stage receipt topology, and the existing performance, artifact, build-owner, and fail-closed join contracts; focused mutations cover every new edge."
     },
     {
       "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",

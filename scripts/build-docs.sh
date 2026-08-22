@@ -8,6 +8,8 @@ reuse_build_receipt=""
 reuse_conformance_receipt=""
 reuse_build_owner="scripts/qualify-production.sh"
 prepared_pr=false
+prepare_site_only=false
+reuse_site_build=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -30,6 +32,14 @@ while [[ $# -gt 0 ]]; do
       prepared_pr=true
       shift
       ;;
+    --prepare-site-only)
+      prepare_site_only=true
+      shift
+      ;;
+    --reuse-site-build)
+      reuse_site_build=true
+      shift
+      ;;
     *)
       echo "build-docs: unknown argument: $1" >&2
       exit 2
@@ -38,6 +48,36 @@ while [[ $# -gt 0 ]]; do
 done
 
 cd "$repo_root"
+
+build_site_projection() {
+  if [[ -d "$repo_root/.fsdocs" ]]; then
+    rm -rf -- "$repo_root/.fsdocs"
+  fi
+
+  dotnet fsdocs build \
+    --clean \
+    --eval \
+    --strict \
+    --projects \
+      src/SIR.Domain/SIR.Domain.fsproj \
+      src/SIR.Simulation/SIR.Simulation.fsproj \
+      src/SIR.Wasm/SIR.Wasm.fsproj \
+      src/SIR.Match/SIR.Match.fsproj \
+      src/SIR.Client/SIR.Client.fsproj \
+    --output "$site_output" \
+    --properties Configuration=Release
+
+  node scripts/prune-docs-navigation.mjs "$site_output"
+}
+
+if [[ "$prepare_site_only" == true ]]; then
+  [[ "$reuse_site_build" == false && -z "$reuse_build_receipt" && -z "$reuse_conformance_receipt" && "$prepared_pr" == false ]] || {
+    echo "build-docs: --prepare-site-only cannot be combined with reuse or prepared-consumer options" >&2
+    exit 2
+  }
+  build_site_projection
+  exit 0
+fi
 
 node scripts/verify-fable-client-baseline.mjs
 
@@ -73,24 +113,18 @@ if [[ -z "$reuse_conformance_receipt" ]]; then
   fi
 fi
 
-if [[ -d "$repo_root/.fsdocs" ]]; then
-  rm -rf -- "$repo_root/.fsdocs"
+if [[ "$reuse_site_build" == true ]]; then
+  [[ "$prepared_pr" == true && -n "$reuse_build_receipt" ]] || {
+    echo "build-docs: --reuse-site-build requires --prepared-pr and a verified build receipt" >&2
+    exit 2
+  }
+  [[ -f "$site_output/index.html" ]] || {
+    echo "build-docs: prepared site projection is missing index.html" >&2
+    exit 1
+  }
+else
+  build_site_projection
 fi
-
-dotnet fsdocs build \
-  --clean \
-  --eval \
-  --strict \
-  --projects \
-    src/SIR.Domain/SIR.Domain.fsproj \
-    src/SIR.Simulation/SIR.Simulation.fsproj \
-    src/SIR.Wasm/SIR.Wasm.fsproj \
-    src/SIR.Match/SIR.Match.fsproj \
-    src/SIR.Client/SIR.Client.fsproj \
-  --output "$site_output" \
-  --properties Configuration=Release
-
-node scripts/prune-docs-navigation.mjs "$site_output"
 
 mkdir -p "$site_output/content/sir-client/v1"
 cp -R "$client_output/content/sir-client/v1/." \

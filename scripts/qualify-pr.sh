@@ -138,6 +138,7 @@ NODE
         # every declared project once and lets later solution growth remain one
         # invocation instead of accumulating serialized owner builds.
         dotnet build SIR.slnx -c Release --no-restore
+        ./scripts/build-docs.sh --prepare-site-only
         mkdir -p artifacts/publish
         cp -a src/SIR.Server/bin/Release/net10.0/. artifacts/publish/
         node scripts/prune-linux-runtime-closure.mjs \
@@ -160,6 +161,7 @@ NODE
           src/SIR.Wasm/bin/Release/net10.0
           src/SIR.Match/bin/Release/net10.0
           src/SIR.Client/bin/Release/net10.0
+          artifacts/site
         )
         ;;
       fable)
@@ -390,7 +392,7 @@ const { writeFileSync } = require("node:fs");
 writeFileSync(process.argv[2], `${JSON.stringify({ restore: Number(process.argv[4]) - Number(process.argv[3]), build: 0, transport: 0, failureStage: process.argv[5] })}\n`);
 NODE
         [[ $restore_status -eq 0 ]] || exit "$restore_status"
-        ./scripts/build-docs.sh --reuse-build-receipt "$receipt" --reuse-build-owner scripts/qualify-pr.sh --prepared-pr
+        ./scripts/build-docs.sh --reuse-build-receipt "$receipt" --reuse-build-owner scripts/qualify-pr.sh --prepared-pr --reuse-site-build
         ;;
       evidence)
         restore_started=$(date +%s%3N)

@@ -299,6 +299,9 @@ const matchQualification = readFileSync(new URL("../tests/SIR.Match.Tests/Progra
 const focusedNativeProducer = /      native\)\n(?<body>[\s\S]*?)\n        ;;/u.exec(focusedQualification);
 assert.ok(focusedNativeProducer?.groups?.body, "focused native producer block is missing");
 assert.equal(focusedNativeProducer.groups.body.match(/dotnet build SIR\.slnx -c Release --no-restore/gu)?.length, 1);
+assert.match(focusedNativeProducer.groups.body, /build-docs\.sh --prepare-site-only[\s\S]*artifacts\/site/u);
+assert.match(focusedQualification, /documentation\)[\s\S]*build-docs\.sh[^\n]*--prepared-pr --reuse-site-build/u);
+assert.match(buildDocs, /--prepare-site-only[\s\S]*build_site_projection[\s\S]*--reuse-site-build[\s\S]*prepared site projection is missing index\.html/u);
 assert.doesNotMatch(focusedQualification, /find src tests -type d.*-name obj/u);
 assert.doesNotMatch(focusedQualification, /--output .*obj/u);
 assert.match(focusedQualification, /dotnet restore SIR\.slnx --locked-mode/u);
