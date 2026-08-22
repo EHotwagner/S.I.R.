@@ -238,7 +238,7 @@ jobs:
         with: { name: gate-prepare-web, path: artifacts/ci/results/prepare-web.json, retention-days: 1 }
 
   domain-conformance:
-    if: needs.route.outputs.rules == 'true' || needs.route.outputs.spatial == 'true' || needs.route.outputs.cancellation == 'true' || needs.route.outputs.cross_runtime == 'true'
+    if: needs.route.outputs.rules == 'true' || needs.route.outputs.spatial == 'true' || needs.route.outputs.cancellation == 'true'
     needs: [route, integrity, prepare-native, prepare-fable, prepare-web]
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -268,7 +268,7 @@ jobs:
       - run: dotnet tool restore
       - name: Extract verified domain inputs once
         run: ./scripts/qualify-pr.sh extract-parts native fable web
-      - name: Run ordinary domain gates concurrently, then performance-sensitive cross-runtime
+      - name: Run independently receipted domain gates concurrently
         shell: bash
         env:
           PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
@@ -286,9 +286,6 @@ jobs:
           done
           status=0
           for pid in "${pids[@]}"; do wait "$pid" || status=1; done
-          if [[ '${{ needs.route.outputs.cross_runtime }}' == 'true' ]]; then
-            ./scripts/run-ci-gate.sh cross-runtime artifacts/ci/results/cross-runtime.json || status=1
-          fi
           exit "$status"
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -298,9 +295,42 @@ jobs:
             artifacts/ci/results/rules.json
             artifacts/ci/results/spatial.json
             artifacts/ci/results/cancellation.json
-            artifacts/ci/results/cross-runtime.json
           if-no-files-found: ignore
           retention-days: 1
+
+  cross-runtime:
+    if: needs.route.outputs.cross_runtime == 'true'
+    needs: [route, integrity, prepare-native, prepare-fable]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with: { global-json-file: global.json }
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: 26.5.0, cache: npm }
+      - id: nuget-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json', 'Directory.Packages.props', '.config/dotnet-tools.json') }}
+      - run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with: { name: ci-route, path: artifacts/ci }
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with: { name: prepared-part-native, path: artifacts/ci/parts }
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with: { name: prepared-part-fable, path: artifacts/ci/parts }
+      - run: ./scripts/run-ci-gate.sh cross-runtime artifacts/ci/results/cross-runtime.json
+        env:
+          PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
+          SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}"
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with: { name: gate-cross-runtime, path: artifacts/ci/results/cross-runtime.json, retention-days: 1 }
 
   browser:
     if: needs.route.outputs.browser == 'true'
@@ -495,7 +525,7 @@ jobs:
 
   pr-verdict:
     if: always() && github.event_name == 'pull_request'
-    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, spatial-mutations, cancellation-mutations, browser-general-helper, browser-general-helper-2, browser-general-helper-3, browser-delivery, domain-conformance, browser, documentation]
+    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, spatial-mutations, cancellation-mutations, browser-general-helper, browser-general-helper-2, browser-general-helper-3, browser-delivery, domain-conformance, cross-runtime, browser, documentation]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
