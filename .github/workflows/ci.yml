@@ -305,6 +305,11 @@ jobs:
           if [[ '${{ needs.route.outputs.browser }}' == 'true' ]]; then
             ./scripts/run-ci-gate.sh browser-delivery artifacts/ci/results/browser-delivery.json || status=1
           fi
+          if [[ '${{ needs.route.outputs.rules }}' == 'true' ]]; then
+            # Rebind the durability proof after the browser process has exited so
+            # the rules gate checks the current canonical branch, fail closed.
+            git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          fi
           gates=()
           [[ '${{ needs.route.outputs.rules }}' == 'true' ]] && gates+=(rules)
           [[ '${{ needs.route.outputs.spatial }}' == 'true' ]] && gates+=(spatial)
