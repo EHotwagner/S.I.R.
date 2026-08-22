@@ -178,6 +178,27 @@ ownership, the durable PR marker, direct filing, confirmation, and host verifica
 without its passing review evidence and the host's exact-SHA `fsgg:review-accepted:v1` marker. If no independent agent mechanism is available, stop and report
 that the review gate is unavailable; self-review does not satisfy it.
 
+**The marker is necessary and not sufficient.** `landable` gates on a second artifact the marker does
+not create: the structured `fsgg.coord.review-decision/v2` ledger, written through `review record` and
+gated behind a durable entry from `review wait`. Open that wait entry BEFORE the critic starts — a
+critic record with no wait entry to authorize it is refused, and the entry expires on a wall clock, so
+a review that outruns its own `expiresAt` cannot be completed at all. Drive it as:
+
+```sh
+scripts/fsgg-coord review wait   <ref> enter.json    --pr <n>   # claim holder, before dispatch
+scripts/fsgg-coord review record <ref> critic.json   --pr <n>   # critic: kind initial, round 0
+scripts/fsgg-coord review wait   <ref> complete.json --pr <n>   # claim holder, on the critic's verdict
+scripts/fsgg-coord review record <ref> accept.json   --pr <n>   # host: kind acceptance
+```
+
+You author no digest and no generation: `review record` derives `revision`, `previousDigest`,
+`claimGeneration`, `baseSha` and `digest` from live state and discards whatever the draft supplied.
+`scripts/fsgg-coord review <ref> --pr <n>` is the authoritative next-action oracle for this protocol.
+It needs a live claim marker to EXIST on the item, not for you to hold it — a critic that holds no
+claim can run it and can post its own `review record`. (The engine's holder check,
+`live claim belongs to worker '...', not '...'`, gates `delivery`, not review.) Every field, vocabulary and invariant is in
+[`docs/coordination-engine-contracts.md`](../../../docs/coordination-engine-contracts.md).
+
 ## 6. Merge and obligations
 
 Ensure the PR closes the item — with a bare `Closes #<n>` (same repo) or `owner/repo#<n>` (cross repo),
@@ -185,7 +206,9 @@ Ensure the PR closes the item — with a bare `Closes #<n>` (same repo) or `owne
 and which then never closes the issue and cannot be repaired once merged (.github#2107). `verify-paths`,
 run right after opening the PR (§5), now catches this while it is still free to fix — do not wait for it
 to surface at `done`. Observe the host-acceptance marker for the current head, address confirmed
-actionable feedback, and wait on the typed `landable` verdict for the exact head SHA. Merge only green
+actionable feedback, and wait on the typed `landable` verdict for the exact head SHA. A `landable`
+refusal naming `fsgg.coord.review-decision/v2` means the review LEDGER is missing or incomplete, not
+that the marker is wrong — see §5. Merge only green
 and verify the merge on the default branch.
 Then complete every package, deployment, generated-registry, and downstream obligation described in
 [merge-and-release](references/merge-and-release.md).

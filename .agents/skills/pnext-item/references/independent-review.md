@@ -39,6 +39,72 @@ Receipt fields: `schema`, `observedAt`, `sourceSha`, `complete`, `consolidationA
 
 <!-- END GENERATED: fsgg-protocol:ledger-policy -->
 
+## The engine's review ledger is what `landable` reads
+
+**The markers in the generated table above are not sufficient to land a PR, and following them alone
+will strand it.** They remain the human-readable review evidence, and the host still verifies them —
+but `scripts/fsgg-coord landable` reads a different artifact: the structured
+`fsgg.coord.review-decision/v2` ledger, written through `fsgg-coord review record` and gated behind a
+durable wait entry written through `fsgg-coord review wait`. A PR carrying a perfect marker chain and
+no ledger is refused with:
+
+```
+PR #N carries no valid host review-acceptance marker (`fsgg:review-decision/v2`) —
+the review chain is absent, incomplete, or malformed.
+```
+
+That refusal names the schema but not the command that produces it, which is why this gap cost
+`S.I.R.#255` three stalled PRs before anyone found the real contract.
+
+**Both artifacts are required. Neither replaces the other.** The markers carry the review's reasoning
+for a human reader; the ledger carries the machine-checkable chain `landable` gates on. Post the marker
+as this contract already describes, and additionally drive the ledger:
+
+```sh
+# 1. the claim holder opens the durable wait, before the critic starts
+scripts/fsgg-coord review wait   <ref> enter.json    --pr <n>
+# 2. the critic records its verdict          (kind: initial, round: 0)
+scripts/fsgg-coord review record <ref> critic.json   --pr <n>
+# 3. the claim holder completes the wait     (evidenceRef: the critic record's comment URL)
+scripts/fsgg-coord review wait   <ref> complete.json --pr <n>
+# 4. the host accepts                        (kind: acceptance, verdict: accepted)
+scripts/fsgg-coord review record <ref> accept.json   --pr <n>
+```
+
+**You do not author a digest, a `revision`, a `previousDigest`, a `claimGeneration`, or a `baseSha`.**
+`review record` overwrites all five from live state before sealing. Your draft must contain the keys —
+the parser refuses a document that omits a required one — but the values are discarded, so a
+placeholder is correct and no invented value can reach the append-only ledger. If you find yourself
+about to guess a sealed field, stop: you are on the wrong path, not missing a secret.
+
+Two rules that no field name suggests, and that cost a round each when missed:
+
+- **The acceptance record carries the CRITIC's identity in `critic`, not the host's.** Every record in
+  one review generation must bind the same critic. A host writing its own worker id is refused with
+  `every record in one review generation must bind the same critic`, which does not point at the
+  host's own draft.
+- **The `complete` wait event's `evidenceRef` must equal the acceptance record's `precedingReview`,
+  exactly.** Use the critic record's comment URL for both.
+
+`reviewGeneration` is derivable, never guessed: it is the literal string `<headSha>:<kind>:<round>`
+(`ReviewWait.generationToken`, a public static). `claimGeneration` is the live claim marker's GitHub
+comment id — the `markerId` that `take --json` already returned to you.
+
+**`scripts/fsgg-coord review <ref> --pr <n>` is the authoritative next-action oracle.** It needs your
+live claim, and it returns one typed state and one next action bound to a freshness token a changed
+head invalidates. Prefer it over inferring the protocol from prose, including this page.
+
+The complete contract — every required and optional draft key, both vocabularies, every ledger
+invariant in the validator's own words, the wait-window expiry trap, and how to settle a question this
+prose does not answer — is [`docs/coordination-engine-contracts.md`](../../../../docs/coordination-engine-contracts.md),
+which `scripts/test-review-contract-coherence.sh` holds to the engine — it parses that document's
+own tables and key lists and compares them against the pinned engine, so falsifying a documented claim
+reds the gate. Run it directly, or as `scripts/run-ci-gate.sh review-contract`, which is the named
+subject it is dispatchable under. **The workflow row that invokes that subject on every PR lives in
+`.github/workflows/ci.yml`, which this change does not touch** — until that row lands the gate is
+dispatchable and green but not automatic, so run it by hand when you change the contract.
+
+
 Every item gets one independent critique cycle before merge. The implementer and critic are different
 agents. The critic receives the issue, acceptance criteria, declared `Paths:`, exact PR head SHA,
 complete diff, and test evidence; it does not receive the implementer's conclusions. The critic may
