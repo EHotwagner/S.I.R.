@@ -85,6 +85,48 @@ jobs:
             artifacts/ci/results/integrity-plan.json
             artifacts/ci/results/evidence.json
 
+  # Per-PR integrity selection is path-conditional (#248), so a subject that no changed path selects
+  # can stay red on the default branch indefinitely with every PR truthfully reporting
+  # `measured-omission` (#252). This job is the unconditional counterpart: it never runs on a pull
+  # request, so it adds nothing to ordinary PR cost, and it runs every integrity subject on the
+  # schedule, on every push to main, and on demand.
+  integrity-sweep:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with: { global-json-file: global.json }
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: 26.5.0, cache: npm }
+      - run: npm ci --ignore-scripts
+      - run: dotnet tool restore
+      - name: Route the default branch's own last commit
+        shell: bash
+        run: |
+          mkdir -p artifacts/ci
+          # The honest path set for a sweep is what actually last landed on this branch. It is also
+          # the point: these are the paths that select nothing, and the sweep runs everything anyway.
+          git diff --name-only HEAD~1 HEAD > artifacts/ci/changed-paths.txt || true
+          if [[ ! -s artifacts/ci/changed-paths.txt ]]; then git ls-files -- '*.md' | head -n 1 > artifacts/ci/changed-paths.txt; fi
+          ./scripts/qualify-pr.sh route artifacts/ci/changed-paths.txt
+      - name: Run every integrity subject unconditionally
+        env:
+          SIR_CI_INTEGRITY_SWEEP: "true"
+        run: ./scripts/run-ci-gate.sh integrity artifacts/ci/results/integrity.json
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: gate-integrity-sweep
+          retention-days: 30
+          path: |
+            artifacts/ci/results/integrity.json
+            artifacts/ci/results/integrity-plan.json
+
   spatial-mutations:
     if: needs.route.outputs.spatial == 'true'
     needs: route
