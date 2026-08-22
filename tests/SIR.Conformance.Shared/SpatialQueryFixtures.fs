@@ -150,6 +150,39 @@ module SpatialQueryFixtures =
         let diagonalOnlyPackagePath = SpatialQuery.packagePointPath 16 (fun position -> position = cell 0 0 || position = cell 1 1) (cell 0 0) (cell 1 1)
         require diagonalOnlyPackagePath.IsNone "Package path adapter stopped enforcing FourWay neighbourhood semantics."
 
+        // AC 2 / F2: boundary resolution is keyed, and the index MUST answer exactly as the
+        // `List.tryFind` scan it replaced - first declaration wins. An index built with
+        // `Map.ofList` would keep the LAST declaration and silently invert this world's answer.
+        let duplicateEdgeWorld =
+            world 7L 3L
+                [ boundary (cell 0 0) (cell 1 0) false false false "duplicate:first"
+                  boundary (cell 0 0) (cell 1 0) true true true "duplicate:second" ]
+                Map.empty
+                Set.empty
+        let duplicateTrace, _ =
+            SpatialQuery.evaluate
+                duplicateEdgeWorld
+                (request "duplicate-edge-first-wins" SpatialQueryKind.LineTrace SpatialModality.Vision (cell 0 0) (cell 1 0) [ cell 0 0 ] bounds)
+        require
+            (not duplicateTrace.Visible
+             && duplicateTrace.Explanation.CoverContributors = [ edge (cell 0 0) (cell 1 0) ])
+            "A duplicated boundary declaration stopped resolving first-declaration-wins."
+
+        // AC 3 / F3: re-evaluating a key already present returns the cached entry and leaves the
+        // cache exactly as it was, appending no shadowing duplicate.
+        let repeatWorld = world 7L 3L [] Map.empty Set.empty
+        let repeatRequest =
+            request "cache-repeat" SpatialQueryKind.BoundedPath SpatialModality.GroundMovement (cell 0 0) (cell 2 0) [ cell 0 0 ] bounds
+        let _, firstCache, firstSource = SpatialQuery.evaluateCached SpatialQuery.emptyCache repeatWorld repeatRequest
+        let _, repeatedCache, repeatedSource = SpatialQuery.evaluateCached firstCache repeatWorld repeatRequest
+        require
+            (firstSource = SpatialEvaluationSource.Uncached && repeatedSource = SpatialEvaluationSource.Cached)
+            "Repeated spatial cache evaluation of one key did not resolve from the cache."
+        require
+            (repeatedCache.StaticEntries.Length = firstCache.StaticEntries.Length
+             && repeatedCache.DynamicEntries.Length = firstCache.DynamicEntries.Length)
+            "Repeated evaluation of one spatial cache key grew the cache."
+
         let canonical =
             [ SpatialQuery.canonicalResultBytes blocked
               SpatialQuery.canonicalResultBytes pathResult
