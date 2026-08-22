@@ -302,13 +302,8 @@ jobs:
           SIR_CI_PREFLIGHT_REUSED: "true"
         run: |
           status=0
-          if [[ '${{ needs.route.outputs.rules }}' == 'true' ]]; then
-            ./scripts/run-ci-gate.sh rules artifacts/ci/results/rules.json || status=1
-          fi
-          if [[ '${{ needs.route.outputs.browser }}' == 'true' ]]; then
-            ./scripts/run-ci-gate.sh browser-delivery artifacts/ci/results/browser-delivery.json || status=1
-          fi
           gates=()
+          [[ '${{ needs.route.outputs.rules }}' == 'true' ]] && gates+=(rules)
           [[ '${{ needs.route.outputs.spatial }}' == 'true' ]] && gates+=(spatial)
           [[ '${{ needs.route.outputs.cancellation }}' == 'true' ]] && gates+=(cancellation)
           pids=()
@@ -317,6 +312,9 @@ jobs:
             pids+=("$!")
           done
           for pid in "${pids[@]}"; do wait "$pid" || status=1; done
+          if [[ '${{ needs.route.outputs.browser }}' == 'true' ]]; then
+            ./scripts/run-ci-gate.sh browser-delivery artifacts/ci/results/browser-delivery.json || status=1
+          fi
           exit "$status"
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
