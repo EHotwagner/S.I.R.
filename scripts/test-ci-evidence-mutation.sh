@@ -2,6 +2,11 @@
 set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+# This harness owns a detached checkout and must not inherit the parent gate's
+# timing paths. An inherited absolute path would write the mutation receipt
+# into the parent checkout and make the detached proof fail for the wrong
+# reason.
+unset SIR_CI_PHASE_PATH SIR_CI_EXTRACT_TIMING_PATH
 temporary=$(mktemp -d /tmp/sir-ci-evidence-mutation.XXXXXX)
 checkout="$temporary/checkout"
 cleanup() {

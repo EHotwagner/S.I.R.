@@ -8,6 +8,9 @@ const workerBundle = pathToFileURL(
     "artifacts/client/engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js",
   ),
 ).href;
+const domainTestsCommand = process.env.SIR_DOMAIN_TESTS_DLL
+  ? [process.env.SIR_DOMAIN_TESTS_DLL, "--print-replay-package"]
+  : ["run", "--project", "tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj", "-c", "Release", "--no-build", "--no-restore", "--", "--print-replay-package"];
 
 const wrapper = `
   import { parentPort } from "node:worker_threads";
@@ -164,7 +167,7 @@ const generatedFullFixture = Uint8Array.from(
   Buffer.from(
     execFileSync(
       "dotnet",
-      ["run", "--project", "tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj", "-c", "Release", "--no-build", "--no-restore", "--", "--print-replay-package"],
+      domainTestsCommand,
       { encoding: "utf8", cwd: process.cwd() },
     ).trim(),
     "hex",

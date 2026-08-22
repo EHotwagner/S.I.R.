@@ -3,28 +3,26 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
-export const routeSchema = "sir.ci-route/v1";
+export const routeSchema = "sir.ci-route/v2";
 export const gateSchema = "sir.ci-gate-result/v1";
 export const joinSchema = "sir.ci-join/v1";
 export const timingSchema = "sir.ci-timing/v1";
-export const policyVersion = "1";
+export const policyVersion = "2";
 export const feedbackBudgetMilliseconds = 300_000;
 export const feedbackHeadroomMilliseconds = 60_000;
 export const feedbackAcceptanceTargetMilliseconds = feedbackBudgetMilliseconds - feedbackHeadroomMilliseconds;
 export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence"];
-export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web", "prepare-server", "prepare-docs"];
-export const helperOrder = ["spatial-mutations", "cancellation-mutations", "browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery"];
+export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web", "prepare-docs"];
+export const helperOrder = ["spatial-mutations", "cancellation-mutations", "browser-general-helper", "browser-delivery"];
 export const subjectOrder = ["integrity", ...producerOrder, ...helperOrder, ...gateOrder];
 export const gateParts = {
   rules: ["native"],
   spatial: ["native", "fable"],
   cancellation: ["native", "web"],
   "cross-runtime": ["native", "fable"],
-  browser: ["web", "server"],
-  "browser-general-helper": ["web", "server"],
-  "browser-general-helper-2": ["web", "server"],
-  "browser-general-helper-3": ["web", "server"],
-  "browser-delivery": ["web", "server"],
+  browser: ["web", "native"],
+  "browser-general-helper": ["web", "native"],
+  "browser-delivery": ["web", "native"],
   documentation: ["web", "docs"],
   evidence: [],
 };
@@ -33,8 +31,7 @@ export const expectedBuildInvocations = {
   "prepare-native": ["build:SIR.slnx", "producer:native"],
   "prepare-fable": ["fable:tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj", "fable:tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj", "fable:tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj", "producer:fable"],
   "prepare-web": ["fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj", "fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj", "producer:web"],
-  "prepare-server": ["producer:server", "publish:src/SIR.Server/SIR.Server.fsproj"],
-  "prepare-docs": ["build:src/SIR.Client/SIR.Client.fsproj", "build:src/SIR.Match/SIR.Match.fsproj", "producer:docs"],
+  "prepare-docs": ["build:src/SIR.Match/SIR.Match.fsproj", "build:src/SIR.Client/SIR.Client.fsproj", "producer:docs"],
   rules: [],
   "spatial-mutations": [
     "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:spatial-mutation-base",
@@ -45,7 +42,7 @@ export const expectedBuildInvocations = {
   ],
   spatial: [],
   "cancellation-mutations": [
-    "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:cancellation-fixture",
+    "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:cancellation-fixture:artifacts-path:isolated",
     ...["cancellation-mutant"].flatMap((name) => [
     `fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:${name}`,
     `fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:${name}`,
@@ -55,8 +52,6 @@ export const expectedBuildInvocations = {
   "cross-runtime": ["build:spikes/browser-wasm-verification/BrowserWasmVerificationSpike.fsproj"],
   browser: [],
   "browser-general-helper": [],
-  "browser-general-helper-2": [],
-  "browser-general-helper-3": [],
   "browser-delivery": [],
   documentation: [],
   evidence: [],
@@ -76,6 +71,16 @@ const under = (path, prefix) => path === prefix || path.startsWith(`${prefix}/`)
 const isDocumentation = (path) => under(path, "docs") || path === "scripts/build-docs.sh";
 const isDomain = (path) => ["src/SIR.Domain", "src/SIR.Simulation", "src/SIR.Match", "tests/SIR.Domain.Tests", "tests/SIR.Domain.Fable.Tests", "tests/SIR.Match.Tests", "tests/SIR.Conformance.Shared"].some((prefix) => under(path, prefix));
 const isBrowser = (path) => ["src/SIR.Client", "src/SIR.Client.Web", "src/SIR.Server", "tests/SIR.Browser.Tests", "tests/SIR.Client.Tests", "tests/SIR.Server.Tests"].some((prefix) => under(path, prefix));
+const productionReviewPaths = new Set([
+  "package.json",
+  "package-lock.json",
+  "scripts/build-client.sh",
+  "scripts/build-docs.sh",
+  "scripts/generate-map-editor-review.mjs",
+  "scripts/test-map-editor-qualification.mjs",
+]);
+const isProductionReviewInput = (path) => ["src/SIR.Client", "src/SIR.Client.Web", "docs/assets/map-editor-review"]
+  .some((prefix) => under(path, prefix)) || productionReviewPaths.has(path);
 const isEvidence = (path) => ["feedback", "readiness", "work"].some((prefix) => under(path, prefix));
 const performancePaths = new Set([
   "scripts/finalize-svg-pipeline-evidence.mjs",
@@ -119,7 +124,12 @@ export function routePaths(rawPaths, source = {}) {
   const kinds = [...new Set(facts.map((fact) => fact.classification).filter((kind) => kind !== "evidence-only"))];
   const performanceOnly = kinds.includes("performance") && kinds.every((kind) => ["performance", "documentation"].includes(kind));
   const classification = kinds.length === 0 ? "evidence-only" : performanceOnly ? "performance" : kinds.length === 1 ? kinds[0] : "cross-cutting";
-  const selectedGates = classifications[classification];
+  const productionReviewInputs = facts
+    .filter(({ path }) => isProductionReviewInput(path) || classification === "cross-cutting")
+    .map(({ path }) => path);
+  const productionReviewRequired = productionReviewInputs.length > 0;
+  const selectedGates = gateOrder.filter((gate) =>
+    classifications[classification].includes(gate) || (productionReviewRequired && gate === "documentation"));
   const classificationRule = classification === "performance" && kinds.length > 1
     ? "RP-009-performance-documentation"
     : classification === "cross-cutting" && kinds.length > 1
@@ -135,6 +145,11 @@ export function routePaths(rawPaths, source = {}) {
     classification,
     paths,
     facts,
+    productionReview: {
+      required: productionReviewRequired,
+      rule: productionReviewRequired ? "RP-010-production-review-freshness" : "not-applicable",
+      inputs: productionReviewInputs,
+    },
     alwaysOn: ["integrity"],
     selectedGates,
     skippedGates,
@@ -184,7 +199,7 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
   const expectedHelpers = [
     ...(selectedGates.includes("spatial") ? ["spatial-mutations"] : []),
     ...(selectedGates.includes("cancellation") ? ["cancellation-mutations"] : []),
-    ...(selectedGates.includes("browser") ? ["browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery"] : []),
+    ...(selectedGates.includes("browser") ? ["browser-general-helper", "browser-delivery"] : []),
   ];
   const expectedSubjects = ["integrity", ...expectedProducers, ...expectedHelpers, ...selectedGates];
   const byGate = new Map();

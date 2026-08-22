@@ -2,6 +2,10 @@ import { test, expect } from "@playwright/test";
 import { openSamples, switchWorkspace } from "./journey.js";
 
 test("@production-delivery Release delivery uses cache-safe compression and defers spatial diagnostics", async ({ page }) => {
+  // This journey deliberately runs under Slow-3G and 4x CPU throttling. Give
+  // that synthetic environment headroom beyond Playwright's generic 30s test
+  // default without weakening any delivery assertion or CI workflow budget.
+  test.slow();
   const client = await page.context().newCDPSession(page);
   await client.send("Network.enable");
   await client.send("Network.emulateNetworkConditions", {

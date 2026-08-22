@@ -1,0 +1,1472 @@
+{
+  "schemaVersion": 1,
+  "viewVersion": "1.0",
+  "workId": "ci-reliability-efficiency",
+  "stage": "analyze",
+  "status": "implementationReady",
+  "generator": "FS.GG.SDD.Artifacts/1.1.0",
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/ci-reliability-efficiency/checklist.md",
+      "kind": "checklist",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "e34051a66e4dc6a14c56d5520bccecfff3eebaec6cee77c96e9748eb3684ae17"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/ci-reliability-efficiency/clarifications.md",
+      "kind": "clarification",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "a7c9b9a52d84264ba6476effc77038392863edc55b2996b1c6c2b810b94843bc"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/ci-reliability-efficiency/plan.md",
+      "kind": "plan",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "7a130264f3b512b00864f7b820be1ac17b5eb98a39617822913091b1e4d6fd0c"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/ci-reliability-efficiency/spec.md",
+      "kind": "specification",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "6e86d77d74b132b17f056d858cba792116d11aa10eaa39f386d23daa4fc7ebfe"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/ci-reliability-efficiency/tasks.yml",
+      "kind": "tasks",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "0aabedb9bbf629831001de538820c4d33498693678b0525fa3fd9178c3985b5f"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    }
+  ],
+  "sourceRelationships": [
+    {
+      "id": "AR001",
+      "sourcePath": "work/ci-reliability-efficiency/checklist.md",
+      "targetPath": "work/ci-reliability-efficiency/plan.md",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "planSourceChecklist",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR002",
+      "sourcePath": "work/ci-reliability-efficiency/checklist.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "taskSourceChecklist",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR003",
+      "sourcePath": "work/ci-reliability-efficiency/clarifications.md",
+      "targetPath": "work/ci-reliability-efficiency/checklist.md",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "checklistSourceClarifications",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR004",
+      "sourcePath": "work/ci-reliability-efficiency/clarifications.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "DEC-001",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR005",
+      "sourcePath": "work/ci-reliability-efficiency/clarifications.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "DEC-002",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR006",
+      "sourcePath": "work/ci-reliability-efficiency/clarifications.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "DEC-003",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR007",
+      "sourcePath": "work/ci-reliability-efficiency/clarifications.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "DEC-004",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR008",
+      "sourcePath": "work/ci-reliability-efficiency/clarifications.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "DEC-005",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR009",
+      "sourcePath": "work/ci-reliability-efficiency/clarifications.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "DEC-006",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR010",
+      "sourcePath": "work/ci-reliability-efficiency/clarifications.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "DEC-007",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR011",
+      "sourcePath": "work/ci-reliability-efficiency/clarifications.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "DEC-008",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR012",
+      "sourcePath": "work/ci-reliability-efficiency/clarifications.md",
+      "targetPath": "work/ci-reliability-efficiency/plan.md",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "planSourceClarifications",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR013",
+      "sourcePath": "work/ci-reliability-efficiency/clarifications.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "taskSourceClarifications",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR014",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PC-001",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR015",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PC-002",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR016",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PC-003",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR017",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PC-004",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR018",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PC-005",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR019",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PC-006",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR020",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PC-007",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR021",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "GV-001",
+      "targetId": null,
+      "relationship": "generatedViewDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR022",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "GV-002",
+      "targetId": null,
+      "relationship": "generatedViewDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR023",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "GV-003",
+      "targetId": null,
+      "relationship": "generatedViewDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR024",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PM-001",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR025",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PM-002",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR026",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PM-003",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR027",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PM-004",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR028",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PM-005",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR029",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PM-006",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR030",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PM-007",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR031",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-001",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR032",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-002",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR033",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-003",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR034",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-004",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR035",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-005",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR036",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-006",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR037",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-007",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR038",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-008",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR039",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-009",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR040",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-010",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR041",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-011",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR042",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-012",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR043",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-013",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR044",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-014",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR045",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "PD-015",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR046",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "taskSourcePlan",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR047",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "VO-001",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR048",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "VO-002",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR049",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "VO-003",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR050",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "VO-004",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR051",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "VO-005",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR052",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "VO-006",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR053",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "VO-007",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR054",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "VO-008",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR055",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "VO-009",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR056",
+      "sourcePath": "work/ci-reliability-efficiency/plan.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "VO-010",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR057",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "AC-001",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR058",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "AC-002",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR059",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "AC-003",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR060",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "AC-004",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR061",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "AC-005",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR062",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "AC-006",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR063",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "AC-007",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR064",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "AC-008",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR065",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/checklist.md",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "checklistSourceSpec",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR066",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/plan.md",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "planSourceSpec",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR067",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-001",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR068",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-002",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR069",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-003",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR070",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-004",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR071",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-005",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR072",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-006",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR073",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-007",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR074",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-008",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR075",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-009",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR076",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-010",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR077",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-011",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR078",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-012",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR079",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-013",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR080",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-014",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR081",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "FR-015",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR082",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/clarifications.md",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "sourceSpec",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR083",
+      "sourcePath": "work/ci-reliability-efficiency/spec.md",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "taskSourceSpec",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR084",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T016",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR085",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T017",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR086",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T018",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR087",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T019",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR088",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T020",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR089",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T021",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR090",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T022",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR091",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T023",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR092",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T024",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR093",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T025",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR094",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T026",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR095",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T027",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR096",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T028",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR097",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T029",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR098",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T030",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR099",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T031",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR100",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T032",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR101",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T033",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR102",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T034",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR103",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T035",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR104",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T036",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR105",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T037",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR106",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T038",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR107",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T039",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR108",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T040",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR109",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T041",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR110",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T042",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR111",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T043",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR112",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T044",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR113",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T045",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR114",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T046",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR115",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T047",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR116",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T048",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR117",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T049",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR118",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T050",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR119",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T051",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR120",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T052",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR121",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T053",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR122",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T054",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR123",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T055",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR124",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T056",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR125",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T057",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR126",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T058",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR127",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T059",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR128",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T060",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR129",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T061",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR130",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T062",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR131",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T063",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR132",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T064",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR133",
+      "sourcePath": "work/ci-reliability-efficiency/tasks.yml",
+      "targetPath": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceId": "T065",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    }
+  ],
+  "readiness": {
+    "status": "implementationReady",
+    "readyCount": 133,
+    "advisoryCount": 0,
+    "warningCount": 0,
+    "blockingCount": 0,
+    "staleSourceCount": 0,
+    "missingDispositionCount": 0,
+    "malformedSourceCount": 0,
+    "generatedViewFindingCount": 0,
+    "acceptedDeferralCount": 0
+  },
+  "findings": [],
+  "generatedViews": [
+    {
+      "path": "readiness/ci-reliability-efficiency/work-model.json",
+      "kind": "workModel",
+      "currency": "missing",
+      "diagnosticIds": []
+    }
+  ],
+  "optionalBoundaryFacts": [
+    {
+      "path": ".fsgg/policy.yml",
+      "relationship": "optionalGovernancePolicy",
+      "requiredBySdd": false,
+      "state": "notEvaluated",
+      "diagnosticIds": []
+    },
+    {
+      "path": ".fsgg/capabilities.yml",
+      "relationship": "optionalGovernanceCapabilities",
+      "requiredBySdd": false,
+      "state": "notEvaluated",
+      "diagnosticIds": []
+    },
+    {
+      "path": ".fsgg/tooling.yml",
+      "relationship": "optionalGovernanceTooling",
+      "requiredBySdd": false,
+      "state": "notEvaluated",
+      "diagnosticIds": []
+    }
+  ],
+  "diagnostics": [],
+  "nextAction": {
+    "actionId": "analysis.next.implement",
+    "command": null,
+    "reason": "Lifecycle sources are current and ready for implementation."
+  }
+}

@@ -17,6 +17,7 @@ prepared_fable=""
 static_only=false
 prepared_pr=false
 external_mutation_proof=false
+prepared_parts_verified=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --reuse-pr-build-receipt)
@@ -41,12 +42,24 @@ while [[ $# -gt 0 ]]; do
       external_mutation_proof=true
       shift
       ;;
+    --prepared-parts-verified)
+      prepared_parts_verified=true
+      shift
+      ;;
     *) echo "verify-spatial-query: unknown argument: $1" >&2; exit 2 ;;
   esac
 done
 
 if [[ "$external_mutation_proof" == true && "$prepared_pr" == false ]]; then
   echo "verify-spatial-query: --external-mutation-proof requires --prepared-pr" >&2
+  exit 2
+fi
+if [[ "$prepared_parts_verified" == true && "$prepared_pr" == false ]]; then
+  echo "verify-spatial-query: --prepared-parts-verified requires --prepared-pr" >&2
+  exit 2
+fi
+if [[ "$prepared_parts_verified" == true && -z "$reuse_build_receipt" ]]; then
+  echo "verify-spatial-query: --prepared-parts-verified requires --reuse-pr-build-receipt" >&2
   exit 2
 fi
 
@@ -67,11 +80,12 @@ search_fixed_quiet() {
 }
 
 client_has_authority_calls() {
+  local scan_root=${1:-src/SIR.Client.Web}
   if command -v rg >/dev/null 2>&1 && [[ "${SIR_SPATIAL_FORCE_GREP:-0}" != 1 ]]; then
-    rg -n 'Los\.lineOfSightBy|Pathfinding\.astar|Edges\.edgeBetween|SpatialQuery\.evaluate' src/SIR.Client.Web -g '*.fs' >/dev/null
+    rg -n 'Los\.lineOfSightBy|Pathfinding\.astar|Edges\.edgeBetween|SpatialQuery\.evaluate' "$scan_root" -g '*.fs' >/dev/null
   else
     grep -RInE --include='*.fs' --exclude-dir='.fable' --exclude-dir='.fable-rules' --exclude-dir=bin --exclude-dir=obj \
-      'Los\.lineOfSightBy|Pathfinding\.astar|Edges\.edgeBetween|SpatialQuery\.evaluate' src/SIR.Client.Web >/dev/null
+      'Los\.lineOfSightBy|Pathfinding\.astar|Edges\.edgeBetween|SpatialQuery\.evaluate' "$scan_root" >/dev/null
   fi
 }
 
@@ -101,17 +115,19 @@ require_clean_scan() {
 }
 
 expect_unreadable_client_scan_error() {
-  local source=src/SIR.Client.Web/RulesExplorer.fs
-  local original_mode
+  local fixture="$task_tmp/unreadable-client-scan"
+  local source="$fixture/RulesExplorer.fs"
   local status
-  original_mode=$(stat -c '%a' "$source")
+  rm -rf "$fixture"
+  mkdir -p "$fixture"
+  cp src/SIR.Client.Web/RulesExplorer.fs "$source"
   chmod 000 "$source"
-  if client_has_authority_calls; then
+  if client_has_authority_calls "$fixture"; then
     status=0
   else
     status=$?
   fi
-  chmod "$original_mode" "$source"
+  chmod u+rw "$source"
   if [[ $status -le 1 ]]; then
     echo "Client authority scan did not fail closed for unreadable source (search exited $status)" >&2
     exit 1
@@ -134,7 +150,9 @@ fi
 
 if [[ -n "$reuse_build_receipt" ]]; then
   [[ -n "$prepared_fable" ]] || { echo "verify-spatial-query: prepared reuse requires a Fable fixture root" >&2; exit 2; }
-  node scripts/production-build-receipt.mjs verify --owner-command scripts/qualify-pr.sh --receipt "$reuse_build_receipt"
+  if [[ "$prepared_parts_verified" == false ]]; then
+    node scripts/production-build-receipt.mjs verify --owner-command scripts/qualify-pr.sh --receipt "$reuse_build_receipt"
+  fi
 else
   dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
 fi

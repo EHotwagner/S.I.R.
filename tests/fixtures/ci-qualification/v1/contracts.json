@@ -18,13 +18,10 @@
     "prepare-native",
     "prepare-fable",
     "prepare-web",
-    "prepare-server",
     "prepare-docs",
     "spatial-mutations",
     "cancellation-mutations",
     "browser-general-helper",
-    "browser-general-helper-2",
-    "browser-general-helper-3",
     "browser-delivery",
     "rules",
     "spatial",
@@ -35,8 +32,8 @@
     "evidence"
   ],
   "schemas": {
-    "route": "sir.ci-route/v1",
-    "artifactManifest": "sir.ci-artifact-manifest/v1",
+    "route": "sir.ci-route/v2",
+    "artifactManifest": "sir.ci-artifact-manifest/v2",
     "gateResult": "sir.ci-gate-result/v1",
     "timing": "sir.ci-timing/v1",
     "join": "sir.ci-join/v1"

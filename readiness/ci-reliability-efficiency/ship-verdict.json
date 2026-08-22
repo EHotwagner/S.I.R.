@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "viewVersion": "1.0",
+  "workId": "ci-reliability-efficiency",
+  "stage": "ship",
+  "status": "shipReady",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
+  "sourcesDigest": {
+    "algorithm": "sha256",
+    "value": "67bd6db1cb5b92ccd9259bfd9692a6cb90557cf622d3b6258c49a18012ea0d05"
+  },
+  "verificationReadiness": {
+    "status": "verificationReady",
+    "evidenceSupportedCount": 64,
+    "evidenceSelfAttestedCount": 0,
+    "evidenceObservedCount": 64
+  },
+  "disposition": {
+    "state": "shipReady",
+    "blockingFindingIds": []
+  },
+  "readiness": "shipReady"
+}

@@ -1,0 +1,1915 @@
+schemaVersion: 1
+workId: ci-reliability-efficiency
+stage: evidence
+status: evidenceReady
+sourceSpec: work/ci-reliability-efficiency/spec.md
+sourceClarifications: work/ci-reliability-efficiency/clarifications.md
+sourceChecklist: work/ci-reliability-efficiency/checklist.md
+sourcePlan: work/ci-reliability-efficiency/plan.md
+sourceTasks: work/ci-reliability-efficiency/tasks.yml
+sourceAnalysis: readiness/ci-reliability-efficiency/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/ci-reliability-efficiency/analysis.json
+    digest: c3442f4a4650c67ffb1f530ba66c0d67cafd10a23897c1c70c1f795947ff49e1
+    schemaVersion: 1
+  - label: checklist
+    path: work/ci-reliability-efficiency/checklist.md
+    digest: e34051a66e4dc6a14c56d5520bccecfff3eebaec6cee77c96e9748eb3684ae17
+    schemaVersion: 1
+  - label: clarifications
+    path: work/ci-reliability-efficiency/clarifications.md
+    digest: a7c9b9a52d84264ba6476effc77038392863edc55b2996b1c6c2b810b94843bc
+    schemaVersion: 1
+  - label: plan
+    path: work/ci-reliability-efficiency/plan.md
+    digest: 7a130264f3b512b00864f7b820be1ac17b5eb98a39617822913091b1e4d6fd0c
+    schemaVersion: 1
+  - label: spec
+    path: work/ci-reliability-efficiency/spec.md
+    digest: 6e86d77d74b132b17f056d858cba792116d11aa10eaa39f386d23daa4fc7ebfe
+    schemaVersion: 1
+  - label: tasks
+    path: work/ci-reliability-efficiency/tasks.yml
+    digest: 48c08c3cefdaab51dd5e678f0fe84900785a10d342967a3f4435feebbb2eab7e
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: [FR-013]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: [FR-014]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV014]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: [FR-015]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV015]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV016]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV017]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV018]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV019]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV020]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV021]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV022]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV023]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV024]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV025]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV026
+    kind: verification
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV026]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV027
+    kind: verification
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV027]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV028
+    kind: verification
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV028]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV029
+    kind: verification
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV029]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV030
+    kind: verification
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV030]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV031
+    kind: verification
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV031]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV032
+    kind: verification
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV032]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV033
+    kind: verification
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV033]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV034
+    kind: verification
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV034]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV035
+    kind: verification
+    subject:
+      type: task
+      id: T035
+    taskRefs: [T035]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV035]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV036
+    kind: verification
+    subject:
+      type: task
+      id: T036
+    taskRefs: [T036]
+    requirementRefs: [FR-013]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-013]
+    obligationRefs: [EV036]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV037
+    kind: verification
+    subject:
+      type: task
+      id: T037
+    taskRefs: [T037]
+    requirementRefs: [FR-014]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-014]
+    obligationRefs: [EV037]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV038
+    kind: verification
+    subject:
+      type: task
+      id: T038
+    taskRefs: [T038]
+    requirementRefs: [FR-015]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-015]
+    obligationRefs: [EV038]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV039
+    kind: verification
+    subject:
+      type: task
+      id: T039
+    taskRefs: [T039]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV039]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV040
+    kind: verification
+    subject:
+      type: task
+      id: T040
+    taskRefs: [T040]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-004]
+    obligationRefs: [EV040]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV041
+    kind: verification
+    subject:
+      type: task
+      id: T041
+    taskRefs: [T041]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007, PD-008, PD-009]
+    obligationRefs: [EV041]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV042
+    kind: verification
+    subject:
+      type: task
+      id: T042
+    taskRefs: [T042]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010, PD-011]
+    obligationRefs: [EV042]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV043
+    kind: verification
+    subject:
+      type: task
+      id: T043
+    taskRefs: [T043]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV043]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV044
+    kind: verification
+    subject:
+      type: task
+      id: T044
+    taskRefs: [T044]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-013, PD-014]
+    obligationRefs: [EV044]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV045
+    kind: verification
+    subject:
+      type: task
+      id: T045
+    taskRefs: [T045]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-015]
+    obligationRefs: [EV045]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV046
+    kind: verification
+    subject:
+      type: task
+      id: T046
+    taskRefs: [T046]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV046]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV047
+    kind: verification
+    subject:
+      type: task
+      id: T047
+    taskRefs: [T047]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-004]
+    obligationRefs: [EV047]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV048
+    kind: verification
+    subject:
+      type: task
+      id: T048
+    taskRefs: [T048]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005, PD-006]
+    obligationRefs: [EV048]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV049
+    kind: verification
+    subject:
+      type: task
+      id: T049
+    taskRefs: [T049]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007, PD-008, PD-009]
+    obligationRefs: [EV049]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV050
+    kind: verification
+    subject:
+      type: task
+      id: T050
+    taskRefs: [T050]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV050]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV051
+    kind: verification
+    subject:
+      type: task
+      id: T051
+    taskRefs: [T051]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV051]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV052
+    kind: verification
+    subject:
+      type: task
+      id: T052
+    taskRefs: [T052]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV052]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV053
+    kind: verification
+    subject:
+      type: task
+      id: T053
+    taskRefs: [T053]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-013, PD-014]
+    obligationRefs: [EV053]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV054
+    kind: verification
+    subject:
+      type: task
+      id: T054
+    taskRefs: [T054]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-015]
+    obligationRefs: [EV054]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV055
+    kind: deferral
+    subject:
+      type: task
+      id: T055
+    taskRefs: [T055]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-015]
+    obligationRefs: [EV055]
+    artifacts: [work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: "Protected-main, scheduled, and Pages receipts can only be observed after the candidate crosses the protected merge boundary; a pull-request run cannot establish those event identities honestly."
+    owner: repository maintainer
+    scope: "Final exact-candidate protected-main, scheduled, and Pages observations required by VO-010."
+    laterLifecycleVisibility: "Run the protected and scheduled workflows after merge, confirm the exact qualified Pages handoff, then replace this deferral with observed evidence before final SDD ship closure."
+    notes: []
+  - id: EV056
+    kind: verification
+    subject:
+      type: task
+      id: T056
+    taskRefs: [T056]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV056]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV057
+    kind: verification
+    subject:
+      type: task
+      id: T057
+    taskRefs: [T057]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV057]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV058
+    kind: verification
+    subject:
+      type: task
+      id: T058
+    taskRefs: [T058]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV058]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV059
+    kind: verification
+    subject:
+      type: task
+      id: T059
+    taskRefs: [T059]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV059]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV060
+    kind: verification
+    subject:
+      type: task
+      id: T060
+    taskRefs: [T060]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV060]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV061
+    kind: verification
+    subject:
+      type: task
+      id: T061
+    taskRefs: [T061]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV061]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV062
+    kind: verification
+    subject:
+      type: task
+      id: T062
+    taskRefs: [T062]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV062]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV063
+    kind: verification
+    subject:
+      type: task
+      id: T063
+    taskRefs: [T063]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV063]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV064
+    kind: verification
+    subject:
+      type: task
+      id: T064
+    taskRefs: [T064]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-014]
+    obligationRefs: [EV064]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+  - id: EV065
+    kind: verification
+    subject:
+      type: task
+      id: T065
+    taskRefs: [T065]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-015]
+    obligationRefs: [EV065]
+    artifacts: [".github/workflows/ci-cost-observer.yml", ".github/workflows/ci.yml", ".github/workflows/pages.yml", docs/ci-qualification.md, scripts/ci-artifact-manifest.mjs, scripts/ci-cost-report.mjs, scripts/ci-integrity-plan.mjs, scripts/ci-route.mjs, scripts/protected-stage-receipt.mjs, scripts/prune-linux-runtime-closure.mjs, scripts/qualify-pr.sh, scripts/qualify-production.sh, scripts/test-ci-reliability-evidence.mjs, scripts/test-ci-route.mjs, scripts/test-pages-qualified-handoff.mjs, scripts/test-protected-stage-receipts.mjs, work/ci-reliability-efficiency/hosted-observation.json, work/ci-reliability-efficiency/local-qualification.md]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-reliability-evidence.mjs
+      - kind: verification
+        path: work/ci-reliability-efficiency/hosted-observation.json
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/ci-reliability-efficiency/ci-reliability.junit.xml
+      digest: "sha256:ad045c7ebf6b85b78472de3c2380c515559bb4a747580425fe0e4e97720fe138"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Exact-head hosted PR run 32573384260 and focused fail-closed workflow controls passed.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

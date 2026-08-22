@@ -6,7 +6,7 @@ mode=${1:-}
 shift || true
 ci_root="$repo_root/artifacts/ci"
 route_path=${SIR_CI_ROUTE:-$ci_root/route.json}
-phase_path="$ci_root/phase-timing.json"
+phase_path=${SIR_CI_PHASE_PATH:-$ci_root/phase-timing.json}
 
 mkdir -p "$ci_root/results" "$ci_root/prepared"
 cd "$repo_root"
@@ -33,6 +33,25 @@ append_traced_builds() {
   done < <(sort "$trace_log")
 }
 
+run_browser_shard_pair() {
+  local first_index=$1
+  local second_index=$2
+  local first_pid second_pid status=0
+  [[ -n "${SIR_JUNIT_OUTPUT:-}" && -n "${SIR_JUNIT_OUTPUT_2:-}" ]] || {
+    echo "qualify-pr: paired browser shards require both JUnit output paths" >&2
+    return 2
+  }
+  SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX="$first_index" SIR_BROWSER_COHORT=general \
+    SIR_JUNIT_OUTPUT="$SIR_JUNIT_OUTPUT" npm run test:browser &
+  first_pid=$!
+  SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX="$second_index" SIR_BROWSER_COHORT=general \
+    SIR_JUNIT_OUTPUT="$SIR_JUNIT_OUTPUT_2" npm run test:browser &
+  second_pid=$!
+  wait "$first_pid" || status=1
+  wait "$second_pid" || status=1
+  return "$status"
+}
+
 case "$mode" in
   route)
     paths_file=${1:?qualify-pr route requires a changed-path file}
@@ -42,15 +61,28 @@ case "$mode" in
     ;;
   integrity)
     node scripts/test-ci-route.mjs
+    ./scripts/test-ci-route-mutations.sh
+    node scripts/test-protected-stage-receipts.mjs
+    node scripts/test-pages-qualified-handoff.mjs
+    node scripts/test-ci-cost-report.mjs
+    node scripts/test-linux-runtime-closure.mjs
+    node scripts/test-workflow-action-contract.mjs
+    node scripts/test-ci-integrity-plan.mjs
     ./scripts/test-ci-gate-artifact-isolation.sh
     ./scripts/test-ci-evidence-mutation.sh
     ./scripts/test-ci-failure-timing-mutation.sh
-    node .github/scripts/test-npm-audit.mjs
-    node .github/scripts/check-npm-audit.mjs
-    ./scripts/verify-fable-game-governance.sh
-    dotnet fsgg-sdd dependency-surface --check --param packageId=FS.GG.Game.Core --param version=0.13.0 --root . --text
-    ./scripts/test-item-184-sdd-byte-stability.sh
-    ./scripts/test-feedback-audit-binding-exceptions.sh
+    node scripts/ci-integrity-plan.mjs --route "$route_path" --output "$ci_root/results/integrity-plan.json" >/dev/null
+    integrity_runs() { jq -e --arg id "$1" '.subjects[] | select(.id == $id and .run == true)' "$ci_root/results/integrity-plan.json" >/dev/null; }
+    if integrity_runs npm-audit; then
+      node .github/scripts/test-npm-audit.mjs
+      node .github/scripts/check-npm-audit.mjs
+    fi
+    if integrity_runs governance; then ./scripts/verify-fable-game-governance.sh; fi
+    if integrity_runs dependency-surface; then
+      dotnet fsgg-sdd dependency-surface --check --param packageId=FS.GG.Game.Core --param version=0.13.0 --root . --text
+    fi
+    if integrity_runs sdd-byte-stability; then ./scripts/test-item-184-sdd-byte-stability.sh; fi
+    if integrity_runs feedback-audit; then ./scripts/test-feedback-audit-binding-exceptions.sh; fi
     ;;
   prepare-part)
     part=${1:?qualify-pr prepare-part requires native|fable|web|server|docs}
@@ -114,8 +146,30 @@ NODE
     }
     trap write_part_timing EXIT
     start_dotnet_trace
-    dotnet tool restore
-    dotnet restore SIR.slnx --locked-mode
+    case "$part" in
+      fable|web|docs) dotnet tool restore ;;
+    esac
+    # Restore only the graph owned by this producer. Each root has a committed
+    # packages.lock.json and project restore traverses its project references,
+    # so locked dependency validation remains fail-closed without making every
+    # parallel producer evaluate the entire solution.
+    case "$part" in
+      native) dotnet restore SIR.slnx --locked-mode ;;
+      fable)
+        dotnet restore tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj --locked-mode
+        dotnet restore tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj --locked-mode
+        dotnet restore tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj --locked-mode
+        ;;
+      web)
+        dotnet restore src/SIR.Replay.Web/SIR.Replay.Web.fsproj --locked-mode
+        dotnet restore src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj --locked-mode
+        ;;
+      server) dotnet restore src/SIR.Server/SIR.Server.fsproj --locked-mode ;;
+      docs)
+        dotnet restore src/SIR.Match/SIR.Match.fsproj --locked-mode
+        dotnet restore src/SIR.Client/SIR.Client.fsproj --locked-mode
+        ;;
+    esac
     restore_completed=$(date +%s%3N)
     failure_stage=build
     build_started=$(date +%s%3N)
@@ -125,6 +179,14 @@ NODE
         # every declared project once and lets later solution growth remain one
         # invocation instead of accumulating serialized owner builds.
         dotnet build SIR.slnx -c Release --no-restore
+        mkdir -p artifacts/publish
+        cp -a src/SIR.Server/bin/Release/net10.0/. artifacts/publish/
+        node scripts/prune-linux-runtime-closure.mjs \
+          --root artifacts/publish \
+          --output "$part_root/native-server-runtime-closure.json"
+        node scripts/prune-linux-runtime-closure.mjs \
+          --root tests/SIR.Match.Tests/bin/Release/net10.0 \
+          --output "$part_root/native-runtime-closure.json"
         part_paths=(
           tests/SIR.Domain.Tests/bin/Release/net10.0
           tests/SIR.Rules.Governance.Tests/bin/Release/net10.0
@@ -133,6 +195,12 @@ NODE
           tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Release/net10.0
           tests/SIR.ModalInput.Tests/bin/Release/net10.0
           tests/SIR.Match.Tests/bin/Release/net10.0
+          artifacts/publish
+          src/SIR.Domain/bin/Release/net10.0
+          src/SIR.Simulation/bin/Release/net10.0
+          src/SIR.Wasm/bin/Release/net10.0
+          src/SIR.Match/bin/Release/net10.0
+          src/SIR.Client/bin/Release/net10.0
         )
         ;;
       fable)
@@ -169,18 +237,16 @@ NODE
         ;;
       server)
         dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore
+        node scripts/prune-linux-runtime-closure.mjs \
+          --root artifacts/publish \
+          --output "$part_root/server-runtime-closure.json"
         part_paths=(artifacts/publish)
         ;;
       docs)
         dotnet build src/SIR.Match/SIR.Match.fsproj -c Release --no-restore
         dotnet build src/SIR.Client/SIR.Client.fsproj -c Release --no-restore
-        part_paths=(
-          src/SIR.Domain/bin/Release/net10.0
-          src/SIR.Simulation/bin/Release/net10.0
-          src/SIR.Wasm/bin/Release/net10.0
-          src/SIR.Match/bin/Release/net10.0
-          src/SIR.Client/bin/Release/net10.0
-        )
+        ./scripts/build-docs.sh --prepare-site-only
+        part_paths=(artifacts/site)
         ;;
     esac
     build_completed=$(date +%s%3N)
@@ -199,9 +265,14 @@ NODE
       --input Directory.Build.props --input Directory.Packages.props --input SIR.slnx \
       "${output_args[@]}" --receipt-directory "$part_root/receipts" --pointer "$part_root/$part.receipt.path"
     receipt=$(<"$part_root/$part.receipt.path")
-    tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf "$part_root/$part.tar" "${part_paths[@]}"
+    node scripts/ci-artifact-manifest.mjs pack \
+      --build-receipt "$receipt" \
+      --store "$part_root/content-store-$part" \
+      --archive "$part_root/$part.tar" \
+      --content-index "$part_root/$part.tar.index.json"
     node scripts/ci-artifact-manifest.mjs create --route "$route_path" --build-receipt "$receipt" \
-      --archive "$part_root/$part.tar" --directory "$part_root/manifests" --pointer "$part_root/$part.manifest.path"
+      --archive "$part_root/$part.tar" --content-index "$part_root/$part.tar.index.json" \
+      --directory "$part_root/manifests" --pointer "$part_root/$part.manifest.path"
     failure_stage=null
     ;;
   extract-parts)
@@ -213,10 +284,12 @@ NODE
       manifest=$(<"$ci_root/parts/$part.manifest.path")
       node scripts/ci-artifact-manifest.mjs verify-transport --route "$route_path" --archive "$ci_root/parts/$part.tar" --manifest "$manifest"
       receipt=$(<"$ci_root/parts/$part.receipt.path")
+      store="$ci_root/staging/$part-store"
       stage="$ci_root/staging/$part"
-      rm -rf -- "$stage"
-      mkdir -p "$stage"
-      tar -xf "$ci_root/parts/$part.tar" -C "$stage"
+      rm -rf -- "$store" "$stage"
+      mkdir -p "$store"
+      tar -xf "$ci_root/parts/$part.tar" -C "$store"
+      node scripts/ci-artifact-manifest.mjs reconstruct --manifest "$manifest" --store "$store" --destination "$stage" >/dev/null
       node scripts/ci-artifact-manifest.mjs verify-staged --root "$repo_root" --build-receipt "$receipt" --manifest "$manifest" --stage "$stage" >/dev/null
       while IFS= read -r output_path; do
         target="$repo_root/$output_path"
@@ -226,7 +299,8 @@ NODE
       done < <(jq -r '.outputs[].path' "$receipt")
     done
     extract_completed=$(date +%s%3N)
-    node - "$ci_root/extract-timing.json" "$extract_started" "$extract_completed" <<'NODE'
+      extract_timing_path=${SIR_CI_EXTRACT_TIMING_PATH:-$ci_root/extract-timing.json}
+      node - "$extract_timing_path" "$extract_started" "$extract_completed" <<'NODE'
 const { writeFileSync } = require("node:fs");
 writeFileSync(process.argv[2], `${JSON.stringify({ transport: Number(process.argv[4]) - Number(process.argv[3]) })}\n`);
 NODE
@@ -241,7 +315,7 @@ NODE
     ;;
   compose-browser)
     web_manifest=$(<"$ci_root/parts/web.manifest.path")
-    server_manifest=$(<"$ci_root/parts/server.manifest.path")
+    server_manifest=$(<"$ci_root/parts/native.manifest.path")
     rm -rf -- artifacts/publish/wwwroot
     mkdir -p artifacts/publish/wwwroot
     cp -a artifacts/client/. artifacts/publish/wwwroot/
@@ -251,7 +325,7 @@ NODE
     ;;
   verify-browser-composition)
     web_manifest=$(<"$ci_root/parts/web.manifest.path")
-    server_manifest=$(<"$ci_root/parts/server.manifest.path")
+    server_manifest=$(<"$ci_root/parts/native.manifest.path")
     node scripts/ci-artifact-manifest.mjs verify-browser-composition \
       --web-manifest "$web_manifest" --server-manifest "$server_manifest" \
       --client artifacts/client --publish artifacts/publish --output "$ci_root/browser-composition.json"
@@ -263,7 +337,7 @@ NODE
       rules) gate_parts=(native) ;;
       spatial|cross-runtime) gate_parts=(native fable) ;;
       cancellation) gate_parts=(native web) ;;
-      browser|browser-general-helper|browser-general-helper-2|browser-general-helper-3|browser-delivery) gate_parts=(web server) ;;
+      browser|browser-general-helper|browser-delivery) gate_parts=(web native) ;;
       documentation) gate_parts=(web docs) ;;
     esac
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
@@ -309,7 +383,7 @@ NODE
         SIR_RULES_PREPARED_PR=1 ./scripts/test-rules-governance-tool-mutations.sh
         SIR_RULES_PREPARED_PR=1 ./scripts/generate-rules-governance.sh --check
         ;;
-      spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" --prepared-pr --external-mutation-proof ;;
+      spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" --prepared-pr --prepared-parts-verified --external-mutation-proof ;;
       cancellation) node ./scripts/smoke-worker-roundtrip.mjs ;;
       cross-runtime)
         ./scripts/test-conformance.sh \
@@ -320,39 +394,18 @@ NODE
         ;;
       browser)
         "$0" compose-browser >/dev/null
-        SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=1 SIR_BROWSER_COHORT=general npm run test:browser
+        run_browser_shard_pair 1 2
         ;;
       browser-general-helper)
         "$0" compose-browser >/dev/null
-        SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=2 SIR_BROWSER_COHORT=general npm run test:browser
-        ;;
-      browser-general-helper-2)
-        "$0" compose-browser >/dev/null
-        SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=3 SIR_BROWSER_COHORT=general npm run test:browser
-        ;;
-      browser-general-helper-3)
-        "$0" compose-browser >/dev/null
-        SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=4 SIR_BROWSER_COHORT=general npm run test:browser
+        run_browser_shard_pair 3 4
         ;;
       browser-delivery)
         "$0" compose-browser >/dev/null
         SIR_BROWSER_SHARDS=1 SIR_BROWSER_COHORT=production-delivery npm run test:browser
         ;;
       documentation)
-        restore_started=$(date +%s%3N)
-        set +e
-        dotnet restore SIR.slnx --locked-mode
-        restore_status=$?
-        set -e
-        restore_completed=$(date +%s%3N)
-        failure_stage=test
-        [[ $restore_status -eq 0 ]] || failure_stage=restore
-        node - "$phase_path" "$restore_started" "$restore_completed" "$failure_stage" <<'NODE'
-const { writeFileSync } = require("node:fs");
-writeFileSync(process.argv[2], `${JSON.stringify({ restore: Number(process.argv[4]) - Number(process.argv[3]), build: 0, transport: 0, failureStage: process.argv[5] })}\n`);
-NODE
-        [[ $restore_status -eq 0 ]] || exit "$restore_status"
-        ./scripts/build-docs.sh --reuse-build-receipt "$receipt" --reuse-build-owner scripts/qualify-pr.sh --prepared-pr
+        ./scripts/build-docs.sh --reuse-build-receipt "$receipt" --reuse-build-owner scripts/qualify-pr.sh --prepared-pr --reuse-site-build
         ;;
       evidence)
         restore_started=$(date +%s%3N)
@@ -431,7 +484,7 @@ NODE
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
       "$0" verify-parts "${gate_parts[@]}" >/dev/null
     fi
-    if [[ "$gate" == browser || "$gate" == browser-general-helper || "$gate" == browser-general-helper-2 || "$gate" == browser-general-helper-3 || "$gate" == browser-delivery ]]; then "$0" verify-browser-composition >/dev/null; fi
+    if [[ "$gate" == browser || "$gate" == browser-general-helper || "$gate" == browser-delivery ]]; then "$0" verify-browser-composition >/dev/null; fi
     ;;
   *)
     echo "qualify-pr: usage route PATHS|integrity|prepare-part ID|extract-parts IDS...|verify-parts IDS...|compose-browser|verify-browser-composition|gate ID" >&2
