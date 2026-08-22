@@ -134,6 +134,26 @@ assert.match(sweepJob, new RegExp(`^ {10}${sweepEnvironmentVariable}: "true"$`, 
 assert.match(sweepJob, /run-ci-gate\.sh integrity /u, "the sweep must run the integrity gate, not a private copy of it");
 assert.match(sweepJob, /^ {10}test -s artifacts\/ci\/changed-paths\.txt$/mu, "the sweep must refuse an empty path inventory rather than hand it to the router");
 
+// Presence assertions alone cannot protect a signal: they say what must exist, never what must not,
+// so a one-line ADDITION can neutralise the job while every "is it wired?" assertion stays green.
+// Each of the three below was demonstrated to destroy the signal with the whole suite passing.
+
+// 1. `continue-on-error: true` anywhere in the sweep makes the job report success while its gate fails.
+assert.doesNotMatch(
+  sweepJob,
+  /continue-on-error/u,
+  "the sweep must not tolerate a failing step: continue-on-error turns a red gate into a green job",
+);
+
+// 2. Pin the `if:` INVENTORY, not just the presence of the right one. `if: false` on the gate step
+//    leaves every existing assertion true while nothing runs — "a correct planner that nothing
+//    invokes", which is precisely the case this block exists to prevent.
+assert.deepEqual(
+  sweepJob.match(/^\s*-?\s*if:.*$/gmu).map((line) => line.trim()),
+  ["if: github.event_name != 'pull_request'", "- if: always()"],
+  "unexpected `if:` in the sweep job — a step-level condition can silently stop the gate running",
+);
+
 // The sweep's steps declare `shell: bash`, which GitHub runs as `bash --noprofile --norc -eo pipefail`.
 // A consumer that stops reading before EOF (`head -n 1`, `grep -m1`, `sed -n '1{p;q}'`,
 // `awk 'NR==1{...exit}'`) SIGPIPEs its producer, and under `pipefail` the pipeline status is 141 —
@@ -147,14 +167,25 @@ assert.match(sweepJob, /^ {10}test -s artifacts\/ci\/changed-paths\.txt$/mu, "th
 // `sed -n '1{p;q}'` and `awk 'NR==1{print; exit}'` each fail 20/20. Deterministic, not flaky.
 // A real pipe, not the `||` of `… || true`.
 const pipeAt = (line) => line.search(/[^|]\|[^|]/u);
+// EVERY pipeline in the job, not only those whose producer happens to be one command. Scoping the
+// scan to a producer prefix is the same defect this probe exists to catch: the comment and the
+// failure message claim the property for the whole step, so the scan must cover the whole step.
 const pipelines = sweepJob
   .split("\n")
   .map((line) => line.trim())
-  .filter((line) => line.startsWith("git ") && pipeAt(line) !== -1);
+  .filter((line) => pipeAt(line) !== -1 && !line.startsWith("#"));
 assert.ok(pipelines.length > 0, "expected the sweep to build its path inventory through a pipeline");
+// Only a consumer chain is executed, and only against a synthetic producer. But a consumer could
+// itself carry side effects, so fail CLOSED on anything not known to be a read-only text filter:
+// extending the job's plumbing then stays a deliberate act rather than a silent one.
+const safeConsumers = /^(sed|cat|sort|tail|tr|cut|awk|grep|uniq|wc|nl|rev|fold|head|column)\b/u;
 for (const pipeline of pipelines) {
-  // Only the consumer chain is executed; the real producer is replaced, so this runs no side effects.
   const consumer = pipeline.slice(pipeAt(pipeline) + 2).replace(/>\s*\S+\s*$/u, "").trim();
+  assert.match(
+    consumer,
+    safeConsumers,
+    `unrecognised pipeline consumer \`${consumer}\` in the sweep job. This probe executes consumers to prove they read to EOF, so it refuses one it cannot classify as a read-only text filter. Add it to safeConsumers only after confirming it is side-effect free.`,
+  );
   const probe = spawnSync("bash", ["--noprofile", "--norc", "-eo", "pipefail", "-c", `seq 1 2000000 | ${consumer} > /dev/null`]);
   assert.equal(
     probe.status,
@@ -162,7 +193,15 @@ for (const pipeline of pipelines) {
     `pipefail hazard: \`${consumer}\` stops reading before EOF, so it SIGPIPEs its producer and fails the step with ${probe.status}. Use a consumer that reads to EOF, e.g. \`sed -n '1p'\`.`,
   );
 }
+// Both trigger legs, not just the cron. `push: branches: [main]` is the stronger of the two — it puts
+// a red X on the main-branch commit itself, fires on every merge, and is immune to the 60-day
+// auto-disable that applies to scheduled workflows. Deleting it leaves only the leg GitHub turns off.
 assert.match(ci, /^ {2}schedule:\n {4}- cron: "[^"]+"$/mu, "the sweep needs a schedule to be a scheduled signal");
+assert.match(
+  ci,
+  /^ {2}push:\n {4}branches: \[main\]$/mu,
+  "the sweep needs the push-to-main leg: it is the stronger signal and the one the 60-day scheduled auto-disable cannot remove",
+);
 
 // AC4 again, from the other side: the per-PR integrity job must not have acquired sweep mode.
 const prIntegrity = jobBody("integrity");
