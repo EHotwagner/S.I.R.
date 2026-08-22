@@ -42,15 +42,28 @@ case "$mode" in
     ;;
   integrity)
     node scripts/test-ci-route.mjs
+    ./scripts/test-ci-route-mutations.sh
+    node scripts/test-protected-stage-receipts.mjs
+    node scripts/test-pages-qualified-handoff.mjs
+    node scripts/test-ci-cost-report.mjs
+    node scripts/test-linux-runtime-closure.mjs
+    node scripts/test-workflow-action-contract.mjs
+    node scripts/test-ci-integrity-plan.mjs
     ./scripts/test-ci-gate-artifact-isolation.sh
     ./scripts/test-ci-evidence-mutation.sh
     ./scripts/test-ci-failure-timing-mutation.sh
-    node .github/scripts/test-npm-audit.mjs
-    node .github/scripts/check-npm-audit.mjs
-    ./scripts/verify-fable-game-governance.sh
-    dotnet fsgg-sdd dependency-surface --check --param packageId=FS.GG.Game.Core --param version=0.13.0 --root . --text
-    ./scripts/test-item-184-sdd-byte-stability.sh
-    ./scripts/test-feedback-audit-binding-exceptions.sh
+    node scripts/ci-integrity-plan.mjs --route "$route_path" --output "$ci_root/results/integrity-plan.json" >/dev/null
+    integrity_runs() { jq -e --arg id "$1" '.subjects[] | select(.id == $id and .run == true)' "$ci_root/results/integrity-plan.json" >/dev/null; }
+    if integrity_runs npm-audit; then
+      node .github/scripts/test-npm-audit.mjs
+      node .github/scripts/check-npm-audit.mjs
+    fi
+    if integrity_runs governance; then ./scripts/verify-fable-game-governance.sh; fi
+    if integrity_runs dependency-surface; then
+      dotnet fsgg-sdd dependency-surface --check --param packageId=FS.GG.Game.Core --param version=0.13.0 --root . --text
+    fi
+    if integrity_runs sdd-byte-stability; then ./scripts/test-item-184-sdd-byte-stability.sh; fi
+    if integrity_runs feedback-audit; then ./scripts/test-feedback-audit-binding-exceptions.sh; fi
     ;;
   prepare-part)
     part=${1:?qualify-pr prepare-part requires native|fable|web|server|docs}
@@ -125,6 +138,9 @@ NODE
         # every declared project once and lets later solution growth remain one
         # invocation instead of accumulating serialized owner builds.
         dotnet build SIR.slnx -c Release --no-restore
+        node scripts/prune-linux-runtime-closure.mjs \
+          --root tests/SIR.Match.Tests/bin/Release/net10.0 \
+          --output "$part_root/native-runtime-closure.json"
         part_paths=(
           tests/SIR.Domain.Tests/bin/Release/net10.0
           tests/SIR.Rules.Governance.Tests/bin/Release/net10.0
@@ -169,6 +185,9 @@ NODE
         ;;
       server)
         dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore
+        node scripts/prune-linux-runtime-closure.mjs \
+          --root artifacts/publish \
+          --output "$part_root/server-runtime-closure.json"
         part_paths=(artifacts/publish)
         ;;
       docs)
@@ -199,9 +218,14 @@ NODE
       --input Directory.Build.props --input Directory.Packages.props --input SIR.slnx \
       "${output_args[@]}" --receipt-directory "$part_root/receipts" --pointer "$part_root/$part.receipt.path"
     receipt=$(<"$part_root/$part.receipt.path")
-    tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf "$part_root/$part.tar" "${part_paths[@]}"
+    node scripts/ci-artifact-manifest.mjs pack \
+      --build-receipt "$receipt" \
+      --store "$part_root/content-store-$part" \
+      --archive "$part_root/$part.tar" \
+      --content-index "$part_root/$part.tar.index.json"
     node scripts/ci-artifact-manifest.mjs create --route "$route_path" --build-receipt "$receipt" \
-      --archive "$part_root/$part.tar" --directory "$part_root/manifests" --pointer "$part_root/$part.manifest.path"
+      --archive "$part_root/$part.tar" --content-index "$part_root/$part.tar.index.json" \
+      --directory "$part_root/manifests" --pointer "$part_root/$part.manifest.path"
     failure_stage=null
     ;;
   extract-parts)
@@ -213,10 +237,12 @@ NODE
       manifest=$(<"$ci_root/parts/$part.manifest.path")
       node scripts/ci-artifact-manifest.mjs verify-transport --route "$route_path" --archive "$ci_root/parts/$part.tar" --manifest "$manifest"
       receipt=$(<"$ci_root/parts/$part.receipt.path")
+      store="$ci_root/staging/$part-store"
       stage="$ci_root/staging/$part"
-      rm -rf -- "$stage"
-      mkdir -p "$stage"
-      tar -xf "$ci_root/parts/$part.tar" -C "$stage"
+      rm -rf -- "$store" "$stage"
+      mkdir -p "$store"
+      tar -xf "$ci_root/parts/$part.tar" -C "$store"
+      node scripts/ci-artifact-manifest.mjs reconstruct --manifest "$manifest" --store "$store" --destination "$stage" >/dev/null
       node scripts/ci-artifact-manifest.mjs verify-staged --root "$repo_root" --build-receipt "$receipt" --manifest "$manifest" --stage "$stage" >/dev/null
       while IFS= read -r output_path; do
         target="$repo_root/$output_path"

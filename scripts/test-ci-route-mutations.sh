@@ -15,6 +15,7 @@ expect_red() {
   cp "$repo_root/.github/workflows/ci.yml" "$temporary/case/.github/workflows/ci.yml"
   cp "$repo_root/scripts/qualify-pr.sh" "$temporary/case/scripts/qualify-pr.sh"
   cp "$repo_root/scripts/qualify-production.sh" "$temporary/case/scripts/qualify-production.sh"
+  cp "$repo_root/scripts/build-docs.sh" "$temporary/case/scripts/build-docs.sh"
   cp "$repo_root/tests/fixtures/ci-qualification/v1/contracts.json" "$temporary/case/tests/fixtures/ci-qualification/v1/contracts.json"
   sed -i "$mutation" "$temporary/case/$name"
   if node "$temporary/case/scripts/test-ci-route.mjs" >"$temporary/mutation.log" 2>&1; then
@@ -27,11 +28,15 @@ expect_red scripts/ci-route.mjs 's/return { classification: "cross-cutting", rul
 expect_red scripts/ci-route.mjs 's/const computedRouteDigest = routeDigest(route);/const computedRouteDigest = route?.digest;/;'
 expect_red scripts/ci-route.mjs 's/\["cross-cutting", "performance"\]/["cross-cutting"]/;'
 expect_red scripts/ci-route.mjs 's/  "scripts\/finalize-svg-pipeline-evidence.mjs",/  "scripts\/ci-route.mjs",\n  "scripts\/finalize-svg-pipeline-evidence.mjs",/;'
+expect_red scripts/ci-route.mjs 's/ || (productionReviewRequired && gate === "documentation")//;'
+expect_red scripts/ci-route.mjs 's/ || classification === "cross-cutting"//;'
+expect_red .github/workflows/ci.yml "s/needs.route.outputs.documentation == 'true'/needs.route.outputs.classification == 'documentation'/;"
+expect_red scripts/build-docs.sh '/test-production-review-freshness-mutations.sh/d;'
 expect_red .github/workflows/ci.yml "s/ || needs.route.outputs.classification == 'performance'//g;"
 expect_red .github/workflows/ci.yml 's/^  full-qualification:/  omitted-full-qualification:/;'
 expect_red .github/workflows/ci.yml 's#\./scripts/qualify-production.sh --protected#./scripts/qualify-production.sh#;'
 expect_red scripts/qualify-pr.sh '/node_modules\/playwright-core/d;'
-expect_red .github/workflows/ci.yml '/^  browser:/,/^  browser-general-helper:/ s#      - uses: actions/download-artifact@v4#      - run: npm ci --ignore-scripts\n      - uses: actions/download-artifact@v4#;'
+expect_red .github/workflows/ci.yml '/^  browser:/,/^  browser-general-helper:/ s|uses: actions/download-artifact@[0-9a-f]* # v8.0.1|run: npm ci --ignore-scripts|;'
 expect_red .github/workflows/ci.yml '/run-ci-gate\.sh spatial artifacts\/ci\/results\/spatial\.json/d;'
 
-echo "CI route policy, performance scope/headroom/preparer wiring, prepared Playwright runtime reuse, co-scheduled rules/spatial receipts, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."
+echo "CI route policy, production-review freshness/preparer wiring, performance scope/headroom, prepared Playwright runtime reuse, co-scheduled rules/spatial receipts, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."

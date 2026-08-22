@@ -7,9 +7,9 @@
       "locator": "file:scripts/ci-route.mjs",
       "path": "scripts/ci-route.mjs",
       "previousSha256": "10da76f4b2631e57c36991f263d19a15c183716e2d68ce208a31c160ed1118af",
-      "replacementSha256": "12321db27746dee1f9961bc88739dc2118203c4da90d6937f9851ec96c76793b",
+      "replacementSha256": "982ab0d5d3f41ba6d7e15d42df1b798c05f6c24a96da69972c2b4479ab07d048",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 231 adds a narrowly scoped SVG-performance route while preserving broad policy files as cross-cutting; the focused route contract verifies conservative classification, the 240-second boundary, producer inventory, and fail-closed joins."
+      "reason": "The CI reliability design advances the route schema to v2 and adds an explicit production-review freshness edge while preserving conservative broad-policy routing, the 240-second boundary, producer inventory, and fail-closed joins; the focused route contract verifies the replacement bytes."
     },
     {
       "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
@@ -17,9 +17,9 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "a0adc96af5c6fc01f47fff4511b8aaf8794c7c736524eccd7ae6f7bdc94b061e",
+      "replacementSha256": "0edf151c627465b7e37caa4d548134beabb0ff7c692053879dffad90fb364289",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 231 extends the focused route matrix with SVG-only allowlist, broad-policy fallback, performance preparer ownership, the unchanged 240-second/60-second-headroom contract, receipt-bound Playwright runtime reuse, co-scheduled rules/spatial receipts, and subject-scoped artifact bindings whose missing-output, repeated-install, deleted-receipt, and extra-manifest mutations fail closed."
+      "reason": "The CI reliability design extends the route matrix with source-to-production-review freshness, prepared documentation execution, protected-stage receipt topology, and the existing performance, artifact, build-owner, and fail-closed join contracts; focused mutations cover every new edge."
     },
     {
       "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
@@ -27,9 +27,9 @@
       "locator": "file:.github/workflows/ci.yml",
       "path": ".github/workflows/ci.yml",
       "previousSha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127",
-      "replacementSha256": "989397f547c1cd6341e17164b30198963d2758418e11ede8916bb397667d0d2e",
+      "replacementSha256": "f352f73423639030f9b6a73d9f01a0e012fcf7119f2764d517a81bca7b81dbf8",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 231 adds the fixed-function performance route, transports the lockfile-installed Playwright runtime from the web producer, and co-schedules rules/spatial receipts on one prepared consumer; the focused workflow-DAG contract rejects restored browser-consumer installs and a deleted spatial receipt while preserving the bounded #220 topology."
+      "reason": "The CI reliability design retains the bounded PR topology, wires documentation preparation from the selected gate, adds protected preflight/core/checkpoint/join jobs, and invokes the exact-run cost observer after the PR verdict while preserving the stable full-qualification context; the workflow-DAG, cost-inventory, and receipt mutations reject missing or weakened edges."
     },
     {
       "audit": "feedback/audits/2026-08-20-sir-item-231-svg-pipeline-measurement.audit.json",

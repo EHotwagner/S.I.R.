@@ -63,9 +63,15 @@ export PATH="$trace_bin:$PATH"
 : > "$fable_log"
 
 if [[ "$protected_mode" == true ]]; then
-  ./scripts/verify-rules-corpus.sh
-  ./scripts/verify-spatial-query.sh --static-only
-  ./scripts/test-worker-cancellation-subject-mutation.sh
+  if [[ -n ${SIR_PROTECTED_PREFLIGHT_RECEIPT:-} ]]; then
+    node scripts/protected-stage-receipt.mjs verify \
+      --stage preflight \
+      --receipt "$SIR_PROTECTED_PREFLIGHT_RECEIPT"
+  else
+    ./scripts/verify-rules-corpus.sh
+    ./scripts/verify-spatial-query.sh --static-only
+    ./scripts/test-worker-cancellation-subject-mutation.sh
+  fi
 fi
 
 SIR_BUILD_RECEIPT_POINTER="$pointer" ./scripts/test-conformance.sh

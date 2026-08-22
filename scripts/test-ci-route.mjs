@@ -7,6 +7,7 @@ import { browserShardCapacityFor } from "./browser-shard-capacity.mjs";
 import { mergeBrowserShardCases, parseBrowserShardJUnit } from "./browser-junit.mjs";
 
 const route = (paths) => routePaths(paths, { commit: "a".repeat(40), tree: "b".repeat(40) });
+const buildDocs = readFileSync(new URL("./build-docs.sh", import.meta.url), "utf8");
 
 assert.equal(route(["docs/index.md"]).classification, "documentation");
 assert.deepEqual(route(["docs/index.md"]).selectedGates, ["documentation", "evidence"]);
@@ -14,6 +15,39 @@ assert.equal(route(["docs/index.md", "work/220-bounded-pr-ci/spec.md"]).classifi
 assert.equal(route(["src/SIR.Domain/Rules.fs"]).classification, "domain");
 assert.equal(route(["src/SIR.Domain/Rules.fs", "readiness/220-bounded-pr-ci/ship-verdict.json"]).classification, "domain");
 assert.equal(route(["tests/SIR.Browser.Tests/journey.js"]).classification, "browser");
+assert.deepEqual(route(["tests/SIR.Browser.Tests/journey.js"]).selectedGates, ["browser", "evidence"]);
+const productionReviewRoute = route(["src/SIR.Client/UnifiedTacticalWorkspace.fs"]);
+assert.equal(productionReviewRoute.classification, "browser");
+assert.deepEqual(productionReviewRoute.selectedGates, ["browser", "documentation", "evidence"]);
+assert.deepEqual(productionReviewRoute.productionReview, {
+  required: true,
+  rule: "RP-010-production-review-freshness",
+  inputs: ["src/SIR.Client/UnifiedTacticalWorkspace.fs"],
+});
+assert.deepEqual(route(["src/SIR.Server/Program.fs"]).productionReview, {
+  required: false,
+  rule: "not-applicable",
+  inputs: [],
+});
+for (const reviewOwnerPath of [
+  "docs/assets/map-editor-review/manifest.json",
+  "scripts/build-client.sh",
+  "scripts/generate-map-editor-review.mjs",
+]) {
+  assert.deepEqual(route([reviewOwnerPath]).productionReview, {
+    required: true,
+    rule: "RP-010-production-review-freshness",
+    inputs: [reviewOwnerPath],
+  });
+}
+for (const broadReviewPath of [".github/workflows/ci.yml", "package-lock.json", "future/feature.xyz"]) {
+  const broadReviewRoute = route([broadReviewPath]);
+  assert.equal(broadReviewRoute.classification, "cross-cutting");
+  assert.deepEqual(broadReviewRoute.productionReview.inputs, [broadReviewPath]);
+  assert.equal(broadReviewRoute.productionReview.required, true);
+}
+assert.deepEqual(route(["src/SIR.Domain/Rules.fs", "docs/index.md"]).productionReview.inputs, ["docs/index.md", "src/SIR.Domain/Rules.fs"]);
+assert.match(buildDocs, /if \[\[ -z "\$reuse_conformance_receipt" \]\]; then\n  \.\/scripts\/test-production-review-freshness-mutations\.sh\n  if \[\[ "\$prepared_pr" != true \]\]; then/u);
 assert.deepEqual(route(["feedback/checkpoints/220.jsonl"]).selectedGates, ["evidence"]);
 const performance = route(["scripts/measure-svg-pipeline.mjs", "scripts/lib/svg-pipeline-measurement.mjs", "docs/performance-budget.md", "work/231-svg-pipeline-measurement/spec.md"]);
 assert.equal(performance.classification, "performance");
@@ -185,14 +219,14 @@ const unknownScenarioOwner = joinRoute(domain, passing.map((result) => result.ga
 assert.ok(unknownScenarioOwner.failures.some(({ code, invocation }) =>
   code === "unknown-build-invocation" && invocation === "fable:tests/SIR.Client.Tests/UnknownRuntime.fsproj"));
 assert.deepEqual(contracts.timingPhases, ["queue", "setup", "restore", "build", "transport", "test", "total"]);
-assert.deepEqual(contracts.schemas, { route: routeSchema, artifactManifest: "sir.ci-artifact-manifest/v1", gateResult: gateSchema, timing: timingSchema, join: joinSchema });
-for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-mutations:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-server:", "prepare-docs:", "rules:", "cancellation:", "cross-runtime:", "browser:", "browser-general-helper:", "browser-general-helper-2:", "browser-general-helper-3:", "browser-delivery:", "documentation:", "evidence:", "pr-verdict:", "full-qualification:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
+assert.deepEqual(contracts.schemas, { route: routeSchema, artifactManifest: "sir.ci-artifact-manifest/v2", gateResult: gateSchema, timing: timingSchema, join: joinSchema });
+for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-mutations:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-server:", "prepare-docs:", "rules:", "cancellation:", "cross-runtime:", "browser:", "browser-general-helper:", "browser-general-helper-2:", "browser-general-helper-3:", "browser-delivery:", "documentation:", "evidence:", "pr-verdict:", "protected-preflight:", "full-qualification:", "protected-verdict:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
 assert.match(workflow, /if: always\(\)/u);
 assert.match(workflow, /if: always\(\) && github\.event_name == 'pull_request'/u);
 assert.match(workflow, /schedule:/u);
 assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/u);
 assert.match(workflow, /hashFiles\('\*\*\/packages\.lock\.json', 'Directory\.Packages\.props', '\.config\/dotnet-tools\.json'\)/u);
-assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 21);
+assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 23);
 for (const part of ["native", "fable", "web", "server", "docs"]) assert.match(workflow, new RegExp(`qualify-pr\\.sh prepare-part ${part}`, "u"));
 assert.doesNotMatch(workflow, /^  prepare:$/mu);
 assert.doesNotMatch(workflow, /prepared-candidate/u);
@@ -200,7 +234,7 @@ assert.match(workflow, /rules:\n[\s\S]*?needs: \[route, integrity, prepare-nativ
 assert.match(jobBody("rules"), /prepared-part-native[\s\S]*prepared-part-fable[\s\S]*run-ci-gate\.sh rules artifacts\/ci\/results\/rules\.json[\s\S]*run-ci-gate\.sh spatial artifacts\/ci\/results\/spatial\.json[\s\S]*gate-rules-spatial[\s\S]*rules\.json[\s\S]*spatial\.json/u);
 assert.doesNotMatch(workflow, /^  spatial:$/mu);
 assert.match(jobBody("prepare-web"), /classification == 'performance'/u);
-assert.match(jobBody("prepare-docs"), /classification == 'performance'/u);
+assert.match(jobBody("prepare-docs"), /needs\.route\.outputs\.documentation == 'true'/u);
 assert.match(workflow, /cancellation:\n[\s\S]*?needs: \[route, integrity, prepare-native, prepare-web\]/u);
 assert.match(workflow, /browser:\n[\s\S]*?needs: \[route, prepare-web, prepare-server\]/u);
 assert.match(workflow, /browser-general-helper:\n[\s\S]*?needs: \[route, prepare-web, prepare-server\]/u);
@@ -208,7 +242,7 @@ assert.match(workflow, /browser-general-helper-2:\n[\s\S]*?needs: \[route, prepa
 assert.match(workflow, /browser-general-helper-3:\n[\s\S]*?needs: \[route, prepare-web, prepare-server\]/u);
 assert.match(workflow, /browser-delivery:\n[\s\S]*?needs: \[route, prepare-web, prepare-server\]/u);
 assert.match(workflow, /documentation:\n[\s\S]*?needs: \[route, integrity, prepare-web, prepare-docs\]/u);
-assert.match(jobBody("browser"), /actions\/setup-dotnet@v4/u);
+assert.match(jobBody("browser"), /actions\/setup-dotnet@[0-9a-f]{40} # v6\.0\.0/u);
 assert.doesNotMatch(jobBody("rules"), /prepared-part-(?:web|server|docs)/u);
 assert.doesNotMatch(jobBody("spatial"), /prepared-part-(?:web|server|docs)/u);
 assert.doesNotMatch(jobBody("browser"), /prepared-part-(?:native|fable|docs)/u);

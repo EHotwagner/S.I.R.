@@ -1,0 +1,90 @@
+name: CI Cost Observer
+
+on:
+  workflow_call:
+    inputs:
+      observed_run_id:
+        required: true
+        type: number
+      observed_run_attempt:
+        required: true
+        type: number
+      observed_head_sha:
+        required: true
+        type: string
+      active_observer_job_name:
+        required: false
+        default: ""
+        type: string
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      OBSERVED_RUN_ID: ${{ inputs.observed_run_id || github.event.workflow_run.id }}
+      OBSERVED_RUN_ATTEMPT: ${{ inputs.observed_run_attempt || github.event.workflow_run.run_attempt }}
+      OBSERVED_HEAD_SHA: ${{ inputs.observed_head_sha || github.event.workflow_run.head_sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ env.OBSERVED_HEAD_SHA }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: 26.5.0 }
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        continue-on-error: true
+        with:
+          pattern: gate-*
+          path: artifacts/observed/gates
+          merge-multiple: true
+          repository: ${{ github.repository }}
+          run-id: ${{ env.OBSERVED_RUN_ID }}
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        continue-on-error: true
+        with:
+          name: pr-verdict
+          path: artifacts/observed/pr-verdict
+          repository: ${{ github.repository }}
+          run-id: ${{ env.OBSERVED_RUN_ID }}
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        continue-on-error: true
+        with:
+          pattern: protected-stage-*
+          path: artifacts/observed/protected-stages
+          merge-multiple: true
+          repository: ${{ github.repository }}
+          run-id: ${{ env.OBSERVED_RUN_ID }}
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        continue-on-error: true
+        with:
+          name: protected-verdict
+          path: artifacts/observed/protected-verdict
+          repository: ${{ github.repository }}
+          run-id: ${{ env.OBSERVED_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Reconcile complete run cost
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/ci-cost-report.mjs observe \
+            --repository '${{ github.repository }}' \
+            --run-id "$OBSERVED_RUN_ID" \
+            --expected-head "$OBSERVED_HEAD_SHA" \
+            --expected-attempt "$OBSERVED_RUN_ATTEMPT" \
+            --active-observer-job-name '${{ inputs.active_observer_job_name }}' \
+            --receipts artifacts/observed \
+            --output artifacts/ci-cost/report.json
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with: { name: ci-cost-report, path: artifacts/ci-cost/report.json, retention-days: 90 }

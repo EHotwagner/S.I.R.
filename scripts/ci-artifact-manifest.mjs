@@ -1,11 +1,12 @@
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { basename, dirname, relative, resolve } from "node:path";
-import { lstat, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { chmod, copyFile, lstat, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
-export const schema = "sir.ci-artifact-manifest/v1";
+export const schema = "sir.ci-artifact-manifest/v2";
 export const browserCompositionSchema = "sir.ci-browser-composition/v1";
+export const contentIndexSchema = "sir.ci-content-index/v1";
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const command = (root, program, args) => execFileSync(program, args, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
@@ -75,6 +76,86 @@ async function treeIdentity(root, path) {
   return { files: entries, digest: sha256(canonical(entries)) };
 }
 
+function contentIndexForReceipt(receipt) {
+  const byPath = new Map();
+  for (const output of receipt.outputs ?? []) for (const file of output.files ?? []) {
+    const path = safeRelative(file.path);
+    const current = { path, mode: file.mode, bytes: file.bytes, sha256: file.sha256 };
+    const previous = byPath.get(path);
+    if (previous && canonical(previous) !== canonical(current)) throw new Error(`ci-artifact-manifest: conflicting-content-path:${path}`);
+    byPath.set(path, current);
+  }
+  const files = [...byPath.values()].sort((left, right) => left.path.localeCompare(right.path));
+  if (files.length === 0) throw new Error("ci-artifact-manifest: empty-content-index");
+  const objects = [...new Map(files.map((file) => [file.sha256, { sha256: file.sha256, bytes: file.bytes }])).values()].sort((left, right) => left.sha256.localeCompare(right.sha256));
+  const body = {
+    schema: contentIndexSchema,
+    files,
+    objects,
+    totals: {
+      logicalFiles: files.length,
+      uniqueObjects: objects.length,
+      logicalBytes: files.reduce((sum, file) => sum + file.bytes, 0),
+      storedBytes: objects.reduce((sum, object) => sum + object.bytes, 0),
+    },
+  };
+  return { ...body, digest: sha256(canonical(body)) };
+}
+
+async function readContentIndex(path) {
+  const bytes = await readFile(path, "utf8");
+  const value = JSON.parse(bytes);
+  const { digest, ...body } = value;
+  if (value.schema !== contentIndexSchema || canonical(value) !== bytes || digest !== sha256(canonical(body))) throw new Error("ci-artifact-manifest: malformed-content-index");
+  return value;
+}
+
+async function packContentStore(root, receiptPath, storePath, archivePath, indexPath) {
+  const receipt = JSON.parse(await readFile(resolve(root, receiptPath), "utf8"));
+  if (receipt.schema !== "sir.production-build-receipt/v1" || receipt.result !== "pass") throw new Error("ci-artifact-manifest: malformed-build-receipt");
+  const index = contentIndexForReceipt(receipt);
+  const store = resolve(root, storePath);
+  await rm(store, { recursive: true, force: true });
+  await mkdir(resolve(store, ".sir-cas/objects"), { recursive: true });
+  for (const object of index.objects) {
+    const source = index.files.find((file) => file.sha256 === object.sha256);
+    const bytes = await readFile(resolve(root, source.path));
+    if (bytes.byteLength !== object.bytes || sha256(bytes) !== object.sha256) throw new Error(`ci-artifact-manifest: source-content-drift:${source.path}`);
+    await writeFile(resolve(store, `.sir-cas/objects/${object.sha256}`), bytes, { flag: "wx" });
+  }
+  await writeFile(resolve(store, ".sir-cas/tree.json"), canonical(index));
+  await mkdir(dirname(resolve(root, archivePath)), { recursive: true });
+  execFileSync("tar", ["--sort=name", "--mtime=@0", "--owner=0", "--group=0", "--numeric-owner", "-cf", resolve(root, archivePath), ".sir-cas"], { cwd: store, stdio: "inherit" });
+  await mkdir(dirname(resolve(root, indexPath)), { recursive: true });
+  await writeFile(resolve(root, indexPath), canonical(index));
+  return index;
+}
+
+async function reconstructContentStore(root, storePath, destinationPath, expectedIndex) {
+  const store = resolve(root, storePath);
+  const index = await readContentIndex(resolve(store, ".sir-cas/tree.json"));
+  if (canonical(index) !== canonical(expectedIndex)) throw new Error("ci-artifact-manifest: content-index-drift");
+  const objectDirectory = resolve(store, ".sir-cas/objects");
+  const actualObjects = (await readdir(objectDirectory, { withFileTypes: true })).filter((entry) => entry.isFile()).map((entry) => entry.name).sort();
+  const expectedObjects = index.objects.map(({ sha256: digest }) => digest).sort();
+  if (canonical(actualObjects) !== canonical(expectedObjects)) throw new Error("ci-artifact-manifest: content-object-inventory-drift");
+  for (const object of index.objects) {
+    const bytes = await readFile(resolve(objectDirectory, object.sha256));
+    if (bytes.byteLength !== object.bytes || sha256(bytes) !== object.sha256) throw new Error(`ci-artifact-manifest: content-object-drift:${object.sha256}`);
+  }
+  const destination = resolve(root, destinationPath);
+  await rm(destination, { recursive: true, force: true });
+  await mkdir(destination, { recursive: true });
+  for (const file of index.files) {
+    const target = resolve(destination, safeRelative(file.path));
+    if (!target.startsWith(`${destination}/`)) throw new Error(`ci-artifact-manifest: unsafe-content-path:${file.path}`);
+    await mkdir(dirname(target), { recursive: true });
+    await copyFile(resolve(objectDirectory, file.sha256), target);
+    await chmod(target, file.mode);
+  }
+  return index;
+}
+
 async function browserComposition(root, webManifestPath, serverManifestPath, clientPath, publishPath) {
   const web = await readManifest(root, webManifestPath);
   const server = await readManifest(root, serverManifestPath);
@@ -98,10 +179,10 @@ async function browserComposition(root, webManifestPath, serverManifestPath, cli
   };
 }
 
-async function derive(root, routePath, buildReceiptPath, archivePath) {
+async function derive(root, routePath, buildReceiptPath, archivePath, contentIndexPath) {
   const routeBytes = await readFile(resolve(root, routePath));
   const route = JSON.parse(routeBytes);
-  if (route.schema !== "sir.ci-route/v1") throw new Error("ci-artifact-manifest: malformed-route-receipt");
+  if (route.schema !== "sir.ci-route/v2") throw new Error("ci-artifact-manifest: malformed-route-receipt");
   const { digest: routeDigest, ...routeBody } = route;
   if (routeDigest !== sha256(canonical(routeBody))) throw new Error("ci-artifact-manifest: stale-route-receipt");
   const receiptBytes = await readFile(resolve(root, buildReceiptPath));
@@ -111,6 +192,8 @@ async function derive(root, routePath, buildReceiptPath, archivePath) {
   const tree = command(root, "git", ["rev-parse", `${commit}^{tree}`]);
   if (route.source.commit !== commit || route.source.tree !== tree) throw new Error("ci-artifact-manifest: route-candidate-drift");
   if (buildReceipt.source.commit !== commit || buildReceipt.source.tree !== tree) throw new Error("ci-artifact-manifest: build-candidate-drift");
+  const contentIndex = await readContentIndex(resolve(root, contentIndexPath));
+  if (canonical(contentIndex) !== canonical(contentIndexForReceipt(buildReceipt))) throw new Error("ci-artifact-manifest: build-content-index-drift");
   return {
     schema,
     result: "pass",
@@ -119,6 +202,7 @@ async function derive(root, routePath, buildReceiptPath, archivePath) {
     route: { path: routePath.replaceAll("\\", "/"), digest: route.digest },
     buildReceipt: { path: buildReceiptPath.replaceAll("\\", "/"), digest: sha256(receiptBytes) },
     transport: await transportIdentity(root, archivePath),
+    contentIndex,
     outputs: buildReceipt.outputs,
   };
 }
@@ -138,9 +222,16 @@ async function main(argv) {
   const route = one("route", "artifacts/ci/route.json");
   const buildReceipt = one("build-receipt", "");
   const archive = one("archive", "artifacts/prepared-candidate.tar");
+  const contentIndex = one("content-index", `${archive}.index.json`);
+  if (mode === "pack") {
+    if (!buildReceipt) throw new Error("ci-artifact-manifest: --build-receipt is required");
+    const index = await packContentStore(root, buildReceipt, one("store", "artifacts/ci/content-store"), archive, contentIndex);
+    console.log(JSON.stringify({ schema: contentIndexSchema, result: "pass", archive, contentIndex, totals: index.totals }));
+    return;
+  }
   if (mode === "create") {
     if (!buildReceipt) throw new Error("ci-artifact-manifest: --build-receipt is required");
-    const value = await derive(root, route, buildReceipt, archive);
+    const value = await derive(root, route, buildReceipt, archive, contentIndex);
     const bytes = canonical(value);
     const digest = sha256(bytes);
     const path = resolve(root, one("directory", "artifacts/ci/manifests"), `${digest}.json`);
@@ -163,8 +254,14 @@ async function main(argv) {
     const currentTransport = await transportIdentity(root, archive);
     if (canonical(actual.transport) !== canonical(currentTransport)) throw new Error("ci-artifact-manifest: transport-identity-drift");
     const listing = command(root, "tar", ["-tf", archive]).split("\n").filter(Boolean);
-    if (listing.length === 0 || listing.some((path) => path.startsWith("/") || path.split("/").includes(".."))) throw new Error("ci-artifact-manifest: unsafe-or-empty-transport");
+    if (listing.length === 0 || listing.some((path) => path.startsWith("/") || path.split("/").includes("..") || !(path === ".sir-cas/" || path === ".sir-cas/tree.json" || path === ".sir-cas/objects/" || /^\.sir-cas\/objects\/[0-9a-f]{64}$/u.test(path)))) throw new Error("ci-artifact-manifest: unsafe-or-empty-transport");
     console.log(JSON.stringify({ schema, result: "pass", transport: currentTransport }));
+    return;
+  }
+  if (mode === "reconstruct") {
+    const actual = await readManifest(root, one("manifest", ""));
+    const reconstructed = await reconstructContentStore(root, one("store", ""), one("destination", ""), actual.contentIndex);
+    console.log(JSON.stringify({ schema: contentIndexSchema, result: "pass", destination: one("destination", ""), totals: reconstructed.totals }));
     return;
   }
   if (mode === "verify-staged") {
@@ -197,13 +294,13 @@ async function main(argv) {
     if (!buildReceipt) throw new Error("ci-artifact-manifest: --build-receipt is required");
     const path = resolve(root, one("manifest", ""));
     const actual = await readManifest(root, path);
-    const current = await derive(root, route, buildReceipt, archive);
+    const current = await derive(root, route, buildReceipt, archive, contentIndex);
     if (canonical(actual) !== canonical(current)) throw new Error("ci-artifact-manifest: candidate-input-tool-command-output-drift");
     execFileSync(process.execPath, ["scripts/production-build-receipt.mjs", "verify", "--owner-command", "scripts/qualify-pr.sh", "--receipt", buildReceipt], { cwd: root, stdio: "inherit" });
     console.log(JSON.stringify({ schema, result: "pass", manifest: relative(root, path).replaceAll("\\", "/") }));
     return;
   }
-  throw new Error("ci-artifact-manifest: usage create|verify-transport|verify-staged|create-browser-composition|verify-browser-composition|verify [options]");
+  throw new Error("ci-artifact-manifest: usage pack|create|verify-transport|reconstruct|verify-staged|create-browser-composition|verify-browser-composition|verify [options]");
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) main(process.argv.slice(2)).catch((error) => { console.error(error.message); process.exitCode = 1; });

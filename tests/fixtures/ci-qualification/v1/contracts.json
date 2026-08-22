@@ -35,8 +35,8 @@
     "evidence"
   ],
   "schemas": {
-    "route": "sir.ci-route/v1",
-    "artifactManifest": "sir.ci-artifact-manifest/v1",
+    "route": "sir.ci-route/v2",
+    "artifactManifest": "sir.ci-artifact-manifest/v2",
     "gateResult": "sir.ci-gate-result/v1",
     "timing": "sir.ci-timing/v1",
     "join": "sir.ci-join/v1"
