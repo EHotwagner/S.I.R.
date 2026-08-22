@@ -7019,6 +7019,19 @@ type private TacticalSidebarOwnerProps =
       Model: Model
       Dispatch: Msg -> unit }
 
+/// The load states of the lazily imported features that THIS sidebar's own
+/// panels render from.
+///
+/// Comparing the whole of ClientFeatures here would rebuild both sidebars every
+/// time any chunk resolved; comparing none of it left Rules and Data — which
+/// default to the RIGHT sidebar — frozen on "Loading..." forever.  The panel to
+/// feature mapping is ClientFeatureRuntime's, so this cannot drift away from the
+/// code that actually requests the import.
+let private sidebarFeatureStates side (model: Model) =
+    TacticalWorkspaceLayout.panelsOn side model.TacticalLayout
+    |> List.choose (fun placement -> ClientFeatureRuntime.panelFeature placement.PanelId)
+    |> List.map (fun feature -> FeatureLoader.stateFor feature model.ClientFeatures)
+
 let private tacticalSidebarOwnerEqual side (previous: Model) (current: Model) =
     let common =
         previous.Workspace = current.Workspace
@@ -7030,7 +7043,12 @@ let private tacticalSidebarOwnerEqual side (previous: Model) (current: Model) =
         // which default to the RIGHT sidebar — frozen on their "Loading…"
         // render forever, because the request and the layout change land in one
         // update and the resolution lands in the next.
-        && previous.ClientFeatures = current.ClientFeatures
+        //
+        // Scoped to the features THIS sidebar's own panels render from, so a
+        // chunk resolving rebuilds the sidebar that shows it and no other.
+        // TacticalLayout is compared just above, so the placement this reads is
+        // stable whenever this predicate is consulted.
+        && sidebarFeatureStates side previous = sidebarFeatureStates side current
         // Feature panels render from the shell model (Lab scenario, parameter
         // Patch, Worker, ActiveOperation, Selection, ...).  Enumerating which of
         // those a panel happens to read is what froze the Rules sandbox: the
