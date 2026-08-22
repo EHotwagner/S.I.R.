@@ -184,12 +184,91 @@ module SpatialQuery =
         ||> List.fold (fun index boundary ->
             if Map.containsKey boundary.Edge index then index else Map.add boundary.Edge boundary index)
 
-    let private boundaryAt (boundaries: Map<Edge, SpatialBoundary>) left right =
-        Edges.edgeBetween left right
-        |> Option.bind (fun edge -> Map.tryFind edge boundaries)
+    /// Resolves disclosed boundaries for ONE evaluation, starting as a scan and promoting itself
+    /// to the keyed index once the query has probed often enough to pay for building one.
+    ///
+    /// MEASURED, AND THIS IS WHY IT IS ADAPTIVE RATHER THAN ALWAYS KEYED. Building the index
+    /// unconditionally per evaluation made a full authoritative tick 7x SLOWER on a 331-edge
+    /// board, not faster. The awareness phase issues up to 256 short line-of-sight evaluations
+    /// against ONE already-hoisted world, and each probes only a handful of edges, so an
+    /// O(n log n) index build per evaluation dwarfed the O(probes x n) scan it replaced. No
+    /// per-query index can beat a scan when probes are fewer than log2 n; the index only pays
+    /// when the query genuinely crosses many edges, which is exactly the 4x4-footprint exact
+    /// line of sight and the bounded path's fallback expansion that this item set out to bound.
+    ///
+    /// Both branches answer IDENTICALLY: the index is built first-wins, which is what the
+    /// `List.tryFind` scan returns. The promotion point depends only on the boundary count, so
+    /// this is a cost decision and never a semantic one, and canonical bytes cannot move with it.
+    /// Probe count above which a query indexes its boundaries instead of scanning them.
+    ///
+    /// Scanning n boundaries costs n comparisons per probe; BUILDING the index costs about
+    /// n log n comparisons PLUS a tree-node allocation per boundary. Both scale with n, so the
+    /// crossover is a probe COUNT and not a board size, and this constant is deliberately
+    /// independent of n.
+    ///
+    /// The value is MEASURED, not derived, and it is far above the comparison-count crossover on
+    /// purpose. Counting comparisons alone puts the crossover near a hundred probes; at that
+    /// setting a full authoritative tick got about 1.5x SLOWER, because the awareness phase
+    /// issues on the order of a hundred exposure-sampled line-of-sight queries per tick that each
+    /// probe a few hundred times, and each of them then paid for an index build whose real cost
+    /// is dominated by allocation rather than by comparisons. Raising it until those queries stay
+    /// on the scan restores the tick and keeps the large-query wins intact.
+    let private boundaryIndexProbeThreshold = 1024L
 
-    let private edgePassable observeBoundary boundaries modality left right =
-        boundaryAt boundaries left right
+    /// Upper estimate of how many times one request will resolve a boundary, from the request
+    /// alone - no traversal of the boundary list, and nothing that depends on the answer.
+    let private estimatedBoundaryProbes (request: SpatialQueryRequest) footprintLength =
+        // int64 throughout: a 256-sample footprint on a wide board overflows int32 here, and an
+        // overflow would silently flip the strategy rather than merely mis-estimate it.
+        let span =
+            1L + int64 (min 4096 (max (abs (request.Target.Col - request.Origin.Col)) (abs (request.Target.Row - request.Origin.Row))))
+        let footprint = int64 footprintLength
+        match request.QueryKind with
+        | SpatialQueryKind.BoundedPath | SpatialQueryKind.Reachability | SpatialQueryKind.MovementCost ->
+            // The fallback loop explores an AREA, not a line, and tests up to eight neighbours per
+            // expansion across the footprint envelope. Estimating this as a line badly
+            // under-counted it and left wall-dense pathfinding - the case that most needs the
+            // index - scanning.
+            footprint * span * span * 8L
+        | _ ->
+            // One traced line per origin/target pair, one crossing probe per step along it.
+            footprint * footprint * span
+
+    /// Builds the boundary resolver for ONE evaluation: one closure, one shape, allocated once.
+    ///
+    /// MEASURED, AND EVERY WORD OF THAT SENTENCE IS load-bearing. Three earlier versions of this
+    /// were correct and still net LOSSES on a full authoritative tick, so please do not reshape it
+    /// without re-running `--working-set` on both sides.
+    ///
+    ///  - Deciding PER PROBE (scan, then promote once a counter passes a threshold) put ref cells
+    ///    and a branch on every probe. Slower than the scan it replaced.
+    ///  - Deciding once but returning ONE OF TWO lambdas made every probe site polymorphic, so the
+    ///    runtime could no longer inline the call. Slower again, even for queries that correctly
+    ///    chose the scan.
+    ///  - Threading the decision as a VALUE and partially applying a module-level function at the
+    ///    probe site allocated a fresh closure on every probe. Slower again.
+    ///
+    /// What works is a SINGLE lambda that captures an already-decided `Option`: one closure class,
+    /// so the call site stays monomorphic; one allocation per evaluation rather than per probe;
+    /// and a branch inside that is identical for the whole query and predicts perfectly.
+    ///
+    /// Both branches answer IDENTICALLY. The index is built FIRST-WINS, which is what the
+    /// `List.tryFind` scan returns, and the choice depends only on the request, so it is a cost
+    /// decision and never a semantic one - canonical bytes cannot move with it.
+    let private boundaryResolver estimatedProbes (boundaries: SpatialBoundary list) =
+        let index =
+            if estimatedProbes > boundaryIndexProbeThreshold then Some(indexBoundaries boundaries) else None
+        fun (edge: Edge) ->
+            match index with
+            | Some built -> Map.tryFind edge built
+            | None -> boundaries |> List.tryFind (fun boundary -> boundary.Edge = edge)
+
+    let private boundaryAt resolveBoundary left right =
+        Edges.edgeBetween left right
+        |> Option.bind resolveBoundary
+
+    let private edgePassable observeBoundary resolveBoundary modality left right =
+        boundaryAt resolveBoundary left right
         |> Option.forall (fun boundary ->
             observeBoundary boundary
             permeability modality boundary.Permeability)
@@ -204,32 +283,32 @@ module SpatialQuery =
             && terrainAt world position |> terrainPassable request.Profile.Modality
             && not (Map.containsKey position world.Occupancy))
 
-    let private orthogonalEnvelope observeBoundary boundaries modality footprint origin destination =
+    let private orthogonalEnvelope observeBoundary resolveBoundary modality footprint origin destination =
         footprint
-        |> List.forall (fun offset -> edgePassable observeBoundary boundaries modality (addCell origin offset) (addCell destination offset))
+        |> List.forall (fun offset -> edgePassable observeBoundary resolveBoundary modality (addCell origin offset) (addCell destination offset))
 
-    let private transitionPassable observeCell observeBoundary boundaries world request footprint origin destination =
+    let private transitionPassable observeCell observeBoundary resolveBoundary world request footprint origin destination =
         let dc = destination.Col - origin.Col
         let dr = destination.Row - origin.Row
         if (dc = 0 && dr = 0) || abs dc > 1 || abs dr > 1 then false
         elif not (anchorPassable observeCell world request footprint destination) then false
-        elif dc = 0 || dr = 0 then orthogonalEnvelope observeBoundary boundaries request.Profile.Modality footprint origin destination
+        elif dc = 0 || dr = 0 then orthogonalEnvelope observeBoundary resolveBoundary request.Profile.Modality footprint origin destination
         else
             let horizontal = cell destination.Col origin.Row
             let vertical = cell origin.Col destination.Row
             anchorPassable observeCell world request footprint horizontal
             && anchorPassable observeCell world request footprint vertical
-            && orthogonalEnvelope observeBoundary boundaries request.Profile.Modality footprint origin horizontal
-            && orthogonalEnvelope observeBoundary boundaries request.Profile.Modality footprint horizontal destination
-            && orthogonalEnvelope observeBoundary boundaries request.Profile.Modality footprint origin vertical
-            && orthogonalEnvelope observeBoundary boundaries request.Profile.Modality footprint vertical destination
+            && orthogonalEnvelope observeBoundary resolveBoundary request.Profile.Modality footprint origin horizontal
+            && orthogonalEnvelope observeBoundary resolveBoundary request.Profile.Modality footprint horizontal destination
+            && orthogonalEnvelope observeBoundary resolveBoundary request.Profile.Modality footprint origin vertical
+            && orthogonalEnvelope observeBoundary resolveBoundary request.Profile.Modality footprint vertical destination
 
-    let private neighbours observeCell observeBoundary boundaries world request footprint origin =
+    let private neighbours observeCell observeBoundary resolveBoundary world request footprint origin =
         [ for dr in -1 .. 1 do
               for dc in -1 .. 1 do
                   if dc <> 0 || dr <> 0 then
                       let destination = cell (origin.Col + dc) (origin.Row + dr)
-                      if transitionPassable observeCell observeBoundary boundaries world request footprint origin destination then yield destination ]
+                      if transitionPassable observeCell observeBoundary resolveBoundary world request footprint origin destination then yield destination ]
         |> List.sortBy cellKey
 
     let private movementCost world path =
@@ -295,7 +374,7 @@ module SpatialQuery =
                 else others <- entry :: others
             Some(chosen, others)
 
-    let private boundedPath observeCell observeBoundary boundaries world request footprint =
+    let private boundedPath observeCell observeBoundary resolveBoundary world request footprint =
         let packageCandidate =
             Pathfinding.astar
                 Neighbourhood.EightWay
@@ -307,7 +386,7 @@ module SpatialQuery =
             packageCandidate
             |> Option.filter (fun path ->
                 path.Length <= int request.Bounds.MaximumResultCells
-                && (path |> List.pairwise |> List.forall (fun (origin, destination) -> transitionPassable observeCell observeBoundary boundaries world request footprint origin destination)))
+                && (path |> List.pairwise |> List.forall (fun (origin, destination) -> transitionPassable observeCell observeBoundary resolveBoundary world request footprint origin destination)))
         // Frontier entries carry the path REVERSED plus its length, so extending a candidate is
         // one cons instead of the `path @ [ candidate ]` copy this replaces, and the length test
         // needs no traversal. The forward path is materialized once, on the success return.
@@ -324,7 +403,7 @@ module SpatialQuery =
                 else
                     // Evaluated ONCE per expansion. The two folds below previously each rebuilt
                     // this list, duplicating every boundary and terrain probe inside it.
-                    let expanded = neighbours observeCell observeBoundary boundaries world request footprint current
+                    let expanded = neighbours observeCell observeBoundary resolveBoundary world request footprint current
                     let next =
                         expanded
                         |> List.fold (fun state candidate ->
@@ -367,15 +446,15 @@ module SpatialQuery =
 
     // `cells` is the already-materialized `lineCells origin target` for this pair. It used to be
     // recomputed here, which was one of the four generations of the same line per pair.
-    let private lineVisible observeBoundary boundaries world modality cells origin target =
+    let private lineVisible observeBoundary resolveBoundary world modality cells origin target =
         let transparent position = inBounds world position && terrainAt world position |> terrainPassable modality
         Los.lineOfSightBy Supercover transparent origin target
-        && (cells |> List.pairwise |> List.forall (fun (left, right) -> edgePassable observeBoundary boundaries modality left right))
+        && (cells |> List.pairwise |> List.forall (fun (left, right) -> edgePassable observeBoundary resolveBoundary modality left right))
 
     let private directionFrom origin target =
         Direction8.tryFromDelta (target.Col - origin.Col) (target.Row - origin.Row)
 
-    let private observedTrace observeCell observeBoundary boundaries (world: ProjectedSpatialWorld) (request: SpatialQueryRequest) footprint =
+    let private observedTrace observeCell observeBoundary resolveBoundary (world: ProjectedSpatialWorld) (request: SpatialQueryRequest) footprint =
         let origins = absoluteFootprint request.Origin footprint
         let targets = absoluteFootprint request.Target footprint
         let maximumWork = int64 request.Bounds.MaximumCrossedItems
@@ -396,7 +475,7 @@ module SpatialQuery =
                     traced
                     |> List.filter (fun (origin, target, cells) ->
                         cells |> List.iter observeCell
-                        lineVisible observeBoundary boundaries world request.Profile.Modality cells origin target)
+                        lineVisible observeBoundary resolveBoundary world request.Profile.Modality cells origin target)
                 let crossedCells = traced |> List.collect (fun (_, _, cells) -> cells) |> distinctCells
                 let crossedEdges =
                     traced
@@ -405,7 +484,7 @@ module SpatialQuery =
                 let cover =
                     crossedEdges
                     |> List.filter (fun edge ->
-                        Map.tryFind edge boundaries
+                        resolveBoundary edge
                         |> Option.exists (fun boundary -> not (permeability request.Profile.Modality boundary.Permeability)))
                 let exposure =
                     visiblePairs
@@ -465,10 +544,10 @@ module SpatialQuery =
             // Built ONCE per evaluation and threaded through every boundary probe below. The scan
             // it replaces ran per consecutive cell pair on every traced line and per footprint
             // offset on every path transition, so its cost was multiplied by the whole query.
-            let boundaries = indexBoundaries world.Boundaries
+            let resolveBoundary = boundaryResolver (estimatedBoundaryProbes request footprint.Length) world.Boundaries
             match request.QueryKind with
             | SpatialQueryKind.BoundedPath | SpatialQueryKind.Reachability | SpatialQueryKind.MovementCost ->
-                let outcome, path, cost, expansions = boundedPath observeCell observeBoundary boundaries world request footprint
+                let outcome, path, cost, expansions = boundedPath observeCell observeBoundary resolveBoundary world request footprint
                 let crossedEdges = path |> List.pairwise |> List.choose (fun (left, right) -> Edges.edgeBetween left right)
                 let crossedCells = path |> List.truncate (int request.Bounds.MaximumCrossedItems)
                 let explanation =
@@ -480,7 +559,7 @@ module SpatialQuery =
                 let result = { Outcome = outcome; Path = path; MovementCost = cost; Visible = false; Explanation = explanation }
                 result, { RevisionTokens = dependedTokens }
             | SpatialQueryKind.LineTrace | SpatialQueryKind.ExactLineOfSight | SpatialQueryKind.Cover | SpatialQueryKind.Exposure ->
-                let visible, cells, edges, cover, exposure, truncated = observedTrace observeCell observeBoundary boundaries world request footprint
+                let visible, cells, edges, cover, exposure, truncated = observedTrace observeCell observeBoundary resolveBoundary world request footprint
                 let outcome = if truncated then SpatialOutcome.Exhausted elif visible then SpatialOutcome.Found else SpatialOutcome.Unreachable
                 let explanation =
                     { emptyExplanation world request outcome footprint with
