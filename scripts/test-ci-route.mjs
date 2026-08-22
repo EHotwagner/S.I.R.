@@ -256,6 +256,7 @@ for (const browserJob of ["browser", "browser-general-helper", "browser-general-
 assert.match(jobBody("documentation"), /prepared-part-docs/u);
 assert.match(jobBody("documentation"), /prepared-part-web/u);
 assert.doesNotMatch(jobBody("documentation"), /prepared-part-native/u);
+assert.match(jobBody("documentation"), /actions\/setup-dotnet@[0-9a-f]{40} # v6\.0\.0/u);
 assert.match(jobBody("spatial-mutations"), /needs: route/u);
 assert.match(jobBody("spatial-mutations"), /run-ci-gate\.sh spatial-mutations/u);
 assert.doesNotMatch(jobBody("spatial-mutations"), /prepared-part-|needs: \[[^\]]*prepare-/u);

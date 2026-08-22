@@ -17,7 +17,7 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "4e5809bee3a24c47857149cd01f5e866af21632c5a695e9dfd98048f954893d4",
+      "replacementSha256": "eb462b78848050eb8b9ae39d8dd179823991ccb3bedd1f24d589b003b5d69a9c",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "The CI reliability design extends the route matrix with source-to-production-review freshness, consolidated ordinary domain execution, an independently parallel performance-sensitive cross-runtime measurement, parallel source-mutation helpers, a dedicated documentation projection producer, runtime-only browser shard setup, protected-stage receipt topology, and the existing performance, artifact, build-owner, and fail-closed join contracts; focused mutations cover every new edge."
     },
@@ -27,7 +27,7 @@
       "locator": "file:.github/workflows/ci.yml",
       "path": ".github/workflows/ci.yml",
       "previousSha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127",
-      "replacementSha256": "d3aa13baeb689c35530b9bcd8ae16090173b36719cd93269b9dea53369a668dc",
+      "replacementSha256": "07cbe9d777c9a72c640d1f0626af56f9b0ef16a07471875fda8a1ac67583b028",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "The CI reliability design retains the bounded PR topology, keeps server preparation in the native producer, starts documentation projection as an independent parallel producer, verifies the hosted .NET 10 runtime instead of installing an unused SDK on browser-only shards, co-schedules independently receipted ordinary domain gates, preserves protected preflight/core/checkpoint/join jobs, and invokes the exact-run cost observer after the PR verdict while preserving the stable full-qualification context; the workflow-DAG, cost-inventory, runtime, and receipt mutations reject missing or weakened edges."
     },
