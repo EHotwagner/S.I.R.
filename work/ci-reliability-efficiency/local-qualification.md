@@ -2,9 +2,10 @@
 
 Date: 2026-08-22
 
-This is diagnostic implementation evidence, not SDD stage-8 evidence. Final
-FR-005 through FR-007 acceptance still requires one source-frozen exact-head
-hosted run and `sir.ci-cost-report/v1` reconciliation.
+This records both diagnostic local qualification and the source-frozen hosted
+acceptance observation. The compact hosted receipt is
+`hosted-observation.json`; its executable validation is
+`hosted-verification.sh`.
 
 ## Clean producer candidate
 
@@ -42,12 +43,35 @@ bytes. Both archives reconstructed exactly, and the reconstructed server started
   candidate changes workflow topology, so no optional subject was omitted).
 - Feedback audit-binding exception mutations and `git diff --check`.
 
-## Deliberately pending
+## Exact-head hosted acceptance
 
-- Exact-head hosted runner time, critical path, action/post-step residual, and
-  artifact-byte reconciliation.
-- The >=20% hosted runner-time reduction and <=240-second verdict ceiling.
-- Any setup-dominated domain-job consolidation. The observer must first show
-  that consolidation improves the critical path; retaining the current subject
-  jobs is safer than speculating locally.
-- SDD evidence, verify, ship, generated-view refresh, and any protected delivery.
+GitHub Actions run
+[32571089354](https://github.com/EHotwagner/S.I.R./actions/runs/32571089354)
+completed successfully at candidate `6ef206926fdd2412d28e575ccb71bddc61277b70`
+(tree `e7ff17456f9bb1c5f23d00b6bca9703bf6ffe163`) with no retry.
+
+| Metric | Baseline | Target | Observed | Change |
+| --- | ---: | ---: | ---: | ---: |
+| Developer wait to PR verdict | n/a | <=240,000 ms | 239,690 ms | target passed by 310 ms |
+| Aggregate GitHub runner consumption | 1,518,000 ms | <=1,214,400 ms | 1,161,000 ms | -23.518% |
+| Uploaded artifact bytes | 351,337,554 | <=281,070,043 | 106,979,278 | -69.551% |
+
+The 239,690 ms verdict is about four minutes of elapsed developer wait. The
+1,161,000 ms value is about 19 minutes 21 seconds summed across concurrent
+runners; it is consumption, not elapsed wait. The `sir.ci-cost-report/v1`
+observer reported `complete`, zero receipt mismatches, and a passing baseline
+comparison. All selected rules, spatial, cancellation, mutation, cross-runtime,
+browser, documentation, and evidence subjects passed.
+
+The hosted prepared payloads were 39,223,426 native bytes, 4,077,529 Fable
+bytes, 31,312,610 web bytes, and 32,347,022 documentation bytes: 106,960,587
+bytes in total. Small route, gate, verdict, and cost receipts account for the
+remaining observed uploaded bytes.
+
+## Remaining protected-boundary control
+
+The final protected-main, scheduled, and Pages observations in VO-010 remain
+pending until this candidate crosses the protected merge boundary. Their
+workflow topology and fail-closed mutation controls pass locally, but this PR
+run cannot truthfully stand in for those post-merge events. SDD verification
+and ship readiness therefore remain open on that single boundary control.

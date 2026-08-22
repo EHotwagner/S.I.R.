@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ci-reliability-efficiency" tests="5" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.CI" name="exact-head-hosted-verdict" />
+  <testcase classname="SIR.CI" name="developer-wait-at-most-240-seconds" />
+  <testcase classname="SIR.CI" name="aggregate-runner-reduction-at-least-20-percent" />
+  <testcase classname="SIR.CI" name="artifact-reduction-at-least-20-percent" />
+  <testcase classname="SIR.CI" name="api-reconciliation-complete" />
+</testsuite>

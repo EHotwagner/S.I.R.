@@ -1,0 +1,5214 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "ci-reliability-efficiency",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/ci-reliability-efficiency/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "e34051a66e4dc6a14c56d5520bccecfff3eebaec6cee77c96e9748eb3684ae17"
+      }
+    },
+    {
+      "path": "work/ci-reliability-efficiency/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "a7c9b9a52d84264ba6476effc77038392863edc55b2996b1c6c2b810b94843bc"
+      }
+    },
+    {
+      "path": "work/ci-reliability-efficiency/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "10aec89e0da88773ef768a1da862928612379d8b83acdc9247674489116d74ae"
+      }
+    },
+    {
+      "path": "work/ci-reliability-efficiency/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "7a130264f3b512b00864f7b820be1ac17b5eb98a39617822913091b1e4d6fd0c"
+      }
+    },
+    {
+      "path": "work/ci-reliability-efficiency/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "6e86d77d74b132b17f056d858cba792116d11aa10eaa39f386d23daa4fc7ebfe"
+      }
+    },
+    {
+      "path": "work/ci-reliability-efficiency/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "48c08c3cefdaab51dd5e678f0fe84900785a10d342967a3f4435feebbb2eab7e"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "ci-reliability-efficiency",
+    "title": "Reliable and Efficient CI Qualification",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "PR routing MUST select a production-review freshness gate for every production-bundle input, review generator, review artifact, build script, lock, workflow, unknown path, or cross-cutting change. (Stories: US-001; Acceptance: AC-001)",
+      "text": "PR routing MUST select a production-review freshness gate for every production-bundle input, review generator, review artifact, build script, lock, workflow, unknown path, or cross-cutting change. (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 48,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001",
+        "EV024"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "The freshness gate MUST compare tracked review evidence with a production-equivalent generated bundle, fail with exact stale paths/digests, and include self-restoring stale/regenerated controls. (Stories: US-001; Acceptance: AC-001)",
+      "text": "The freshness gate MUST compare tracked review evidence with a production-equivalent generated bundle, fail with exact stale paths/digests, and include self-restoring stale/regenerated controls. (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 49,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002",
+        "EV025"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "Protected and scheduled qualification MUST expose independently attributable prepare, mutation, functional, browser/performance, documentation/site, SDD/Governance, and final-join receipts instead of one opaque serial job. (Stories: US-002; Acceptance: AC-002)",
+      "text": "Protected and scheduled qualification MUST expose independently attributable prepare, mutation, functional, browser/performance, documentation/site, SDD/Governance, and final-join receipts instead of one opaque serial job. (Stories: US-002; Acceptance: AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003",
+        "EV026"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "Every protected/scheduled subject MUST checkpoint a typed result and diagnostic artifact under \u0060always()\u0060 semantics; the first named failure MUST be visible within 300 seconds and no failed dependency may be rendered as an acceptable skip. (Stories: US-002; Acceptance: AC-002)",
+      "text": "Every protected/scheduled subject MUST checkpoint a typed result and diagnostic artifact under \u0060always()\u0060 semantics; the first named failure MUST be visible within 300 seconds and no failed dependency may be rendered as an acceptable skip. (Stories: US-002; Acceptance: AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004"
+      ],
+      "linkedEvidenceIds": [
+        "EV004",
+        "EV027"
+      ]
+    },
+    {
+      "id": "FR-005",
+      "title": "The representative cross-cutting PR verdict MUST remain at most 240,000 milliseconds and accepted optimization evidence MUST use a source-frozen exact-head hosted run rather than an unchanged retry. (Stories: US-003; Acceptance: AC-003)",
+      "text": "The representative cross-cutting PR verdict MUST remain at most 240,000 milliseconds and accepted optimization evidence MUST use a source-frozen exact-head hosted run rather than an unchanged retry. (Stories: US-003; Acceptance: AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T005"
+      ],
+      "linkedEvidenceIds": [
+        "EV005",
+        "EV028"
+      ]
+    },
+    {
+      "id": "FR-006",
+      "title": "Against run 32523274261, actual summed GitHub job duration MUST fall by at least 20 percent from 1,518 seconds while every selected subject, mutation population, test count, and product budget remains equal or larger. (Stories: US-003; Acceptance: AC-003)",
+      "text": "Against run 32523274261, actual summed GitHub job duration MUST fall by at least 20 percent from 1,518 seconds while every selected subject, mutation population, test count, and product budget remains equal or larger. (Stories: US-003; Acceptance: AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T006"
+      ],
+      "linkedEvidenceIds": [
+        "EV006",
+        "EV029"
+      ]
+    },
+    {
+      "id": "FR-007",
+      "title": "Prepared artifact upload bytes MUST fall by at least 20 percent from 351,337,554 bytes, with per-artifact and aggregate compressed/uncompressed sizes recorded before and after. (Stories: US-003; Acceptance: AC-003)",
+      "text": "Prepared artifact upload bytes MUST fall by at least 20 percent from 351,337,554 bytes, with per-artifact and aggregate compressed/uncompressed sizes recorded before and after. (Stories: US-003; Acceptance: AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 54,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T007"
+      ],
+      "linkedEvidenceIds": [
+        "EV007",
+        "EV030"
+      ]
+    },
+    {
+      "id": "FR-008",
+      "title": "Linux PR producers MUST exclude non-Linux runtime assets and redundant closure copies that consumers cannot load, without changing publish/package portability or protected cross-runtime evidence. (Stories: US-003; Acceptance: AC-004)",
+      "text": "Linux PR producers MUST exclude non-Linux runtime assets and redundant closure copies that consumers cannot load, without changing publish/package portability or protected cross-runtime evidence. (Stories: US-003; Acceptance: AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 55,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T008"
+      ],
+      "linkedEvidenceIds": [
+        "EV008",
+        "EV031"
+      ]
+    },
+    {
+      "id": "FR-009",
+      "title": "Prepared artifacts MUST remain immutable, content-addressed, mode-preserving, exact-candidate-bound, and reconstructed only after transport and staged-byte verification; no consumer may rebuild on verification failure. (Stories: US-003; Acceptance: AC-004)",
+      "text": "Prepared artifacts MUST remain immutable, content-addressed, mode-preserving, exact-candidate-bound, and reconstructed only after transport and staged-byte verification; no consumer may rebuild on verification failure. (Stories: US-003; Acceptance: AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 56,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T009"
+      ],
+      "linkedEvidenceIds": [
+        "EV009",
+        "EV032"
+      ]
+    },
+    {
+      "id": "FR-010",
+      "title": "Setup-dominated subjects MAY share a hosted job only when their stable ids, commands, timings, independent failures, and join obligations remain separate typed receipts and measured critical path does not regress. (Stories: US-003, US-005; Acceptance: AC-005)",
+      "text": "Setup-dominated subjects MAY share a hosted job only when their stable ids, commands, timings, independent failures, and join obligations remain separate typed receipts and measured critical path does not regress. (Stories: US-003, US-005; Acceptance: AC-005)",
+      "acceptanceCriteria": [
+        "AC-005"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 57,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T010"
+      ],
+      "linkedEvidenceIds": [
+        "EV010",
+        "EV033"
+      ]
+    },
+    {
+      "id": "FR-011",
+      "title": "Expensive synthetic/mutation self-tests MAY be conditionally omitted only through a committed conservative impact classifier that runs for relevant, topology, rename, deletion, malformed, or unknown inputs and emits a stable measured omission reason otherwise. Original test results MUST be parsed for non-vacuity rather than rerun. (Stories: US-005; Acceptance: AC-005)",
+      "text": "Expensive synthetic/mutation self-tests MAY be conditionally omitted only through a committed conservative impact classifier that runs for relevant, topology, rename, deletion, malformed, or unknown inputs and emits a stable measured omission reason otherwise. Original test results MUST be parsed for non-vacuity rather than rerun. (Stories: US-005; Acceptance: AC-005)",
+      "acceptanceCriteria": [
+        "AC-005"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 58,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T011"
+      ],
+      "linkedEvidenceIds": [
+        "EV011",
+        "EV034"
+      ]
+    },
+    {
+      "id": "FR-012",
+      "title": "Pages MUST consume an exact-SHA qualified site receipt from successful protected main qualification, verify every byte before deployment, and perform no independent restore/build/Fable/Vite/fsdocs work. (Stories: US-004; Acceptance: AC-006)",
+      "text": "Pages MUST consume an exact-SHA qualified site receipt from successful protected main qualification, verify every byte before deployment, and perform no independent restore/build/Fable/Vite/fsdocs work. (Stories: US-004; Acceptance: AC-006)",
+      "acceptanceCriteria": [
+        "AC-006"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 59,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T012"
+      ],
+      "linkedEvidenceIds": [
+        "EV012",
+        "EV035"
+      ]
+    },
+    {
+      "id": "FR-013",
+      "title": "Timing authority MUST include GitHub job start/end, setup actions, restores, builds, artifact upload/download/extraction, tests, post steps, finalization, queue when available, retry count, and failure stage; script-only receipts MUST be labeled partial. (Stories: US-005; Acceptance: AC-007)",
+      "text": "Timing authority MUST include GitHub job start/end, setup actions, restores, builds, artifact upload/download/extraction, tests, post steps, finalization, queue when available, retry count, and failure stage; script-only receipts MUST be labeled partial. (Stories: US-005; Acceptance: AC-007)",
+      "acceptanceCriteria": [
+        "AC-007"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 60,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T013"
+      ],
+      "linkedEvidenceIds": [
+        "EV013",
+        "EV036"
+      ]
+    },
+    {
+      "id": "FR-014",
+      "title": "A versioned cost report MUST reconcile workflow critical path, total runner-minutes, per-job setup/test ratios, cache hits, artifact bytes, and omitted reasons against the GitHub Jobs and Artifacts APIs, rejecting missing or materially inconsistent facts. (Stories: US-005; Acceptance: AC-007)",
+      "text": "A versioned cost report MUST reconcile workflow critical path, total runner-minutes, per-job setup/test ratios, cache hits, artifact bytes, and omitted reasons against the GitHub Jobs and Artifacts APIs, rejecting missing or materially inconsistent facts. (Stories: US-005; Acceptance: AC-007)",
+      "acceptanceCriteria": [
+        "AC-007"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 61,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T014"
+      ],
+      "linkedEvidenceIds": [
+        "EV014",
+        "EV037"
+      ]
+    },
+    {
+      "id": "FR-015",
+      "title": "Workflow actions MUST use supported Node-runtime-compatible releases with least permissions, explicit timeouts, stable required contexts, and fail-closed YAML/topology/subject mutation tests; each milestone MUST document an independent rollback boundary. (Stories: US-005; Acceptance: AC-008)",
+      "text": "Workflow actions MUST use supported Node-runtime-compatible releases with least permissions, explicit timeouts, stable required contexts, and fail-closed YAML/topology/subject mutation tests; each milestone MUST document an independent rollback boundary. (Stories: US-005; Acceptance: AC-008)",
+      "acceptanceCriteria": [
+        "AC-008"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/ci-reliability-efficiency/spec.md",
+      "sourceLocation": {
+        "line": 62,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T015"
+      ],
+      "linkedEvidenceIds": [
+        "EV015",
+        "EV038"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Decompose protected/scheduled qualification into one exact clean-room producer layer, isolated mutation/browser/performance consumers, separately receipted read-only subjects, and an unconditional deterministic join; never share a mutable working copy across subjects.",
+      "decision": "Decompose protected/scheduled qualification into one exact clean-room producer layer, isolated mutation/browser/performance consumers, separately receipted read-only subjects, and an unconditional deterministic join; never share a mutable working copy across subjects.",
+      "requirementRefs": [
+        "FR-003",
+        "FR-004"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/ci-reliability-efficiency/clarifications.md",
+      "sourceLocation": {
+        "line": 38,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T016"
+      ]
+    },
+    {
+      "id": "DEC-002",
+      "title": "Build the documentation site once in successful protected main qualification and deploy that exact verified receipt from a restricted \u0060workflow_run\u0060 Pages workflow; Pages performs no build.",
+      "decision": "Build the documentation site once in successful protected main qualification and deploy that exact verified receipt from a restricted \u0060workflow_run\u0060 Pages workflow; Pages performs no build.",
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/ci-reliability-efficiency/clarifications.md",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T017"
+      ]
+    },
+    {
+      "id": "DEC-003",
+      "title": "Make PR transport target-specific: retain Linux-x64 runtime bytes and one content-addressed copy of duplicate closure files, reconstruct expected trees from a signed-by-digest manifest, and keep portable package/cross-runtime proof outside that acceleration boundary.",
+      "decision": "Make PR transport target-specific: retain Linux-x64 runtime bytes and one content-addressed copy of duplicate closure files, reconstruct expected trees from a signed-by-digest manifest, and keep portable package/cross-runtime proof outside that acceleration boundary.",
+      "requirementRefs": [
+        "FR-007",
+        "FR-008",
+        "FR-009"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/ci-reliability-efficiency/clarifications.md",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T018"
+      ]
+    },
+    {
+      "id": "DEC-004",
+      "title": "Use measured setup:test ratios to consolidate rules, spatial, cancellation, and cross-runtime into a candidate \u0060domain-conformance\u0060 runner with four independent receipts; retain separate producers, mutation jobs, browser shards, documentation, and evidence gates.",
+      "decision": "Use measured setup:test ratios to consolidate rules, spatial, cancellation, and cross-runtime into a candidate \u0060domain-conformance\u0060 runner with four independent receipts; retain separate producers, mutation jobs, browser shards, documentation, and evidence gates.",
+      "requirementRefs": [
+        "FR-010"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/ci-reliability-efficiency/clarifications.md",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T019"
+      ]
+    },
+    {
+      "id": "DEC-005",
+      "title": "Split integrity into an unconditional floor plus stable-id conditional subreceipts. Every classifier defaults to run, models both sides of renames, and is mutation-tested against a false omission.",
+      "decision": "Split integrity into an unconditional floor plus stable-id conditional subreceipts. Every classifier defaults to run, models both sides of renames, and is mutation-tested against a false omission.",
+      "requirementRefs": [
+        "FR-011"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/ci-reliability-efficiency/clarifications.md",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T020"
+      ]
+    },
+    {
+      "id": "DEC-006",
+      "title": "Add one read-only reusable/post-run cost observer for complete GitHub job/artifact facts. Pull requests call it after the in-run verdict and exclude only its own active job so new observer logic is qualifiable before merge; \u0060workflow_run\u0060 observes terminal default-branch runs. Gate/join receipts remain authoritative for correctness and clearly labeled as partial for post-step cost.",
+      "decision": "Add one read-only reusable/post-run cost observer for complete GitHub job/artifact facts. Pull requests call it after the in-run verdict and exclude only its own active job so new observer logic is qualifiable before merge; \u0060workflow_run\u0060 observes terminal default-branch runs. Gate/join receipts remain authoritative for correctness and clearly labeled as partial for post-step cost.",
+      "requirementRefs": [
+        "FR-013",
+        "FR-014"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/ci-reliability-efficiency/clarifications.md",
+      "sourceLocation": {
+        "line": 43,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T021"
+      ]
+    },
+    {
+      "id": "DEC-007",
+      "title": "Implement M0 through M5 in order with separate commits, inversions, exact-head hosted receipts, five-percent local rollback guards, and unchanged global evidence/workload budgets.",
+      "decision": "Implement M0 through M5 in order with separate commits, inversions, exact-head hosted receipts, five-percent local rollback guards, and unchanged global evidence/workload budgets.",
+      "requirementRefs": [
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-015"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/ci-reliability-efficiency/clarifications.md",
+      "sourceLocation": {
+        "line": 44,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T022"
+      ]
+    },
+    {
+      "id": "DEC-008",
+      "title": "Pin supported official actions by immutable SHA, retain explicit product runtime versions and least permissions, add timeouts, and reject required-context or permission drift statically.",
+      "decision": "Pin supported official actions by immutable SHA, retain explicit product runtime versions and least permissions, add timeouts, and reject required-context or permission drift statically.",
+      "requirementRefs": [
+        "FR-015"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/ci-reliability-efficiency/clarifications.md",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T023"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Implement requirement FR-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-002"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Implement requirement FR-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-003"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Implement requirement FR-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Implement requirement FR-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-005"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "T006",
+      "title": "Implement requirement FR-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-006"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV006"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "T007",
+      "title": "Implement requirement FR-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-007"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV007"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "T008",
+      "title": "Implement requirement FR-008",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-008"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "FR-008"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV008"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "T009",
+      "title": "Implement requirement FR-009",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-009"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "FR-009"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV009"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "T010",
+      "title": "Implement requirement FR-010",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-010"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "FR-010"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV010"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "T011",
+      "title": "Implement requirement FR-011",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-011"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "FR-011"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV011"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "T012",
+      "title": "Implement requirement FR-012",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-012"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-006",
+        "FR-012"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV012"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "T013",
+      "title": "Implement requirement FR-013",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-013"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "FR-013"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV013"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "T014",
+      "title": "Implement requirement FR-014",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-014"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "FR-014"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV014"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "T015",
+      "title": "Implement requirement FR-015",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-015"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-008",
+        "FR-015"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV015"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "T016",
+      "title": "Implement clarification decision DEC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-001"
+      ],
+      "sourceIds": [
+        "DEC-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV016"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "T017",
+      "title": "Implement clarification decision DEC-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-002"
+      ],
+      "sourceIds": [
+        "DEC-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV017"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "T018",
+      "title": "Implement clarification decision DEC-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-003"
+      ],
+      "sourceIds": [
+        "DEC-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV018"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "T019",
+      "title": "Implement clarification decision DEC-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-004"
+      ],
+      "sourceIds": [
+        "DEC-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV019"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "T020",
+      "title": "Implement clarification decision DEC-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-005"
+      ],
+      "sourceIds": [
+        "DEC-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV020"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "id": "T021",
+      "title": "Implement clarification decision DEC-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-006"
+      ],
+      "sourceIds": [
+        "DEC-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV021"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "id": "T022",
+      "title": "Implement clarification decision DEC-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-007"
+      ],
+      "sourceIds": [
+        "DEC-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV022"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "id": "T023",
+      "title": "Implement clarification decision DEC-008",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-008"
+      ],
+      "sourceIds": [
+        "DEC-008"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV023"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "id": "T024",
+      "title": "Implement plan decision PD-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "DEC-007",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV024"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 24,
+        "column": 1
+      }
+    },
+    {
+      "id": "T025",
+      "title": "Implement plan decision PD-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "DEC-007",
+        "FR-002",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV025"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "id": "T026",
+      "title": "Implement plan decision PD-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "DEC-001",
+        "FR-003",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV026"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      }
+    },
+    {
+      "id": "T027",
+      "title": "Implement plan decision PD-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "DEC-001",
+        "FR-004",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV027"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 27,
+        "column": 1
+      }
+    },
+    {
+      "id": "T028",
+      "title": "Implement plan decision PD-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "DEC-007",
+        "FR-005",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV028"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "id": "T029",
+      "title": "Implement plan decision PD-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "DEC-006",
+        "FR-006",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV029"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "id": "T030",
+      "title": "Implement plan decision PD-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "DEC-003",
+        "FR-007",
+        "PD-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV030"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      }
+    },
+    {
+      "id": "T031",
+      "title": "Implement plan decision PD-008",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "DEC-003",
+        "FR-008",
+        "PD-008"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV031"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 31,
+        "column": 1
+      }
+    },
+    {
+      "id": "T032",
+      "title": "Implement plan decision PD-009",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "DEC-001",
+        "DEC-003",
+        "FR-009",
+        "PD-009"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV032"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "id": "T033",
+      "title": "Implement plan decision PD-010",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "DEC-004",
+        "FR-010",
+        "PD-010"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV033"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "id": "T034",
+      "title": "Implement plan decision PD-011",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "DEC-005",
+        "FR-011",
+        "PD-011"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV034"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 34,
+        "column": 1
+      }
+    },
+    {
+      "id": "T035",
+      "title": "Implement plan decision PD-012",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-006",
+        "DEC-002",
+        "FR-012",
+        "PD-012"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV035"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 35,
+        "column": 1
+      }
+    },
+    {
+      "id": "T036",
+      "title": "Implement plan decision PD-013",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "DEC-006",
+        "FR-013",
+        "PD-013"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV036"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 36,
+        "column": 1
+      }
+    },
+    {
+      "id": "T037",
+      "title": "Implement plan decision PD-014",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "DEC-006",
+        "FR-014",
+        "PD-014"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV037"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 37,
+        "column": 1
+      }
+    },
+    {
+      "id": "T038",
+      "title": "Implement plan decision PD-015",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-008",
+        "DEC-007",
+        "DEC-008",
+        "FR-015",
+        "PD-015"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV038"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 38,
+        "column": 1
+      }
+    },
+    {
+      "id": "T039",
+      "title": "Update contract surface PC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV039"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      }
+    },
+    {
+      "id": "T040",
+      "title": "Update contract surface PC-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-003",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV040"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      }
+    },
+    {
+      "id": "T041",
+      "title": "Update contract surface PC-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PD-007",
+        "PD-008",
+        "PD-009"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV041"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      }
+    },
+    {
+      "id": "T042",
+      "title": "Update contract surface PC-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PD-010",
+        "PD-011"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV042"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      }
+    },
+    {
+      "id": "T043",
+      "title": "Update contract surface PC-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-005",
+        "PD-012"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV043"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 43,
+        "column": 1
+      }
+    },
+    {
+      "id": "T044",
+      "title": "Update contract surface PC-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-006",
+        "PD-013",
+        "PD-014"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV044"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 44,
+        "column": 1
+      }
+    },
+    {
+      "id": "T045",
+      "title": "Update contract surface PC-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-007",
+        "PD-015"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV045"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      }
+    },
+    {
+      "id": "T046",
+      "title": "Record verification evidence VO-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "PD-002",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV046"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 46,
+        "column": 1
+      }
+    },
+    {
+      "id": "T047",
+      "title": "Record verification evidence VO-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-003",
+        "PD-004",
+        "VO-002"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV047"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      }
+    },
+    {
+      "id": "T048",
+      "title": "Record verification evidence VO-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PD-005",
+        "PD-006",
+        "VO-003"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV048"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 48,
+        "column": 1
+      }
+    },
+    {
+      "id": "T049",
+      "title": "Record verification evidence VO-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PD-007",
+        "PD-008",
+        "PD-009",
+        "VO-004"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV049"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 49,
+        "column": 1
+      }
+    },
+    {
+      "id": "T050",
+      "title": "Record verification evidence VO-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PD-010",
+        "VO-005"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV050"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      }
+    },
+    {
+      "id": "T051",
+      "title": "Record verification evidence VO-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PD-011",
+        "VO-006"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV051"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "id": "T052",
+      "title": "Record verification evidence VO-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-005",
+        "PD-012",
+        "VO-007"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV052"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      }
+    },
+    {
+      "id": "T053",
+      "title": "Record verification evidence VO-008",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-006",
+        "PD-013",
+        "PD-014",
+        "VO-008"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV053"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "id": "T054",
+      "title": "Record verification evidence VO-009",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-007",
+        "PD-015",
+        "VO-009"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV054"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 54,
+        "column": 1
+      }
+    },
+    {
+      "id": "T055",
+      "title": "Record verification evidence VO-010",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PD-001",
+        "PD-015",
+        "VO-010"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV055"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 55,
+        "column": 1
+      }
+    },
+    {
+      "id": "T056",
+      "title": "Handle migration posture PM-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV056"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 56,
+        "column": 1
+      }
+    },
+    {
+      "id": "T057",
+      "title": "Handle migration posture PM-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PM-002"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV057"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 57,
+        "column": 1
+      }
+    },
+    {
+      "id": "T058",
+      "title": "Handle migration posture PM-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PM-003"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV058"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 58,
+        "column": 1
+      }
+    },
+    {
+      "id": "T059",
+      "title": "Handle migration posture PM-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PM-004"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV059"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 59,
+        "column": 1
+      }
+    },
+    {
+      "id": "T060",
+      "title": "Handle migration posture PM-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-005",
+        "PM-005"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV060"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 60,
+        "column": 1
+      }
+    },
+    {
+      "id": "T061",
+      "title": "Handle migration posture PM-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-006",
+        "PM-006"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV061"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 61,
+        "column": 1
+      }
+    },
+    {
+      "id": "T062",
+      "title": "Handle migration posture PM-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-007",
+        "PM-007"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV062"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 62,
+        "column": 1
+      }
+    },
+    {
+      "id": "T063",
+      "title": "Refresh generated view impact GV-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV063"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 63,
+        "column": 1
+      }
+    },
+    {
+      "id": "T064",
+      "title": "Refresh generated view impact GV-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-002",
+        "PD-014"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV064"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 64,
+        "column": 1
+      }
+    },
+    {
+      "id": "T065",
+      "title": "Refresh generated view impact GV-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-003",
+        "PD-015"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV065"
+      ],
+      "source": "work/ci-reliability-efficiency/tasks.yml",
+      "sourceLocation": {
+        "line": 65,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV006",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T006",
+      "taskRefs": [
+        "T006"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV007",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T007",
+      "taskRefs": [
+        "T007"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV008",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T008",
+      "taskRefs": [
+        "T008"
+      ],
+      "requirementRefs": [
+        "FR-008"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV009",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T009",
+      "taskRefs": [
+        "T009"
+      ],
+      "requirementRefs": [
+        "FR-009"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV010",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T010",
+      "taskRefs": [
+        "T010"
+      ],
+      "requirementRefs": [
+        "FR-010"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV011",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T011",
+      "taskRefs": [
+        "T011"
+      ],
+      "requirementRefs": [
+        "FR-011"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV012",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T012",
+      "taskRefs": [
+        "T012"
+      ],
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV013",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T013",
+      "taskRefs": [
+        "T013"
+      ],
+      "requirementRefs": [
+        "FR-013"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV014",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T014",
+      "taskRefs": [
+        "T014"
+      ],
+      "requirementRefs": [
+        "FR-014"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV015",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T015",
+      "taskRefs": [
+        "T015"
+      ],
+      "requirementRefs": [
+        "FR-015"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV016",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T016",
+      "taskRefs": [
+        "T016"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV017",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T017",
+      "taskRefs": [
+        "T017"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV018",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T018",
+      "taskRefs": [
+        "T018"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV019",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T019",
+      "taskRefs": [
+        "T019"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV020",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T020",
+      "taskRefs": [
+        "T020"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV021",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T021",
+      "taskRefs": [
+        "T021"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV022",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T022",
+      "taskRefs": [
+        "T022"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV023",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T023",
+      "taskRefs": [
+        "T023"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV024",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T024",
+      "taskRefs": [
+        "T024"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 24,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV025",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T025",
+      "taskRefs": [
+        "T025"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV026",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T026",
+      "taskRefs": [
+        "T026"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV027",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T027",
+      "taskRefs": [
+        "T027"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 27,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV028",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T028",
+      "taskRefs": [
+        "T028"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV029",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T029",
+      "taskRefs": [
+        "T029"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV030",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T030",
+      "taskRefs": [
+        "T030"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV031",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T031",
+      "taskRefs": [
+        "T031"
+      ],
+      "requirementRefs": [
+        "FR-008"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 31,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV032",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T032",
+      "taskRefs": [
+        "T032"
+      ],
+      "requirementRefs": [
+        "FR-009"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV033",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T033",
+      "taskRefs": [
+        "T033"
+      ],
+      "requirementRefs": [
+        "FR-010"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV034",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T034",
+      "taskRefs": [
+        "T034"
+      ],
+      "requirementRefs": [
+        "FR-011"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 34,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV035",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T035",
+      "taskRefs": [
+        "T035"
+      ],
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 35,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV036",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T036",
+      "taskRefs": [
+        "T036"
+      ],
+      "requirementRefs": [
+        "FR-013"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 36,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV037",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T037",
+      "taskRefs": [
+        "T037"
+      ],
+      "requirementRefs": [
+        "FR-014"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 37,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV038",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T038",
+      "taskRefs": [
+        "T038"
+      ],
+      "requirementRefs": [
+        "FR-015"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 38,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV039",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T039",
+      "taskRefs": [
+        "T039"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV040",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T040",
+      "taskRefs": [
+        "T040"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV041",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T041",
+      "taskRefs": [
+        "T041"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV042",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T042",
+      "taskRefs": [
+        "T042"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV043",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T043",
+      "taskRefs": [
+        "T043"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 43,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV044",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T044",
+      "taskRefs": [
+        "T044"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 44,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV045",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T045",
+      "taskRefs": [
+        "T045"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV046",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T046",
+      "taskRefs": [
+        "T046"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 46,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV047",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T047",
+      "taskRefs": [
+        "T047"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV048",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T048",
+      "taskRefs": [
+        "T048"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 48,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV049",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T049",
+      "taskRefs": [
+        "T049"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 49,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV050",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T050",
+      "taskRefs": [
+        "T050"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV051",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T051",
+      "taskRefs": [
+        "T051"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV052",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T052",
+      "taskRefs": [
+        "T052"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV053",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T053",
+      "taskRefs": [
+        "T053"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV054",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T054",
+      "taskRefs": [
+        "T054"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 54,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV055",
+      "kind": "missing",
+      "subjectType": "task",
+      "subjectId": "T055",
+      "taskRefs": [
+        "T055"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "missing",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 55,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV056",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T056",
+      "taskRefs": [
+        "T056"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 56,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV057",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T057",
+      "taskRefs": [
+        "T057"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 57,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV058",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T058",
+      "taskRefs": [
+        "T058"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 58,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV059",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T059",
+      "taskRefs": [
+        "T059"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 59,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV060",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T060",
+      "taskRefs": [
+        "T060"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 60,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV061",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T061",
+      "taskRefs": [
+        "T061"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 61,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV062",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T062",
+      "taskRefs": [
+        "T062"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 62,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV063",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T063",
+      "taskRefs": [
+        "T063"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 63,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV064",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T064",
+      "taskRefs": [
+        "T064"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 64,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV065",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T065",
+      "taskRefs": [
+        "T065"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci-cost-observer.yml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-artifact-manifest.mjs",
+        "scripts/ci-cost-report.mjs",
+        "scripts/ci-integrity-plan.mjs",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/prune-linux-runtime-closure.mjs",
+        "scripts/qualify-pr.sh",
+        "scripts/qualify-production.sh",
+        "scripts/test-ci-reliability-evidence.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/ci-reliability-efficiency/hosted-observation.json",
+        "work/ci-reliability-efficiency/local-qualification.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/ci-reliability-efficiency/evidence.yml",
+      "sourceLocation": {
+        "line": 65,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/ci-reliability-efficiency/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.1.0"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/ci-reliability-efficiency/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e34051a66e4dc6a14c56d5520bccecfff3eebaec6cee77c96e9748eb3684ae17"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/ci-reliability-efficiency/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a7c9b9a52d84264ba6476effc77038392863edc55b2996b1c6c2b810b94843bc"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/ci-reliability-efficiency/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "10aec89e0da88773ef768a1da862928612379d8b83acdc9247674489116d74ae"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/ci-reliability-efficiency/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7a130264f3b512b00864f7b820be1ac17b5eb98a39617822913091b1e4d6fd0c"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/ci-reliability-efficiency/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6e86d77d74b132b17f056d858cba792116d11aa10eaa39f386d23daa4fc7ebfe"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/ci-reliability-efficiency/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "48c08c3cefdaab51dd5e678f0fe84900785a10d342967a3f4435feebbb2eab7e"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "eadfc686241ac74a0e95c998198466fc211700bec7801b65c2c6ba74f62e1d39"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}

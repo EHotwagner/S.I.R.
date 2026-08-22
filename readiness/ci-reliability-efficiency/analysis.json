@@ -4,7 +4,7 @@
   "workId": "ci-reliability-efficiency",
   "stage": "analyze",
   "status": "implementationReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.1",
+  "generator": "FS.GG.SDD.Artifacts/1.1.0",
   "sources": [
     {
       "path": ".fsgg/agents.yml",

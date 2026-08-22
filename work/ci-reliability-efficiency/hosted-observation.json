@@ -1,0 +1,70 @@
+{
+  "schema": "sir.ci-hosted-evidence/v1",
+  "repository": "EHotwagner/S.I.R.",
+  "workflow": {
+    "id": 322497650,
+    "runId": 32571089354,
+    "attempt": 1,
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "headBranch": "item/247-ci-reliability-efficiency",
+    "headSha": "6ef206926fdd2412d28e575ccb71bddc61277b70",
+    "treeSha": "e7ff17456f9bb1c5f23d00b6bca9703bf6ffe163",
+    "url": "https://github.com/EHotwagner/S.I.R./actions/runs/32571089354"
+  },
+  "verdict": {
+    "artifactId": 9475373410,
+    "artifactName": "pr-verdict",
+    "payloadSha256": "c14764e9cd8779e8627b6ff7e1634feaec3e4ee65d2911c81dec1004217ff22f",
+    "schema": "sir.ci-join/v1",
+    "result": "pass",
+    "classification": "cross-cutting",
+    "selectedGates": [
+      "rules",
+      "spatial",
+      "cancellation",
+      "cross-runtime",
+      "browser",
+      "documentation",
+      "evidence"
+    ],
+    "skippedGateCount": 0,
+    "failedGateCount": 0,
+    "elapsedMilliseconds": 239690,
+    "acceptanceTargetMilliseconds": 240000,
+    "actualHeadroomMilliseconds": 60310,
+    "retryCount": 0
+  },
+  "cost": {
+    "artifactId": 9475377201,
+    "artifactName": "ci-cost-report",
+    "payloadSha256": "3d4dfe913f1a78e8f0471e33f4d2567ded5247eda884a25bc4c3652b2fa70013",
+    "reportDigest": "7f0332f0a9cc224a33a9cf8adc16700312c4bcf93610d01930134ba8384d88f1",
+    "schema": "sir.ci-cost-report/v1",
+    "result": "complete",
+    "apiRunnerMilliseconds": 1161000,
+    "artifactBytes": 106979278,
+    "runnerReductionPercent": 23.518,
+    "artifactReductionPercent": 69.551,
+    "baselineComparison": "pass",
+    "reconciliation": "complete",
+    "mismatchedReceiptCount": 0
+  },
+  "baselines": {
+    "runnerMilliseconds": 1518000,
+    "artifactBytes": 351337554
+  },
+  "targets": {
+    "runnerMilliseconds": 1214400,
+    "artifactBytes": 281070043,
+    "verdictMilliseconds": 240000
+  },
+  "preparedArtifactBytes": {
+    "native": 39223426,
+    "fable": 4077529,
+    "web": 31312610,
+    "docs": 32347022,
+    "total": 106960587
+  }
+}
