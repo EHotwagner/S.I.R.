@@ -6,14 +6,23 @@ it is contended by #232, #235 and #236.
 ## How to reproduce
 
 ```sh
-dotnet build tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release
-dotnet run  --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj \
-            -c Release --no-build -- --working-set <f2f5|f4|f3|f1f6>
+scripts/measure-working-set.sh origin/main 3
 ```
 
-The "before" side is the same binary with `src/SIR.Simulation/{SpatialQuery,Simulation}.fs` taken
-from `origin/main`; only `SIR.Simulation.dll` is swapped between runs, so both sides execute an
-identical harness.
+That is the whole measurement, committed: it builds both sides, swaps only `SIR.Simulation.dll`
+between runs so each side executes an identical harness binary, runs one workload per process, and
+interleaves the two sides so machine load falls on both equally. A single workload can be run alone
+with `--working-set <f2f5|f4|f3|f1f6>` against the performance project directly.
+
+The gates this evidence supports have their own committed inversion harness:
+
+```sh
+scripts/test-working-set-gate-mutations.sh
+```
+
+It mutates one source line per gate, requires the suite to fail WITH THE EXPECTED MESSAGE, and
+refuses a mutation that did not modify its subject — a pattern that has drifted away from the source
+reports itself invalid rather than passing quietly.
 
 ## ONE WORKLOAD PER PROCESS — this is not a detail
 
