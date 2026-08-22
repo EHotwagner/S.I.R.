@@ -6192,17 +6192,20 @@ let private tacticalToolbarOwner =
                     TacticalParcelEditor = previous.Model.TacticalParcelEditor
                     EditorView = previous.Model.EditorView
                     Battlefield = previous.Model.Battlefield
+                    // Outside the Simulator workspace the toolbar does not read
+                    // the simulator selection at all, so it is normalized away.
+                    // INSIDE it, WHICH unit is selected decides what the toolbar's
+                    // commands act on -- so `Some 1` and `Some 2` are NOT the same
+                    // model.  Treating them as equal froze the toolbar on the
+                    // previous selection: its Commit route preview button kept
+                    // closing over unit 1 while unit 2 was selected, so the second
+                    // unit's route stayed a preview forever and no error was
+                    // raised anywhere.  Compare identity, not just occupancy.
                     SimulatorSelectedUnit =
                         if current.Model.Workspace <> SimulatorWorkspace
                            && previous.Model.Workspace <> SimulatorWorkspace then
                             previous.Model.SimulatorSelectedUnit
-                        elif current.Model.SimulatorSelectedUnit.IsSome = previous.Model.SimulatorSelectedUnit.IsSome then
-                            previous.Model.SimulatorSelectedUnit
-                        else current.Model.SimulatorSelectedUnit
-                    TacticalSelectedUnit =
-                        if current.Model.TacticalSelectedUnit.IsSome = previous.Model.TacticalSelectedUnit.IsSome then
-                            previous.Model.TacticalSelectedUnit
-                        else current.Model.TacticalSelectedUnit }
+                        else current.Model.SimulatorSelectedUnit }
             normalizedCurrent = previous.Model)
     )
 
@@ -6690,6 +6693,13 @@ let private tacticalToolsContentToken workspace (model: Model) =
         box (
             model.Editor,
             model.Simulator,
+            // tacticalToolsBody passes SimulatorSelectedUnit straight into
+            // simulatorPanelBody, so the tools this panel offers act on WHICH
+            // unit is selected.  Leaving it out of the token froze the panel on
+            // the previous selection: selecting a second unit and committing its
+            // route re-committed the FIRST unit instead, silently, leaving the
+            // second unit's route a preview forever.
+            model.SimulatorSelectedUnit,
             model.ClientFeatures,
             model.TacticalParcelEditor,
             model.TacticalParcelImportText
