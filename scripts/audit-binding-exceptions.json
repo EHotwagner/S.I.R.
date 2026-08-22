@@ -17,7 +17,7 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "1fce0ab7129e25453f2af7ebce7c49fb48f3b44cfc049e72afb7cc3791fd1f08",
+      "replacementSha256": "f3026fee74bc5e69c4f02d8ed261c6b25b1ad74aa9c3f5da32a7e3450006a332",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "The CI reliability design extends the route matrix with source-to-production-review freshness, consolidated ordinary domain execution with browser-delivery isolated from compiler contention and prepared-runtime-only setup, an independently parallel performance-sensitive cross-runtime measurement, parallel source-mutation helpers with isolated concurrent fixture builds, a dedicated documentation projection producer, scoped locked restores and tool ownership for each prepared producer, command-scoped consumer setup, two capacity-bounded concurrent browser-shard pairs, runtime-only browser setup, protected-stage receipt topology, and the existing performance, artifact, build-owner, and fail-closed join contracts; focused mutations cover every new edge."
     },
@@ -27,7 +27,7 @@
       "locator": "file:.github/workflows/ci.yml",
       "path": ".github/workflows/ci.yml",
       "previousSha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127",
-      "replacementSha256": "177b5858e0b252ccd8d3051ba1caf4ba3518a15aa5694573c33681d447d7fa78",
+      "replacementSha256": "dfdcbe4cd3589cc90ab3ff6af948a8d2a6b7cd903d51862ef10e5961c705cfde",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "The CI reliability design retains the bounded PR topology, starts prepared consumers and isolated mutation helpers independently of the still-mandatory integrity join, executes four general browser shards as two concurrent capacity-bounded pairs, and runs browser-delivery without compiler contention immediately before the short concurrent domain checks on the same runner while retaining its browser-only receipt; it verifies hosted runtimes, removes npm, NuGet-cache, and repository-tool setup from prepared consumers whose executable commands do not use them, preserves protected stages, and runs the read-only exact-run cost observer directly after the PR verdict. The workflow-DAG, cost-inventory, runtime, shard-pair, setup-surface, and receipt mutations reject missing or weakened edges."
     },
