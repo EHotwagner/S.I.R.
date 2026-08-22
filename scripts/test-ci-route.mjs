@@ -336,7 +336,7 @@ for (const command of [
   "SIR_RULES_PREPARED_PR=1 ./scripts/generate-rules-governance.sh --check",
 ]) assert.match(focusedRulesGate.groups.body, new RegExp(command.replaceAll(".", "\\."), "u"));
 assert.match(focusedQualification, /spatial-mutations\)[\s\S]*test-spatial-subject-mutations\.sh --prepared-pr/u);
-assert.match(focusedQualification, /spatial\).*--prepared-pr --external-mutation-proof/u);
+assert.match(focusedQualification, /spatial\).*--prepared-pr --prepared-parts-verified --external-mutation-proof/u);
 assert.match(focusedQualification, /cancellation-mutations\).*test-worker-cancellation-subject-mutation\.sh --mutation-only/u);
 assert.match(focusedQualification, /cancellation\).*smoke-worker-roundtrip\.mjs/u);
 assert.match(cancellationMutationQualification, /mutation_only[\s\S]*SIR_BUILD_EXCEPTION=cancellation-fixture[\s\S]*dotnet build tests\/SIR\.Domain\.Tests\/SIR\.Domain\.Tests\.fsproj -c Release --no-restore[\s\S]*sed -i/u);
@@ -358,6 +358,9 @@ assert.match(spatialQualification, /wait "\$mutation_pid"/u);
 assert.match(spatialQualification, /local fixture="\$task_tmp\/unreadable-client-scan"/u);
 assert.match(spatialQualification, /client_has_authority_calls "\$fixture"/u);
 assert.doesNotMatch(spatialQualification, /chmod 000 "src\/SIR\.Client\.Web/u);
+assert.match(focusedQualification, /spatial\) \.\/scripts\/verify-spatial-query\.sh[^\n]*--prepared-parts-verified/u);
+assert.match(spatialQualification, /--prepared-parts-verified[\s\S]*prepared_parts_verified=true/u);
+assert.match(spatialQualification, /if \[\[ "\$prepared_parts_verified" == false \]\]; then[\s\S]*production-build-receipt\.mjs verify/u);
 assert.match(browserConfiguration, /workers: 1/u);
 assert.match(browserConfiguration, /fullyParallel: true/u);
 assert.match(browserConfiguration, /process\.env\.SIR_BROWSER_PORT/u);

@@ -17,7 +17,7 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "7d3318351fb296e20205b17f6812fa90f5208f06775725eda56f5984aadac238",
+      "replacementSha256": "3b150138ac46b82dee2ff86a74c59f53f1b04b77e910682f17ac3edfc0ebd42a",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "The CI reliability design extends the route matrix with source-to-production-review freshness, consolidated ordinary domain execution, an independently parallel performance-sensitive cross-runtime measurement, parallel source-mutation helpers, a dedicated documentation projection producer, two capacity-bounded concurrent browser-shard pairs, runtime-only browser setup, protected-stage receipt topology, and the existing performance, artifact, build-owner, and fail-closed join contracts; focused mutations cover every new edge."
     },

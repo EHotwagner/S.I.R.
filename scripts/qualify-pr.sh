@@ -361,7 +361,7 @@ NODE
         SIR_RULES_PREPARED_PR=1 ./scripts/test-rules-governance-tool-mutations.sh
         SIR_RULES_PREPARED_PR=1 ./scripts/generate-rules-governance.sh --check
         ;;
-      spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" --prepared-pr --external-mutation-proof ;;
+      spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" --prepared-pr --prepared-parts-verified --external-mutation-proof ;;
       cancellation) node ./scripts/smoke-worker-roundtrip.mjs ;;
       cross-runtime)
         ./scripts/test-conformance.sh \

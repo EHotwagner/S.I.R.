@@ -17,6 +17,7 @@ prepared_fable=""
 static_only=false
 prepared_pr=false
 external_mutation_proof=false
+prepared_parts_verified=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --reuse-pr-build-receipt)
@@ -41,12 +42,24 @@ while [[ $# -gt 0 ]]; do
       external_mutation_proof=true
       shift
       ;;
+    --prepared-parts-verified)
+      prepared_parts_verified=true
+      shift
+      ;;
     *) echo "verify-spatial-query: unknown argument: $1" >&2; exit 2 ;;
   esac
 done
 
 if [[ "$external_mutation_proof" == true && "$prepared_pr" == false ]]; then
   echo "verify-spatial-query: --external-mutation-proof requires --prepared-pr" >&2
+  exit 2
+fi
+if [[ "$prepared_parts_verified" == true && "$prepared_pr" == false ]]; then
+  echo "verify-spatial-query: --prepared-parts-verified requires --prepared-pr" >&2
+  exit 2
+fi
+if [[ "$prepared_parts_verified" == true && -z "$reuse_build_receipt" ]]; then
+  echo "verify-spatial-query: --prepared-parts-verified requires --reuse-pr-build-receipt" >&2
   exit 2
 fi
 
@@ -137,7 +150,9 @@ fi
 
 if [[ -n "$reuse_build_receipt" ]]; then
   [[ -n "$prepared_fable" ]] || { echo "verify-spatial-query: prepared reuse requires a Fable fixture root" >&2; exit 2; }
-  node scripts/production-build-receipt.mjs verify --owner-command scripts/qualify-pr.sh --receipt "$reuse_build_receipt"
+  if [[ "$prepared_parts_verified" == false ]]; then
+    node scripts/production-build-receipt.mjs verify --owner-command scripts/qualify-pr.sh --receipt "$reuse_build_receipt"
+  fi
 else
   dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
 fi
