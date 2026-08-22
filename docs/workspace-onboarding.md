@@ -115,9 +115,11 @@ resolves SDKs relative to its own location and does not consult `DOTNET_ROOT` fo
 
 Two things in the shim absorb this, and both are covered by the workspace's checks:
 
-- a self-erasing `dotnet` **function**, because bash resolves function names before `PATH` and the
-  snapshot restores no functions and unsets none. The first `dotnet` call in such a shell repairs
-  `PATH` for everything after it — including non-bash children — and then removes itself.
+- a `dotnet` **function**, because bash resolves function names before `PATH` and the snapshot
+  restores no functions and unsets none. It invokes the muxer by absolute path, so **the call** is
+  correct in every shape. It also repairs `PATH` and removes itself, but **only when called
+  directly** — read the next section before relying on that, because the bound is narrower than it
+  looks.
 - **step 0 re-heals rather than trusting its own marker.** A child shell inheriting a reverted
   `PATH` plus a set `FSGG_AGENT_ENV_APPLIED` would otherwise skip the work and stay broken; that is
   what `scripts/fsgg-coord` and `./build.sh` hit, since each is a bash script spawned from the
@@ -158,11 +160,41 @@ This does not reach the repository's own entry points, and that was checked rath
 own `BASH_ENV` pass and step 0 repairs its `PATH` before it runs any Node tool or `npm` script.
 Whatever they spawn inherits the repaired `PATH`.
 
-The bounded residual is this: in the one shell whose `PATH` a host reverts — Claude Code's tool
-shell — invoking a Node tool or an `npm run` script **directly**, before any `dotnet` call has
-happened in that same shell, gets the unrepaired `PATH`. A single `dotnet` call first is enough,
-since the function repairs that shell permanently on its way out; so is going through `./build.sh`
-or any `scripts/*.sh`, which is how these tools are actually driven.
+The residual, stated at its true width — an earlier version of this page claimed it was narrower,
+which the independent review of S.I.R.#256 measured and disproved (finding M1). In the one shell
+whose `PATH` a host reverts — Claude Code's tool shell — invoking a Node tool or an `npm run` script
+**directly** gets the unrepaired `PATH`. A prior `dotnet` call fixes that **only if it was a direct
+call**:
+
+| shape | the call itself | the parent shell's `PATH` afterwards |
+| --- | --- | --- |
+| `dotnet fsi …` | correct | repaired |
+| `V=$(dotnet --version)` | correct | **still unrepaired** |
+| `dotnet --version \| cat` | correct | **still unrepaired** |
+
+`$( )` and each pipeline stage are subshells, so every `export` and `unset -f` inside them is
+discarded when they exit. The function therefore guarantees the *call*, not the shell. Going through
+`./build.sh` or any `scripts/*.sh` is unaffected either way: each is a bash script that gets its own
+`BASH_ENV` pass and re-heals `PATH` at step 0.
+
+### `command -v dotnet` while the function is defined
+
+A second consequence, and the one with teeth (finding M2). While the function exists,
+`command -v dotnet` answers the bare word `dotnet` and `type -P dotnet` answers the **unpinned**
+system muxer. That is what POSIX says a shell function does; nothing in `scripts/agent-env.sh` can
+change it.
+
+It matters because `scripts/qualify-pr.sh`, `scripts/qualify-production.sh` and
+`scripts/run-ci-gate.sh` each set `SIR_REAL_DOTNET` from `$(command -v dotnet)`, and
+`scripts/dotnet-invocation-trace.sh` execs that value — a bare word there would re-resolve to the
+trace shim itself and recurse. **They are not affected, and the reason is structural rather than
+lucky:** each is a `#!/usr/bin/env bash` script, so it gets its own `BASH_ENV` pass, inherits
+`FSGG_AGENT_ENV_APPLIED`, returns at step 0 with `PATH` re-healed, and never defines the function.
+`scripts/test-agent-env.sh` asserts exactly that, so if it ever stops holding a check goes red
+rather than a build hanging.
+
+If you need the real binary in a clobbered shell, make one direct `dotnet` call first — which
+removes the function — or read `$FSGG_AGENT_ENV_APPLIED`, which holds the resolved root.
 
 ## When you still need the manual repair
 

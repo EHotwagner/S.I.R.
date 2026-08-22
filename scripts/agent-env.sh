@@ -117,18 +117,42 @@ __fsgg_agent_env() {
     # its own location and ignores DOTNET_ROOT for that. (Verified: DOTNET_ROOT alone still fails
     # the pin.) Ordering cannot win against that, and the host's PATH is not ours to author.
     #
-    # A function is what survives it: bash resolves function names before PATH, snapshots restore
-    # no functions and unset none, and this one repairs the shell it is invoked in and then removes
-    # itself — so the FIRST `dotnet` call in such a shell leaves PATH correct for everything after
-    # it, including non-bash children. In a shell nobody clobbered it fires once, finds PATH already
-    # carrying the root, and is gone.
+    # A function is what survives it: bash resolves function names before PATH, and a snapshot
+    # restores no functions and unsets none.
+    #
+    # WHAT THIS FUNCTION GUARANTEES IS THE CALL, AND ONLY THE CALL. It invokes the muxer by absolute
+    # path, so `dotnet …` is correct in every invocation shape.
+    #
+    # IT REPAIRS PATH AND REMOVES ITSELF ONLY WHERE THAT PERSISTS. `BASH_SUBSHELL` is 0 in the
+    # current shell and non-zero inside `$( )` or a pipeline stage, where every `export` and
+    # `unset -f` is discarded when the subshell exits anyway. Guarding the mutation does not change
+    # what any caller observes — the discarded writes were already discarded — it makes the code say
+    # what it does, so the next reader does not re-derive the guarantee from an unguarded `unset -f`
+    # and overclaim it the way this file's documentation once did (S.I.R.#256 review, M1: the
+    # defect was the sentence, not the behaviour). The consequence the guard makes legible is real:
+    # after `V=$(dotnet --version)` the parent shell's PATH is STILL unrepaired, so a Node tool or
+    # an `npm run` script invoked after it sees the host's PATH, not this one.
+    #
+    # WHILE IT IS DEFINED, `command -v dotnet` ANSWERS `dotnet` AND `type -P dotnet` ANSWERS THE
+    # UNPINNED MUXER (S.I.R.#256 review, M2). No arrangement of this file can fix that — it is what
+    # POSIX says a shell function does — so it is bounded and asserted rather than pretended away,
+    # and it matters because `scripts/qualify-pr.sh`, `scripts/qualify-production.sh` and
+    # `scripts/run-ci-gate.sh` each set `SIR_REAL_DOTNET` from `$(command -v dotnet)`, which
+    # `scripts/dotnet-invocation-trace.sh` then execs — a bare word there would re-resolve to the
+    # trace shim itself. They are NOT affected, and the reason is structural rather than lucky: each
+    # is a `#!/usr/bin/env bash` script, so it gets its own BASH_ENV pass, inherits
+    # FSGG_AGENT_ENV_APPLIED, returns at step 0 with PATH re-healed, and never defines this
+    # function. `docs/workspace-onboarding.md` states that bound; `scripts/test-agent-env.sh`
+    # asserts it, including the recursion it would cause if it ever stopped holding.
     eval 'dotnet() {
-            unset -f dotnet
-            case ":$PATH:" in
-              *":'"$candidate"':"*) ;;
-              *) PATH="'"$candidate"':$PATH"; export PATH ;;
-            esac
-            command dotnet "$@"
+            if [ "${BASH_SUBSHELL:-0}" -eq 0 ]; then
+              case ":$PATH:" in
+                *":'"$candidate"':"*) ;;
+                *) PATH="'"$candidate"':$PATH"; export PATH ;;
+              esac
+              unset -f dotnet
+            fi
+            command "'"$candidate"'/dotnet" "$@"
           }'
     return 0
   done
