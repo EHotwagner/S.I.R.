@@ -27,7 +27,7 @@ case "$subject" in
   rules) preflight_parts=(native) ;;
   spatial|cross-runtime) preflight_parts=(native fable) ;;
   cancellation) preflight_parts=(native web) ;;
-  browser|browser-general-helper|browser-general-helper-2|browser-general-helper-3|browser-delivery) preflight_parts=(web native) ;;
+  browser|browser-general-helper|browser-delivery) preflight_parts=(web native) ;;
   documentation) preflight_parts=(web docs) ;;
 esac
 if [[ ${#preflight_parts[@]} -gt 0 && "${SIR_CI_PREFLIGHT_REUSED:-false}" != true ]]; then

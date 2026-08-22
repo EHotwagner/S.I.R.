@@ -13,7 +13,7 @@ export const feedbackHeadroomMilliseconds = 60_000;
 export const feedbackAcceptanceTargetMilliseconds = feedbackBudgetMilliseconds - feedbackHeadroomMilliseconds;
 export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence"];
 export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web", "prepare-docs"];
-export const helperOrder = ["spatial-mutations", "cancellation-mutations", "browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery"];
+export const helperOrder = ["spatial-mutations", "cancellation-mutations", "browser-general-helper", "browser-delivery"];
 export const subjectOrder = ["integrity", ...producerOrder, ...helperOrder, ...gateOrder];
 export const gateParts = {
   rules: ["native"],
@@ -22,8 +22,6 @@ export const gateParts = {
   "cross-runtime": ["native", "fable"],
   browser: ["web", "native"],
   "browser-general-helper": ["web", "native"],
-  "browser-general-helper-2": ["web", "native"],
-  "browser-general-helper-3": ["web", "native"],
   "browser-delivery": ["web", "native"],
   documentation: ["web", "docs"],
   evidence: [],
@@ -54,8 +52,6 @@ export const expectedBuildInvocations = {
   "cross-runtime": ["build:spikes/browser-wasm-verification/BrowserWasmVerificationSpike.fsproj"],
   browser: [],
   "browser-general-helper": [],
-  "browser-general-helper-2": [],
-  "browser-general-helper-3": [],
   "browser-delivery": [],
   documentation: [],
   evidence: [],
@@ -203,7 +199,7 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
   const expectedHelpers = [
     ...(selectedGates.includes("spatial") ? ["spatial-mutations"] : []),
     ...(selectedGates.includes("cancellation") ? ["cancellation-mutations"] : []),
-    ...(selectedGates.includes("browser") ? ["browser-general-helper", "browser-general-helper-2", "browser-general-helper-3", "browser-delivery"] : []),
+    ...(selectedGates.includes("browser") ? ["browser-general-helper", "browser-delivery"] : []),
   ];
   const expectedSubjects = ["integrity", ...expectedProducers, ...expectedHelpers, ...selectedGates];
   const byGate = new Map();

@@ -391,6 +391,7 @@ jobs:
         env:
           PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
           SIR_JUNIT_OUTPUT: artifacts/ci/results/browser-general-1.junit.xml
+          SIR_JUNIT_OUTPUT_2: artifacts/ci/results/browser-general-2.junit.xml
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -398,6 +399,7 @@ jobs:
           path: |
             artifacts/ci/results/browser.json
             artifacts/ci/results/browser-general-1.junit.xml
+            artifacts/ci/results/browser-general-2.junit.xml
           retention-days: 1
 
   browser-general-helper:
@@ -423,79 +425,15 @@ jobs:
       - run: ./scripts/run-ci-gate.sh browser-general-helper artifacts/ci/results/browser-general-helper.json
         env:
           PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
-          SIR_JUNIT_OUTPUT: artifacts/ci/results/browser-general-2.junit.xml
+          SIR_JUNIT_OUTPUT: artifacts/ci/results/browser-general-3.junit.xml
+          SIR_JUNIT_OUTPUT_2: artifacts/ci/results/browser-general-4.junit.xml
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: gate-browser-general-helper
           path: |
             artifacts/ci/results/browser-general-helper.json
-            artifacts/ci/results/browser-general-2.junit.xml
-          retention-days: 1
-
-  browser-general-helper-2:
-    if: needs.route.outputs.browser == 'true'
-    needs: [route, prepare-web, prepare-native]
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Capture runner start
-        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with: { node-version: 26.5.0 }
-      - name: Verify hosted .NET 10 runtime
-        run: dotnet --list-runtimes | grep -F 'Microsoft.NETCore.App 10.0.'
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with: { name: ci-route, path: artifacts/ci }
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with: { name: prepared-part-web, path: artifacts/ci/parts }
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with: { name: prepared-part-native, path: artifacts/ci/parts }
-      - run: ./scripts/run-ci-gate.sh browser-general-helper-2 artifacts/ci/results/browser-general-helper-2.json
-        env:
-          PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
-          SIR_JUNIT_OUTPUT: artifacts/ci/results/browser-general-3.junit.xml
-      - if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: gate-browser-general-helper-2
-          path: |
-            artifacts/ci/results/browser-general-helper-2.json
             artifacts/ci/results/browser-general-3.junit.xml
-          retention-days: 1
-
-  browser-general-helper-3:
-    if: needs.route.outputs.browser == 'true'
-    needs: [route, prepare-web, prepare-native]
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Capture runner start
-        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with: { node-version: 26.5.0 }
-      - name: Verify hosted .NET 10 runtime
-        run: dotnet --list-runtimes | grep -F 'Microsoft.NETCore.App 10.0.'
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with: { name: ci-route, path: artifacts/ci }
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with: { name: prepared-part-web, path: artifacts/ci/parts }
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with: { name: prepared-part-native, path: artifacts/ci/parts }
-      - run: ./scripts/run-ci-gate.sh browser-general-helper-3 artifacts/ci/results/browser-general-helper-3.json
-        env:
-          PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
-          SIR_JUNIT_OUTPUT: artifacts/ci/results/browser-general-4.junit.xml
-      - if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: gate-browser-general-helper-3
-          path: |
-            artifacts/ci/results/browser-general-helper-3.json
             artifacts/ci/results/browser-general-4.junit.xml
           retention-days: 1
 
@@ -553,7 +491,7 @@ jobs:
 
   pr-verdict:
     if: always() && github.event_name == 'pull_request'
-    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, prepare-docs, spatial-mutations, cancellation-mutations, browser-general-helper, browser-general-helper-2, browser-general-helper-3, browser-delivery, domain-conformance, cross-runtime, browser, documentation]
+    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, prepare-docs, spatial-mutations, cancellation-mutations, browser-general-helper, browser-delivery, domain-conformance, cross-runtime, browser, documentation]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -586,7 +524,7 @@ jobs:
             fi
           fi
           args=()
-          for gate in integrity prepare-native prepare-fable prepare-web prepare-docs spatial-mutations cancellation-mutations browser-general-helper browser-general-helper-2 browser-general-helper-3 browser-delivery rules spatial cancellation cross-runtime browser documentation evidence; do
+          for gate in integrity prepare-native prepare-fable prepare-web prepare-docs spatial-mutations cancellation-mutations browser-general-helper browser-delivery rules spatial cancellation cross-runtime browser documentation evidence; do
             if [[ -f "artifacts/ci/results/$gate.json" ]]; then args+=(--result "$gate=artifacts/ci/results/$gate.json"); fi
           done
           node scripts/ci-route.mjs join \
@@ -629,15 +567,39 @@ jobs:
   cost-observer:
     if: always() && github.event_name == 'pull_request'
     needs: pr-verdict
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       actions: read
       contents: read
-    uses: ./.github/workflows/ci-cost-observer.yml
-    with:
-      observed_run_id: ${{ github.run_id }}
-      observed_run_attempt: ${{ github.run_attempt }}
-      observed_head_sha: ${{ github.event.pull_request.head.sha }}
-      active_observer_job_name: cost-observer / observe
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: 26.5.0 }
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        continue-on-error: true
+        with:
+          pattern: gate-*
+          path: artifacts/observed/gates
+          merge-multiple: true
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        continue-on-error: true
+        with: { name: pr-verdict, path: artifacts/observed/pr-verdict }
+      - name: Reconcile complete run cost
+        env: { GITHUB_TOKEN: "${{ github.token }}" }
+        run: |
+          node scripts/ci-cost-report.mjs observe \
+            --repository '${{ github.repository }}' \
+            --run-id '${{ github.run_id }}' \
+            --expected-head '${{ github.event.pull_request.head.sha }}' \
+            --expected-attempt '${{ github.run_attempt }}' \
+            --active-observer-job-name cost-observer \
+            --receipts artifacts/observed \
+            --output artifacts/ci-cost/report.json
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with: { name: ci-cost-report, path: artifacts/ci-cost/report.json, retention-days: 90 }
 
   full-qualification:
     if: github.event_name != 'pull_request'

@@ -44,5 +44,5 @@ assert.match(workflows.find(({ name }) => name === "ci.yml").text, /permissions:
 assert.doesNotMatch(workflows.find(({ name }) => name === "ci.yml").text, /contents: write|issues: write|pull-requests: write/u);
 assert.match(workflows.find(({ name }) => name === "pages.yml").text, /pages: write\n      id-token: write/u);
 assert.doesNotMatch(workflows.find(({ name }) => name === "ci-cost-observer.yml").text, /contents: write|pages: write|id-token: write/u);
-assert.match(workflows.find(({ name }) => name === "ci.yml").text, /cost-observer:\n[\s\S]*needs: pr-verdict[\s\S]*uses: \.\/\.github\/workflows\/ci-cost-observer\.yml/u);
+assert.match(workflows.find(({ name }) => name === "ci.yml").text, /cost-observer:\n[\s\S]*needs: pr-verdict[\s\S]*permissions:\n      actions: read\n      contents: read[\s\S]*--active-observer-job-name cost-observer/u);
 console.log("Official actions are supported full-SHA pins with version comments; every job has an explicit timeout and workflows retain least permissions.");

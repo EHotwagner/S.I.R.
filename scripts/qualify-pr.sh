@@ -33,6 +33,25 @@ append_traced_builds() {
   done < <(sort "$trace_log")
 }
 
+run_browser_shard_pair() {
+  local first_index=$1
+  local second_index=$2
+  local first_pid second_pid status=0
+  [[ -n "${SIR_JUNIT_OUTPUT:-}" && -n "${SIR_JUNIT_OUTPUT_2:-}" ]] || {
+    echo "qualify-pr: paired browser shards require both JUnit output paths" >&2
+    return 2
+  }
+  SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX="$first_index" SIR_BROWSER_COHORT=general \
+    SIR_JUNIT_OUTPUT="$SIR_JUNIT_OUTPUT" npm run test:browser &
+  first_pid=$!
+  SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX="$second_index" SIR_BROWSER_COHORT=general \
+    SIR_JUNIT_OUTPUT="$SIR_JUNIT_OUTPUT_2" npm run test:browser &
+  second_pid=$!
+  wait "$first_pid" || status=1
+  wait "$second_pid" || status=1
+  return "$status"
+}
+
 case "$mode" in
   route)
     paths_file=${1:?qualify-pr route requires a changed-path file}
@@ -296,7 +315,7 @@ NODE
       rules) gate_parts=(native) ;;
       spatial|cross-runtime) gate_parts=(native fable) ;;
       cancellation) gate_parts=(native web) ;;
-      browser|browser-general-helper|browser-general-helper-2|browser-general-helper-3|browser-delivery) gate_parts=(web native) ;;
+      browser|browser-general-helper|browser-delivery) gate_parts=(web native) ;;
       documentation) gate_parts=(web docs) ;;
     esac
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
@@ -353,19 +372,11 @@ NODE
         ;;
       browser)
         "$0" compose-browser >/dev/null
-        SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=1 SIR_BROWSER_COHORT=general npm run test:browser
+        run_browser_shard_pair 1 2
         ;;
       browser-general-helper)
         "$0" compose-browser >/dev/null
-        SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=2 SIR_BROWSER_COHORT=general npm run test:browser
-        ;;
-      browser-general-helper-2)
-        "$0" compose-browser >/dev/null
-        SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=3 SIR_BROWSER_COHORT=general npm run test:browser
-        ;;
-      browser-general-helper-3)
-        "$0" compose-browser >/dev/null
-        SIR_BROWSER_SHARDS=4 SIR_BROWSER_SHARD_INDEX=4 SIR_BROWSER_COHORT=general npm run test:browser
+        run_browser_shard_pair 3 4
         ;;
       browser-delivery)
         "$0" compose-browser >/dev/null
@@ -451,7 +462,7 @@ NODE
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
       "$0" verify-parts "${gate_parts[@]}" >/dev/null
     fi
-    if [[ "$gate" == browser || "$gate" == browser-general-helper || "$gate" == browser-general-helper-2 || "$gate" == browser-general-helper-3 || "$gate" == browser-delivery ]]; then "$0" verify-browser-composition >/dev/null; fi
+    if [[ "$gate" == browser || "$gate" == browser-general-helper || "$gate" == browser-delivery ]]; then "$0" verify-browser-composition >/dev/null; fi
     ;;
   *)
     echo "qualify-pr: usage route PATHS|integrity|prepare-part ID|extract-parts IDS...|verify-parts IDS...|compose-browser|verify-browser-composition|gate ID" >&2
