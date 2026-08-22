@@ -1,0 +1,224 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-23-sir-item-255-review-contract-divergence.md",
+  "reportSha256": "8c9c42ca5d9c40eb1d9273b56a9db2ebdcd811b2500b30313ca2b6b09691a741",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#255",
+          "result": "verified"
+        },
+        {
+          "locator": "file:.claude/skills/pnext-item/references/independent-review.md",
+          "result": "verified",
+          "sha256": "34a00df747a06b04efad5a0b16f58db10d0de5960bd04c1a8c3b23742614e630"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic first returned this locator as stale: at the commit the report names, the file is already repaired and names both commands, which contradicted an Observed sentence written in the present tense. The report was corrected to state the tense explicitly and to identify origin/main as where the pre-change state lives; the locator now evidences the repair and the issue evidences the defect.",
+        "The detail that one worker escalated the item as unresolvable locally rests on the issue narrative alone."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:docs/coordination-engine-contracts.md",
+          "result": "verified",
+          "sha256": "ed4f7a0a64de3781e75f2dc25ab50558639ea2c22b7201a3174089dec0f4459d"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#255",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Locator granularity, not a missing fact: the decompilation establishing the five overwritten fields is quoted inside the cited document rather than carried as a separate locator. The critic verified the claim against the live decoder independently.",
+        "The cited document is this cycle's own artifact. The critic corroborated the claim independently against the live decoder and against the PR #259 review's decompilation of recordReview$cont@2412-3."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:FS-GG/.github#2834",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic independently extracted the refusal format string from fsgg-coord-engine.dll and confirmed no variant names a producing command, and confirmed Protocol.landableExitCodes exists so the Expected comparison is grounded."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:FS-GG/.github#2834",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Independently reproduced by the critic: RouteEvidence of four empty strings with meaningful is accepted; three and five descriptive entries are refused. Pure cardinality, as claimed."
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:FS-GG/.github#2835",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic returned the severity-template attribution as unsupported, having checked the repository mirror of cross-repo-coordination, which contains no intake section. Re-measured: the template does exist, with the lowercase severity vocabulary, in the Kit-distributed skill actually loaded at runtime. The report's attribution was corrected to name that file and line, and the mirror divergence the critic surfaced is now recorded as §4.12. FS-GG/.github#2835 carries the imprecise attribution and needs a correcting comment."
+      ]
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#266",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Not a missing fact for this finding: the non-persistence of the mint is measured. The unmeasured part is the re-mint consequence, which the report now marks explicitly as an inference rather than a measurement.",
+        "The critic found the re-mint consequence stated as fact while appearing in neither #266 nor the packed intra-repo-parallel-work skill, and unmeasured by this worker. The report now marks it explicitly as an inference from the observed mint behaviour rather than a measurement."
+      ]
+    },
+    {
+      "id": "§4.7",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "6a6da24367e3c586856406adc2015a97edfcc039412174b2644d591698219280"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic ran ten mutations of its own, absent from the gate's own list, and all ten red, establishing that the gate genuinely derives its expectations from the document.",
+        "The critic also found three vacuous assertions inside this finding's own repair: the acceptance row was never iterated, the wait-state column was compared against a constant equal to itself, and the literal-only inversion loop was a tautology. All three were repaired after the critique and are recorded in the finding; the gate now runs eleven document mutations. The digest above is the repaired script, so this evidence postdates the critique that produced it."
+      ]
+    },
+    {
+      "id": "§4.8",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:docs/coordination-engine-contracts.md",
+          "result": "verified",
+          "sha256": "ed4f7a0a64de3781e75f2dc25ab50558639ea2c22b7201a3174089dec0f4459d"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:ilspycmd -r ~/.nuget/packages/fs.gg.coord.cli/0.71.0/tools/net10.0/any ~/.nuget/packages/fs.gg.coord.cli/0.71.0/tools/net10.0/any/fsgg-coord-engine.dll -t FS.GG.Coord.Cli.Client",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Closed after the critique: an ilspycmd locator covering the CLI-layer half has been added to the finding, so both layers now carry evidence. The gate still cannot evidence the CLI half and declares those gates KNOWN-BLIND.",
+        "The critic verified both halves independently: the 24-hour ceiling and the expiresAt ordering in ReviewWait.validate, including that it does not bound the window relative to now; and the literal AddMinutes(5.0) five-minute rule in the CLI gate, present only in fsgg-coord-engine.dll while the ceiling strings live only in FS.GG.Coord.Core.dll. The layering claim is confirmed."
+      ]
+    },
+    {
+      "id": "§4.9",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:docs/coordination-engine-contracts.md",
+          "result": "verified",
+          "sha256": "ed4f7a0a64de3781e75f2dc25ab50558639ea2c22b7201a3174089dec0f4459d"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Independently confirmed by the critic against the pinned FS.GG.Coord.Core.dll: validateReviewLedger accepts the canonical ref, the /pr/<n> form, the literal string not-even-a-ref, and empty strings on both sides, and refuses only when the two sides disagree."
+      ]
+    },
+    {
+      "id": "§4.10",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git -C . reflog show HEAD --date=iso",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic returned this incomplete because its only locator was the author's own checkpoint restating the claim, and because the stated two-reversion count exceeded what any cited artifact carried. Resolved by narrowing the finding rather than by relabelling it: the claim is now exactly the detached checkout of the reviewed SHA inside the live worktree, which the reflog the critic itself found does carry, and that reflog is now a cited locator.",
+        "The implementer's separate observation of a second reversion is noted in the finding and forms no part of its claim; a non-HEAD-moving checkout or restore would not appear in the reflog and none was measured.",
+        "The author's own checkpoint was dropped as a locator rather than re-scored: it restates the claim instead of supporting it, which is what claim-only means."
+      ]
+    },
+    {
+      "id": "§4.11",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/checkpoints/item-255-review-contract-divergence.jsonl",
+          "result": "verified",
+          "sha256": "e0cc91aa056bb29f8fd29185192439e6c8fd96a69b507e0bd8ed30ecd94eadc0"
+        }
+      ],
+      "confidenceLimits": [
+        "Not a missing fact for this finding: the collision itself is corroborated by a second identity's live message and by the single record on the PR. The report's Observed was narrowed to what the evidence carries, and the who-dispatched attribution is now stated as the implementer's account.",
+        "The critic corroborated the consequences independently: PR #259 carries exactly one review-decision record so no ledger damage occurred; the same-critic refusal string is verbatim in FS.GG.Coord.Core.dll; and a second identity distinct from the recording critic reported the oracle's action on #255 while stating it had not acted, which is direct evidence of a second actor redirected to read-only."
+      ]
+    },
+    {
+      "id": "§4.12",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:wc -l .claude/skills/cross-repo-coordination/references/deep-detail.md ~/.claude/skills/cross-repo-coordination/references/deep-detail.md",
+          "result": "verified"
+        },
+        {
+          "locator": "command:grep -c intake .claude/skills/cross-repo-coordination/references/deep-detail.md",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "This finding was added AFTER the critique, in response to the critic's §4.5 result, and was therefore not itself independently critiqued. It is disclosed as such rather than presented as carrying the same review standing as §4.1 through §4.11.",
+        "Both cited commands were run and their outputs are the finding's Observed values: 409 lines with zero intake occurrences in the repository mirror, 429 lines carrying the full intake template in the loaded Kit skill."
+      ]
+    }
+  ]
+}
