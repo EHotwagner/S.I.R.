@@ -23,3 +23,11 @@
 - Diagnosis: the tactical visual review is a downstream production capture whose manifest still named the prior bundle, stylesheet, and M9 baseline. Its retained 100/200-unit images and structural counts also preceded the current canonical 4×4 unit footprint.
 - Patch: regenerated the review through `npm run review:tactical-visual`, refreshing the maintained-simulation capture, 100/200-unit density captures, manifest bindings, structural counts, and telemetry.
 - Verification: visually inspected all three captures; `node scripts/test-tactical-visual-review.mjs` reproduced both independent captures byte-for-byte and passed the 100/150 ms input-to-paint plus 17.67 ms frame budgets; `npm run test:tactical-visual-review-mutations` rejected all stylesheet, lifecycle, workload, faction, simultaneous route/attack, one-route, font, timing, and reproduction mutations.
+
+## Iteration 4 — 2026-08-22
+
+- Local failing command: the documentation phase within the exact protected wrapper.
+- Failure: fsdocs inherited `DOTNET_HOST_PATH=/usr/share/dotnet/dotnet`; that host lacks the repo-pinned 10.0.302 SDK even though `/home/developer/.dotnet/dotnet` provides it. Hosted CI installs 10.0.302 explicitly.
+- Diagnosis: local host selection only; production, browser, tactical review, mutation, cross-runtime, server, and SDD verification gates had already passed.
+- Patch: none to repository code or SDK policy. Re-ran the unchanged documentation consumer with `DOTNET_HOST_PATH=/home/developer/.dotnet/dotnet`.
+- Verification: strict fsdocs project cracking/build passed for five assemblies; documentation integrity, experience, browser smoke, generated-site mutation, and accessibility gates all passed.

@@ -4,7 +4,7 @@
   "workId": "138-sir-fable-game-scaffold",
   "stage": "verify",
   "status": "verificationReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -51,7 +51,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "6affb06b7279c3a62bcceadec5015bcc76c4656611319ea043dd6d12459050a4"
+        "value": "3b5237ffb072893418c2ec02f8176af2203577167a2a21849c41cdc6d8cb71ae"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "649c2e86cb4f4c4d27ce34b33f7b8fcf35eb892be62a465096bb2b9991b2c2b2"
+        "value": "7c7f8acd7ad5296d23d44105d97d3c440b798e44d36207ba0bef48cf0e326306"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"

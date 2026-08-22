@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "649c2e86cb4f4c4d27ce34b33f7b8fcf35eb892be62a465096bb2b9991b2c2b2"
+        "value": "d58c0079240c3e4118ebdfc4ac013ec06ac1dce911f3eaf1b8597cc53fbf8d8d"
       }
     },
     {
@@ -812,7 +812,7 @@
       "schemaVersion": 1,
       "generator": {
         "id": "FS.GG.SDD.Artifacts",
-        "version": "1.0.0"
+        "version": "1.0.1"
       },
       "sources": [
         {
@@ -859,7 +859,7 @@
           "path": "work/138-sir-fable-game-scaffold/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "649c2e86cb4f4c4d27ce34b33f7b8fcf35eb892be62a465096bb2b9991b2c2b2"
+            "value": "d58c0079240c3e4118ebdfc4ac013ec06ac1dce911f3eaf1b8597cc53fbf8d8d"
           },
           "schemaVersion": 1
         },
@@ -890,7 +890,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "aaa8ab0152c97960ab5f252b084c6cf8d5f47613b0be513ded97f82952bfe069"
+        "value": "41434d5a4c87458efec88d775df2fb4a62981e2feaa055cd67d3373eb4c8ed83"
       },
       "currency": "current"
     }
