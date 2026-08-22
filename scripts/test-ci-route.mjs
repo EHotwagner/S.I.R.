@@ -239,8 +239,9 @@ assert.match(jobBody("prepare-native"), /classification != 'evidence-only'/u);
 assert.doesNotMatch(workflow, /^  prepare:$/mu);
 assert.doesNotMatch(workflow, /prepared-candidate/u);
 assert.match(workflow, /domain-conformance:\n[\s\S]*?needs: \[route, prepare-native, prepare-fable, prepare-web\]/u);
-assert.match(jobBody("domain-conformance"), /extract-parts native fable web[\s\S]*gates\+=\(rules\)[\s\S]*gates\+=\(spatial\)[\s\S]*gates\+=\(cancellation\)[\s\S]*for gate in[\s\S]*run-ci-gate\.sh "\$gate"[\s\S]*for pid in[^\n]*wait[^\n]*done[\s\S]*run-ci-gate\.sh browser-delivery[\s\S]*gate-domain-conformance/u);
+assert.match(jobBody("domain-conformance"), /extract-parts native fable web[\s\S]*gates\+=\(rules\)[\s\S]*gates\+=\(spatial\)[\s\S]*gates\+=\(cancellation\)[\s\S]*for gate in[\s\S]*run-ci-gate\.sh "\$gate"[\s\S]*for pid in[^\n]*wait[^\n]*done[\s\S]*gate-domain-conformance/u);
 assert.doesNotMatch(jobBody("domain-conformance"), /gates\+=\(browser-delivery\)/u);
+assert.doesNotMatch(jobBody("domain-conformance"), /run-ci-gate\.sh browser-delivery|PLAYWRIGHT_EXECUTABLE_PATH/u);
 assert.doesNotMatch(jobBody("domain-conformance"), /actions\/cache@|npm ci|dotnet tool restore|cache: npm/u);
 assert.doesNotMatch(jobBody("domain-conformance"), /gates\+=\(cross-runtime\)/u);
 assert.doesNotMatch(jobBody("domain-conformance"), /run-ci-gate\.sh cross-runtime/u);
@@ -248,7 +249,7 @@ assert.match(jobBody("cross-runtime"), /needs: \[route, prepare-native, prepare-
 assert.doesNotMatch(workflow, /^  spatial:$/mu);
 assert.match(jobBody("prepare-web"), /classification == 'performance'/u);
 for (const browserJob of ["browser", "browser-general-helper", "browser-delivery"]) assert.match(jobBody(browserJob), /needs: \[route, prepare-web, prepare-native\]/u);
-assert.match(jobBody("browser-delivery"), /if: needs\.route\.outputs\.browser == 'true' && needs\.route\.outputs\.rules != 'true' && needs\.route\.outputs\.spatial != 'true' && needs\.route\.outputs\.cancellation != 'true'/u);
+assert.match(jobBody("browser-delivery"), /if: needs\.route\.outputs\.browser == 'true'/u);
 assert.match(workflow, /documentation:\n[\s\S]*?needs: \[route, prepare-web, prepare-docs\]/u);
 for (const browserJob of ["browser", "browser-general-helper", "browser-delivery"]) {
   assert.doesNotMatch(jobBody(browserJob), /actions\/setup-dotnet@/u);

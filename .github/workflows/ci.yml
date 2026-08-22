@@ -297,7 +297,6 @@ jobs:
       - name: Run independently receipted domain gates concurrently
         shell: bash
         env:
-          PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
           SIR_CI_CACHE_HIT: "false"
           SIR_CI_PREFLIGHT_REUSED: "true"
         run: |
@@ -312,9 +311,6 @@ jobs:
             pids+=("$!")
           done
           for pid in "${pids[@]}"; do wait "$pid" || status=1; done
-          if [[ '${{ needs.route.outputs.browser }}' == 'true' ]]; then
-            ./scripts/run-ci-gate.sh browser-delivery artifacts/ci/results/browser-delivery.json || status=1
-          fi
           exit "$status"
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -324,7 +320,6 @@ jobs:
             artifacts/ci/results/rules.json
             artifacts/ci/results/spatial.json
             artifacts/ci/results/cancellation.json
-            artifacts/ci/results/browser-delivery.json
           if-no-files-found: ignore
           retention-days: 1
 
@@ -433,7 +428,7 @@ jobs:
           retention-days: 1
 
   browser-delivery:
-    if: needs.route.outputs.browser == 'true' && needs.route.outputs.rules != 'true' && needs.route.outputs.spatial != 'true' && needs.route.outputs.cancellation != 'true'
+    if: needs.route.outputs.browser == 'true'
     needs: [route, prepare-web, prepare-native]
     runs-on: ubuntu-latest
     timeout-minutes: 30
