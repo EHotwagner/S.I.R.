@@ -239,13 +239,14 @@ assert.match(jobBody("prepare-native"), /classification != 'evidence-only'/u);
 assert.doesNotMatch(workflow, /^  prepare:$/mu);
 assert.doesNotMatch(workflow, /prepared-candidate/u);
 assert.match(workflow, /domain-conformance:\n[\s\S]*?needs: \[route, integrity, prepare-native, prepare-fable, prepare-web\]/u);
-assert.match(jobBody("domain-conformance"), /extract-parts native fable web[\s\S]*gates\+=\(rules\)[\s\S]*gates\+=\(spatial\)[\s\S]*gates\+=\(cancellation\)[\s\S]*for pid in[^\n]*wait[^\n]*done[\s\S]*gate-domain-conformance/u);
+assert.match(jobBody("domain-conformance"), /extract-parts native fable web[\s\S]*gates\+=\(rules\)[\s\S]*gates\+=\(spatial\)[\s\S]*gates\+=\(cancellation\)[\s\S]*gates\+=\(browser-delivery\)[\s\S]*for pid in[^\n]*wait[^\n]*done[\s\S]*gate-domain-conformance/u);
 assert.doesNotMatch(jobBody("domain-conformance"), /gates\+=\(cross-runtime\)/u);
 assert.doesNotMatch(jobBody("domain-conformance"), /run-ci-gate\.sh cross-runtime/u);
 assert.match(jobBody("cross-runtime"), /needs: \[route, integrity, prepare-native, prepare-fable\][\s\S]*prepared-part-native[\s\S]*prepared-part-fable[\s\S]*run-ci-gate\.sh cross-runtime/u);
 assert.doesNotMatch(workflow, /^  spatial:$/mu);
 assert.match(jobBody("prepare-web"), /classification == 'performance'/u);
 for (const browserJob of ["browser", "browser-general-helper", "browser-delivery"]) assert.match(jobBody(browserJob), /needs: \[route, prepare-web, prepare-native\]/u);
+assert.match(jobBody("browser-delivery"), /if: needs\.route\.outputs\.browser == 'true' && needs\.route\.outputs\.rules != 'true' && needs\.route\.outputs\.spatial != 'true' && needs\.route\.outputs\.cancellation != 'true'/u);
 assert.match(workflow, /documentation:\n[\s\S]*?needs: \[route, integrity, prepare-web, prepare-docs\]/u);
 for (const browserJob of ["browser", "browser-general-helper", "browser-delivery"]) {
   assert.doesNotMatch(jobBody(browserJob), /actions\/setup-dotnet@/u);

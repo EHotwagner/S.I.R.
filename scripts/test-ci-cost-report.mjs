@@ -18,7 +18,7 @@ const jobs = { jobs: [{ id: 1, name: "gate", status: "completed", conclusion: "s
 const artifacts = { artifacts: [{ id: 7, name: "gate", size_in_bytes: 200, created_at: "2026-08-22T00:00:06Z", expires_at: "2026-08-23T00:00:00Z", expired: false }, { id: 8, name: "expired", size_in_bytes: 900, expired: true }] };
 const receipts = [
   { path: "gate.json", sha256: "b".repeat(64), value: { schema: "sir.ci-gate-result/v1", gate: "integrity", status: "pass", source: { commit: head, tree: "c".repeat(40) }, timingMilliseconds: { total: 4_000 } } },
-  { path: "join.json", sha256: "d".repeat(64), value: { schema: "sir.ci-join/v1", result: "pass", source: { commit: head, tree: "c".repeat(40) }, timing: { criticalPath: 8_000 } } },
+  { path: "join.json", sha256: "d".repeat(64), value: { schema: "sir.ci-join/v1", result: "pass", source: { commit: head, tree: "c".repeat(40) }, timing: { criticalPathMilliseconds: 8_000 } } },
 ];
 
 const report = summarize(run, jobs, artifacts, receipts);

@@ -105,7 +105,7 @@ export function summarize(run, jobsPayload, artifactsPayload, receiptInventory =
     schema: value.schema,
     status: value.status ?? value.result ?? null,
     source: value.source ?? null,
-    durationMilliseconds: value.timingMilliseconds?.total ?? value.timing?.criticalPath ?? null,
+    durationMilliseconds: value.timingMilliseconds?.total ?? value.timing?.criticalPathMilliseconds ?? value.timing?.criticalPath ?? null,
   }));
   const mismatchedReceipts = candidateReceipts.filter(({ source }) => source?.commit && source.commit !== run.head_sha);
   const gateReceipts = candidateReceipts.filter(({ schema: receiptSchema }) => receiptSchema === "sir.ci-gate-result/v1");

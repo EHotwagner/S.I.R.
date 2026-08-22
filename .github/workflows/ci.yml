@@ -314,6 +314,7 @@ jobs:
           [[ '${{ needs.route.outputs.rules }}' == 'true' ]] && gates+=(rules)
           [[ '${{ needs.route.outputs.spatial }}' == 'true' ]] && gates+=(spatial)
           [[ '${{ needs.route.outputs.cancellation }}' == 'true' ]] && gates+=(cancellation)
+          [[ '${{ needs.route.outputs.browser }}' == 'true' ]] && gates+=(browser-delivery)
           pids=()
           for gate in "${gates[@]}"; do
             ./scripts/run-ci-gate.sh "$gate" "artifacts/ci/results/$gate.json" &
@@ -330,6 +331,7 @@ jobs:
             artifacts/ci/results/rules.json
             artifacts/ci/results/spatial.json
             artifacts/ci/results/cancellation.json
+            artifacts/ci/results/browser-delivery.json
           if-no-files-found: ignore
           retention-days: 1
 
@@ -438,7 +440,7 @@ jobs:
           retention-days: 1
 
   browser-delivery:
-    if: needs.route.outputs.browser == 'true'
+    if: needs.route.outputs.browser == 'true' && needs.route.outputs.rules != 'true' && needs.route.outputs.spatial != 'true' && needs.route.outputs.cancellation != 'true'
     needs: [route, prepare-web, prepare-native]
     runs-on: ubuntu-latest
     timeout-minutes: 30
