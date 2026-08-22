@@ -2,6 +2,7 @@
   "env": {
     "FSGG_COORD_OWNER_TYPE": "user",
     "FSGG_COORD_OWNER": "EHotwagner",
-    "FSGG_COORD_PROJECT": "S.I.R."
+    "FSGG_COORD_PROJECT": "S.I.R.",
+    "BASH_ENV": "$(git rev-parse --show-toplevel 2>/dev/null)/scripts/agent-env.sh"
   }
 }
