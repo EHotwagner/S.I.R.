@@ -622,10 +622,17 @@ jobs:
         if: success()
         run: |
           source_receipt=$(<artifacts/qualification/site-receipt.path)
-          staged_receipt="artifacts/qualification/site-receipts/$(basename "$source_receipt")"
-          mkdir -p "$(dirname "$staged_receipt")"
-          cp "$source_receipt" "$staged_receipt"
-          printf '%s\n' "$staged_receipt" > artifacts/qualification/site-receipt.path
+          build_receipt=$(<artifacts/qualification/build-receipt.path)
+          conformance_receipt=$(<artifacts/qualification/conformance-receipt.path)
+          handoff=artifacts/qualified-site-handoff
+          rm -rf -- "$handoff"
+          mkdir -p "$handoff/artifacts/qualification" "$handoff/artifacts/site"
+          cp -a artifacts/site/. "$handoff/artifacts/site/"
+          cp artifacts/qualification/single-pass-timing.json artifacts/qualification/site-receipt.path "$handoff/artifacts/qualification/"
+          for receipt in "$source_receipt" "$build_receipt" "$conformance_receipt"; do
+            mkdir -p "$handoff/$(dirname "$receipt")"
+            cp "$receipt" "$handoff/$receipt"
+          done
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with: { name: protected-stage-core, path: artifacts/qualification/stages/core.json, retention-days: 30 }
@@ -634,11 +641,7 @@ jobs:
         with:
           name: protected-qualified-site
           retention-days: 30
-          path: |
-            artifacts/qualification/single-pass-timing.json
-            artifacts/qualification/site-receipt.path
-            artifacts/qualification/site-receipts
-            artifacts/site
+          path: artifacts/qualified-site-handoff
 
   protected-verdict:
     if: always() && github.event_name != 'pull_request'

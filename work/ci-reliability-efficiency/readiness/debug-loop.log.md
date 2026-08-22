@@ -62,4 +62,12 @@
 - Failure: `receipt-content-address-drift` after protected CI, the cost observer, and the qualified-site upload had all passed.
 - Diagnosis: the CI handoff copied the canonical `<sha256>.json` site receipt to a fixed `site-receipt.json` alias. The verifier correctly requires the receipt basename to equal its content digest, so the deployment could never accept that alias.
 - Patch: stage the receipt under its original content-addressed basename, rewrite the artifact pointer to the staged path, upload that receipt directory, and make Pages resolve the exact receipt through the pointer. The workflow contract now rejects reintroduction of the fixed alias.
-- Verification: Pages handoff, action-pin/permission, CI route, protected-stage receipt, workflow topology, and YAML/static contract checks pass locally. Hosted qualified-site deployment remains pending.
+- Verification: Pages handoff, action-pin/permission, CI route, protected-stage receipt, workflow topology, and YAML/static contract checks passed locally. Hosted CI passed, and Pages advanced beyond content-address validation to the next missing dependency check.
+
+## Iteration 9 — 2026-08-22
+
+- Hosted failing command: the same post-CI Pages receipt verification after content-address preservation.
+- Failure: `missing-output:docs/evidence/production-build-receipt-v1/<digest>.json` for a receipt declared by the site receipt.
+- Diagnosis: the site receipt binds three outputs: the documentation site plus the canonical build and conformance receipts. The artifact contained the site and site receipt but not the two transitive receipt files, so full verification could not derive the declared output identity.
+- Patch: assemble the deployment artifact as an exact repo-relative handoff root containing the qualified site, timing/pointer files, and the canonical site/build/conformance receipt closure. Pages overlays that trusted CI artifact onto the matching commit checkout and verifies the original site-receipt path without rebuilding.
+- Verification: Pages handoff, action-pin/permission, CI route, protected-stage receipt, workflow topology, and YAML/static contract checks pass locally. Hosted deployment remains pending.
