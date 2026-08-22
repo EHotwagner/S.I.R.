@@ -71,3 +71,11 @@
 - Diagnosis: the site receipt binds three outputs: the documentation site plus the canonical build and conformance receipts. The artifact contained the site and site receipt but not the two transitive receipt files, so full verification could not derive the declared output identity.
 - Patch: assemble the deployment artifact as an exact repo-relative handoff root containing the qualified site, timing/pointer files, and the canonical site/build/conformance receipt closure. Pages overlays that trusted CI artifact onto the matching commit checkout and verifies the original site-receipt path without rebuilding.
 - Verification: Pages handoff, action-pin/permission, CI route, protected-stage receipt, workflow topology, and YAML/static contract checks pass locally. Hosted deployment remains pending.
+
+## Iteration 10 — 2026-08-22
+
+- Hosted failing command: Pages site-receipt verification after the complete receipt closure was present.
+- Failure: `output-identity-drift` for the qualified documentation site.
+- Diagnosis: downloading the hosted artifact proved that zip-based artifact transport omitted the hidden `artifacts/site/.nojekyll` file and normalized twelve qualified file modes from `0744` to `0755`. The receipt correctly binds hidden files and modes as well as bytes.
+- Patch: package the qualified site and canonical receipt closure in a tar archive, which preserves hidden files and modes. Pages first fail-closed validates every archive member against the site, qualification-pointer/timing, and canonical receipt prefixes, then extracts without owner restoration and runs the unchanged receipt verifier.
+- Verification: Pages handoff, action-pin/permission, CI route, protected-stage receipt, workflow topology, and YAML/static contracts pass. A local tar round-trip preserved all 590 receipt-bound files with exact bytes and modes, including `.nojekyll`. Hosted deployment remains pending.
