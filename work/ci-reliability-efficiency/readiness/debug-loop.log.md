@@ -15,3 +15,11 @@
 - Diagnosis: the preceding protected run measured 91.576/96.387 ms, and an unchanged exact local rerun measured 52.421/54.889 ms. Structural counters were identical in all runs, so the isolated breach is runner contention rather than a semantic or algorithmic regression.
 - Patch: none; product timing budgets and assertions remain unchanged.
 - Verification: the exact local protected qualification advanced past the stress gate and stopped only when receipt generation correctly rejected the intentionally dirty review manifest. The complete wrapper is rerun after committing the generated manifest so its source/tree receipt can be valid.
+
+## Iteration 3 — 2026-08-22
+
+- Failing command: `./scripts/run-protected-stage.sh core artifacts/qualification/stages/core.json -- ./scripts/qualify-production.sh --protected`
+- Failure: after M9 passed, `scripts/test-tactical-visual-review.mjs` reported `review is not bound to the production bundle`.
+- Diagnosis: the tactical visual review is a downstream production capture whose manifest still named the prior bundle, stylesheet, and M9 baseline. Its retained 100/200-unit images and structural counts also preceded the current canonical 4×4 unit footprint.
+- Patch: regenerated the review through `npm run review:tactical-visual`, refreshing the maintained-simulation capture, 100/200-unit density captures, manifest bindings, structural counts, and telemetry.
+- Verification: visually inspected all three captures; `node scripts/test-tactical-visual-review.mjs` reproduced both independent captures byte-for-byte and passed the 100/150 ms input-to-paint plus 17.67 ms frame budgets; `npm run test:tactical-visual-review-mutations` rejected all stylesheet, lifecycle, workload, faction, simultaneous route/attack, one-route, font, timing, and reproduction mutations.

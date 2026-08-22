@@ -25,15 +25,15 @@
     "browserUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
     "browserVersion": "Chrome/151.0.7922.34"
   },
-  "productionBundleSha256": "4737b171e5f999bdede2c6c542481f40fa67cde32b7f15b2e4ee1308af99e8ed",
-  "productionStylesSha256": "80fd66f219c0e95820fe03d38a662cbf50f2ceeea0ef77f73c46e97874301170",
+  "productionBundleSha256": "4730090755e00fedfc3821b599546689ff04f7f3fa07f106ee68f31c13a95e8b",
+  "productionStylesSha256": "ad754e09906d39d57e1f7cbf3eb77ac23ee2796e2af8df33cdd8fe43ce4d1117",
   "before": {
     "path": "../persistent-workspace-m9-review/field-focus.png",
-    "sha256": "c8f73f888799833040e2b601e6de0e976e399095f616e567e64909a8f0d016c5"
+    "sha256": "226ee11badc7d6bf1e9c3d501d15c772df5b5bb76d827e3893293f6bc414146c"
   },
   "after": {
     "path": "after-production.png",
-    "sha256": "1a7bfcc75bc9c5fbe195d13a37873f03a1a5d1c005186f20db02281f563bc6bc",
+    "sha256": "39fe6c2a045bfe0500917fd261d76c060527d6b3e4872d654d34440c3f81641e",
     "captureKind": "actual-production-shell-chromium-screenshot",
     "semantic": {
       "identity": "tactical-visual-system-v1",
@@ -74,7 +74,7 @@
     {
       "units": 100,
       "path": "production-density-100.png",
-      "sha256": "81dc91018874dbadcda2576b95ec4cc0050b0d4ceec72c5e0ea11c12bbc00b1b",
+      "sha256": "0054eab4daf682aa208de6c6be9979f36db94324f10c35aabd2c012751953aed",
       "workload": {
         "requestedUnits": 100,
         "renderedUnits": 100,
@@ -98,13 +98,13 @@
           "committed",
           "predicted"
         ],
-        "domNodes": 3258
+        "domNodes": 4060
       }
     },
     {
       "units": 200,
       "path": "production-density-200.png",
-      "sha256": "f1307b7470e9f5508aeecd6a33c6a2f6ddf40e38c804db2ce82d2e60fdf9daac",
+      "sha256": "5bbb259b59123ceb975207b503e7635e2b412e5861c404be9fc45e8d09343adc",
       "workload": {
         "requestedUnits": 200,
         "renderedUnits": 200,
@@ -128,7 +128,7 @@
           "committed",
           "predicted"
         ],
-        "domNodes": 4806
+        "domNodes": 6408
       }
     }
   ],
