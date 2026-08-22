@@ -31,6 +31,8 @@
     <Compile Include="../SIR.Client.Web/SidebarResizeView.fs" Link="SidebarResizeView.fs" />
     <Compile Include="../SIR.Client.Web/TacticalEnvironmentView.fs" Link="TacticalEnvironmentView.fs" />
     <Compile Include="../SIR.Client.Web/DocsView.fs" Link="DocsView.fs" />
+    <Compile Include="../SIR.Client.Web/TacticalSharedControls.fs" Link="TacticalSharedControls.fs" />
+    <Compile Include="../SIR.Client.Web/TacticalScenePresentation.fs" Link="TacticalScenePresentation.fs" />
     <Compile Include="../SIR.Client.Web/App.fs" Link="App.fs" />
   </ItemGroup>
   <ItemGroup>

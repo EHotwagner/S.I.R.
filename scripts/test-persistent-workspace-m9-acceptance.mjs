@@ -18,7 +18,7 @@ const builtStylesPath = resolve(clientOutput, "content/sir-client/v1/styles.css"
 const builtStylesBytes = await readFile(builtStylesPath);
 const builtStyles = builtStylesBytes.toString("utf8");
 
-const [app, styles, smoke, accessibility, layoutTests, projectionTests, report, workspace, roadmap, reviewManifestText, reviewGeometrySvg, reviewPng, mockup] =
+const [appRoot, styles, smoke, accessibility, layoutTests, projectionTests, report, workspace, roadmap, reviewManifestText, reviewGeometrySvg, reviewPng, mockup, tacticalSharedControls, tacticalScenePresentation] =
   await Promise.all([
     readFile("src/SIR.Client.Web/App.fs", "utf8"),
     readFile("src/SIR.Client.Web/styles.css", "utf8"),
@@ -33,7 +33,15 @@ const [app, styles, smoke, accessibility, layoutTests, projectionTests, report, 
     readFile("docs/assets/persistent-workspace-m9-review/field-focus-geometry.svg"),
     readFile("docs/assets/persistent-workspace-m9-review/field-focus.png"),
     readFile("docs/assets/persistent-workspace-mockups/index.html"),
+    readFile("src/SIR.Client.Web/TacticalSharedControls.fs", "utf8"),
+    readFile("src/SIR.Client.Web/TacticalScenePresentation.fs", "utf8"),
   ]);
+
+// The tactical scene owner is an explicit view boundary extracted from App
+// (SIR.Client.Web.fsproj compiles it just before App.fs).  Qualify the composed
+// ownership surface, exactly as M0 and M7 already do, so relocating a view can
+// never mask a removed control while App.fs remains the root Elmish shell.
+const app = `${appRoot}\n${tacticalSharedControls}\n${tacticalScenePresentation}`;
 const reviewManifest = JSON.parse(reviewManifestText);
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const require = (condition, message) => {
@@ -92,10 +100,14 @@ for (const obsolete of [
   require(!bundle.includes(obsolete), `alternate/legacy landmark reached production JavaScript: ${obsolete}`);
 }
 
+// The renderer now lives in the extracted TacticalScenePresentation boundary and
+// is reached through one memoized owner, so the call carries the scene revisions
+// and the frame scheduler.  The single-owner invariant is unchanged and still
+// exact -- only the shape it is written in moved.
 require(
-  (app.match(/let private persistentSceneSvg/g) ?? []).length === 1 &&
+  (app.match(/let persistentSceneSvg/g) ?? []).length === 1 &&
     (app.match(/svg\.id "persistent-tactical-svg"/g) ?? []).length === 1 &&
-    (app.match(/persistentSceneSvg model projection presentationAlpha dispatch/g) ?? []).length === 1 &&
+    (app.match(/persistentSceneSvg\s+props\.Model\s+props\.Projection\s+props\.PresentationAlpha\s+props\.Revisions\s+scheduler\s+props\.Dispatch/g) ?? []).length === 1 &&
     (app.match(/tacticalWorkscreenRegion model dispatch/g) ?? []).length === 2 &&
     (app.match(/tacticalShell model dispatch transientContent/g) ?? []).length === 2,
   "source does not have exactly one renderer definition, SVG root, renderer call, region definition/call, and shell call",
@@ -154,7 +166,7 @@ for (const required of [
 for (const required of [
   "Perspective review exposed an entity or retained an invisible selection.",
   "Review interpolation crossed disclosure/semantic-owner guards or leaked a previous-frame entity.",
-  "Simulator projection mutated its handoff or crossed its revision boundary.",
+  "Simulator viewport projection mutated its handoff or crossed its revision boundary",
   "Planning projection mutated input or disclosed editor/runtime-only unit state.",
   "Planning projection shared mutable route geometry with authority state.",
 ]) {

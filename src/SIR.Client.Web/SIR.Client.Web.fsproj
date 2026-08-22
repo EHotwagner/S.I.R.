@@ -32,6 +32,8 @@
     <Compile Include="SidebarResizeView.fs" />
     <Compile Include="TacticalEnvironmentView.fs" />
     <Compile Include="DocsView.fs" />
+    <Compile Include="TacticalSharedControls.fs" />
+    <Compile Include="TacticalScenePresentation.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>
   <ItemGroup>

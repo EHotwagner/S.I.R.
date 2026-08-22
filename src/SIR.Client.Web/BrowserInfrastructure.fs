@@ -306,26 +306,64 @@ let currentTacticalCamera
     : BattlefieldCamera =
     jsNative
 
+/// Observe the retained SVG's own box, not the window: the sidebars and the
+/// bottom panel resize it without a window resize ever firing.
+///
+/// Two things here are deliberate and were learned the hard way.  First, the
+/// element is MEASURED SYNCHRONOUSLY as soon as it exists, so the model does not
+/// spend its first frames on the 960x640 default while the real box is already
+/// known.  Second, `ResizeObserver` is optional: a host without it (the headless
+/// qualification DOM is one) previously threw out of the subscription's start,
+/// which the subscription runner caught and reported, leaving viewport size
+/// permanently frozen and every resize assertion silently unobservable.  The
+/// window fallback is worse but it is not nothing.
 [<Emit("""
 (() => {
   const accept = $0;
   let disposed = false;
   let frame = 0;
   let element;
-  const observer = new ResizeObserver((entries) => {
-    const rect = entries[entries.length - 1]?.contentRect;
-    if (!disposed && rect && Number.isFinite(rect.width) && rect.width > 0 && Number.isFinite(rect.height) && rect.height > 0) {
-      accept([rect.width, rect.height]);
-    }
-  });
+  let lastWidth = 0;
+  let lastHeight = 0;
+  const offer = (width, height) => {
+    if (disposed) return;
+    if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) return;
+    if (width === lastWidth && height === lastHeight) return;
+    lastWidth = width;
+    lastHeight = height;
+    accept([width, height]);
+  };
+  const measure = () => {
+    if (disposed || !element) return;
+    const rect = element.getBoundingClientRect();
+    if (rect) offer(rect.width, rect.height);
+  };
+  const observer =
+    typeof ResizeObserver === 'function'
+      ? new ResizeObserver((entries) => {
+          const rect = entries[entries.length - 1]?.contentRect;
+          if (rect) offer(rect.width, rect.height);
+        })
+      : null;
+  const onWindowResize = observer ? null : () => measure();
   const connect = () => {
     if (disposed) return;
     element = document.getElementById('persistent-tactical-svg');
-    if (element) observer.observe(element);
-    else frame = window.requestAnimationFrame(connect);
+    if (!element) { frame = window.requestAnimationFrame(connect); return; }
+    frame = 0;
+    measure();
+    if (observer) observer.observe(element);
+    else window.addEventListener('resize', onWindowResize);
   };
   connect();
-  return { Dispose() { disposed = true; if (frame !== 0) window.cancelAnimationFrame(frame); observer.disconnect(); } };
+  return {
+    Dispose() {
+      disposed = true;
+      if (frame !== 0) window.cancelAnimationFrame(frame);
+      if (observer) observer.disconnect();
+      else if (onWindowResize) window.removeEventListener('resize', onWindowResize);
+    }
+  };
 })()
 """)>]
 let observeTacticalViewport

@@ -3,7 +3,7 @@ import { promisify } from "node:util";
 import { readFile } from "node:fs/promises";
 
 const execFileAsync = promisify(execFile);
-const [app, styles, projection, projectionContract, simulator, protocol, runner, clientTests, projectionTests] =
+const [appRoot, styles, projection, projectionContract, simulator, protocol, runner, clientTests, projectionTests, tacticalSharedControls, tacticalScenePresentation] =
   await Promise.all([
     readFile("src/SIR.Client.Web/App.fs", "utf8"),
     readFile("src/SIR.Client.Web/styles.css", "utf8"),
@@ -14,7 +14,15 @@ const [app, styles, projection, projectionContract, simulator, protocol, runner,
     readFile("src/SIR.Client.Web/Runner.fs", "utf8"),
     readFile("tests/SIR.Client.Tests/Program.fs", "utf8"),
     readFile("tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs", "utf8"),
+    readFile("src/SIR.Client.Web/TacticalSharedControls.fs", "utf8"),
+    readFile("src/SIR.Client.Web/TacticalScenePresentation.fs", "utf8"),
   ]);
+
+// The tactical scene owner is an explicit view boundary extracted from App
+// (SIR.Client.Web.fsproj compiles it just before App.fs).  Qualify the composed
+// ownership surface, exactly as M0 and M7 already do, so relocating a view can
+// never mask a removed control while App.fs remains the root Elmish shell.
+const app = `${appRoot}\n${tacticalSharedControls}\n${tacticalScenePresentation}`;
 
 const require = (condition, message) => {
   if (!condition) throw new Error(`Simulator M6 qualification failed: ${message}`);
