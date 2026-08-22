@@ -246,6 +246,8 @@ assert.doesNotMatch(jobBody("domain-conformance"), /actions\/cache@|npm ci|dotne
 assert.doesNotMatch(jobBody("domain-conformance"), /gates\+=\(cross-runtime\)/u);
 assert.doesNotMatch(jobBody("domain-conformance"), /run-ci-gate\.sh cross-runtime/u);
 assert.match(jobBody("cross-runtime"), /needs: \[route, prepare-native, prepare-fable\][\s\S]*prepared-part-native[\s\S]*prepared-part-fable[\s\S]*run-ci-gate\.sh cross-runtime/u);
+assert.doesNotMatch(jobBody("cross-runtime"), /actions\/cache@|nuget-cache|dotnet tool restore/u);
+assert.match(jobBody("cross-runtime"), /SIR_CI_CACHE_HIT: "false"/u);
 assert.doesNotMatch(workflow, /^  spatial:$/mu);
 assert.match(jobBody("prepare-web"), /classification == 'performance'/u);
 for (const browserJob of ["browser", "browser-general-helper", "browser-delivery"]) assert.match(jobBody(browserJob), /needs: \[route, prepare-web, prepare-native\]/u);
