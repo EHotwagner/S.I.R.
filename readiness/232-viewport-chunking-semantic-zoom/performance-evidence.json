@@ -93,6 +93,17 @@
       "worstFrameIntervalMs": 17.095
     }
   },
+  "obligation": {
+    "disposition": "deferred",
+    "id": "EV022",
+    "laterLifecycleVisibility": "Re-measure with the recorded command once the transition-aware Elmish host adapter tracked at FS-GG/FS.GG.Rendering#1256 is delivered and consumable. The timing half of this intent must not be claimed anywhere until that re-measurement is green.",
+    "notAuthoredInEvidenceYml": "work/232-viewport-chunking-semantic-zoom/evidence.yml is deliberately absent: the SDD lifecycle for this item stops at analyze/implementationReady. The evidence stage rejects any declaration carrying the performanceBudget block it demands (S.I.R.#271), and the remaining 36 obligations are unauthored, so a one-obligation evidence.yml would assert a lifecycle stage this item has not reached. This record is the durable home of the deferral until then.",
+    "owner": "EHotwagner/S.I.R. client presentation, blocked upstream on FS-GG/FS.GG.Rendering#1256",
+    "rationale": "The declared viewport-visible-v1 TIMING budget is not met on the exact candidate. The structural half of the same intent -- queried chunks, emitted spatial primitives, semantic duplicates, offscreen focusable nodes -- IS met and is gated separately. Recorded as a deferral rather than a pass because a pass would misstate the measurement, and a synthetic pass would not satisfy the obligation in any case.",
+    "scope": "The timing clauses of performance intent viewport-visible-work-v1 only: p95, p99 and catch-up frames on the playback, modality-transition, pan, zoom and selection journeys.",
+    "synthetic": false,
+    "task": "T022"
+  },
   "producerVerdictField": "pass",
   "producerVerdictNote": "The producing harness hardcodes result:\"pass\" with no budget comparison anywhere (S.I.R.#268). This evidence derives from MEASURED values only; the producer verdict is recorded for traceability and is not relied upon.",
   "producerVerdictTrusted": false,

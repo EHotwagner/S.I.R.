@@ -1505,6 +1505,14 @@ let tacticalSceneRevisions (model: Model) (projection: SharedSceneProjection opt
         |> Option.map (fun scene -> scene.RevisionIdentity)
         |> Option.defaultValue "unavailable"
     let contentLayer name count = contentScene + ":" + viewport + ":" + name + ":" + count
+    // Terrain and edges are NOT viewport-culled -- only units are (see
+    // emittedPrimitiveCount above).  Including the chunk window and tier in
+    // their CONTENT key therefore rebuilt their retained geometry on every
+    // camera move, for a layer whose content the camera cannot change, which is
+    // the opposite of "camera motion changes only visible-chunk-dependent
+    // presentation".  Their presentation keys still carry the viewport; only the
+    // retained geometry is freed from it.
+    let unculledContentLayer name count = contentScene + ":" + name + ":" + count
     let contentTick =
         projection |> Option.map (fun scene -> string scene.Tick) |> Option.defaultValue "0"
     let selection =
@@ -1530,8 +1538,8 @@ let tacticalSceneRevisions (model: Model) (projection: SharedSceneProjection opt
               model.Live.Status
               (model.Live.Snapshot |> Option.map (fun value -> string value.ProjectionRevision) |> Option.defaultValue "") ]
     { AcceptedScene = acceptedScene
-      TerrainContent = contentLayer "terrain" (length (fun scene -> scene.Terrain.Length))
-      EdgesContent = contentLayer "edges" (length (fun scene -> scene.Edges.Length))
+      TerrainContent = unculledContentLayer "terrain" (length (fun scene -> scene.Terrain.Length))
+      EdgesContent = unculledContentLayer "edges" (length (fun scene -> scene.Edges.Length))
       UnitsContent = contentLayer "units" (length (fun scene -> scene.Units.Length)) + ":" + contentTick
       Terrain = layer "terrain" (length (fun scene -> scene.Terrain.Length))
       Edges = layer "edges" (length (fun scene -> scene.Edges.Length))
