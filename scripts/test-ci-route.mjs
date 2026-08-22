@@ -172,6 +172,7 @@ assert.equal(contracts.feedbackHeadroomMilliseconds, feedbackHeadroomMillisecond
 assert.deepEqual(contracts.gateOrder, gateOrder);
 assert.deepEqual(contracts.subjectOrder, subjectOrder);
 assert.deepEqual(expectedBuildInvocations["cancellation-mutations"], [
+  "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:cancellation-fixture:artifacts-path:isolated",
   "fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:cancellation-mutant",
   "fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:cancellation-mutant",
 ]);
@@ -263,11 +264,11 @@ assert.match(jobBody("spatial-mutations"), /run-ci-gate\.sh spatial-mutations/u)
 assert.doesNotMatch(jobBody("spatial-mutations"), /prepared-part-|needs: \[[^\]]*prepare-/u);
 assert.doesNotMatch(jobBody("spatial-mutations"), /npm ci|dotnet tool restore/u);
 assert.match(jobBody("cancellation-mutations"), /npm ci --ignore-scripts[\s\S]*dotnet tool restore/u);
-assert.match(jobBody("cancellation-mutations"), /needs: \[route, prepare-native\][\s\S]*prepared-part-native/u);
+assert.match(jobBody("cancellation-mutations"), /needs: route/u);
 assert.match(jobBody("cancellation-mutations"), /run-ci-gate\.sh cancellation-mutations/u);
+assert.doesNotMatch(jobBody("cancellation-mutations"), /prepared-part-|needs: \[[^\]]*prepare-/u);
 const gateRunner = readFileSync(new URL("./run-ci-gate.sh", import.meta.url), "utf8");
 assert.match(gateRunner, /spatial\|cross-runtime\) preflight_parts=\(native fable\)/u);
-assert.match(gateRunner, /cancellation-mutations\) preflight_parts=\(native\)/u);
 assert.match(gateRunner, /cancellation\) preflight_parts=\(native web\)/u);
 assert.match(gateRunner, /browser\|browser-general-helper\|browser-delivery\) preflight_parts=\(web native\)/u);
 assert.match(gateRunner, /documentation\) preflight_parts=\(web docs\)/u);
@@ -352,9 +353,11 @@ for (const command of [
 ]) assert.match(focusedRulesGate.groups.body, new RegExp(command.replaceAll(".", "\\."), "u"));
 assert.match(focusedQualification, /spatial-mutations\)[\s\S]*test-spatial-subject-mutations\.sh --prepared-pr/u);
 assert.match(focusedQualification, /spatial\).*--prepared-pr --prepared-parts-verified --external-mutation-proof/u);
-assert.match(focusedQualification, /cancellation-mutations\).*test-worker-cancellation-subject-mutation\.sh --mutation-only --prepared-native/u);
+assert.match(focusedQualification, /cancellation-mutations\).*test-worker-cancellation-subject-mutation\.sh --mutation-only/u);
 assert.match(focusedQualification, /cancellation\).*smoke-worker-roundtrip\.mjs/u);
-assert.match(cancellationMutationQualification, /prepared_native[\s\S]*SIR\.Domain\.Tests\.dll[\s\S]*SIR_BUILD_EXCEPTION=cancellation-fixture[\s\S]*dotnet build tests\/SIR\.Domain\.Tests\/SIR\.Domain\.Tests\.fsproj -c Release --no-restore[\s\S]*sed -i/u);
+assert.match(cancellationMutationQualification, /dotnet restore tests\/SIR\.Domain\.Tests\/SIR\.Domain\.Tests\.fsproj --locked-mode[\s\S]*--artifacts-path "\$native_artifacts"[\s\S]*SIR_BUILD_EXCEPTION=cancellation-fixture[\s\S]*dotnet build tests\/SIR\.Domain\.Tests\/SIR\.Domain\.Tests\.fsproj -c Release --no-restore[\s\S]*native_pid=\$![\s\S]*build-client\.sh[\s\S]*wait "\$native_pid"/u);
+assert.match(cancellationMutationQualification, /SIR_DOMAIN_TESTS_DLL="\$native_artifacts\/bin\/SIR\.Domain\.Tests\/release\/SIR\.Domain\.Tests\.dll"/u);
+assert.match(readFileSync(new URL("./smoke-worker-roundtrip.mjs", import.meta.url), "utf8"), /SIR_DOMAIN_TESTS_DLL[\s\S]*domainTestsCommand/u);
 assert.match(focusedQualification, /cross-runtime\)[\s\S]*--domain-only[\s\S]*--ordinary-pr-functional/u);
 assert.doesNotMatch(fullQualification, /--ordinary-pr-functional/u);
 assert.match(conformanceQualification, /--ordinary-pr-functional requires --domain-only/u);

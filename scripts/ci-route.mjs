@@ -18,7 +18,6 @@ export const subjectOrder = ["integrity", ...producerOrder, ...helperOrder, ...g
 export const gateParts = {
   rules: ["native"],
   spatial: ["native", "fable"],
-  "cancellation-mutations": ["native"],
   cancellation: ["native", "web"],
   "cross-runtime": ["native", "fable"],
   browser: ["web", "native"],
@@ -43,6 +42,7 @@ export const expectedBuildInvocations = {
   ],
   spatial: [],
   "cancellation-mutations": [
+    "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:cancellation-fixture:artifacts-path:isolated",
     ...["cancellation-mutant"].flatMap((name) => [
     `fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:${name}`,
     `fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:${name}`,

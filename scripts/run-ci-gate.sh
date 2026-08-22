@@ -26,7 +26,6 @@ preflight_parts=()
 case "$subject" in
   rules) preflight_parts=(native) ;;
   spatial|cross-runtime) preflight_parts=(native fable) ;;
-  cancellation-mutations) preflight_parts=(native) ;;
   cancellation) preflight_parts=(native web) ;;
   browser|browser-general-helper|browser-delivery) preflight_parts=(web native) ;;
   documentation) preflight_parts=(web docs) ;;
