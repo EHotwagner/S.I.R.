@@ -507,8 +507,7 @@ let run () =
         (simulatorInput = simulatorBefore
          && simulatorProjection.Owner = SimulatorScene
          && simulatorProjection.RevisionIdentity = editor.Revision.Digest
-         && simulatorProjection.Units.Length > 0
-         && simulatorProjection.Units.Length <= editor.Map.Units.Count
+         && simulatorProjection.Units.Length = editor.Map.Units.Count
          && (simulatorProjection.Units |> Array.map _.PrimitiveId |> Array.distinct).Length = simulatorProjection.Units.Length
          && simulatorProjection.Routes.Length = 2
          && (simulatorProjection.Routes
@@ -827,9 +826,9 @@ let run () =
                 EditorFocusedUnit = Some secondUnit }
     let changedIds = ids changedEditor
     require
-        (baselineIds.Length = (baselineIds |> Array.distinct).Length
+        (baselineIds = changedIds
+         && baselineIds.Length = (baselineIds |> Array.distinct).Length
          && changedIds.Length = (changedIds |> Array.distinct).Length
-         && not (Set.intersect (Set.ofArray baselineIds) (Set.ofArray changedIds)).IsEmpty
          && baselineIds |> Array.contains "terrain:0:0"
          && baselineIds |> Array.contains "unit:1"
          && baselineIds |> Array.exists (fun id -> id.StartsWith("edge:", StringComparison.Ordinal))
@@ -847,9 +846,8 @@ let run () =
                         SelectedCommand = None }
                 PlanningCamera = { camera with PanX = 77.0 } }
     require
-        (planningIds.Length = (Array.distinct planningIds).Length
-         && (ids changedPlanning).Length = (ids changedPlanning |> Array.distinct).Length
-         && not (Set.intersect (Set.ofArray planningIds) (Set.ofArray (ids changedPlanning))).IsEmpty)
+        (planningIds = ids changedPlanning
+         && planningIds.Length = (Array.distinct planningIds).Length)
         "Planning viewport projection duplicated semantic IDs or lost every stable boundary identity."
 
     let simulatorIds = ids simulatorProjection
@@ -859,9 +857,8 @@ let run () =
                 SimulatorCamera = { camera with Zoom = 2.0 }
                 SimulatorFocusedUnit = Some secondUnit }
     require
-        (simulatorIds.Length = (Array.distinct simulatorIds).Length
-         && (ids changedSimulator).Length = (ids changedSimulator |> Array.distinct).Length
-         && not (Set.intersect (Set.ofArray simulatorIds) (Set.ofArray (ids changedSimulator))).IsEmpty
+        (simulatorIds = ids changedSimulator
+         && simulatorIds.Length = (Array.distinct simulatorIds).Length
          && simulatorProjection.RevisionIdentity =
             changedSimulator.RevisionIdentity)
         "Simulator IDs or accepted revision changed with camera or focus."
@@ -1437,9 +1434,8 @@ let run () =
         |> Array.filter (fun descriptor -> not (Set.contains descriptor.Id (emittedIds representativeProjection)))
         |> Array.map (fun descriptor -> TacticalOverlayId.value descriptor.Id)
     require
-        (representativeScene.Units.Length = representativeUnitCount
-         && stressScene.Units.Length >= representativeScene.Units.Length
-         && representativeUnitCount > 0
+        (representativeScene.Units.Length = 100
+         && stressScene.Units.Length = 200
          && Array.isEmpty missingOverlayIds)
         ("The representative production-view projection did not emit every advertised initial overlay family: " + String.concat ", " missingOverlayIds)
     require
@@ -1453,7 +1449,7 @@ let run () =
     require
         (representativeProjection.Cost.EstimatedSvgNodes <= 5000
          && stressProjection.Cost.EstimatedSvgNodes <= 5000
-         && stressProjection.Cost.EmittedPayloads >= representativeProjection.Cost.EmittedPayloads)
+         && stressProjection.Cost.EmittedPayloads > representativeProjection.Cost.EmittedPayloads)
         "Representative and stress viewport projection node budgets were not enforced."
     let overlayTimings =
         Array.init 80 (fun _ ->
@@ -1487,16 +1483,14 @@ let run () =
          && planningAllocation < 3_000_000L
          && simulatorAllocation < 3_000_000L
          && reviewAllocation < 3_000_000L
-         && representativeReview.VisualCost.UnitCount > 0
-         && representativeReview.VisualCost.UnitCount <= 100
-         && representativeReview.VisualCost.EffectInstances > 0
-         && representativeReview.VisualCost.EffectInstances <= 100
+         && representativeReview.VisualCost.UnitCount = 100
+         && representativeReview.VisualCost.EffectInstances = 100
          && representativeReview.VisualCost.EstimatedSvgNodes <= 5_000
          && representativeReviewP95 < 4.0
-         && stressReview.VisualCost.UnitCount >= representativeReview.VisualCost.UnitCount
-         && stressReview.VisualCost.UnitCount <= 200
-         && stressReview.VisualCost.EffectInstances >= representativeReview.VisualCost.EffectInstances
-         && stressReview.VisualCost.EffectInstances <= 256
+         && stressReview.VisualCost.UnitCount = 200
+         && stressReview.VisualCost.EffectInstances = 256
+         && stressReview.Effects[0].Tick = 45
+         && stressReview.Effects[stressReview.Effects.Length - 1].Tick = 300
          && (stressReview.Effects
              |> Array.pairwise
              |> Array.forall (fun (left, right) -> (left.Tick, left.Order, left.EventId) <= (right.Tick, right.Order, right.EventId)))
