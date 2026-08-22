@@ -314,7 +314,8 @@ jobs:
           [[ '${{ needs.route.outputs.rules }}' == 'true' ]] && gates+=(rules)
           [[ '${{ needs.route.outputs.spatial }}' == 'true' ]] && gates+=(spatial)
           [[ '${{ needs.route.outputs.cancellation }}' == 'true' ]] && gates+=(cancellation)
-          [[ '${{ needs.route.outputs.browser }}' == 'true' ]] && gates+=(browser-delivery)
+          run_delivery=false
+          [[ '${{ needs.route.outputs.browser }}' == 'true' ]] && run_delivery=true
           pids=()
           for gate in "${gates[@]}"; do
             ./scripts/run-ci-gate.sh "$gate" "artifacts/ci/results/$gate.json" &
@@ -322,6 +323,9 @@ jobs:
           done
           status=0
           for pid in "${pids[@]}"; do wait "$pid" || status=1; done
+          if [[ "$run_delivery" == true ]]; then
+            ./scripts/run-ci-gate.sh browser-delivery artifacts/ci/results/browser-delivery.json || status=1
+          fi
           exit "$status"
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

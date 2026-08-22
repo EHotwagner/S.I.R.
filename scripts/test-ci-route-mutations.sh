@@ -38,7 +38,7 @@ expect_red .github/workflows/ci.yml 's#\./scripts/qualify-production.sh --protec
 expect_red scripts/qualify-pr.sh '/node_modules\/playwright-core/d;'
 expect_red .github/workflows/ci.yml '/^  browser:/,/^  browser-general-helper:/ s|uses: actions/download-artifact@[0-9a-f]* # v8.0.1|run: npm ci --ignore-scripts|;'
 expect_red .github/workflows/ci.yml '/gates+=(spatial)/d;'
-expect_red .github/workflows/ci.yml '/gates+=(browser-delivery)/d;'
+expect_red .github/workflows/ci.yml '/run_delivery=true/d;'
 expect_red .github/workflows/ci.yml '/run-ci-gate.sh cross-runtime artifacts\/ci\/results\/cross-runtime.json/d;'
 expect_red .github/workflows/ci.yml '/SIR_CI_PREFLIGHT_REUSED:/d;'
 expect_red scripts/qualify-pr.sh '/artifacts\/publish/d;'
