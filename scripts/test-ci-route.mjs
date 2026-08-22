@@ -420,6 +420,10 @@ assert.doesNotMatch(focusedQualification, /verify --work 138-sir-fable-game-scaf
 assert.match(focusedQualification, /route\.paths\.map/u);
 assert.match(fullQualification, /--paired-optimization/u);
 assert.match(fullQualification, /if \[\[ "\$paired_mode" == true \]\]; then\n  reduction_basis_points=/u);
+assert.match(fullQualification, /protected_main_fable_builds=3/u);
+assert.match(fullQualification, /if \[\[ -n \$\{SIR_PROTECTED_PREFLIGHT_RECEIPT:-\} \]\]; then[\s\S]*protected_main_fable_builds=1/u);
+assert.match(fullQualification, /src\/SIR\.Replay\.Web\/SIR\.Replay\.Web\.fsproj="\$protected_main_fable_builds"/u);
+assert.match(fullQualification, /src\/SIR\.Client\.Web\/SIR\.RulesExplorer\.Web\.fsproj="\$protected_main_fable_builds"/u);
 for (const subject of ["rules", "spatial", "cancellation", "cross-runtime", "historical-compatibility", "governance", "production-browser", "documentation", "performance", "sdd-verify"]) assert.match(fullQualification, new RegExp(`"${subject}"`, "u"));
 assert.equal(gateOrder.length, 7);
 

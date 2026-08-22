@@ -31,3 +31,11 @@
 - Diagnosis: local host selection only; production, browser, tactical review, mutation, cross-runtime, server, and SDD verification gates had already passed.
 - Patch: none to repository code or SDK policy. Re-ran the unchanged documentation consumer with `DOTNET_HOST_PATH=/home/developer/.dotnet/dotnet`.
 - Verification: strict fsdocs project cracking/build passed for five assemblies; documentation integrity, experience, browser smoke, generated-site mutation, and accessibility gates all passed.
+
+## Iteration 5 — 2026-08-22
+
+- Hosted failing command: final Fable process inventory inside protected full qualification.
+- Failure: the split hosted route observed one Replay Web and one Rules Explorer Fable build, while the invariant expected three of each.
+- Diagnosis: hosted protected preflight executes the two cancellation-mutation builds in its own job and passes a signed preflight receipt to core. The integrated local protected route executes those builds inside core, so its trace legitimately contains three. Every functional hosted gate, including strict documentation, passed before this accounting-only failure.
+- Patch: make the exact expected main-client Fable count route-aware: one when a protected preflight receipt is supplied, three for the integrated local protected route. All three cross-runtime fixture expectations remain exact-once.
+- Verification: CI route contract and invocation-trace tests exercise the conditional inventory without relaxing unknown, duplicate, or malformed invocation rejection.

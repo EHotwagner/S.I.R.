@@ -149,12 +149,19 @@ node scripts/production-build-receipt.mjs mutate-missing-reuse \
   --mutation-output-id documentation-site
 
 if [[ "$protected_mode" == true ]]; then
+  protected_main_fable_builds=3
+  if [[ -n ${SIR_PROTECTED_PREFLIGHT_RECEIPT:-} ]]; then
+    # Hosted protected preflight owns the two cancellation-mutation client
+    # builds in a separate job. Only the core production build belongs to this
+    # invocation trace; the integrated local route retains all three.
+    protected_main_fable_builds=1
+  fi
   fable_inventory=$(node scripts/verify-fable-invocations.mjs "$fable_log" \
     --expect tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj=1 \
     --expect tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj=1 \
     --expect tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj=1 \
-    --expect src/SIR.Replay.Web/SIR.Replay.Web.fsproj=3 \
-    --expect src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj=3)
+    --expect src/SIR.Replay.Web/SIR.Replay.Web.fsproj="$protected_main_fable_builds" \
+    --expect src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj="$protected_main_fable_builds")
 else
   fable_inventory=$(node scripts/verify-fable-invocations.mjs "$fable_log")
 fi
