@@ -147,7 +147,27 @@ NODE
     trap write_part_timing EXIT
     start_dotnet_trace
     dotnet tool restore
-    dotnet restore SIR.slnx --locked-mode
+    # Restore only the graph owned by this producer. Each root has a committed
+    # packages.lock.json and project restore traverses its project references,
+    # so locked dependency validation remains fail-closed without making every
+    # parallel producer evaluate the entire solution.
+    case "$part" in
+      native) dotnet restore SIR.slnx --locked-mode ;;
+      fable)
+        dotnet restore tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj --locked-mode
+        dotnet restore tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj --locked-mode
+        dotnet restore tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj --locked-mode
+        ;;
+      web)
+        dotnet restore src/SIR.Replay.Web/SIR.Replay.Web.fsproj --locked-mode
+        dotnet restore src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj --locked-mode
+        ;;
+      server) dotnet restore src/SIR.Server/SIR.Server.fsproj --locked-mode ;;
+      docs)
+        dotnet restore src/SIR.Match/SIR.Match.fsproj --locked-mode
+        dotnet restore src/SIR.Client/SIR.Client.fsproj --locked-mode
+        ;;
+    esac
     restore_completed=$(date +%s%3N)
     failure_stage=build
     build_started=$(date +%s%3N)

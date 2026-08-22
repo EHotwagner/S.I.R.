@@ -308,14 +308,27 @@ const focusedNativeProducer = /      native\)\n(?<body>[\s\S]*?)\n        ;;/u.e
 assert.ok(focusedNativeProducer?.groups?.body, "focused native producer block is missing");
 assert.equal(focusedNativeProducer.groups.body.match(/dotnet build SIR\.slnx -c Release --no-restore/gu)?.length, 1);
 assert.doesNotMatch(focusedNativeProducer.groups.body, /build-docs\.sh|artifacts\/site/u);
-const focusedDocsProducer = /      docs\)\n(?<body>[\s\S]*?)\n        ;;/u.exec(focusedQualification);
+const focusedDocsProducer = [...focusedQualification.matchAll(/      docs\)\n(?<body>[\s\S]*?)\n        ;;/gu)]
+  .find((match) => match.groups?.body.includes("dotnet build src/SIR.Match/SIR.Match.fsproj"));
 assert.ok(focusedDocsProducer?.groups?.body, "focused docs producer block is missing");
 assert.match(focusedDocsProducer.groups.body, /dotnet build src\/SIR\.Match\/SIR\.Match\.fsproj -c Release --no-restore[\s\S]*dotnet build src\/SIR\.Client\/SIR\.Client\.fsproj -c Release --no-restore[\s\S]*build-docs\.sh --prepare-site-only[\s\S]*artifacts\/site/u);
 assert.match(focusedQualification, /documentation\)[\s\S]*build-docs\.sh[^\n]*--prepared-pr --reuse-site-build/u);
 assert.match(buildDocs, /--prepare-site-only[\s\S]*build_site_projection[\s\S]*--reuse-site-build[\s\S]*prepared site projection is missing index\.html/u);
 assert.doesNotMatch(focusedQualification, /find src tests -type d.*-name obj/u);
 assert.doesNotMatch(focusedQualification, /--output .*obj/u);
-assert.match(focusedQualification, /dotnet restore SIR\.slnx --locked-mode/u);
+const producerRestoreBlock = /    # Restore only the graph owned by this producer\.[\s\S]*?    restore_completed=/u.exec(focusedQualification)?.[0] ?? "";
+assert.match(producerRestoreBlock, /native\) dotnet restore SIR\.slnx --locked-mode/u);
+for (const project of [
+  "tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj",
+  "tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj",
+  "tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj",
+  "src/SIR.Replay.Web/SIR.Replay.Web.fsproj",
+  "src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj",
+  "src/SIR.Server/SIR.Server.fsproj",
+  "src/SIR.Match/SIR.Match.fsproj",
+  "src/SIR.Client/SIR.Client.fsproj",
+]) assert.match(producerRestoreBlock, new RegExp(`dotnet restore ${project.replaceAll(".", "\\.")} --locked-mode`, "u"));
+assert.equal(producerRestoreBlock.match(/dotnet restore SIR\.slnx --locked-mode/gu)?.length, 1);
 assert.match(focusedQualification, /trap write_part_timing EXIT/u);
 assert.match(focusedQualification, /verify-staged[\s\S]*cp -a "\$stage\/\$output_path" "\$target"/u);
 assert.match(focusedQualification, /run_browser_shard_pair[\s\S]*SIR_BROWSER_SHARD_INDEX="\$first_index"[\s\S]*SIR_BROWSER_SHARD_INDEX="\$second_index"[\s\S]*wait "\$first_pid"[\s\S]*wait "\$second_pid"/u);
