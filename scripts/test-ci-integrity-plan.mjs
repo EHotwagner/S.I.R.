@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { planFor, subjectOrder, sweepEnvironmentVariable, sweepRequested } from "./ci-integrity-plan.mjs";
 import { routePaths } from "./ci-route.mjs";
 
@@ -69,14 +70,42 @@ assert.ok(swept.subjects.every(({ matchingPaths }) => matchingPaths.length === 0
 // The two modes are distinguishable in the sealed artifact, not merely in behaviour.
 assert.notEqual(swept.digest, conditional.digest);
 
-// AC4 — the sweep must not widen per-PR selection. Sweeping is opt-in and off by default, and the
-// conditional branch is byte-identical to its pre-sweep behaviour for the same route.
-assert.equal(planFor(route(omittedPaths)).digest, conditional.digest);
+// AC4 — the sweep must not widen per-PR selection. Sweeping is opt-in and off by default.
+//
+// Note precisely what is and is not claimed. Per-PR SELECTION is unchanged, and that is what AC4
+// requires and what these pins assert. The plan DIGEST is deliberately NOT claimed to be unchanged:
+// `mode` lives inside the digested body, so every plan digest differs from its pre-sweep value. No
+// consumer compares plan digests across versions, so that is a versioning fact, not a regression.
+// Pinning selection absolutely — literal expected tuples, not a comparison against another call of
+// the same function — is what makes these assertions capable of failing.
+const conditionalSelection = (paths) => planFor(route(paths)).subjects.map(({ id, run, reason }) => [id, run, reason]);
+const allOmitted = (ids) => ids.map((id) => [id, false, "measured-omission"]);
+
+assert.deepEqual(conditionalSelection(omittedPaths), allOmitted(declaredSubjects), "an inert route must select nothing");
 assert.deepEqual(
-  planFor(route(["package-lock.json"])).subjects.map(({ id, run }) => [id, run]),
-  [["npm-audit", true], ["governance", false], ["dependency-surface", false], ["sdd-byte-stability", false], ["feedback-audit", false]],
+  conditionalSelection(["package-lock.json"]),
+  [["npm-audit", true, "relevant-path"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", false, "measured-omission"]],
   "per-PR selection must stay path-conditional",
 );
+assert.deepEqual(
+  conditionalSelection(["scripts/audit-binding-exceptions.json"]),
+  [["npm-audit", false, "measured-omission"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", true, "relevant-path"]],
+  "the subject this item repairs must still be selected by its own paths on a pull request",
+);
+
+// The plan is a sealed artifact that `qualify-pr.sh` reads with jq and CI archives for 30 days, so
+// pin its SHAPE too. Selection pins alone cannot see a field appearing in or vanishing from the
+// digested body, and that is a schema change to a consumed artifact, not an internal detail.
+for (const [label, plan] of [["pull-request", conditional], ["sweep", swept]]) {
+  assert.deepEqual(
+    Object.keys(plan).sort(),
+    ["alwaysOn", "digest", "mode", "routeDigest", "schema", "source", "subjects"],
+    `${label} plan shape drifted`,
+  );
+  for (const subject of plan.subjects) {
+    assert.deepEqual(Object.keys(subject).sort(), ["id", "matchingPaths", "reason", "run"], `${label} subject shape drifted`);
+  }
+}
 
 // Activation is explicit: only the exact string "true" sweeps.
 assert.equal(sweepRequested({ [sweepEnvironmentVariable]: "true" }), true);
@@ -89,7 +118,9 @@ assert.equal(sweepRequested({}), false);
 // better-looking mechanism, so assert the wiring in ci.yml, not just the module.
 // ---------------------------------------------------------------------------
 const ci = readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8");
-const jobs = ci.slice(ci.indexOf("\njobs:\n") + 7);
+const jobsIndex = ci.indexOf("\njobs:\n");
+assert.notEqual(jobsIndex, -1, "ci.yml has no jobs: block — the workflow parse below would silently degrade");
+const jobs = ci.slice(jobsIndex + 7);
 const headers = [...jobs.matchAll(/^ {2}([a-z0-9-]+):$/gmu)];
 const jobBody = (name) => {
   const index = headers.findIndex(([, id]) => id === name);
@@ -101,11 +132,36 @@ const sweepJob = jobBody("integrity-sweep");
 assert.match(sweepJob, /^ {4}if: github\.event_name != 'pull_request'$/mu, "the sweep must never run on a pull request");
 assert.match(sweepJob, new RegExp(`^ {10}${sweepEnvironmentVariable}: "true"$`, "mu"), "the sweep job must activate sweep mode");
 assert.match(sweepJob, /run-ci-gate\.sh integrity /u, "the sweep must run the integrity gate, not a private copy of it");
-// The route step declares `shell: bash`, which GitHub runs with `-o pipefail`. A command that closes
-// a pipe early (`head -n 1`) SIGPIPEs its producer and fails the whole step with 141 — turning the
-// safety net into the thing that reddens `main`. Measured, not theorised: exit 141.
-assert.doesNotMatch(sweepJob, /\|\s*head\b/u, "no early-closing pipe in a pipefail step; use `sed -n '1p'`");
 assert.match(sweepJob, /^ {10}test -s artifacts\/ci\/changed-paths\.txt$/mu, "the sweep must refuse an empty path inventory rather than hand it to the router");
+
+// The sweep's steps declare `shell: bash`, which GitHub runs as `bash --noprofile --norc -eo pipefail`.
+// A consumer that stops reading before EOF (`head -n 1`, `grep -m1`, `sed -n '1{p;q}'`,
+// `awk 'NR==1{...exit}'`) SIGPIPEs its producer, and under `pipefail` the pipeline status is 141 —
+// which would fail this job on every push to `main`, making the only unconditional integrity signal
+// the thing that reddens the branch.
+//
+// Asserting over the workflow TEXT cannot express that: the property is about the step's BEHAVIOUR,
+// and a blocklist of one token (`head`) leaves three equivalents passing. So EXECUTE each pipeline's
+// consumer instead, against a producer large enough that an early exit always has pending writes.
+// Measured over 20 runs each: `sed -n '1p'` and `cat` fail 0/20; `head -n 1`, `grep -m1 ''`,
+// `sed -n '1{p;q}'` and `awk 'NR==1{print; exit}'` each fail 20/20. Deterministic, not flaky.
+// A real pipe, not the `||` of `… || true`.
+const pipeAt = (line) => line.search(/[^|]\|[^|]/u);
+const pipelines = sweepJob
+  .split("\n")
+  .map((line) => line.trim())
+  .filter((line) => line.startsWith("git ") && pipeAt(line) !== -1);
+assert.ok(pipelines.length > 0, "expected the sweep to build its path inventory through a pipeline");
+for (const pipeline of pipelines) {
+  // Only the consumer chain is executed; the real producer is replaced, so this runs no side effects.
+  const consumer = pipeline.slice(pipeAt(pipeline) + 2).replace(/>\s*\S+\s*$/u, "").trim();
+  const probe = spawnSync("bash", ["--noprofile", "--norc", "-eo", "pipefail", "-c", `seq 1 2000000 | ${consumer} > /dev/null`]);
+  assert.equal(
+    probe.status,
+    0,
+    `pipefail hazard: \`${consumer}\` stops reading before EOF, so it SIGPIPEs its producer and fails the step with ${probe.status}. Use a consumer that reads to EOF, e.g. \`sed -n '1p'\`.`,
+  );
+}
 assert.match(ci, /^ {2}schedule:\n {4}- cron: "[^"]+"$/mu, "the sweep needs a schedule to be a scheduled signal");
 
 // AC4 again, from the other side: the per-PR integrity job must not have acquired sweep mode.
