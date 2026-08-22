@@ -438,6 +438,18 @@ module MapScale =
             (axisGap first.Cell.Col first.Size second.Cell.Col second.Size)
             (axisGap first.Cell.Row first.Size second.Cell.Row second.Size)
 
+    let private footprintsOverlap firstCell firstSize secondCell secondSize =
+        firstCell.Col < secondCell.Col + secondSize
+        && secondCell.Col < firstCell.Col + firstSize
+        && firstCell.Row < secondCell.Row + secondSize
+        && secondCell.Row < firstCell.Row + firstSize
+
+    let private firstFootprintIntersection firstCell firstSize secondCell secondSize =
+        if footprintsOverlap firstCell firstSize secondCell secondSize then
+            Some(cell (max firstCell.Col secondCell.Col) (max firstCell.Row secondCell.Row))
+        else
+            None
+
     let private directRoute origin destination =
         let mutable column = origin.Col
         let mutable row = origin.Row
@@ -602,15 +614,24 @@ module MapScale =
                     |> List.fold (fun progress id -> Map.remove id progress) collectState.MovementProgress }
         let validateCheckpoint = checkpoint ValidatePhase validatedState validationEvents
 
-        let destinationCounts =
-            validatedMoves |> List.collect (fun move -> footprint move.Unit.Size move.Destination |> Array.toList)
-            |> List.countBy id |> Map.ofList
+        let destinationCounts = System.Collections.Generic.Dictionary<Cell, int32>()
+        validatedMoves
+        |> List.iter (fun move ->
+            footprint move.Unit.Size move.Destination
+            |> Array.iter (fun address ->
+                match destinationCounts.TryGetValue address with
+                | true, count -> destinationCounts[address] <- count + 1
+                | false, _ -> destinationCounts.Add(address, 1)))
+        let movesByUnit =
+            validatedMoves
+            |> List.map (fun move -> move.Unit.Id, move)
+            |> Map.ofList
         let conflicts =
             validatedMoves
             |> List.choose (fun move ->
                 let destinationConflict =
                     footprint move.Unit.Size move.Destination
-                    |> Array.tryFind (fun p -> Map.find p destinationCounts > 1)
+                    |> Array.tryFind (fun p -> destinationCounts[p] > 1)
                 match destinationConflict with
                 | Some p -> Some(move.Unit.Id, DestinationConflict p)
                 | None ->
@@ -618,37 +639,26 @@ module MapScale =
                         validatedMoves
                         |> List.tryFind (fun other ->
                         other.Unit.Id <> move.Unit.Id
-                        && footprint move.Unit.Size move.Destination |> Set.ofArray
-                           |> Set.intersect (footprint other.Unit.Size other.Unit.Cell |> Set.ofArray) |> Set.isEmpty |> not
-                        && footprint other.Unit.Size other.Destination |> Set.ofArray
-                           |> Set.intersect (footprint move.Unit.Size move.Unit.Cell |> Set.ofArray) |> Set.isEmpty |> not)
+                        && footprintsOverlap move.Destination move.Unit.Size other.Unit.Cell other.Unit.Size
+                        && footprintsOverlap other.Destination other.Unit.Size move.Unit.Cell move.Unit.Size)
                     match crossing with
                     | Some other -> Some(move.Unit.Id, CrossingConflict other.Unit.Id)
                     | None ->
-                        let destinationCells = footprint move.Unit.Size move.Destination |> Set.ofArray
                         state.Units
                         |> Map.toSeq
                         |> Seq.filter (fun (id, _) -> id <> move.Unit.Id)
                         |> Seq.tryPick (fun (id, other) ->
-                            let occupied = footprint other.Size other.Cell |> Set.ofArray
-                            if Set.intersect destinationCells occupied |> Set.isEmpty then None
-                            else
+                            match firstFootprintIntersection move.Destination move.Unit.Size other.Cell other.Size with
+                            | None -> None
+                            | Some address ->
                                 let otherMovesAway =
-                                    validatedMoves
-                                    |> List.exists (fun candidate ->
-                                        candidate.Unit.Id = id
-                                        && (Set.intersect
-                                                (footprint candidate.Unit.Size candidate.Destination |> Set.ofArray)
-                                                destinationCells
-                                            |> Set.isEmpty))
+                                    Map.tryFind id movesByUnit
+                                    |> Option.exists (fun candidate ->
+                                        not (footprintsOverlap
+                                                candidate.Destination candidate.Unit.Size
+                                                move.Destination move.Unit.Size))
                                 if otherMovesAway then None
-                                else
-                                    Set.intersect destinationCells occupied
-                                    |> Set.toList
-                                    |> List.sort
-                                    |> List.tryHead
-                                    |> Option.map (fun address ->
-                                        move.Unit.Id, OccupiedCell(address, id))))
+                                else Some(move.Unit.Id, OccupiedCell(address, id))))
             |> Map.ofList
         let resolvedMoves =
             validatedMoves |> List.filter (fun move -> not (Map.containsKey move.Unit.Id conflicts))

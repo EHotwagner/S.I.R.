@@ -39,3 +39,19 @@
 - Diagnosis: hosted protected preflight executes the two cancellation-mutation builds in its own job and passes a signed preflight receipt to core. The integrated local protected route executes those builds inside core, so its trace legitimately contains three. Every functional hosted gate, including strict documentation, passed before this accounting-only failure.
 - Patch: make the exact expected main-client Fable count route-aware: one when a protected preflight receipt is supplied, three for the integrated local protected route. All three cross-runtime fixture expectations remain exact-once.
 - Verification: CI route contract and invocation-trace tests exercise the conditional inventory without relaxing unknown, duplicate, or malformed invocation rejection.
+
+## Iteration 6 — 2026-08-22
+
+- Hosted failing command: scenario-catalog qualification inside protected full qualification.
+- Failure: the canonical 80×80/200-unit production route measured p95 101.126 ms / p99 105.072 ms against the unchanged 100/125 ms product budget. This performance signal had recurred on a second non-consecutive hosted run, so another blind retry was not accepted as a fix.
+- Diagnosis: simultaneous movement conflict resolution repeatedly constructed immutable 4×4 footprint sets inside move×move and move×unit searches. The canonical stress fixture turns those transient allocations and set intersections into the dominant tick cost.
+- Patch: retained the same destination, crossing, occupied-cell, move-away, conflict-precedence, and deterministic unit-order semantics while replacing repeated footprint-set materialization with allocation-free rectangle overlap/intersection checks. Destination multiplicity remains cell-exact.
+- Verification: the Release solution builds with zero warnings and errors. Three complete client qualification runs retained the exact structural result (1,562 events, 77 path expansions, 16 peak LOS samples, 19 peak combat resolutions, and 6,533 scene nodes) while stress p95 fell from the prior local 52–56 ms range to 7.827–8.122 ms and p99 to 11.130–13.642 ms. The unchanged 100/125 ms assertion remains in force.
+
+## Iteration 7 — 2026-08-22
+
+- Failing command: M4 map-editor qualification within `./scripts/test-conformance.sh`.
+- Failure: `review artifacts were not regenerated from the current production bundle` after the simulation optimization changed the emitted application bundle digest.
+- Diagnosis: the runtime and cross-runtime gates had passed, but the maintained M4, M9, and tactical review manifests were still intentionally bound to the preceding bundle. This is the expected fail-closed evidence-freshness boundary after a production source change.
+- Patch: regenerated the deterministic map-editor review, live M9 Chromium review, tactical production review, client feature-bundle graph receipt, and F# public-surface freshness projections against the optimized production build.
+- Verification: M4 through M9 acceptance passed; both independent tactical reproductions stayed within their unchanged 100/150 ms input-to-paint and 17.67 ms frame budgets; and the full tactical stylesheet, lifecycle, workload, faction, simultaneous-route/attack, one-route, font, timing, and exact-reproduction mutation matrix failed closed.
