@@ -254,7 +254,7 @@ jobs:
       - run: dotnet tool restore
       - name: Extract verified domain inputs once
         run: ./scripts/qualify-pr.sh extract-parts native fable web
-      - name: Run independently receipted domain gates concurrently
+      - name: Run ordinary domain gates concurrently, then performance-sensitive cross-runtime
         shell: bash
         env:
           PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
@@ -265,7 +265,6 @@ jobs:
           [[ '${{ needs.route.outputs.rules }}' == 'true' ]] && gates+=(rules)
           [[ '${{ needs.route.outputs.spatial }}' == 'true' ]] && gates+=(spatial)
           [[ '${{ needs.route.outputs.cancellation }}' == 'true' ]] && gates+=(cancellation)
-          [[ '${{ needs.route.outputs.cross_runtime }}' == 'true' ]] && gates+=(cross-runtime)
           pids=()
           for gate in "${gates[@]}"; do
             ./scripts/run-ci-gate.sh "$gate" "artifacts/ci/results/$gate.json" &
@@ -273,6 +272,9 @@ jobs:
           done
           status=0
           for pid in "${pids[@]}"; do wait "$pid" || status=1; done
+          if [[ '${{ needs.route.outputs.cross_runtime }}' == 'true' ]]; then
+            ./scripts/run-ci-gate.sh cross-runtime artifacts/ci/results/cross-runtime.json || status=1
+          fi
           exit "$status"
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
