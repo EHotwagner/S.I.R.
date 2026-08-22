@@ -146,7 +146,9 @@ NODE
     }
     trap write_part_timing EXIT
     start_dotnet_trace
-    dotnet tool restore
+    case "$part" in
+      fable|web|docs) dotnet tool restore ;;
+    esac
     # Restore only the graph owned by this producer. Each root has a committed
     # packages.lock.json and project restore traverses its project references,
     # so locked dependency validation remains fail-closed without making every

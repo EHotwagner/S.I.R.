@@ -17,9 +17,9 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "61ada7e22890252cb34dc9efb6f868972fb6d0c89be09aaf9e34be59f0805132",
+      "replacementSha256": "21a40c72df91881235f9e05d65fa7c7a04632039469152859288447e9dae58e4",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "The CI reliability design extends the route matrix with source-to-production-review freshness, consolidated ordinary domain execution, an independently parallel performance-sensitive cross-runtime measurement, parallel source-mutation helpers, a dedicated documentation projection producer, scoped locked restores for each prepared producer, two capacity-bounded concurrent browser-shard pairs, runtime-only browser setup, protected-stage receipt topology, and the existing performance, artifact, build-owner, and fail-closed join contracts; focused mutations cover every new edge."
+      "reason": "The CI reliability design extends the route matrix with source-to-production-review freshness, consolidated ordinary domain execution, an independently parallel performance-sensitive cross-runtime measurement, parallel source-mutation helpers, a dedicated documentation projection producer, scoped locked restores and tool ownership for each prepared producer, command-scoped consumer setup, two capacity-bounded concurrent browser-shard pairs, runtime-only browser setup, protected-stage receipt topology, and the existing performance, artifact, build-owner, and fail-closed join contracts; focused mutations cover every new edge."
     },
     {
       "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
@@ -27,9 +27,9 @@
       "locator": "file:.github/workflows/ci.yml",
       "path": ".github/workflows/ci.yml",
       "previousSha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127",
-      "replacementSha256": "86fce1267b45c2da6b5cbc024b732f50d25ad48342bb1273129fe49547f138b4",
+      "replacementSha256": "c2e01462729516e9e79adb5076fd6c3a7ee1ed5b6e18497483142c5175c89706",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "The CI reliability design retains the bounded PR topology, starts prepared consumers independently of the still-mandatory integrity join, executes four general browser shards as two concurrent capacity-bounded pairs, and runs the independent browser-delivery receipt concurrently with broad domain verification on the same runner while retaining its browser-only runner; it verifies hosted runtimes, preserves protected stages, and runs the read-only exact-run cost observer directly after the PR verdict. The workflow-DAG, cost-inventory, runtime, shard-pair, and receipt mutations reject missing or weakened edges."
+      "reason": "The CI reliability design retains the bounded PR topology, starts prepared consumers independently of the still-mandatory integrity join, executes four general browser shards as two concurrent capacity-bounded pairs, and runs the independent browser-delivery receipt concurrently with broad domain verification on the same runner while retaining its browser-only runner; it verifies hosted runtimes, omits package or tool setup from consumers whose executable commands do not use it, preserves protected stages, and runs the read-only exact-run cost observer directly after the PR verdict. The workflow-DAG, cost-inventory, runtime, shard-pair, setup-surface, and receipt mutations reject missing or weakened edges."
     },
     {
       "audit": "feedback/audits/2026-08-20-sir-item-231-svg-pipeline-measurement.audit.json",

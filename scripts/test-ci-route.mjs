@@ -258,10 +258,12 @@ for (const browserJob of ["browser", "browser-general-helper", "browser-delivery
 assert.match(jobBody("documentation"), /prepared-part-docs/u);
 assert.match(jobBody("documentation"), /prepared-part-web/u);
 assert.doesNotMatch(jobBody("documentation"), /prepared-part-native/u);
-assert.match(jobBody("documentation"), /actions\/setup-dotnet@[0-9a-f]{40} # v6\.0\.0/u);
+assert.doesNotMatch(jobBody("documentation"), /actions\/setup-dotnet@/u);
 assert.match(jobBody("spatial-mutations"), /needs: route/u);
 assert.match(jobBody("spatial-mutations"), /run-ci-gate\.sh spatial-mutations/u);
 assert.doesNotMatch(jobBody("spatial-mutations"), /prepared-part-|needs: \[[^\]]*prepare-/u);
+assert.doesNotMatch(jobBody("spatial-mutations"), /npm ci|dotnet tool restore/u);
+assert.match(jobBody("cancellation-mutations"), /npm ci --ignore-scripts[\s\S]*dotnet tool restore/u);
 assert.match(jobBody("cancellation-mutations"), /needs: route/u);
 assert.match(jobBody("cancellation-mutations"), /run-ci-gate\.sh cancellation-mutations/u);
 assert.doesNotMatch(jobBody("cancellation-mutations"), /prepared-part-|needs: \[[^\]]*prepare-/u);
@@ -317,6 +319,7 @@ assert.match(buildDocs, /--prepare-site-only[\s\S]*build_site_projection[\s\S]*-
 assert.doesNotMatch(focusedQualification, /find src tests -type d.*-name obj/u);
 assert.doesNotMatch(focusedQualification, /--output .*obj/u);
 const producerRestoreBlock = /    # Restore only the graph owned by this producer\.[\s\S]*?    restore_completed=/u.exec(focusedQualification)?.[0] ?? "";
+assert.match(focusedQualification, /case "\$part" in\n      fable\|web\|docs\) dotnet tool restore ;;/u);
 assert.match(producerRestoreBlock, /native\) dotnet restore SIR\.slnx --locked-mode/u);
 for (const project of [
   "tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj",
