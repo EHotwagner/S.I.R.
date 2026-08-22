@@ -351,9 +351,17 @@ let currentTacticalCamera
     element = document.getElementById('persistent-tactical-svg');
     if (!element) { frame = window.requestAnimationFrame(connect); return; }
     frame = 0;
-    measure();
-    if (observer) observer.observe(element);
-    else window.addEventListener('resize', onWindowResize);
+    if (observer) {
+      // ResizeObserver delivers an initial observation of its own, so measuring
+      // here as well only changes WHEN the model first learns its real size --
+      // and that shifts where the projection places cell (0,0) relative to the
+      // shell chrome. Measure eagerly only on the fallback path, which has no
+      // initial delivery at all.
+      observer.observe(element);
+    } else {
+      measure();
+      window.addEventListener('resize', onWindowResize);
+    }
   };
   connect();
   return {
