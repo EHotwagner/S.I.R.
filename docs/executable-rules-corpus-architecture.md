@@ -649,6 +649,78 @@ Line numbers are navigational hints, not identity. Builds validate symbol and
 path references. Historical pages never use an unpinned `main` link as their
 only implementation reference.
 
+### Implementation source pin
+
+The implementation identity that `ImplementationDigest` covers is declared by two
+artifacts under `tests/fixtures/rules-corpus/v2/`, because the pin has two duties
+that one commit cannot discharge together.
+
+`implementation-sources.json` is the **immutable half**. It declares
+`sourceCommit`, the package and algorithm fingerprints, and the `sources` list.
+Its membership rule is *implementation identity*: **a path belongs to `sources`
+if and only if its text at `sourceCommit` was hashed into the sealed
+implementation digest** carried by `src/SIR.Simulation/CombatRules.fs`. The list
+is therefore a historical provenance record describing one immutable commit, not
+an assertion about the current working tree, and it is correct that it does not
+change when the tree changes.
+
+Two consequences of that rule are worth stating, because both have been
+mistaken for accidents:
+
+- **Most listed paths host no rule symbol, and that is intended.** The digest
+  fingerprints the runtime-artifact set behind registered algorithms, and
+  `SemanticDigest` *may conservatively change when a runtime artifact changes
+  without changing observable behavior* while it *must never remain unchanged
+  when registered executable behavior changes*. Over-inclusion is sanctioned;
+  under-inclusion is prohibited. Evaluator and codec surfaces such as
+  `CanonicalEncoding.fs`, `CanonicalHash.fs` and `FixedPoint.fs` are listed for
+  exactly this reason — omitting them was once filed as a defect and fixed by
+  inclusion.
+- **The set is closed under refactoring.** When code moves out of a listed file
+  into a new one, the new file joins the list in the same change, so extraction
+  cannot quietly move implementation out from under the digest.
+
+`source-correspondence.json` is the **mutable half**. It records, per declared
+source, the SHA-256 of that file's text after the normalization
+`scripts/verify-rules-corpus.sh` applies, and the verifier requires the current
+tree to still match it — byte-exactly, for every declared source. Correspondence
+covers the identity set **exactly**: a missing row and an undeclared row are both
+refusals, so a source cannot be unfrozen by deleting its entry.
+
+### `sourceCommit` semantics and the rebind procedure
+
+`sourceCommit` names the commit that published rule **source links** resolve
+against. Because a fresh network clone must be able to reach it, it must be an
+ancestor of the canonical default branch, and the verifier refuses a malformed,
+absent, checkout-local, or non-ancestor value.
+
+That durability requirement is the reason correspondence is a separate artifact.
+Rebinding an identity subject means recording text that is **not yet** on the
+default branch — a pull request's own content never is — so a baseline stored as
+a commit id can only ever name a commit that already exists after the merge it
+gates. Binding both duties to `sourceCommit` made the second unsatisfiable: no
+pull request changing a declared source could pass, in either direction, because
+the comparison is byte identity rather than a size or shape constraint.
+
+To change a declared implementation source:
+
+1. Make the source change.
+2. Run `scripts/rebind-rules-corpus-sources.sh` to see which identity subjects
+   moved, then `--write` to record their new digests, **in the same commit**.
+   The tool rebinds only paths whose normalized text actually differs, refuses to
+   add or remove a path, and refuses to record a digest for a tree that does not
+   build.
+3. Review the `source-correspondence.json` diff. It names exactly the identity
+   subjects that moved, and that diff is the record of the decision.
+
+`sourceCommit`, the sealed implementation digest, and the generated corpus
+fixtures are **not** touched by a correspondence rebind. The sealed digest is
+derived only from blobs at `sourceCommit`, so the working tree contributes
+nothing to it and package identity does not move. Advancing `sourceCommit`
+itself is a separate, deliberate identity rebind that re-seals the digest and
+regenerates the manifest, coverage, and representative-application fixtures
+together.
+
 ## Documentation and web-client projections
 
 ### Rule explorer
