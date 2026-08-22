@@ -112,7 +112,14 @@ jobs:
           # The honest path set for a sweep is what actually last landed on this branch. It is also
           # the point: these are the paths that select nothing, and the sweep runs everything anyway.
           git diff --name-only HEAD~1 HEAD > artifacts/ci/changed-paths.txt || true
-          if [[ ! -s artifacts/ci/changed-paths.txt ]]; then git ls-files -- '*.md' | head -n 1 > artifacts/ci/changed-paths.txt; fi
+          # Degenerate case (root commit, or a commit that changed nothing): the router rejects an
+          # empty inventory, so fall back to any tracked path. `sed -n 1p` rather than `head -n 1`
+          # deliberately — this step runs under `-o pipefail`, where `head` closing the pipe early
+          # SIGPIPEs `git ls-files` and fails the whole step with 141.
+          if [[ ! -s artifacts/ci/changed-paths.txt ]]; then
+            git ls-files -- '*.md' | sed -n '1p' > artifacts/ci/changed-paths.txt
+          fi
+          test -s artifacts/ci/changed-paths.txt
           ./scripts/qualify-pr.sh route artifacts/ci/changed-paths.txt
       - name: Run every integrity subject unconditionally
         env:

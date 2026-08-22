@@ -101,6 +101,11 @@ const sweepJob = jobBody("integrity-sweep");
 assert.match(sweepJob, /^ {4}if: github\.event_name != 'pull_request'$/mu, "the sweep must never run on a pull request");
 assert.match(sweepJob, new RegExp(`^ {10}${sweepEnvironmentVariable}: "true"$`, "mu"), "the sweep job must activate sweep mode");
 assert.match(sweepJob, /run-ci-gate\.sh integrity /u, "the sweep must run the integrity gate, not a private copy of it");
+// The route step declares `shell: bash`, which GitHub runs with `-o pipefail`. A command that closes
+// a pipe early (`head -n 1`) SIGPIPEs its producer and fails the whole step with 141 — turning the
+// safety net into the thing that reddens `main`. Measured, not theorised: exit 141.
+assert.doesNotMatch(sweepJob, /\|\s*head\b/u, "no early-closing pipe in a pipefail step; use `sed -n '1p'`");
+assert.match(sweepJob, /^ {10}test -s artifacts\/ci\/changed-paths\.txt$/mu, "the sweep must refuse an empty path inventory rather than hand it to the router");
 assert.match(ci, /^ {2}schedule:\n {4}- cron: "[^"]+"$/mu, "the sweep needs a schedule to be a scheduled signal");
 
 // AC4 again, from the other side: the per-PR integrity job must not have acquired sweep mode.
