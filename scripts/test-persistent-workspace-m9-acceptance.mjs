@@ -105,11 +105,11 @@ for (const obsolete of [
 // and the frame scheduler.  The single-owner invariant is unchanged and still
 // exact -- only the shape it is written in moved.
 require(
-  (app.match(/let persistentSceneSvg/g) ?? []).length === 1 &&
+  (app.match(/let persistentSceneSvg\b/g) ?? []).length === 1 &&
     (app.match(/svg\.id "persistent-tactical-svg"/g) ?? []).length === 1 &&
     (app.match(/persistentSceneSvg\s+props\.Model\s+props\.Projection\s+props\.PresentationAlpha\s+props\.Revisions\s+scheduler\s+props\.Dispatch/g) ?? []).length === 1 &&
-    (app.match(/tacticalWorkscreenRegion model dispatch/g) ?? []).length === 2 &&
-    (app.match(/tacticalShell model dispatch transientContent/g) ?? []).length === 2,
+    (app.match(/tacticalWorkscreenRegion model dispatch\b/g) ?? []).length === 2 &&
+    (app.match(/tacticalShell model dispatch transientContent\b/g) ?? []).length === 2,
   "source does not have exactly one renderer definition, SVG root, renderer call, region definition/call, and shell call",
 );
 for (const required of [
