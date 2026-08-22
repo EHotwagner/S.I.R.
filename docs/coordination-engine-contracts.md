@@ -70,6 +70,17 @@ Three separate errors in an earlier revision of this page came from that one sea
 described as mere non-emptiness. All three were written from the Core encoders and validators, none of
 which can see what the CLI enforces.
 
+**A worked example, from this page's own review.** A critic checking these very claims tested the
+`enter` event against `ReviewWait.validate`, found no five-minute bound on `enteredAt`, and reported
+that the rule "does not exist". The rule does exist — in the CLI gate, the layer the pure validator
+cannot see. The critic was right that the page was wrong (it omitted the 24-hour ceiling the validator
+*does* enforce) and wrong about why. It converged against the pure validator and drew a false negative
+by precisely the mechanism described above, while reviewing the paragraph that describes it.
+
+Take the lesson rather than the irony: **"I called the validator and it does not enforce X" is not
+evidence that X is unenforced.** It is evidence about one layer. Both layers are enumerated for the
+`enter` event below, and where a rule is production-only this page says so.
+
 Everything below marked **production-only** is a rule the in-process validator does not enforce and
 cannot reveal.
 
