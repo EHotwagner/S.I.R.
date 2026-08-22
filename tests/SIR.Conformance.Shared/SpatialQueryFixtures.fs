@@ -150,6 +150,44 @@ module SpatialQueryFixtures =
         let diagonalOnlyPackagePath = SpatialQuery.packagePointPath 16 (fun position -> position = cell 0 0 || position = cell 1 1) (cell 0 0) (cell 1 1)
         require diagonalOnlyPackagePath.IsNone "Package path adapter stopped enforcing FourWay neighbourhood semantics."
 
+        // AC 2 / F2: boundary resolution answers FIRST-DECLARATION-WINS, exactly as the
+        // `List.tryFind` scan it replaced. An index built with `Map.ofList` would keep the LAST
+        // declaration and silently invert this world's answer.
+        //
+        // BOTH RESOLUTION PATHS ARE EXERCISED, AND THAT IS THE POINT. Resolution is a per-query
+        // cost decision: a query that probes few times keeps the scan, and only a query that
+        // probes past the threshold builds the keyed index. Asserting this on a small query alone
+        // is VACUOUS for the index - it never runs - which is exactly what happened here until
+        // `scripts/test-working-set-gate-mutations.sh` inverted the index and watched the
+        // assertion pass anyway. The pair below pins the real invariant: the two paths agree.
+        let duplicateEdgeWorld =
+            world 7L 3L
+                [ boundary (cell 0 0) (cell 1 0) false false false "duplicate:first"
+                  boundary (cell 0 0) (cell 1 0) true true true "duplicate:second" ]
+                Map.empty
+                Set.empty
+        let duplicatedEdge = edge (cell 0 0) (cell 1 0)
+
+        // Few probes: resolved by the linear scan.
+        let scannedDuplicate, _ =
+            SpatialQuery.evaluate
+                duplicateEdgeWorld
+                (request "duplicate-edge-scanned" SpatialQueryKind.LineTrace SpatialModality.Vision (cell 0 0) (cell 1 0) [ cell 0 0 ] bounds)
+        require
+            (not scannedDuplicate.Visible && scannedDuplicate.Explanation.CoverContributors = [ duplicatedEdge ])
+            "Scanned boundary resolution stopped answering first-declaration-wins."
+
+        // A 4x4 footprint over eight columns is 256 origin/target pairs, which probes far past the
+        // threshold, so this query resolves through the keyed index instead.
+        let indexedFootprint = [ for row in 0 .. 3 do for col in 0 .. 3 -> cell col row ]
+        let indexedDuplicate, _ =
+            SpatialQuery.evaluate
+                duplicateEdgeWorld
+                (request "duplicate-edge-indexed" SpatialQueryKind.ExactLineOfSight SpatialModality.Vision (cell 0 0) (cell 7 0) indexedFootprint bounds)
+        require
+            (indexedDuplicate.Explanation.CoverContributors |> List.contains duplicatedEdge)
+            "Indexed boundary resolution stopped answering first-declaration-wins."
+
         let canonical =
             [ SpatialQuery.canonicalResultBytes blocked
               SpatialQuery.canonicalResultBytes pathResult
