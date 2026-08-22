@@ -323,7 +323,7 @@
       },
       "children": [
         {
-          "className": "",
+          "className": "persistent-workspace-rosters",
           "position": "static",
           "rect": {
             "x": 4.188,
@@ -348,7 +348,7 @@
       },
       "children": [
         {
-          "className": "panel editor-tools editor-tools-panel",
+          "className": "persistent-workspace-tools",
           "position": "static",
           "rect": {
             "x": 4.188,
@@ -373,7 +373,7 @@
       },
       "children": [
         {
-          "className": "panel unit-editor-panel",
+          "className": "persistent-workspace-selections",
           "position": "static",
           "rect": {
             "x": 1220.203,

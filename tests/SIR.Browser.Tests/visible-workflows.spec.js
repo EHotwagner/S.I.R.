@@ -268,18 +268,24 @@ test("visible View commands preserve a usable tactical workspace across authorin
 });
 
 test("visible Plan worker status renders while background Plan completion stays isolated", async ({ page }) => {
+  // The shim delays MAIN -> WORKER only; the worker's reply is untouched, so the
+  // observable "Connecting" window is exactly this delay. Expanding the document
+  // panel costs several round-trips, so that work happens BEFORE entering Plan --
+  // otherwise the window closes while the panel is still opening and the test
+  // races a transient the product does in fact render.
   await page.addInitScript(() => {
     const nativePostMessage = Worker.prototype.postMessage;
     Worker.prototype.postMessage = function (...args) {
-      setTimeout(() => nativePostMessage.apply(this, args), 100);
+      setTimeout(() => nativePostMessage.apply(this, args), 2000);
     };
   });
   await page.goto("/");
   const app = page.getByRole("main", { name: "S.I.R. simulator and editor" });
   const constructionsBeforePlan = Number(await app.getAttribute("data-app-view-constructions"));
-  await switchWorkspace(page, "Plan");
   const documentPanel = await expandPanel(page, "document");
+  await switchWorkspace(page, "Plan");
   const status = documentPanel.locator(".planning-worker-status");
+  await expect(status).toHaveText("Connecting to planning worker");
   const planRoster = page.locator('[data-roster-mode="PlanningWorkspace"] .persistent-roster-owner');
   const planTools = page.locator('[data-tools-mode="PlanningWorkspace"] .persistent-tools-owner');
   const planSelection = page.locator('[data-selection-mode="PlanningWorkspace"] .persistent-selection-owner');
@@ -291,7 +297,6 @@ test("visible Plan worker status renders while background Plan completion stays 
   const leftConstructionsBeforeReady = await leftSidebar.getAttribute("data-sidebar-constructions");
   const rightConstructionsBeforeReady = await rightSidebar.getAttribute("data-sidebar-constructions");
   const statusConstructionsBeforeReady = Number(await status.getAttribute("data-planning-worker-status-constructions"));
-  await expect(status).toHaveText("Connecting to planning worker");
   await expect(status).toHaveText("Planning worker ready");
   await expect(planRoster).toHaveAttribute("data-roster-constructions", planRosterConstructionsBeforeReady);
   await expect(planTools).toHaveAttribute("data-tools-constructions", planToolsConstructionsBeforeReady);
