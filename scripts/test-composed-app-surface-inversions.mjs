@@ -24,8 +24,16 @@
 // boot the production bundle before they reach their source assertions.
 
 import { readFile, writeFile } from "node:fs/promises";
-import { spawn } from "node:child_process";
+import { spawn, execFileSync } from "node:child_process";
 import { resolve } from "node:path";
+
+// The gates this harness drives are not all side-effect-free -- at least one
+// rewrites a review telemetry artifact with machine-dependent timing and heap
+// values just by running. Restoring only the file WE mutate would leave the tree
+// dirty and call it clean, so snapshot the whole tracked working tree and report
+// any path this run left changed. Visible beats tidy.
+const trackedStatus = () =>
+  execFileSync("git", ["status", "--porcelain"], { encoding: "utf8" }).trim();
 
 const PRESENTATION = "src/SIR.Client.Web/TacticalScenePresentation.fs";
 
@@ -107,6 +115,7 @@ const runGate = (gate) =>
   });
 
 const failures = [];
+const statusBefore = trackedStatus();
 for (const probe of cases) {
   const path = resolve(probe.file);
   const original = await readFile(path, "utf8");
@@ -155,6 +164,15 @@ for (const probe of cases) {
   if (probe.file === PRESENTATION && !restored.includes(probe.from)) {
     failures.push(`${probe.file} was not restored after inverting ${probe.gate}`);
   }
+}
+
+const statusAfter = trackedStatus();
+if (statusAfter !== statusBefore) {
+  const before = new Set(statusBefore.split("\n"));
+  const introduced = statusAfter.split("\n").filter((line) => line && !before.has(line));
+  failures.push(
+    `this run left the working tree changed; restore with git checkout -- <path> and re-read the gates that did it:\n      ${introduced.join("\n      ")}`,
+  );
 }
 
 if (failures.length > 0) {
