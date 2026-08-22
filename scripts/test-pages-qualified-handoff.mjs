@@ -12,10 +12,12 @@ assert.match(pages, /ref: \$\{\{ github\.event\.workflow_run\.head_sha \}\}/u);
 assert.match(pages, /name: protected-qualified-site/u);
 assert.match(pages, /run-id: \$\{\{ github\.event\.workflow_run\.id \}\}/u);
 assert.match(pages, /test '\$\{\{ github\.event\.workflow_run\.head_sha \}\}' = "\$\(git rev-parse HEAD\)"/u);
-assert.match(pages, /production-build-receipt\.mjs verify[\s\S]*--receipt artifacts\/qualification\/site-receipt\.json/u);
+assert.match(pages, /production-build-receipt\.mjs verify[\s\S]*--receipt "\$\(<artifacts\/qualification\/site-receipt\.path\)"/u);
+assert.match(ci, /staged_receipt="artifacts\/qualification\/site-receipts\/\$\(basename "\$source_receipt"\)"/u);
+assert.match(ci, /printf '%s\\n' "\$staged_receipt" > artifacts\/qualification\/site-receipt\.path/u);
+assert.match(ci, /name: protected-qualified-site[\s\S]*artifacts\/qualification\/site-receipts[\s\S]*artifacts\/site/u);
+assert.doesNotMatch(ci, /site-receipt\.json/u);
 assert.match(pages, /permissions:\n      actions: read\n      contents: read\n      pages: write\n      id-token: write/u);
 assert.doesNotMatch(pages, /npm ci|build-docs\.sh|fsdocs build|dotnet build/u);
-assert.match(ci, /name: protected-qualified-site[\s\S]*artifacts\/qualification\/site-receipt\.json[\s\S]*artifacts\/site/u);
-assert.match(ci, /cp "\$\(<artifacts\/qualification\/site-receipt\.path\)" artifacts\/qualification\/site-receipt\.json/u);
 
 console.log("Pages consumes only the exact successful protected-main site receipt with deploy-only permissions and no rebuild path.");

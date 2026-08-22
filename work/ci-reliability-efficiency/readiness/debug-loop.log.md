@@ -55,3 +55,11 @@
 - Diagnosis: the runtime and cross-runtime gates had passed, but the maintained M4, M9, and tactical review manifests were still intentionally bound to the preceding bundle. This is the expected fail-closed evidence-freshness boundary after a production source change.
 - Patch: regenerated the deterministic map-editor review, live M9 Chromium review, tactical production review, client feature-bundle graph receipt, and F# public-surface freshness projections against the optimized production build.
 - Verification: M4 through M9 acceptance passed; both independent tactical reproductions stayed within their unchanged 100/150 ms input-to-paint and 17.67 ms frame budgets; and the full tactical stylesheet, lifecycle, workload, faction, simultaneous-route/attack, one-route, font, timing, and exact-reproduction mutation matrix failed closed.
+
+## Iteration 8 — 2026-08-22
+
+- Hosted failing command: `production-build-receipt.mjs verify` in the post-CI Pages deployment.
+- Failure: `receipt-content-address-drift` after protected CI, the cost observer, and the qualified-site upload had all passed.
+- Diagnosis: the CI handoff copied the canonical `<sha256>.json` site receipt to a fixed `site-receipt.json` alias. The verifier correctly requires the receipt basename to equal its content digest, so the deployment could never accept that alias.
+- Patch: stage the receipt under its original content-addressed basename, rewrite the artifact pointer to the staged path, upload that receipt directory, and make Pages resolve the exact receipt through the pointer. The workflow contract now rejects reintroduction of the fixed alias.
+- Verification: Pages handoff, action-pin/permission, CI route, protected-stage receipt, workflow topology, and YAML/static contract checks pass locally. Hosted qualified-site deployment remains pending.
