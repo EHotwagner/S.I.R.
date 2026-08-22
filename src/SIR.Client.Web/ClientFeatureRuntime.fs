@@ -115,16 +115,25 @@ let documentationContextLinks hasSelected openConcept =
         ]
     ]
 
+/// The lazily imported feature a supporting panel's body is produced from, if
+/// any.  This is the ONE place that mapping lives: a memo comparator that wants
+/// to know "does this sidebar's content depend on a feature import?" has to
+/// agree with the code that requests the import, or a panel either never
+/// re-renders after its chunk lands or every sidebar rebuilds when any chunk
+/// lands.  Both of those have happened.
+let panelFeature panelId =
+    if panelId = "rules" then Some FeatureLoader.rulesWorkbench
+    elif panelId = "data" then Some FeatureLoader.rulesExplorer
+    elif panelId = "samples" then Some FeatureLoader.samples
+    elif panelId = "tools" then Some FeatureLoader.tacticalEnvironment
+    else None
+
 let requestSupportingPanel panelId opened focused =
-    if panelId = "rules" || panelId = "data" || panelId = "samples" || panelId = "tools" then
-        let feature =
-            if panelId = "rules" then FeatureLoader.rulesWorkbench
-            elif panelId = "data" then FeatureLoader.rulesExplorer
-            elif panelId = "samples" then FeatureLoader.samples
-            else FeatureLoader.tacticalEnvironment
+    match panelFeature panelId with
+    | Some feature ->
         let requested, load = update (FeatureLoader.Request feature) opened
         requested, Cmd.batch [ focused; load ]
-    else opened, focused
+    | None -> opened, focused
 
 [<ReactLazyComponent>]
 let private LazyRulesExplorer simulator selectedUnit bootstrap =

@@ -35,7 +35,10 @@ const executablePath = process.env.PLAYWRIGHT_EXECUTABLE_PATH || chromium.execut
 const browserVersion = execFileSync(executablePath, ["--version"], { encoding: "utf8" }).trim();
 const candidate = { commit: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(), tree: execFileSync("git", ["rev-parse", "HEAD^{tree}"], { encoding: "utf8" }).trim() };
 const buildIdentity = {
-  clientManifestSha256: byteDigest(readFileSync("artifacts/publish/.vite/manifest.json")),
+  // dotnet publish emits the client manifest under wwwroot/; this read was still
+  // pointing at the pre-publish layout, so the harness could not start at all.
+  // Nothing caught it because no workflow job invokes this harness.
+  clientManifestSha256: byteDigest(readFileSync("artifacts/publish/wwwroot/.vite/manifest.json")),
   serverAssemblySha256: byteDigest(readFileSync("artifacts/publish/SIR.Server.dll")),
 };
 const browser = await chromium.launch({ executablePath, args: ["--enable-precise-memory-info", "--js-flags=--expose-gc"] });
