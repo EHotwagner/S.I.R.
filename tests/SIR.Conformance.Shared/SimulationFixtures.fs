@@ -136,7 +136,49 @@ module SimulationFixtures =
         else
             encodedCheckpoint
 
+    /// AC 1 / F1: the projected spatial world is constructed AT MOST ONCE per observation phase,
+    /// however many observation pairs the tick carries - and not at all when it carries none.
+    ///
+    /// The counter lives HERE, in the caller, rather than inside `Simulation`. A module-level
+    /// mutable in the simulation would be both a determinism hazard and a Fable hazard, so the
+    /// world is a caller-supplied factory and the only mutable state sits in this fixture.
+    let private observationWorldConstruction () =
+        let state = Simulation.initialState
+        let projectedWorld () =
+            { Identity =
+                SpatialAuthorityIdentity.create "fixture-board" "sir-spatial-v1" 0L "fixture-authority" 0L
+                |> Result.defaultWith failwith
+              Minimum = state.Board.Minimum
+              Maximum = state.Board.Maximum
+              Terrain = Map.empty
+              Boundaries = []
+              Occupancy = Map.empty
+              DisclosedRevisionTokens = Set.empty }
+        let countingRun journal =
+            let constructions = ref 0
+            let worldFor () =
+                constructions.Value <- constructions.Value + 1
+                projectedWorld ()
+            let next, events = Simulation.observationPhaseWith worldFor state journal
+            constructions.Value, next, events
+
+        let observedCount, observedState, observedEvents =
+            countingRun
+                [ Observe(Simulation.unitId 10, Simulation.unitId 20)
+                  Observe(Simulation.unitId 20, Simulation.unitId 10)
+                  Observe(Simulation.unitId 10, Simulation.unitId 10) ]
+        if observedCount <> 1 then
+            failwithf "The observation phase constructed the spatial world %d times for a three-observation tick." observedCount
+        // Without this the count above would pass vacuously on a phase that observed nothing.
+        if List.isEmpty observedEvents || observedState.Observations = state.Observations then
+            failwith "The counted observation phase produced no observation, so its construction count proves nothing."
+
+        let unobservedCount, _, _ = countingRun [ Attack(Simulation.unitId 10, Simulation.unitId 20) ]
+        if unobservedCount <> 0 then
+            failwithf "The observation phase constructed %d spatial worlds for a tick carrying no observation." unobservedCount
+
     let private execute journal =
+        observationWorldConstruction ()
         let result = Simulation.runTick Simulation.initialState journal
 
         result,
