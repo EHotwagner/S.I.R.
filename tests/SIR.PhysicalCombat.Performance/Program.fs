@@ -682,60 +682,78 @@ let private squareFootprint side =
 
 let private measureRepeated warmup iterations (action: unit -> 'a) =
     for _ in 1 .. warmup do action () |> ignore
+    // Settle the heap between workloads. Without this the workloads contaminate each other: an
+    // earlier workload that allocates differently leaves the collector in a different state, and
+    // the next measurement moves with THAT rather than with the code under test. It was mistaken
+    // for a 60% regression in the cache workload until the same number reproduced with the
+    // original code restored.
+    GC.Collect()
+    GC.WaitForPendingFinalizers()
+    GC.Collect()
     let clock = Stopwatch.StartNew()
     let mutable last = action ()
     for _ in 2 .. iterations do last <- action ()
     clock.Stop()
     last, clock.Elapsed.TotalMilliseconds / float iterations
 
-let private runWorkingSetMeasurement () =
+// Each workload runs in its OWN PROCESS, selected by name. They used to run one after another in a
+// single process and that made the harness lie: the indexed trace and path workloads allocate a
+// boundary index per evaluation, and the heap state they left behind slowed the cache and tick
+// workloads that ran after them by roughly 2x - which read as a regression in code those later
+// workloads never executed. `GC.Collect` between workloads did not settle it. Isolation did.
+let private runWorkingSetMeasurement selected =
+    let selects name = selected = "all" || selected = name
     // F2 + F5 - exact line of sight over a 4x4 footprint, which is 256 origin/target pairs, on a
     // walled map. F2 is the per-crossing boundary resolution; F5 is the line materialization.
-    let traceWorld = wallDenseWorld 64 true false
-    let traceRequest =
+    if selects "f2f5" then
+     let traceWorld = wallDenseWorld 64 true false
+     let traceRequest =
         workingSetRequest "working-set-los" SpatialQueryKind.ExactLineOfSight SpatialModality.Vision (cell 0 0) (cell 10 10) (squareFootprint 4)
-    let traceResult, traceMs = measureRepeated 3 20 (fun () -> SpatialQuery.evaluate traceWorld traceRequest |> fst)
-    printfn
+     let traceResult, traceMs = measureRepeated 3 20 (fun () -> SpatialQuery.evaluate traceWorld traceRequest |> fst)
+     printfn
         "working-set f2f5-exact-los-ms=%.3f boundaries=%d footprint=%d crossed-cells=%d crossed-edges=%d outcome=%A visible=%b"
         traceMs traceWorld.Boundaries.Length traceRequest.Footprint.Length
         traceResult.Explanation.CrossedCells.Length traceResult.Explanation.CrossedEdges.Length
         traceResult.Outcome traceResult.Visible
 
-    // F4 - a bounded path whose package A* candidate is REJECTED by the boundary rule, because
+    if selects "f4" then
+     // F4 - a bounded path whose package A* candidate is REJECTED by the boundary rule, because
     // `anchorPassable` does not consult boundaries and `transitionPassable` does. That is what
     // makes the rewritten fallback loop the path actually taken on a wall-dense map.
-    let pathWorld = wallDenseWorld 24 false false
-    let pathRequest =
+     let pathWorld = wallDenseWorld 24 false false
+     let pathRequest =
         workingSetRequest "working-set-path" SpatialQueryKind.BoundedPath SpatialModality.GroundMovement (cell 0 0) (cell 20 20) [ cell 0 0 ]
-    let pathResult, pathMs = measureRepeated 3 10 (fun () -> SpatialQuery.evaluate pathWorld pathRequest |> fst)
-    printfn
+     let pathResult, pathMs = measureRepeated 3 10 (fun () -> SpatialQuery.evaluate pathWorld pathRequest |> fst)
+     printfn
         "working-set f4-bounded-path-ms=%.3f boundaries=%d expansions=%d path-cells=%d cost=%d outcome=%A"
         pathMs pathWorld.Boundaries.Length pathResult.Explanation.Expansions
         pathResult.Path.Length pathResult.MovementCost pathResult.Outcome
 
-    // F3 - lookups against an already-populated dynamic tier. The cost removed is the
+    if selects "f3" then
+     // F3 - lookups against an already-populated dynamic tier. The cost removed is the
     // `DynamicEntries @ StaticEntries` copy that ran on EVERY lookup, hits included.
-    let cacheWorld = wallDenseWorld 24 true true
-    let cacheRequests =
+     let cacheWorld = wallDenseWorld 24 true true
+     let cacheRequests =
         [ for index in 0 .. 511 ->
             workingSetRequest (sprintf "working-set-cache-%04d" index) SpatialQueryKind.LineTrace SpatialModality.Vision (cell 0 0) (cell 3 0) [ cell 0 0 ] ]
-    let populated =
+     let populated =
         cacheRequests
         |> List.fold
             (fun cache request ->
                 let _, next, _ = SpatialQuery.evaluateCached cache cacheWorld request
                 next)
             SpatialQuery.emptyCache
-    let probe = List.head cacheRequests
-    let _, cacheMs = measureRepeated 100 2000 (fun () -> SpatialQuery.evaluateCached populated cacheWorld probe)
-    printfn
+     let probe = List.head cacheRequests
+     let _, cacheMs = measureRepeated 100 2000 (fun () -> SpatialQuery.evaluateCached populated cacheWorld probe)
+     printfn
         "working-set f3-cache-lookup-us=%.4f dynamic-entries=%d static-entries=%d"
         (cacheMs * 1000.0) populated.DynamicEntries.Length populated.StaticEntries.Length
 
-    // F1 + F6 - one full authoritative tick whose board carries many semantic edges and whose
+    if selects "f1f6" then
+     // F1 + F6 - one full authoritative tick whose board carries many semantic edges and whose
     // journal carries many observations. F1 is the per-observation world rebuild; F6 is the
     // duplicated guarded-edge board scan.
-    let observationBoard =
+     let observationBoard =
         { Minimum = cell 0 0
           Maximum = cell 63 63
           Edges =
@@ -751,11 +769,11 @@ let private runWorkingSetMeasurement () =
                                   BlocksMovement = (col + row) % 6 = 0 }
                         | None -> () ]
           Covers = Map.empty }
-    let observationState = { state 40 8 8 [] with Board = observationBoard }
-    let observationJournal =
+     let observationState = { state 40 8 8 [] with Board = observationBoard }
+     let observationJournal =
         [ for observer in 1 .. 20 -> KernelInput.Observe(Simulation.unitId (int32 observer), Simulation.unitId (int32 observer + 20)) ]
-    let tickResult, tickMs = measureRepeated 3 10 (fun () -> Simulation.runTick observationState observationJournal)
-    printfn
+     let tickResult, tickMs = measureRepeated 3 10 (fun () -> Simulation.runTick observationState observationJournal)
+     printfn
         "working-set f1f6-observation-tick-ms=%.3f board-edges=%d observations=%d observed=%d events=%d"
         tickMs observationBoard.Edges.Length observationJournal.Length
         tickResult.State.Observations.Count tickResult.Events.Length
@@ -767,7 +785,13 @@ exception AwarenessPerformanceExit of int
 let main args =
     try
         if args |> Array.contains "--working-set" then
-            raise (AwarenessPerformanceExit(runWorkingSetMeasurement ()))
+            let selected =
+                args
+                |> Array.tryFindIndex (fun value -> value = "--working-set")
+                |> Option.bind (fun index -> args |> Array.tryItem (index + 1))
+                |> Option.filter (fun value -> not (value.StartsWith "--"))
+                |> Option.defaultValue "all"
+            raise (AwarenessPerformanceExit(runWorkingSetMeasurement selected))
         elif args |> Array.contains "--verify-awareness-receipt" then
             raise (AwarenessPerformanceExit(verifyAwarenessPerformanceReceipt (argument "--verify-awareness-receipt" args) (argument "--candidate-commit" args)))
         elif args |> Array.contains "--awareness" then
