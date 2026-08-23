@@ -1,0 +1,165 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-23-sir-item-255-review-contract-divergence-2.md",
+  "reportSha256": "0cb74d93733d269cebf9191dd1c0e0b808dd1075f700a351d12a0140b03b3acf",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "\u00a74.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show cb38462:scripts/test-review-contract-coherence.sh | grep -c 'mutate_and_expect_red \"'",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "7f34688585e335d10ef31594db74b71e0961db3dabaaf9d68b0f7d0075944e85"
+        }
+      ],
+      "confidenceLimits": [
+        "the locator supports the mutation count only; the 18-of-21 attribution split was reproduced by the critic through direct execution but is not itself carried by a locator",
+        "whether earlier rounds' authors relied on the mis-scored evidence is declared not-measured in \u00a71"
+      ]
+    },
+    {
+      "id": "\u00a74.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show cb38462:scripts/test-review-contract-coherence.sh | grep -nE 'in doc\\)|in inv\\)|cell.Contains tok|<headSha>:<kind>:<round>'",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "7f34688585e335d10ef31594db74b71e0961db3dabaaf9d68b0f7d0075944e85"
+        }
+      ],
+      "confidenceLimits": [
+        "the four presence-shaped sites are exact and reproduced at cb38462; the historical instance TOTAL is deliberately not asserted"
+      ]
+    },
+    {
+      "id": "\u00a74.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "file:docs/coordination-engine-contracts.md",
+          "result": "verified",
+          "sha256": "9dce25cc8161dced3104af078869bf2fd8500cf81b154c71d8755f69b2a3b183"
+        }
+      ],
+      "confidenceLimits": [
+        "'parsed with .NET date parsing rather than an ISO-8601 grammar' is an inference from the accepted set, not decompilation",
+        "the note that 0.73.1's coherent-set release is still Draft is cross-repo and claim-only"
+      ]
+    },
+    {
+      "id": "\u00a74.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show cb38462:.claude/skills/pnext-item/references/independent-review.md | sed -n '388,392p'",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git show cb38462:.claude/skills/work-board/references/host-loop.md | sed -n '71,75p'",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "the dispatchSuccessor oracle behaviour is a board-host report, marked unverified in the finding",
+        "the critic returned this finding `incomplete` for want of a reproducible locator for its Expected: quote, which does not exist at the frontmatter commit; the two `git show cb38462:` companions were added afterwards against the criterion the critic itself specified, and were verified by the implementer rather than by the critic"
+      ]
+    },
+    {
+      "id": "\u00a74.5",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "7f34688585e335d10ef31594db74b71e0961db3dabaaf9d68b0f7d0075944e85"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "the '11 uncovered checks' figure is an unrecoverable intermediate-build artifact, labelled in the finding as history rather than evidence"
+      ]
+    },
+    {
+      "id": "\u00a74.6",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head origin/main",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#258",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "a second transplanted fact (a 15->17 ledger-growth claim) was retracted before commit: the ledger holds 57 exceptions at HEAD, 1d8c93d and 8972d37 alike, so the count varies with diff overlap and not with ledger growth; only the empty-diff identity was transplanted to #258"
+      ]
+    },
+    {
+      "id": "\u00a74.7",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show cb38462:scripts/test-review-contract-coherence.sh | grep -n 'sorted(json.loads'",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "the S.I.R.#232 CLI-help limb is a board-host report, marked unverified in the finding"
+      ]
+    },
+    {
+      "id": "\u00a74.8",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "7f34688585e335d10ef31594db74b71e0961db3dabaaf9d68b0f7d0075944e85"
+        }
+      ],
+      "confidenceLimits": [
+        "'three checks parsed with re.search or [0]' understates the idiom's spread: six sites carry it; the understatement does not affect the disposition"
+      ]
+    }
+  ]
+}
