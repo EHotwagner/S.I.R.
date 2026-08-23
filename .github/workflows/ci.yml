@@ -30,6 +30,14 @@ jobs:
       documentation: ${{ steps.route.outputs.documentation }}
       evidence: ${{ steps.route.outputs.evidence }}
       prepare: ${{ steps.route.outputs.prepare }}
+      # S.I.R.#304: one per producer, derived by expectedProducersFor() in scripts/ci-route.mjs --
+      # the SAME function pr-verdict's join uses to build its expected set. Each prepare-* job below
+      # keys its `if:` on its own flag, so "what the workflow runs" and "what the join expects" are
+      # two readings of one declaration rather than two hand-maintained lists that can drift.
+      prepare_native: ${{ steps.route.outputs.prepare_native }}
+      prepare_fable: ${{ steps.route.outputs.prepare_fable }}
+      prepare_web: ${{ steps.route.outputs.prepare_web }}
+      prepare_docs: ${{ steps.route.outputs.prepare_docs }}
     steps:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
@@ -192,7 +200,7 @@ jobs:
         with: { name: gate-cancellation-mutations, path: artifacts/ci/results, retention-days: 1 }
 
   prepare-native:
-    if: needs.route.outputs.classification != 'evidence-only'
+    if: needs.route.outputs.prepare_native == 'true'
     needs: route
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -233,7 +241,7 @@ jobs:
         with: { name: gate-prepare-native, path: artifacts/ci/results, retention-days: 1 }
 
   prepare-fable:
-    if: needs.route.outputs.classification == 'domain' || needs.route.outputs.classification == 'cross-cutting'
+    if: needs.route.outputs.prepare_fable == 'true'
     needs: route
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -274,7 +282,7 @@ jobs:
         with: { name: gate-prepare-fable, path: artifacts/ci/results, retention-days: 1 }
 
   prepare-web:
-    if: needs.route.outputs.classification == 'documentation' || needs.route.outputs.classification == 'browser' || needs.route.outputs.classification == 'performance' || needs.route.outputs.classification == 'cross-cutting'
+    if: needs.route.outputs.prepare_web == 'true'
     needs: route
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -316,7 +324,7 @@ jobs:
         with: { name: gate-prepare-web, path: artifacts/ci/results, retention-days: 1 }
 
   prepare-docs:
-    if: needs.route.outputs.documentation == 'true'
+    if: needs.route.outputs.prepare_docs == 'true'
     needs: route
     runs-on: ubuntu-latest
     timeout-minutes: 30
