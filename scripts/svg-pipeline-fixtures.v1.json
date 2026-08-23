@@ -3,6 +3,17 @@
   "materialShareThreshold": 0.2,
   "warmupCycles": 2,
   "stabilizationCycles": 5,
+  "frameBudget": {
+    "callbackMillisecondsCeiling": 16.67,
+    "evaluatedPercentiles": [0.95, 0.99],
+    "exemptJourneys": ["idle"],
+    "source": "docs/performance-budget.md, production-workload table, \"Browser callback/main-thread inspection\" column. That column declares < 16.67 ms for BOTH the representative 100-unit replay row and the stress 200-unit replay row, so one ceiling governs every fixture here; no per-fixture ceiling is invented.",
+    "measures": "Chromium AnimationFrame animation_frame_timing_info.duration_ms, which is the same quantity that column describes: one animation-frame callback plus tactical DOM inspection on the production route.",
+    "percentileConvention": "nearest-rank, values[ceil(n*p)-1], the convention already used by finalize-svg-pipeline-evidence.mjs",
+    "exemptJourneyReason": "The idle journey performs no interaction and Chromium emits no AnimationFrame records for it (samples=0 in every observed run). A frame budget cannot be evaluated with no frames, so idle is declared exempt and reports `unevaluated` rather than a verdict it did not measure. A NON-exempt journey that reports zero frames is a FAILURE, not an exemption.",
+    "notMeasuredHere": "The same table's \"Release projection p95\" column (< 4 ms representative, < 8 ms stress) is the F# TacticalSceneProjection budget. This browser harness does not measure it and derives no verdict from it.",
+    "notABudget": "frameHealth.droppedFrames is computed against a bare inline 25 ms threshold that no budget document declares. It is REPORTED as a diagnostic and is deliberately NOT gated on; see the issue filed for that discrepancy."
+  },
   "journeys": ["idle", "playback", "pan", "zoom", "selection", "modality-transition", "dense-overlay"],
   "controlledAxes": {
     "mapExtent": ["controlled-baseline", "controlled-map-extent"],

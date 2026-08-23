@@ -24,6 +24,16 @@ export function validateDefinitions(definition) {
   if (requiredJourneys.some((name) => !definition.journeys.includes(name))) throw new Error("journey inventory is incomplete");
   if (!(definition.materialShareThreshold > 0 && definition.materialShareThreshold < 1)) throw new Error("material share threshold must be between zero and one");
   if (!(definition.warmupCycles > 0 && definition.stabilizationCycles > definition.warmupCycles)) throw new Error("memory cycle contract is invalid");
+  const budget = definition.frameBudget;
+  if (!budget || typeof budget !== "object") throw new Error("fixture definition declares no frameBudget; a verdict cannot be derived without a declared budget");
+  if (!(budget.callbackMillisecondsCeiling > 0)) throw new Error("frameBudget.callbackMillisecondsCeiling must be a positive number of milliseconds");
+  if (!Array.isArray(budget.evaluatedPercentiles) || budget.evaluatedPercentiles.length === 0
+      || budget.evaluatedPercentiles.some((value) => !(value > 0 && value <= 1)))
+    throw new Error("frameBudget.evaluatedPercentiles must be a non-empty list of proportions in (0, 1]");
+  if (!Array.isArray(budget.exemptJourneys) || budget.exemptJourneys.some((name) => !definition.journeys.includes(name)))
+    throw new Error("frameBudget.exemptJourneys must list declared journeys");
+  if (typeof budget.source !== "string" || budget.source.length === 0)
+    throw new Error("frameBudget.source must cite where the budget is declared");
   const ids = new Set();
   for (const fixture of definition.fixtures || []) {
     if (!fixture.id || ids.has(fixture.id)) throw new Error("fixture ids must be unique and non-empty");
@@ -229,7 +239,53 @@ export function extractFrameHealth(trace) {
   const intervals = frames.slice(1).map((event, index) => (traceTimestamp(event) - traceTimestamp(frames[index])) / 1000);
   const durations = frames.map((event) => Number(event.args?.animation_frame_timing_info?.duration_ms)).filter(Number.isFinite);
   const longTasks = events.filter((event) => event.name === "RunTask" && Number(event.dur || 0) >= 50_000).map((event) => Number((event.dur / 1000).toFixed(3)));
-  return { samples: frames.length, droppedFrames: durations.filter((value) => value > 25).length, frameDurationsMilliseconds: durations.map((value) => Number(value.toFixed(3))), intervalsMilliseconds: intervals.map((value) => Number(value.toFixed(3))), longTasks, source: "Chromium AnimationFrame timing records and renderer RunTask slices; no injected frame observer" };
+  return { samples: frames.length, droppedFrames: durations.filter((value) => value > 25).length, frameDurationsMilliseconds: durations.map((value) => Number(value.toFixed(3))), intervalsMilliseconds: intervals.map((value) => Number(value.toFixed(3))), longTasks, source: "Chromium AnimationFrame timing records and renderer RunTask slices; no injected frame observer", droppedFrameNote: "droppedFrames counts frames longer than an inline 25 ms threshold that NO budget document declares. It is a reported diagnostic and is deliberately not gated on; the declared frame budget is evaluated separately in each run's frameBudget block." };
+}
+
+// Nearest-rank percentile. This is the convention finalize-svg-pipeline-evidence.mjs already used;
+// it is shared here so the producer and the consumer cannot drift into two different definitions.
+export function percentile(values, proportion) {
+  if (!Array.isArray(values) || values.length === 0) return null;
+  const sorted = [...values].sort((left, right) => left - right);
+  return sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * proportion) - 1)];
+}
+
+// Derive ONE run's verdict from its measured frame durations against the DECLARED budget.
+//
+// Three outcomes, deliberately. "unevaluated" exists because the idle journey emits no AnimationFrame
+// records at all, and a gate that answers "pass" about a quantity it never measured is a non-answer
+// reported as a confident answer. A journey that is NOT declared exempt and still produced no frames is
+// a FAILURE, so a broken measurement can never be laundered into an exemption.
+export function evaluateRunFrameVerdict(frameHealth, journey, budget) {
+  if (!budget) throw new Error("a declared frameBudget is required to derive a run verdict");
+  const ceiling = budget.callbackMillisecondsCeiling;
+  const durations = Array.isArray(frameHealth?.frameDurationsMilliseconds) ? frameHealth.frameDurationsMilliseconds : [];
+  const exempt = (budget.exemptJourneys || []).includes(journey);
+  const percentiles = Object.fromEntries((budget.evaluatedPercentiles || []).map((proportion) => [`p${Math.round(proportion * 100)}`, percentile(durations, proportion)]));
+  const base = { ceilingMilliseconds: ceiling, sampleCount: durations.length, percentiles, maximumMilliseconds: durations.length ? Math.max(...durations) : null, budgetSource: budget.source };
+  if (exempt && durations.length === 0)
+    return { ...base, result: "unevaluated", reason: `the ${journey} journey is declared frame-exempt and produced no AnimationFrame records; no frame verdict is claimed` };
+  if (durations.length === 0)
+    return { ...base, result: "fail", reason: `the ${journey} journey is not declared frame-exempt but produced no AnimationFrame records, so its budget could not be evaluated` };
+  const breaches = Object.entries(percentiles).filter(([, value]) => value !== null && value > ceiling).map(([name, value]) => `${name}=${value} ms`);
+  if (breaches.length)
+    return { ...base, result: "fail", reason: `measured ${breaches.join(", ")} against the declared ceiling of ${ceiling} ms` };
+  return { ...base, result: "pass", reason: `every evaluated percentile is within the declared ceiling of ${ceiling} ms` };
+}
+
+// Derive the ARTIFACT verdict from the per-run verdicts. These are different questions: a run asks
+// whether one journey met the budget, the artifact asks whether the matrix as a whole did. The artifact
+// passes only when nothing failed AND at least one run was genuinely evaluated -- a matrix of nothing but
+// exemptions is not a pass.
+export function evaluateArtifactVerdict(runs) {
+  const verdicts = (runs || []).map((run) => run.frameBudget?.result);
+  const failed = verdicts.filter((value) => value === "fail").length;
+  const passed = verdicts.filter((value) => value === "pass").length;
+  const unevaluated = verdicts.filter((value) => value === "unevaluated").length;
+  if (verdicts.some((value) => value === undefined)) throw new Error("every run must carry a derived frameBudget verdict before the artifact verdict is computed");
+  if (failed > 0) return { result: "fail", passedRunCount: passed, failedRunCount: failed, unevaluatedRunCount: unevaluated, reason: `${failed} of ${verdicts.length} runs breached the declared frame budget` };
+  if (passed === 0) return { result: "fail", passedRunCount: passed, failedRunCount: failed, unevaluatedRunCount: unevaluated, reason: "no run was evaluated against the declared frame budget, so no pass is claimed" };
+  return { result: "pass", passedRunCount: passed, failedRunCount: failed, unevaluatedRunCount: unevaluated, reason: `${passed} runs met the declared frame budget and none breached it` };
 }
 
 export function extractInputToPaint(trace, journey) {

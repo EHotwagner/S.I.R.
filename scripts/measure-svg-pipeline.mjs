@@ -5,7 +5,7 @@ import { spawn } from "node:child_process";
 import { cpus, platform, release } from "node:os";
 import { basename, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
-import { byteDigest, digest, extractFrameHealth, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, stableJson, summarize, validateDefinitions, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
+import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, stableJson, summarize, validateDefinitions, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
 
 const args = process.argv.slice(2);
 const option = (name, fallback) => { const index = args.indexOf(name); return index >= 0 ? args[index + 1] : fallback; };
@@ -34,7 +34,7 @@ const executablePath = process.env.PLAYWRIGHT_EXECUTABLE_PATH || chromium.execut
 const browserVersion = execFileSync(executablePath, ["--version"], { encoding: "utf8" }).trim();
 const candidate = { commit: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(), tree: execFileSync("git", ["rev-parse", "HEAD^{tree}"], { encoding: "utf8" }).trim() };
 const buildIdentity = {
-  clientManifestSha256: byteDigest(readFileSync("artifacts/publish/.vite/manifest.json")),
+  clientManifestSha256: byteDigest(readFileSync("artifacts/publish/wwwroot/.vite/manifest.json")),
   serverAssemblySha256: byteDigest(readFileSync("artifacts/publish/SIR.Server.dll")),
 };
 const browser = await chromium.launch({ executablePath, args: ["--enable-precise-memory-info", "--js-flags=--expose-gc"] });
@@ -153,7 +153,9 @@ try {
       for (let cycle = 0; cycle < definitions.stabilizationCycles; cycle += 1) { await perform(page, "pan", fixture); await perform(page, "zoom", fixture); await perform(page, "playback", fixture); }
       const heapStable = await cdp.send("Runtime.getHeapUsage");
       const structural = await observeStructure(svg);
-      runs.push({ fixture: fixture.id, fixtureDigest: digest(fixture), workload: workloadRecipe(fixture), journey, startedAt, completedAt: new Date().toISOString(), result: "pass", stages: extractStages(journeyTrace), structural: { global: { mapExtent: fixture.mapExtent, unitCount: fixture.globalUnitCount, supportingListSize: fixture.supportingListSize }, visible: controlledStructural, cameraControl: { fitCompleteMap: true, viewport: fixture.viewport, centerAnchoredWheelSteps: 15, wheelDeltaY: -240 }, postMemoryCycles: structural }, frameHealth: { ...extractFrameHealth(journeyTrace), samplingWindow: "clock-sync-bounded named journey only; captured before warm-up and stabilization memory cycles" }, inputLatency: extractInputToPaint(journeyTrace, journey), memory: { warm: heapWarm, stabilized: heapStable, usedDelta: heapStable.usedSize - heapWarm.usedSize, warmupCycles: definitions.warmupCycles, stabilizationCycles: definitions.stabilizationCycles, collectionControl: "not-forced" }, trace: { path: retainedPath, sha256: traceSha256 } });
+      const runFrameHealth = { ...extractFrameHealth(journeyTrace), samplingWindow: "clock-sync-bounded named journey only; captured before warm-up and stabilization memory cycles" };
+      const runFrameVerdict = evaluateRunFrameVerdict(runFrameHealth, journey, definitions.frameBudget);
+      runs.push({ result: runFrameVerdict.result, fixture: fixture.id, fixtureDigest: digest(fixture), workload: workloadRecipe(fixture), journey, startedAt, completedAt: new Date().toISOString(), stages: extractStages(journeyTrace), structural: { global: { mapExtent: fixture.mapExtent, unitCount: fixture.globalUnitCount, supportingListSize: fixture.supportingListSize }, visible: controlledStructural, cameraControl: { fitCompleteMap: true, viewport: fixture.viewport, centerAnchoredWheelSteps: 15, wheelDeltaY: -240 }, postMemoryCycles: structural }, frameHealth: runFrameHealth, frameBudget: runFrameVerdict, inputLatency: extractInputToPaint(journeyTrace, journey), memory: { warm: heapWarm, stabilized: heapStable, usedDelta: heapStable.usedSize - heapWarm.usedSize, warmupCycles: definitions.warmupCycles, stabilizationCycles: definitions.stabilizationCycles, collectionControl: "not-forced" }, trace: { path: retainedPath, sha256: traceSha256 } });
       await context.close();
     }
   }
@@ -162,7 +164,8 @@ try {
     rawTraceManifest = { schema: "sir.svg-pipeline-raw-trace-manifest/1", candidate, fixtureDefinitionSha256: digest(definitions), runs: retainedRuns };
     writeFileSync(resolve(retainDir, "..", "raw-trace-manifest.json"), stableJson(rawTraceManifest));
   }
-  const artifact = { schema: "sir.svg-pipeline-measurement/1", result: "pass", candidate, buildIdentity, fixtureDefinition: { path: "scripts/svg-pipeline-fixtures.v1.json", sha256: digest(definitions) }, environment: { browserVersion, executableName: basename(executablePath), node: process.version, platform: platform(), release: release(), cpuCount: cpus().length }, selection: { fixtures: fixtures.map((fixture) => fixture.id), journeys }, runs, rawTraceManifest: rawTraceManifest ? { path: "work/231-svg-pipeline-measurement/raw-trace-manifest.json", sha256: digest(rawTraceManifest) } : null, summary: summarize(runs, definitions.materialShareThreshold) };
+  const artifactVerdict = evaluateArtifactVerdict(runs);
+const artifact = { schema: "sir.svg-pipeline-measurement/1", result: artifactVerdict.result, frameBudget: { ...artifactVerdict, declared: definitions.frameBudget }, candidate, buildIdentity, fixtureDefinition: { path: "scripts/svg-pipeline-fixtures.v1.json", sha256: digest(definitions) }, environment: { browserVersion, executableName: basename(executablePath), node: process.version, platform: platform(), release: release(), cpuCount: cpus().length }, selection: { fixtures: fixtures.map((fixture) => fixture.id), journeys }, runs, rawTraceManifest: rawTraceManifest ? { path: "work/231-svg-pipeline-measurement/raw-trace-manifest.json", sha256: digest(rawTraceManifest) } : null, summary: summarize(runs, definitions.materialShareThreshold) };
   writeFileSync(resolve(out, "summary.json"), stableJson(artifact));
   writeFileSync(resolve(out, "measurement.junit.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="${runs.length}" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-production-chromium" tests="${runs.length}" failures="0" errors="0" skipped="0">${runs.map((run) => `<testcase classname="${run.fixture}" name="${run.journey}"/>`).join("")}</testsuite></testsuites>\n`);
   console.log(`svg-pipeline: PASS runs=${runs.length} next=${artifact.summary.nextBottleneck.stage} artifact=${resolve(out, "summary.json")}`);
