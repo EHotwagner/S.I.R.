@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-255-review-contract-divergence
 lane: none
 toolVersion: n/a
-commit: 60201107372eecf3712e379b43fb77e422ccd176
+commit: 251aa70f0fec4deba6656afd3af5eab0bb05fd1c
 ---
 
 # S.I.R. item 255 — the packed review contract and the engine's review ledger
@@ -191,13 +191,21 @@ collision (§4.11).
 - **Observed:** The engine-conformance half compared the engine against constants transcribed into the
   script; the doc-binding half grepped for twelve literal substrings. The two halves never met, so no
   engine claim was bound to the prose stating it.
-  **The repair then reproduced the defect three times in miniature**, all found by review of the
-  repair rather than by its own sweep: the rebuilt gate iterated only four of the authorization
-  table's five rows, leaving the `acceptance` row falsifiable undetected; it compared the wait-state
-  column against `if kindName = "initial" then "Waiting" else "Waiting"`, a constant compared with
-  itself; and it "proved" the literal-only claims red-when-deleted with a loop whose mutation and
-  assertion were the same `grep`. All three are repaired, and the transferable lesson is recorded in
-  the document: **a gate's inversion evidence is itself a claim that can be vacuous.**
+  **The repair then reproduced the defect six times in miniature across two review rounds**, none
+  found by the repair's own sweep. Round one: the gate iterated only four of the authorization table's
+  five rows, leaving the `acceptance` row falsifiable undetected; it compared the wait-state column
+  against `if kindName = "initial" then "Waiting" else "Waiting"`, a constant compared with itself; and
+  it "proved" the literal-only claims red-when-deleted with a loop whose mutation and assertion were
+  the same `grep`. Round two: two vocabulary rows were parsed into the expectation file and never
+  looped over — parsed-but-unchecked, worse than unparsed because the expectation file makes it look
+  covered; the overwrites table was compared against a string literal inside the gate, three lines
+  below the comment introducing the category it belonged in; and the authorization table's receipt-kind
+  column was captured by the parser and discarded, in no category and checked by nothing.
+  All six are repaired; the gate now runs sixteen document mutations. **Every one of the six was filed
+  under `Derived`** — the category promising the most — while the `Transcribed` category added in round
+  one held up under review and the literal-only claims behaved exactly as documented. The transferable
+  lesson is recorded in the document: **a gate's inversion evidence is itself a claim that can be
+  vacuous, and over-claiming lands on whichever bucket promises the most.**
 - **Evidence:** file:scripts/test-review-contract-coherence.sh; command:bash scripts/test-review-contract-coherence.sh
 - **Version:** n/a — this cycle's own artifact.
 - **Owner:** EHotwagner/S.I.R. — scripts/test-review-contract-coherence.sh
@@ -299,6 +307,30 @@ collision (§4.11).
 - **Avoidable cost:** one incorrect `unsupported` disposition during report review, corrected here.
 - **Disposition:** issue
 
+#### §4.13 A CI dispatch route was added that could never report a pass, and two mirrors asserted it worked
+
+- **Kind:** defect
+- **Impact:** The gate this cycle exists to deliver was described in both packed skill mirrors as
+  dispatchable through CI. It was not: the route exits 1 on a correct document and 1 on a falsified
+  one, so it cannot report a pass and cannot distinguish pass from fail. A worker trusting the mirrors
+  would have believed a check was available that could never go green.
+- **Expected:** A documented dispatch route either works, or is not documented as working.
+- **Observed:** `bash scripts/run-ci-gate.sh review-contract <out>` exits 1 with no receipt, failing
+  `ci-route: unknown gate result:review-contract`. The subject was added to `run-ci-gate.sh`'s case
+  statement without being added to `ci-route.mjs`'s `gateOrder`, `gateParts`, `expectedBuildInvocations`
+  or the join's `expectedCommand` branch — none of which is in this item's declared `Paths:`.
+- **Evidence:** command:bash scripts/run-ci-gate.sh review-contract artifacts/ci/results/review-contract.json; file:scripts/run-ci-gate.sh
+- **Version:** n/a — this cycle's own artifact.
+- **Owner:** EHotwagner/S.I.R. — the wiring belongs to EHotwagner/S.I.R.#265, which owns the four files
+  that must change together.
+- **Recurrence:** new, and the sharpest instance of this item's own subject: a change whose purpose is
+  contracts that assert things which are not true, shipping a route that could not be green with
+  mirrors saying it was.
+- **Avoidable cost:** part of one review round; the half-wiring was removed rather than completed,
+  because completing it needs `ci-route.mjs`, `qualify-pr.sh`, `test-ci-route.mjs` and `ci.yml` to
+  change together and three of those are outside this item's touch-set.
+- **Disposition:** product fix
+
 ## §5 Did not exercise
 
 - Host acceptance (`review record` of kind `acceptance`) and a green `landable` — the host's acts.
@@ -334,14 +366,20 @@ collision (§4.11).
   inherited value, because the ambient environment points at an install lacking the SDK `global.json`
   pins. Removal condition: the workspace exports a `DOTNET_ROOT` containing the pinned SDK. Risk if
   permanent: low; the resolution is explicit and fails closed naming the pin.
-- The gate is dispatchable as `run-ci-gate.sh review-contract` but no workflow row invokes it, because
-  `.github/workflows/ci.yml` is in another item's touch-set. Removal condition: EHotwagner/S.I.R.#265
-  lands. Risk if permanent: the gate silently stops being run, which is this item's own defect class.
+- The gate runs only when a human runs it: `bash scripts/test-review-contract-coherence.sh`. Nothing
+  invokes it automatically. An earlier revision of this change added a `review-contract` case to
+  `scripts/run-ci-gate.sh` and described the gate as "dispatchable", but that route could never report
+  a pass — `ci-route.mjs` refuses an unknown subject, so it exited 1 on a correct document and on a
+  falsified one alike. The half-wiring was removed rather than left in place asserting more than it
+  delivered. Removal condition: EHotwagner/S.I.R.#265, which owns the four files that must change
+  together (`ci-route.mjs`, `qualify-pr.sh`, `test-ci-route.mjs`, `ci.yml`). Risk if permanent: the
+  gate silently stops being run, which is this item's own defect class.
 
 ## §8 Friction and avoidable cost
 
-- One review round consumed by §4.7 and §4.8, and one report-critique round consumed by the three
-  vacuous-assertion recurrences inside §4.7's own repair.
+- Two review rounds consumed by §4.7, §4.8 and §4.13, plus one report-critique round: the gate's own
+  repair carried six vacuous assertions across the two rounds, and a dispatch route was shipped that
+  could never report a pass.
 - A detached checkout inside the live worktree left the branch pointer relocated until the rebase, and
   cost re-applied edits (§4.10).
 - One duplicated critic review (§4.11).
