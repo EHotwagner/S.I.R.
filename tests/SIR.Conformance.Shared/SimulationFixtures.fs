@@ -177,6 +177,72 @@ module SimulationFixtures =
         if unobservedCount <> 0 then
             failwithf "The observation phase constructed %d spatial worlds for a tick carrying no observation." unobservedCount
 
+#if !FABLE_COMPILER
+    /// AC 1 / F1 on the PRODUCTION route.
+    ///
+    /// `observationWorldConstruction` above counts world constructions by injecting its own factory
+    /// into `observationPhaseWith`. That proves the helper hoists, and it is blind to how the helper
+    /// is WIRED: reverting F1 inside the private `observationPhase` - which is what `runTick`
+    /// actually calls - leaves `observationPhaseWith` byte-identical, so the counting fixture still
+    /// sees one construction, the whole canonical corpus stays byte-identical, and nothing reds.
+    /// The largest finding in this item had a gate that could not see its own route.
+    ///
+    /// Allocation closes it, for the same reason it closed F4: rebuilding the projected world per
+    /// observation pair allocates a fresh `SpatialBoundary` and an interpolated `RevisionToken` per
+    /// board edge, per pair, while leaving every observable result identical. This measures the real
+    /// `Simulation.runTick` with no injection at all.
+    let private tickAllocationBoard =
+        { Minimum = MapScale.cell 0 0
+          Maximum = MapScale.cell 63 63
+          Edges =
+            [ for row in 0 .. 31 do
+                for col in 0 .. 30 do
+                    if (col + row) % 3 = 0 then
+                        match FS.GG.Game.Core.Edges.edgeBetween (MapScale.cell col row) (MapScale.cell (col + 1) row) with
+                        | Some value ->
+                            yield
+                                { EdgeId = sprintf "tick-allocation-edge-%d-%d" col row
+                                  SpatialRevision = 1
+                                  Edge = value
+                                  BlocksMovement = (col + row) % 6 = 0 }
+                        | None -> () ]
+          Covers = Map.empty }
+
+    let private tickAllocationState =
+        let template = Simulation.initialState.Units |> Map.toList |> List.head |> snd
+        let units =
+            [ for index in 1 .. 40 ->
+                let id = Simulation.unitId (int32 index)
+                id,
+                { template with
+                    Id = id
+                    Side = (if index % 2 = 0 then Blue else Red)
+                    Cell = MapScale.cell (int32 ((index * 3) % 64)) (int32 ((index * 7) % 64)) } ]
+            |> Map.ofList
+        { Simulation.initialState with Board = tickAllocationBoard; Units = units; Observations = Set.empty }
+
+    let private tickAllocationJournal =
+        [ for observer in 1 .. 20 -> Observe(Simulation.unitId (int32 observer), Simulation.unitId (int32 observer + 20)) ]
+
+    /// Allocated bytes for ONE multi-observation `Simulation.runTick`, with the structural counters
+    /// alongside so a number that moved because the tick did something different is distinguishable
+    /// from one that moved because it did the same thing per pair instead of once.
+    let tickAllocationWorkload () =
+        for _ in 1 .. 3 do
+            Simulation.runTick tickAllocationState tickAllocationJournal |> ignore
+        System.GC.Collect()
+        System.GC.WaitForPendingFinalizers()
+        System.GC.Collect()
+        let before = System.GC.GetAllocatedBytesForCurrentThread()
+        let result = Simulation.runTick tickAllocationState tickAllocationJournal
+        let allocated = System.GC.GetAllocatedBytesForCurrentThread() - before
+        allocated,
+        tickAllocationBoard.Edges.Length,
+        tickAllocationJournal.Length,
+        result.State.Observations.Count,
+        result.Events.Length
+#endif
+
     let private execute journal =
         observationWorldConstruction ()
         let result = Simulation.runTick Simulation.initialState journal

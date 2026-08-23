@@ -139,4 +139,51 @@ expect_failure neighbours-once-per-expansion "$conformance" \
   "Spatial bounded-path allocation budget exceeded" --print-spatial-performance
 restore
 
-echo "Working-set gate mutations failed closed: world-construction count, boundary first-wins, dynamic cache bound, neighbours once per expansion."
+# AC 1 - F1 on the PRODUCTION route. `world-construction-count` above injects its own world factory
+# into `observationPhaseWith`, so it proves the HELPER hoists and is blind to how the helper is
+# WIRED. This mutation reverts F1 in the private `observationPhase` that `runTick` actually calls,
+# leaving `observationPhaseWith` byte-identical. Measured: the whole canonical conformance corpus
+# stays byte-identical and exits 0, `world-construction-count` still sees one construction, and
+# nothing reds - except the allocation budget, which moves 17,038,984 -> 20,847,776 (+22%) while
+# board-edges, observations, observed and events all stay identical.
+python3 - "$simulation" <<'PYTHON'
+import sys
+path = sys.argv[1]
+with open(path, encoding="utf-8") as handle:
+    text = handle.read()
+old = """    let private observationPhase (state: SimulationState) inputs =
+        observationPhaseWith (fun () -> spatialWorld state.Tick state.Board) state inputs"""
+if text.count(old) != 1:
+    sys.exit("production-route world-construction mutation could not locate its subject")
+new = """    let private observationPhase (state: SimulationState) inputs =
+        let observations =
+            inputs
+            |> List.choose (function
+                | Observe(observerId, targetId) -> Some(observerId, targetId)
+                | _ -> None)
+        if List.isEmpty observations then state, []
+        else
+        ((state, []), observations)
+        ||> List.fold (fun (current, events) (observerId, targetId) ->
+            match tryUnit observerId current, tryUnit targetId current with
+            | Some observer, Some target ->
+                let request = spatialRequest "simulation-observation" SpatialQueryKind.ExactLineOfSight SpatialModality.Vision observer.Cell target.Cell
+                let visibility, _ = SpatialQuery.evaluate (spatialWorld state.Tick state.Board) request
+                let visible = visibility.Outcome = SpatialOutcome.Found && visibility.Visible
+                if visible then
+                    let distance = chebyshevDistance observer.Cell target.Cell |> int32
+                    let observed = Set.add (observerId, targetId) current.Observations
+                    { current with Observations = observed },
+                    UnitObserved(observerId, targetId, distance) :: events
+                else current, events
+            | _ -> current, events)
+        |> fun (next, events) -> next, List.rev events"""
+with open(path, "w", encoding="utf-8") as handle:
+    handle.write(text.replace(old, new))
+PYTHON
+require_mutated production-route-world-construction "$simulation"
+expect_failure production-route-world-construction "$conformance" \
+  "Authoritative tick allocation budget exceeded" --print-spatial-performance
+restore
+
+echo "Working-set gate mutations failed closed: world-construction count, production-route world construction, boundary first-wins, dynamic cache bound, neighbours once per expansion."
