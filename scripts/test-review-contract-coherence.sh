@@ -116,7 +116,27 @@ doc = open(sys.argv[1], encoding="utf-8").read()
 out, problems = {}, []
 ticked = lambda s: re.findall(r"`([^`]+)`", s)
 
-# EVERY PARSE BELOW IS TOTAL OVER ITS CELL. NONE TAKES THE FIRST MATCH.
+# NO PARSE BELOW PRODUCES A CHECK'S EXPECTATION FROM A FIRST MATCH. Stated exactly, because the
+# previous wording of this banner -- "EVERY PARSE BELOW IS TOTAL OVER ITS CELL. NONE TAKES THE FIRST
+# MATCH." -- was FALSE when it was written, and its confidence is what invited the next reader to stop
+# looking. Nine first-match parses survived beneath it and three widenings survived at exit 0.
+#
+# What actually holds, and each clause is checkable:
+#
+#   1. Every expectation that names a SET -- vocabulary columns, key lists, authorization cells,
+#      subject examples, wait-example keys and types -- is parsed with `re.findall` over the whole
+#      cell, so an added alternative joins the set.
+#   2. Four SCALARS remain (`meaningfulEvidenceCount`, `notMeaningfulEvidenceCount`,
+#      `confirmationRounds`, `initialRound`). Each is paired with a total set-parse of the SAME bullet
+#      -- `evidenceCountsNamed`, `confirmationRoundsNamed`, `initialRoundsNamed` -- and the check that
+#      consumes the scalar consumes the set too, so a widening reds it by name. The scalar is a
+#      convenience, never the whole expectation.
+#   3. `re.search` survives only as a LOCATOR: `section()` and `bullet()` find the region to parse.
+#      A locator cannot be widened into a false claim, because it produces no expectation.
+#   4. `sole()` refuses where a second statement is genuinely ambiguous rather than additive.
+#
+# The proof is not this comment. STEP 3 requires a widening mutation for every derived check, so if
+# any clause above stops holding, the corresponding widening stops reddening and the run fails.
 #
 # Repair-phase round 1, finding F1. The previous revision closed the SCORING defect (a parse abort no
 # longer counts as a detection) but left six checks unable to detect a WIDENING, because their
@@ -159,12 +179,10 @@ def section(header, stop=("\n## ", "\n### ")):
     return doc[i:j]
 
 draft = section("### Draft keys")
-m = re.search(r"\*\*Required\*\*.*?:\s*\n\n(.+?)\n\n", draft, re.S)
-if m: out["requiredKeys"] = ticked(m.group(1))
-else: problems.append("could not parse the required draft-key list")
-m = re.search(r"\*\*Optional\*\*.*?:\s*\n\n(.+?)\n\n", draft, re.S)
-if m: out["optionalKeys"] = ticked(m.group(1))
-else: problems.append("could not parse the optional draft-key list")
+_req = sole(r"\*\*Required\*\*.*?:\s*\n\n(.+?)\n\n", draft, "the required draft-key list", re.S)
+out["requiredKeys"] = ticked(_req) if _req else []
+_opt = sole(r"\*\*Optional\*\*.*?:\s*\n\n(.+?)\n\n", draft, "the optional draft-key list", re.S)
+out["optionalKeys"] = ticked(_opt) if _opt else []
 
 # EVERY row is kept, and every row must state its EXTENSION in both directions. An earlier revision
 # dropped rows with no backticked literal via `if vals:`, silently excluding `timestamp`; the revision
@@ -207,6 +225,11 @@ if not outcomes:
     problems.append("the outcome table parsed to no rows at all")
 
 wait = section("## `review wait` — schema `fsgg.coord.review-wait/v1`", stop=("\n## ",))
+# EVERY json example in the section, classified by its own `event` field -- not `blocks[0]` and
+# `blocks[1]`. A THIRD example was accepted and silently ignored, so a second `enter` block carrying
+# `"claimGeneration": 5382700300` (a Number where the engine emits a String) passed the whole gate.
+# Round 1 totalised the six cells a critic had measured; this is the same first-match defect at a site
+# nobody had measured, which is why the property and not the instance has to be the unit of repair.
 blocks = re.findall(r"```json\n(.*?)\n```", wait, re.S)
 if len(blocks) >= 2:
     def jkind(v):
@@ -216,15 +239,33 @@ if len(blocks) >= 2:
         if isinstance(v, (int, float)): return "Number"
         if isinstance(v, list): return "Array"
         return "Object"
+    def kindsOfExample(obj):
+        return {k: jkind(v) for k, v in obj.items()}
     try:
-        enter = json.loads(blocks[0])
-        out["waitEnterKeys"] = sorted(enter.keys())
+        parsed = [json.loads(b) for b in blocks]
+        enters = [b for b in parsed if b.get("event") == "enter"]
+        terminals = [b for b in parsed if b.get("event") in ("complete", "cancel", "timeout")]
+        if not enters:
+            problems.append("the review wait section carries no `enter` example")
+        if not terminals:
+            problems.append("the review wait section carries no terminal example")
+        enter = enters[0] if enters else {}
+        # The union across EVERY enter example, so an added example widens the key set rather than
+        # being discarded.
+        out["waitEnterKeys"] = sorted({k for e in enters for k in e})
         # KEYS ALONE WERE THE WHOLE CHECK, and `sorted(json.loads(...).keys())` discards every value.
         # `claimGeneration` is a STRING while `claim --json` emits a numeric `markerId`, so following
         # the obvious idiom is refused -- and rewriting this example's "5382700300" to 5382700300 red
         # nothing at all. Parsed-but-unchecked, one level below the row that had the same defect.
-        out["waitEnterTypes"] = {k: jkind(v) for k, v in enter.items()}
-        out["waitTerminalKeys"] = sorted(json.loads(blocks[1]).keys())
+        # Per key, EVERY type any enter example gives it. One example -> one type, as before. A second
+        # example disagreeing -> a joined string that cannot equal the encoder's single type, so the
+        # disagreement reds `doc:wait-enter-value-types` by name instead of being discarded.
+        merged = {}
+        for e in enters:
+            for k, v in kindsOfExample(e).items():
+                merged.setdefault(k, set()).add(v)
+        out["waitEnterTypes"] = {k: "|".join(sorted(vs)) for k, vs in merged.items()}
+        out["waitTerminalKeys"] = sorted({k for tb in terminals for k in tb})
     except Exception as e:
         problems.append("a wait example is not valid JSON: %s" % e)
 else:
@@ -252,8 +293,12 @@ else: problems.append("could not parse the not-meaningful route-evidence cardina
 # five for a repair-phase review" -- adds a member the engine refuses, so the added one reds instead
 # of parsing to an unchanged four.
 _card = re.search(r"- `routeApplicability.*?(?=\n\n|\n- |\n> )", inv, re.S)
+# EVERY count-word in the bullet, not only those inside `**exactly …**`. The widening that survived
+# round 1 read ", or two entries for a repair-phase review" -- no `**exactly**`, so the narrower
+# pattern never saw it. A claim's extension is every count the bullet names, however it is phrased.
 out["evidenceCountsNamed"] = sorted({words[w] for w in
-                                    re.findall(r"\*\*exactly (\w+)\*\*", _card.group(0) if _card else "")
+                                    re.findall(r"\b(one|two|three|four|five)\b",
+                                               _card.group(0) if _card else "")
                                     if w in words})
 # Deliberately NOT a parse failure when the count is wrong. A parse abort reds the run without
 # reddening any check, and STEP 3 then reports NO DETECTION rather than attributing the escape --
@@ -273,11 +318,25 @@ if not out["evidenceCountsNamed"]:
 out["waitWindowHours"] = sorted({int(h) for h in all_of(r"at most (\d+) hours", doc,
                                                        "the review-wait window ceiling")})
 
-m2 = re.search(r'must be `"round": (\d+)`, the second `(\d+)`', inv)
+def bullet(startswith):
+    """One whole bullet, to the next bullet or blank line -- not one line, and not one match."""
+    m = re.search(r"- %s.*?(?=\n\n|\n- |\n> )" % re.escape(startswith), inv, re.S)
+    return m.group(0) if m else ""
+
+# BOTH of these were `re.search`, so an appended "except that in a repair-phase chain …" clause left
+# the parsed value untouched and the check green on a page that contradicted itself. The extension of
+# each claim is every round number its bullet names.
+_cont = bullet("**`confirmation round must be contiguous within its generation`**")
+out["confirmationRoundsNamed"] = sorted(
+    {int(x) for x in re.findall(r'`"round": (\d+)`', _cont)}
+    | {int(x) for x in re.findall(r"the second `(\d+)`", _cont)})
+m2 = re.search(r'must be `"round": (\d+)`, the second `(\d+)`', _cont)
 if m2: out["confirmationRounds"] = [int(m2.group(1)), int(m2.group(2))]
 else: problems.append("could not parse the confirmation-round contiguity claim")
 
-m = re.search(r'an `initial` record must carry `"round": (\d+)`', inv)
+_ir = bullet("`initial review round must be zero`")
+out["initialRoundsNamed"] = sorted({int(x) for x in re.findall(r'`"round": (\d+)`', _ir)})
+m = re.search(r'an `initial` record must carry `"round": (\d+)`', _ir)
 if m: out["initialRound"] = int(m.group(1))
 else: problems.append("could not parse the initial-record round claim")
 
@@ -572,10 +631,18 @@ check "doc:wait-terminal-keys"
      (j (strs "waitTerminalKeys"))
      (j (keysOf (ReviewWait.encode (ReviewWait.Transition.Complete("g", entered, "e"))))))
 
+// The bullet's extension is EVERY round number it names. An appended "except that in a repair-phase
+// chain an `initial` record must carry `\"round\": 1`" used to leave this untouched, because the parse
+// was `re.search`. Now the added number joins the set and the set no longer matches the engine.
+let namedInitialRounds =
+  expected.GetProperty("initialRoundsNamed").EnumerateArray()
+  |> Seq.map (fun e -> e.GetInt32()) |> List.ofSeq |> List.sort
 check "doc:initial-round"
   (accepts [ seal { baseRec with Round = num "initialRound" } ]
-   && not (accepts [ seal { baseRec with Round = num "initialRound" + 1 } ]))
-  (sprintf "document says an initial record's round is %d; the engine disagrees" (num "initialRound"))
+   && not (accepts [ seal { baseRec with Round = num "initialRound" + 1 } ])
+   && namedInitialRounds = [ num "initialRound" ])
+  (sprintf "document says an initial record's round is %d and its bullet names [%s]; the engine accepts exactly one value"
+     (num "initialRound") (namedInitialRounds |> List.map string |> String.concat ","))
 
 let evidenceOf app n =
   accepts [ seal { baseRec with RouteApplicability = app
@@ -594,9 +661,15 @@ check "doc:meaningful-evidence-cardinality"
      (num "meaningfulEvidenceCount")
      (namedCounts |> List.map string |> String.concat ",")
      (expectedCounts |> List.map string |> String.concat ","))
+// Shares the bullet's named-count set with the meaningful check: this row has no cell of its own, so
+// the widening that adds ", or two entries for a repair-phase review" reds BOTH. Round 1 exempted this
+// check on the reason "has no cell of its own to widen", which was false -- the cell is the bullet.
 check "doc:not-meaningful-evidence-cardinality"
-  (cardinalityHolds "not-meaningful" (num "notMeaningfulEvidenceCount"))
-  (sprintf "document says exactly %d entries; the engine disagrees" (num "notMeaningfulEvidenceCount"))
+  (cardinalityHolds "not-meaningful" (num "notMeaningfulEvidenceCount") && namedCounts = expectedCounts)
+  (sprintf "document says exactly %d entries and its bullet names [%s]; the engine enforces [%s]"
+     (num "notMeaningfulEvidenceCount")
+     (namedCounts |> List.map string |> String.concat ",")
+     (expectedCounts |> List.map string |> String.concat ","))
 
 let renderShape (shape: string) h (k: ReviewWait.Kind) r =
   let wire = match k with ReviewWait.Kind.InitialReview -> "initial-review" | _ -> "repair-confirmation"
@@ -758,9 +831,14 @@ match confRounds with
 | [ first; second ] ->
     let c1 = seal { (confirmationAt first crInitial 2 baseRec.Critic) with Verdict = ReviewVerdict.ChangesRequired }
     let secondConfOk n = accepts [ crInitial; c1; confirmationAt n c1 3 baseRec.Critic ]
+    let namedConfRounds =
+      expected.GetProperty("confirmationRoundsNamed").EnumerateArray()
+      |> Seq.map (fun e -> e.GetInt32()) |> List.ofSeq |> List.sort
     check "doc:confirmation-round-contiguity"
       (firstConfOk first && not (firstConfOk (first + 1)) && not (firstConfOk 0)
-       && secondConfOk second && not (secondConfOk first))
+       && secondConfOk second && not (secondConfOk first)
+       // EVERY round number the bullet names, so an appended repair-phase alternative reds here.
+       && namedConfRounds = List.sort [ first; second ])
       (sprintf "document says the first confirmation is round %d and the second %d; the validator disagrees"
          first second)
 | _ ->
@@ -1096,6 +1174,39 @@ edit("doc:outcome-coverage", WIDEN, "the outcome table WIDENED with a case nothi
      "| `accepted-exceptions` | `nonempty-on-initial` | `accepted` |\n"
      "| `accepted-exceptions` | `nonempty-on-escalation` | `accepted` |")
 
+# --- WIDENINGS FOR THE CHECKS ROUND 1 EXEMPTED ON FALSE REASONS (critic F3, X1-X4) --------------
+edit("doc:initial-round", WIDEN, "X1 the initial-round bullet gains a repair-phase alternative",
+     'an `initial` record must carry `"round": 0`.',
+     'an `initial` record must carry `"round": 0`, except that in a repair-phase chain an `initial` '
+     'record must carry `"round": 1`.')
+edit("doc:confirmation-round-contiguity", WIDEN, "X2 the contiguity bullet gains a repair-phase alternative",
+     'must be `"round": 1`, the second `2`, and so on',
+     'must be `"round": 1`, the second `2`, and so on; in a repair-phase chain the first must be '
+     '`"round": 0`, the second `5`')
+edit("doc:not-meaningful-evidence-cardinality", WIDEN, "X3 the cardinality bullet gains a second count",
+     '`"not-meaningful"` requires **exactly one**.',
+     '`"not-meaningful"` requires **exactly one**, or two entries for a repair-phase review.')
+edit("doc:wait-enter-value-types", WIDEN, "X4 a second enter example types claimGeneration as a number",
+     "### The `complete`, `cancel` and `timeout` events",
+     "Also accepted with `claimGeneration` written as the number `claim --json` emits:\n\n"
+     "```json\n{\n  \"schema\": \"fsgg.coord.review-wait/v1\",\n  \"event\": \"enter\",\n"
+     "  \"item\": \"EHotwagner/S.I.R.#255\",\n  \"claimGeneration\": 5382700300,\n"
+     "  \"reviewGeneration\": \"<headSha>:initial-review:0\",\n  \"kind\": \"initial-review\",\n"
+     "  \"enteredAt\": \"2026-08-22T21:40:00.0000000+00:00\",\n"
+     "  \"expiresAt\": \"2026-08-22T23:40:00.0000000+00:00\",\n"
+     "  \"evidenceRef\": \"https://github.com/EHotwagner/S.I.R./pull/257\"\n}\n```\n\n"
+     "### The `complete`, `cancel` and `timeout` events")
+# The five outcome rows round 1 chained under one "as above" reason. The critic tested them by
+# construction and found the reason unnecessary: widening an `accepted` cell reds via the row's own
+# named check. Five exemptions resting on one unverified sentence is a single point of failure.
+for _case in ("same-critic-after-changes-required", "different-critic-after-changes-required",
+              "same-critic-after-pass", "nonempty-on-initial", "empty-on-acceptance"):
+    _rule = "successor-critic" if _case.endswith(("changes-required", "after-pass")) else "accepted-exceptions"
+    edit("doc:outcome:%s" % _case, WIDEN,
+         "the %s outcome cell gains an alternative" % _case,
+         "| `%s` | `%s` | `accepted` |" % (_rule, _case),
+         "| `%s` | `%s` | `accepted`, or `refused` once the head is rebased |" % (_rule, _case))
+
 # --- Checks for which NO widening can be constructed, each with its reason. -------------------------
 # This registry is the honest half of the direction requirement: `NOT_MEASURED`, never a pass. A check
 # that appears in neither the widening manifest nor here fails the run, so a claim added later cannot
@@ -1110,30 +1221,27 @@ NO_NARROWING = {
   "doc:outcome:nonempty-on-acceptance": "as above",
 }
 
-NO_WIDENING = {
-  "doc:not-meaningful-evidence-cardinality":
-    "the bullet's named-cardinality set is consumed by doc:meaningful-evidence-cardinality, which "
-    "carries the widening; this check probes only the not-meaningful count against the validator and "
-    "has no cell of its own to widen",
-  "doc:outcome:same-critic-after-changes-required":
-    "the cell already states the permissive outcome; the dangerous direction (refused -> accepted) "
-    "exists only on the refusal rows, which do carry widenings",
-  "doc:outcome:different-critic-after-changes-required": "as above",
-  "doc:outcome:same-critic-after-pass": "as above",
-  "doc:outcome:nonempty-on-initial": "as above",
-  "doc:outcome:empty-on-acceptance": "as above",
-  "doc:initial-round":
-    "the claim is a single integer in one sentence; an added alternative is not a permitted-but-wrong "
-    "member of a set but a second sentence, which the parser refuses rather than mis-parses",
-  "doc:generation-token-shape":
-    "the shape is a single fenced token; a second fenced shape makes the section ambiguous and is "
-    "refused at parse time, so the escape fails closed but cannot be attributed to this check",
-  "doc:wait-enter-value-types":
-    "a type is a single value per key; widening would mean a key holding two types at once, which "
-    "JSON cannot express in the example",
-  "doc:confirmation-round-contiguity":
-    "the claim is an ordered pair of integers in one sentence; as with doc:initial-round an added "
-    "alternative is refused at parse time rather than mis-parsed",
+# WIDENINGS THAT ARE REFUSED AT PARSE, EACH PROVEN BY A MUTATION THE GATE RUNS.
+#
+# Repair-phase round 1's critic, finding F3. Round 1 shipped a free-text `NO_WIDENING` registry: ten
+# hand-written sentences saying why a widening could not be constructed, and nothing checked one of
+# them. Three were false, and three widenings survived at exit 0 -- including one where the gate
+# printed the reason the escape was impossible IN THE RUN WHERE THAT ESCAPE SUCCEEDED. An exemption
+# whose reason is authored prose, inside a gate whose whole thesis is that authored prose rots, is the
+# same defect one level up; the registry had become the escape hatch.
+#
+# Nine of the ten entries were false or unnecessary and are gone: their checks are now totalised and
+# carry real widenings. What remains is the honest case -- a claim whose widening the parser genuinely
+# REFUSES rather than mis-parses -- and it is no longer asserted. Each entry supplies the mutation
+# that proves the refusal, and the gate requires that mutation to red the run WITHOUT reddening any
+# check. That is the contract's `NOT_MEASURED`: an explicit refusal to claim the measurement, with the
+# fail-closed behaviour demonstrated rather than described.
+WIDENING_REFUSED_AT_PARSE = {
+  "doc:generation-token-shape": (
+    "the shape is a single fenced token and `sole()` refuses a second one, so a widening cannot reach "
+    "the check to be attributed; the run still reds, fail-closed",
+    "```\n<headSha>:<kind>:<round>\n```",
+    "```\n<headSha>:<kind>:<round>\n```\n\nand in a repair-phase chain:\n\n```\n<kind>:<headSha>:<round>\n```"),
 }
 
 if problems:
@@ -1145,7 +1253,16 @@ if problems:
 with open(os.path.join(outdir, "manifest.tsv"), "w", encoding="utf-8") as fh:
     for check_id, direction, name, path in manifest:
         fh.write("%s\t%s\t%s\t%s\n" % (check_id, direction, name, path))
-for fname, registry in (("no-widening.tsv", NO_WIDENING), ("no-narrowing.tsv", NO_NARROWING)):
+# Each parse-refusal exemption emits the mutation that proves it. `widen-attempt` is scored
+# differently from `widen`: it must red the run and must NOT name a check.
+for cid, (reason, old, new) in sorted(WIDENING_REFUSED_AT_PARSE.items()):
+    if old not in text:
+        problems.append("%s: parse-refusal proof anchor not present: %r" % (cid, old[:60]))
+    else:
+        emit(cid, "widen-attempt", "widening %s, which the parser must REFUSE" % cid,
+             text.replace(old, new, 1))
+for fname, registry in (("no-widening.tsv", {k: v[0] for k, v in WIDENING_REFUSED_AT_PARSE.items()}),
+                        ("no-narrowing.tsv", NO_NARROWING)):
     with open(os.path.join(outdir, fname), "w", encoding="utf-8") as fh:
         for check_id, reason in sorted(registry.items()):
             fh.write("%s\t%s\n" % (check_id, reason))
@@ -1158,8 +1275,9 @@ PY
 # each run starts a `dotnet fsi` host, and the memory ceiling binds well before the core count does.
 jobs=${SIR_COHERENCE_JOBS:-6}
 find "$mutants" -name '*.md' -print0 | xargs -0 -P "$jobs" -I{} bash -c '
-  out=$("$0" --inner "$1" 2>&1) || true
+  out=$("$0" --inner "$1" 2>&1) && rc=0 || rc=$?
   printf "%s\n" "$out" | sed -n "s/^  FAILED  \(.*\)$/\1/p" > "$1.failed"
+  printf "%s" "$rc" > "$1.rc"
 ' "$repo_root/scripts/test-review-contract-coherence.sh" {}
 
 status=0
@@ -1167,7 +1285,21 @@ narrowed="$tmp/narrowed.txt"; : > "$narrowed"
 widened="$tmp/widened.txt"; : > "$widened"
 while IFS=$'\t' read -r check_id direction name path; do
   reddened=$(cat "$path.failed" 2>/dev/null || true)
-  if [[ -z "$reddened" ]]; then
+  rc=$(cat "$path.rc" 2>/dev/null || echo 0)
+  # A `widen-attempt` PROVES a parse-refusal exemption: the run must red, and must name NO check.
+  # Scored inversely to every other mutation, which is the point -- it demonstrates the fail-closed
+  # behaviour the exemption claims instead of asserting it in prose.
+  if [[ "$direction" == "widen-attempt" ]]; then
+    if [[ "$rc" == "0" ]]; then
+      printf '  UNPROVEN      %-6s %-52s  the parser did NOT refuse this widening; the exemption is false\n' \
+        "$direction" "$name" >&2; status=1
+    elif [[ -n "$reddened" ]]; then
+      printf '  MISFILED      %-6s %-52s  reddened %s — this is a real detection, so it is a widening, not an exemption\n' \
+        "$direction" "$name" "$(printf '%s' "$reddened" | tr '\n' ' ')" >&2; status=1
+    else
+      printf '  refuses at parse (proven)  %-40s  %s\n' "$check_id" "$name"
+    fi
+  elif [[ -z "$reddened" ]]; then
     printf '  NO DETECTION  %-6s %-52s  the run reddened no check at all — a parse abort is not a detection\n' \
       "$direction" "$name" >&2
     status=1
@@ -1208,12 +1340,36 @@ if (( ${#no_widen[@]} )); then
   printf '      %s\n' "${no_widen[@]}" >&2
   status=1
 fi
-if (( ${#no_narrow[@]} == 0 && ${#no_widen[@]} == 0 )); then
+# AN EXEMPTION MAY NEVER COVER BOTH DIRECTIONS. A check excused from one must demonstrably carry the
+# other, or it has no inversion evidence at all while appearing twice-explained.
+both=()
+while IFS=$'\t' read -r id _; do
+  [[ -n "$id" ]] && { grep -qxF "$id" "$narrowed" || both+=("$id (excused widening, and no narrowing)"); }
+done < "$mutants/no-widening.tsv"
+while IFS=$'\t' read -r id _; do
+  [[ -n "$id" ]] && { grep -qxF "$id" "$widened" || both+=("$id (excused narrowing, and no widening)"); }
+done < "$mutants/no-narrowing.tsv"
+if (( ${#both[@]} )); then
+  echo "  these checks are excused one direction and have no evidence for the other:" >&2
+  printf '      %s\n' "${both[@]}" >&2
+  status=1
+fi
+
+if (( ${#no_narrow[@]} == 0 && ${#no_widen[@]} == 0 && ${#both[@]} == 0 )); then
   echo "  ok      every derived check is reddened by a named NARROWING and a named WIDENING mutation,"
   echo "          or carries a declared reason why no widening can be constructed:"
   for reg in no-widening no-narrowing; do
     while IFS=$'\t' read -r id reason; do
-      [[ -n "$id" ]] && printf '            %-52s no %s: %s\n' "$id" "${reg#no-}" "$reason"
+      # The two registries are guaranteed by DIFFERENT mechanisms, and saying so matters: a
+      # no-widening entry is proven by a `widen-attempt` mutation that must red without naming a
+      # check; a no-narrowing entry is not proven by a mutation at all -- it is cross-checked only
+      # in that the check demonstrably carries a widening. Labelling both "proven" would be the
+      # strengthened-assertion defect this gate was just repaired for.
+      if [[ "$reg" == "no-widening" ]]; then
+        [[ -n "$id" ]] && printf '            %-44s no widening — PROVEN by a refusal mutation: %s\n' "$id" "$reason"
+      else
+        [[ -n "$id" ]] && printf '            %-44s no narrowing — reason authored, cross-checked only in that this check carries a widening: %s\n' "$id" "$reason"
+      fi
     done < "$mutants/$reg.tsv"
   done
 fi
@@ -1275,6 +1431,9 @@ echo "    (keep the claim's text, add a permitted-but-wrong alternative). A chec
 echo "    one is listed above with the reason, never silently counted as covered. Widening is the"
 echo "    class that survived three ordinary rounds and this phase's first attempt, so a check shown"
 echo "    to catch only replacements is not shown to work."
-echo "  - no cell parse takes a first match. Every expectation is the WHOLE cell — a set of literals"
-echo "    or an exact string — because a first-match parse cannot represent a widening at all."
+echo "  - no check's expectation comes from a first match. Set-valued claims are parsed with findall"
+echo "    over the whole cell; the four remaining scalars are each paired with a total set-parse of"
+echo "    the same bullet that the same check consumes; re.search survives only as a locator. The"
+echo "    proof is the widening mutations above, not this sentence — an earlier version of this line"
+echo "    claimed the stronger property and was false when it was printed."
 echo "  - every LITERAL-ONLY claim is present, and no inversion is claimed over them."
