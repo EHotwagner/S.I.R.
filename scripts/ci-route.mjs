@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, readdir, writeFile, mkdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -77,6 +77,28 @@ export const expectedProducersFor = (selectedGates) =>
 // A subject is second-wave exactly when it consumes prepared producer artifacts; that is
 // already the discriminator `gateParts` encodes, and it agrees with ci.yml's `needs:` graph
 // (verified in scripts/test-ci-route.mjs against the workflow itself).
+// S.I.R.#263. THE JOIN'S INPUT SET IS DERIVED HERE, from `subjectOrder`, and nowhere else.
+//
+// `pr-verdict` used to enumerate the subjects in a hand-written `for gate in ...; do` loop in ci.yml
+// and pass them as `--result` arguments. That was a SECOND DECLARATION of `subjectOrder`, maintained
+// by hand, joined to this one by nothing -- so a subject missing from it was never handed to the
+// join, and its gate ran, passed, uploaded its receipt and had its verdict thrown away -- and
+// `pr-verdict` then reported `missing-gate-result` for it (run 32656572583). STATED PRECISELY, after
+// review: that is a MISATTRIBUTED RED, not a silent pass. The run fails either way; what the
+// omission destroys is the ability to tell "this gate did not run" from "this gate ran and passed",
+// which is what sends a lane looking for a job that in fact succeeded. Six successive attempts to
+// CHECK that loop were each defeated
+// within one review round, because every one of them answered a negative existential -- first "which
+// block is the real join?", then "which world is the block running in?" -- and a negative existential
+// admits one more hiding place each time it is answered (S.I.R.#334).
+//
+// So the loop is gone. There is no list in the workflow to drift, no block to execute, and no
+// sandbox to distinguish from production: the join reads the results directory and selects from it
+// BY `subjectOrder`. What was a property of a shell script is now a pure function of one
+// declaration, and `scripts/test-ci-route.mjs` tests it as one.
+export const joinResultSubjects = (presentFileNames) =>
+  subjectOrder.filter((subject) => (presentFileNames ?? []).includes(`${subject}.json`));
+
 export const subjectWave = (subject) => ((gateParts[subject] ?? []).length > 0 ? 2 : 1);
 export const feedbackWaveCount = (subjects) => Math.max(1, ...subjects.map(subjectWave));
 // A route is never held to LESS than the historical flat budget: this removes the inversion,
@@ -478,8 +500,20 @@ async function main(argv) {
   }
   if (mode === "join") {
     const route = JSON.parse(await readFile(one("route", ""), "utf8"));
+    const resultsDir = one("results-dir", undefined);
+    const declarations = many("result");
+    // Mutually exclusive on purpose: two ways to name the input set is how the old drift began.
+    if (resultsDir && declarations.length > 0) throw new Error("ci-route: --results-dir and --result are mutually exclusive");
     const results = [];
-    for (const declaration of many("result")) {
+    if (resultsDir) {
+      const present = (await readdir(resultsDir)).sort();
+      for (const subject of joinResultSubjects(present)) {
+        const result = JSON.parse(await readFile(resolve(resultsDir, `${subject}.json`), "utf8"));
+        if (result.gate !== subject) throw new Error(`ci-route: gate-result-name-drift:${subject}`);
+        results.push(result);
+      }
+    }
+    for (const declaration of declarations) {
       const separator = declaration.indexOf("=");
       if (separator <= 0) throw new Error(`ci-route: malformed result declaration:${declaration}`);
       const result = JSON.parse(await readFile(declaration.slice(separator + 1), "utf8"));
