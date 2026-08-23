@@ -312,12 +312,17 @@ out["scalars"] = scalars
 if not scalars:
     problems.append("the scalar invariants table parsed to no rows at all")
 
-# ---- GOVERNED REGIONS: a rule about WHERE a claim may live, not about how it may be phrased --------
+# ---- GOVERNED REGIONS: a rule about WHERE a claim may live, INSIDE THE REGIONS THAT ARE MARKED -----
 #
 # The prose that used to carry these values is wrapped in `<!-- scalar-governed:<id> -->` markers, and
-# no digit, number word, or `<a>:<b>` shape token may appear inside. That is what makes the fix
-# terminate: a widening cannot smuggle a value back into prose regardless of wording, so the gate does
-# not have to anticipate the next author's phrasing -- the property every earlier repair here lacked.
+# no digit, number word, or `<a>:<b>` shape token may appear inside. Four things make that terminate,
+# and none of them is a phrasing rule: the region's text is compared to its transcription for
+# EQUALITY, an id may be borne by exactly one region, a marker whose id list is unreadable is REFUSED
+# rather than skipped, and the values themselves live in the scalar table where both columns are
+# probed. What this does NOT do is bound the whole page: prose outside every marked region is not
+# examined at all. The marking is authored, so the rule is exactly as total as the marking. Earlier
+# versions of this comment claimed the document-wide property -- do not restore it here after the
+# footer has retired it.
 NUMBER_WORDS = r"zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|twenty-four|seventy-two"
 violations = []
 # One region may govern several ids -- two invariants often share a sentence -- so the marker takes a
@@ -335,6 +340,22 @@ region_bodies, id_regions = {}, {}
 for m in re.finditer(r"<!-- scalar-governed:([a-z,-]+) -->(.*?)<!-- /scalar-governed -->", doc, re.S):
     rids = [r.strip() for r in m.group(1).split(",") if r.strip()]
     body = m.group(2)
+    # FAIL CLOSED ON AN UNREADABLE MARKER. `[a-z,-]+` matches a label of separators alone -- `,` or
+    # `,,` -- which splits to no ids at all. Every rule below is keyed on an id or on the label, so
+    # an empty id list made all of them iterate over nothing: the unknown-id check saw no ids, the
+    # uniqueness rule gained no entry, and the raw label is not a GOVERNED_TEXT key, so the equality
+    # never compared it. The region reached the token rules alone -- the ones this file concedes are
+    # insufficient -- and the run then printed a confident `ok` about a marker whose ids resolved to
+    # nothing. That is a FAILED READ reported as a pass (#266), and the answer is to refuse the input
+    # rather than to recognise the sentence inside it. Enumerating `,` and `,,` would be the
+    # enumeration trap one level down; what is refused here is UNREADABILITY, not a phrasing.
+    if not rids:
+        violations.append("a `scalar-governed` marker carries no readable id (label %r): the marker "
+                          "is UNREADABLE, not empty of claims. A region whose id list resolves to "
+                          "nothing is refused rather than skipped -- every rule here is keyed on an "
+                          "id, so an unreadable marker would otherwise be governed by nothing while "
+                          "the run reported success" % m.group(1))
+        continue
     governed.update(rids)
     label = ",".join(rids)
     region_bodies.setdefault(m.group(1), []).append(body)
@@ -877,11 +898,15 @@ for key, probe in scalarProbes do
       (sprintf "documented as the value but the engine REFUSES [%s]; documented as refused but the engine ACCEPTS [%s]"
          (j wrongAccepted) (j wrongRefused))
 
-// ---- GOVERNED REGIONS: no value may be restated in prose ------------------------------------------
+// ---- GOVERNED REGIONS: no value may be restated inside a MARKED region ---------------------------
 //
-// The rule is about WHERE a claim may live, not how it may be phrased, which is why it terminates
-// where three rounds of regex patching did not. A widening cannot smuggle a number back into the
-// prose regardless of wording, because no wording is permitted to carry one.
+// SCOPE, because an earlier version of this comment claimed the document-wide property the footer
+// has since retired -- and a retired claim left standing in a comment is how the next reader
+// reinstates it. What holds: each scalar row has exactly one `scalar-governed` region; every region
+// is compared to its transcription for equality; a second region repeating an id is refused; and a
+// marker whose id list is unreadable is refused rather than skipped. Prose OUTSIDE every marked
+// region is NOT examined by this check, in any phrasing. The passing footer prints that boundary,
+// and this comment must not outlive it.
 let governedViolations =
   expected.GetProperty("governedViolations").EnumerateArray()
   |> Seq.map (fun e -> e.GetString()) |> List.ofSeq
@@ -1136,6 +1161,20 @@ if _gov:
              + text[_full.end():])
     else:
         problems.append("no complete governed region found to duplicate")
+    # AN UNREADABLE MARKER. A label of separators alone matches the region pattern but resolves to
+    # no ids, so before round 5 every rule keyed on an id iterated over nothing and the run printed
+    # a confident `ok`. The injected sentence carries no digit, no listed number word and no shape
+    # token, so the token rules cannot see it either: only the fail-closed unreadability predicate
+    # reds it. This is the inversion of a FAILED READ, which is the sub-shape a happy-path mutation
+    # never reaches -- the gate must refuse what it cannot parse, not decide about it.
+    if _full:
+        emit("doc:scalar-region-purity", WIDEN,
+             "a region marker whose id list is unreadable carries a restated value",
+             text[:_full.end()]
+             + "\n\n<!-- scalar-governed:, -->\nIn a repair-phase chain the validator increments "
+               "that round by a single unit before comparing it.\n<!-- /scalar-governed -->"
+             + text[_full.end():])
+
     # The narrowing direction for purity is removing the governance itself: a scalar row whose prose
     # region has gone unmarked can restate the value freely again.
     emit("doc:scalar-region-purity", NARROW, "a governed region loses its marker",

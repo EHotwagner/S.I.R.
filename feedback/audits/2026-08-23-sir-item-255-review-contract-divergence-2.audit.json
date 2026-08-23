@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-255-review-contract-divergence-2.md",
-  "reportSha256": "88dac3f54e2e7cc8f35be615fce7363c002f047a8f1316e12ade7d471fa604ac",
+  "reportSha256": "3199777a48ca25171905cbc468e135c0e6fd475937f0709cb3c0c84770f2472b",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -17,7 +17,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "f367abad3c5ae9be04d1d0bd68f05ec4dfc26a26f8f46d43fca9438a58e09da7"
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
         }
       ],
       "confidenceLimits": [
@@ -37,7 +37,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "f367abad3c5ae9be04d1d0bd68f05ec4dfc26a26f8f46d43fca9438a58e09da7"
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
         }
       ],
       "confidenceLimits": [
@@ -95,7 +95,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "f367abad3c5ae9be04d1d0bd68f05ec4dfc26a26f8f46d43fca9438a58e09da7"
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
         },
         {
           "locator": "command:bash scripts/test-review-contract-coherence.sh",
@@ -154,7 +154,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "f367abad3c5ae9be04d1d0bd68f05ec4dfc26a26f8f46d43fca9438a58e09da7"
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
         }
       ],
       "confidenceLimits": [
@@ -174,7 +174,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "f367abad3c5ae9be04d1d0bd68f05ec4dfc26a26f8f46d43fca9438a58e09da7"
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
         }
       ],
       "confidenceLimits": [
@@ -220,7 +220,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "f367abad3c5ae9be04d1d0bd68f05ec4dfc26a26f8f46d43fca9438a58e09da7"
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
         },
         {
           "locator": "file:docs/coordination-engine-contracts.md",
@@ -260,6 +260,40 @@
         "the cause is attributed to claimGeneration by elimination — the only board delta between the two reads was the claim marker (5384265669 deleted, 5384652804 created) — and is consistent with the engine's own documented binding of claimGeneration to the claim marker's GitHub comment id; the engine internals were NOT decompiled by this worker",
         "not repairable in this repository: the oracle is engine-owned. Filed by the host as FS-GG/.github#2860",
         "recorded here rather than only in the issue because it is the same defect class as this item's subject, and it occurred to this item during its own repair"
+      ]
+    },
+    {
+      "id": "§4.13",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh --inner <mutant>",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
+        },
+        {
+          "locator": "file:docs/coordination-engine-contracts.md",
+          "result": "verified",
+          "sha256": "cc4774e898cd0ae2008e35f47d4394b1a1691d8f14c3619a53e197d6de459dd9"
+        }
+      ],
+      "confidenceLimits": [
+        "BEFORE measured first on the unrepaired round-4 head: Q1 (label ',' carrying P6 verbatim) and Q5 (label ',,') each reproduced at exit 0, 87 mutations, zero FAILED, on BOTH the direct production route and the --inner re-entry route",
+        "AFTER, both routes: Q1 and Q5 red on doc:scalar-region-purity naming the unreadable marker and printing its label; Q4, R1 and R2 unregressed and still red for their own reasons (R2 via doc:scalar-coverage)",
+        "Q4 now reds via the unreadability predicate rather than via the digit token rule, because the fail-closed refusal precedes any interpretation of the region's contents. The document is refused either way; the reason is deliberately the earlier and stronger one, since reporting on the contents of a region whose ids resolved to nothing would be deciding about input the gate could not parse",
+        "ABLATION, the step-7 proof: removing ONLY the unreadability predicate returns Q1 and Q5 to exit 0 on --inner, so the predicate is what catches them and not some other rule. The same ablation also reds the CLEAN run with NO DETECTION, because the unreadable-marker widening added to STEP 3 then reddens no check — the gate enforces its own coverage of this case",
+        "the repair refuses UNREADABILITY, not the literals ',' and ',,'; no separator shape is enumerated, which would have been the enumeration trap one level down",
+        "unregressed at this head and re-executed rather than assumed: P5-P7 still red, P1/P3/P4 still survive as the disclosed boundary, Y1/Y2/N1/N6/C1 still red, F4 still deleted (one comment-only occurrence), NO_NARROWING still exactly two entries",
+        "four copies of the retired document-wide claim existed in comments, not one; all four now state the marked-region scope, and zero copies of the retired wording remain. None was printed, so none was a step-8 finding"
       ]
     }
   ]

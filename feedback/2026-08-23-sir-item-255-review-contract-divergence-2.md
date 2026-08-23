@@ -638,6 +638,46 @@ It did not survive the test, and the replacement is the main result below.
   not direct. Recorded here because it happened **to this item, while repairing this item's own
   defect class** — a check reporting a state it had not verified.
 
+#### §4.13 A marker the gate could not read was reported as a marker it had read and approved — the fourth overclaim, closed by refusing the input rather than by recognising the sentence
+
+- **Observed.** Round 4's narrowed footer says a value *"cannot be restated inside a marked region in
+  any phrasing, nor smuggled in beside one."* It could. Region ids are parsed by splitting the marker
+  label on commas and dropping empties, and the label pattern `[a-z,-]+` admits **separators alone** —
+  `<!-- scalar-governed:, -->` — which yields an **empty id list**. Every rule was keyed on an id or
+  on a `GOVERNED_TEXT` label, so all of them iterated over nothing: the unknown-id check saw no ids,
+  the uniqueness rule gained no entry, and the raw label `","` is not a transcription key, so the
+  equality never compared it. Only the token rules remained — the ones this file concedes are
+  insufficient. `Q1` (label `,` carrying `P6` **verbatim**) and `Q5` (label `,,`) both left the gate
+  printing `ok doc:scalar-region-purity`, 87 mutations, zero `FAILED`, **exit 0**, on both routes.
+- **Root cause.** Not a missing rule and not a phrasing gap: a **failed read reported as a pass**.
+  `Q4` — the same region with the numeral spelled — reds *and prints an empty label before the colon*,
+  which is the proof that the gate parsed the thing as a region and then issued a confident verdict
+  about a marker whose ids resolved to nothing. This is `#266`'s shape, and it is the same shape as
+  §4.12 one layer down: an authority that cannot interpret its input must refuse, not decide.
+- **Impact.** Fourth overclaim in this file, printed two lines above the footer's own record of the
+  other three.
+- **Why this one terminates, where rounds 1–3 did not.** Round 4's critic measured the closure instead
+  of arguing it. Of the four reachable ways to introduce a marked region, three already refuse: `R1`
+  (regrouping ids across regions) reds via *"governed region is missing entirely"*, `R2` (a new row
+  plus its region) reds via `doc:scalar-coverage`, and `Q4` reds on its content. The fourth needed
+  **one fail-closed predicate**. Every previous round either widened a claim or moved an escape; this
+  round makes **a sentence already printed become true**, which is a different act.
+- **Avoidable cost:** one review round.
+- **Disposition:** product fix — repaired in round 5. A marker whose id list resolves to nothing is
+  refused and the region is not interpreted further. `,` and `,,` are **not** enumerated: what is
+  refused is unreadability. Ablating that single predicate restores `Q1`/`Q5` to exit 0 on `--inner`,
+  which is the step-7 proof that the predicate is what catches them; ablating it also reds the **clean**
+  run with `NO DETECTION`, because the unreadable-marker widening added to STEP 3's catalogue then
+  reddens no check. The gate now enforces its own coverage of the case it could not previously see.
+  Sweep `87 → 88`.
+- **Four copies of the retired total claim, not one.** The comment above the check
+  (*"no value may be restated in prose"*) and the comment above the parse (*"a widening cannot smuggle
+  a value back into prose regardless of wording"*) both still asserted the property the footer retired
+  in round 4. Neither is printed, so neither is a step-8 finding — but a retired claim left standing in
+  a comment directly above the mechanism that no longer implements it is how the next reader reinstates
+  it. Both now state the marked-region scope and say plainly not to restore the wider one. Zero copies
+  of the retired wording remain.
+
 ## §5 Did not exercise
 
 - **`scaffold-onboarding`.** This phase inherited a live workspace, an existing branch and an existing
@@ -737,6 +777,7 @@ It did not survive the test, and the replacement is the main result below.
   | round 2 | 78 — 39 widening, 38 narrowing, 1 widen-attempt | 22.7s |
   | round 3 | 86 — 45 widening, 41 narrowing | 28.6s |
   | round 4 | 87 — 46 widening, 41 narrowing | 26.3s |
+  | round 5 | 88 — 47 widening, 41 narrowing | 25.2s |
 
   **3.2x the mutations for the same wall clock as the sweep it replaces** — but that is parallelism,
   not efficiency, and the honest counterpart belongs in the same paragraph: **CPU went from ~26s user
@@ -799,7 +840,11 @@ It did not survive the test, and the replacement is the main result below.
 | Baseline it replaces, 21 mutations | 22.5s | same command at the branch point |
 | Checks emitted on a clean document | 39 `doc:*`, 6 `engine:*`, 1 `known-blind:*` | gate output at head |
 | Mutations after round 3 | 86 — 45 widening, 41 narrowing, 28.6s | gate output at that head |
-| Mutations after round 4 | 87 — 46 widening, 41 narrowing, 26.3s | gate output at head |
+| Mutations after round 4 | 87 — 46 widening, 41 narrowing, 26.3s | gate output at that head |
+| Mutations after round 5 | 88 — 47 widening, 41 narrowing, 25.2s | gate output at head |
+| Round 4's escapes `Q1`, `Q5` (unreadable marker) | were green, now red by name | §4.13, both routes |
+| `Q4`, `R1`, `R2` (the three that already refused) | unregressed, still red | §4.13 |
+| Ablating the unreadability predicate | `Q1`/`Q5` return to exit 0; clean run reds `NO DETECTION` | §4.13 |
 | Round 3's five escapes (`Y1`,`Y2`,`N1`,`N6`,`C1`), re-run per step 7 | all still red, each `doc:scalar-region-purity` | §4.11 |
 | Round 3's escapes `P5`–`P7` (duplicate-id regions) | were green, now red by name | §4.11, both routes |
 | Round 3's escapes `P1`,`P3`,`P4` (unmarked prose) | still green — the DISCLOSED boundary | §4.11; the footer now states it |
