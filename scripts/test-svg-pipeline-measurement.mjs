@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
-import { documentedFrameCeilingCell, documentedTacticalBudgetRows, tacticalBudgetTableDocumentation, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
+import { documentedFrameCeilingCell, documentedTacticalBudgetRows, tacticalBudgetSurfaces, tacticalBudgetTableDocumentation, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 // validateDefinitions COMPOSES the budget: workload policy from the fixture file, ceiling from the
@@ -626,7 +626,40 @@ for (const consumer of tacticalConsumersByName) {
   const text = readFileSync(new URL(consumer, import.meta.url), "utf8");
   assert.match(text, /performance-budget\.mjs/, `${consumer} must import the single declaration`);
 }
-console.log(`JUSTIFIED tactical-budget-no-restatement: ${budgetConsumers.length} DERIVED consumers declare none of the ${declaredBudgetKeys.length} budget keys, widen no budget by arithmetic, and carry none of the ${sweptTacticalValues.length} sweepable declared values; ${unsweepableTacticalValues.size} declared value(s) are covered by the key rule alone, each with a recorded reason`);
+
+// Rule C -- SUBJECT. Rules A and B are both keyed off something the DECLARATION says: a budget key,
+// or a budget value. Neither sees a consumer that bounds a measured subject with a number the
+// declaration never contained -- and that is not a hypothetical gap, it is the other half of this
+// item's root cause: a threshold with no row in the table, invented at the point of use. It is also
+// the mutant that escaped the first draft of this gate (`nodeEstimate <= 9500` survived Rules A and
+// B outright), which is why this rule exists at all.
+//
+// So the third rule is keyed off the SUBJECT instead. Where a consumer reads a budgeted quantity off
+// the live DOM, the identifier it binds that measurement to may not meet a numeric literal on any
+// line: the only thing a measurement may be compared against is the declaration. It fails closed --
+// a declared surface no consumer reads at all is a failure, not a skip, because a rule with nothing
+// to check would pass vacuously forever.
+let surfaceBoundedIdentifiers = 0;
+for (const surface of tacticalBudgetSurfaces) {
+  let readingConsumers = 0;
+  for (const consumer of tacticalConsumersByName) {
+    const text = readFileSync(new URL(consumer, import.meta.url), "utf8");
+    const binding = text.match(new RegExp(`(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)[^\\n]*getAttribute\\(\\s*["'\`]${surface.attribute}["'\`]`));
+    if (!binding) continue;
+    readingConsumers += 1;
+    surfaceBoundedIdentifiers += 1;
+    const [, identifier] = binding;
+    for (const line of text.split("\n")) {
+      if (!new RegExp(`\\b${identifier}\\b`).test(line)) continue;
+      assert.doesNotMatch(line, /(?<![\w.$])\d/,
+        `${consumer} bounds ${identifier} -- the measurement it read from ${surface.attribute} -- with a numeric literal: ${line.trim()}. A measurement may only be compared against the declaration; a number written here is either a restated budget or a threshold this repository declares nowhere, which is the defect S.I.R.#318 removed.`);
+    }
+  }
+  assert.ok(readingConsumers > 0,
+    `no tactical consumer reads ${surface.attribute}, so the subject rule for ${surface.quantity} checks nothing and would pass vacuously`);
+}
+assert.ok(surfaceBoundedIdentifiers >= tacticalBudgetSurfaces.length, "the subject rule bound fewer identifiers than there are declared surfaces");
+console.log(`JUSTIFIED tactical-budget-no-restatement: ${budgetConsumers.length} DERIVED consumers declare none of the ${declaredBudgetKeys.length} budget keys, widen no budget by arithmetic, and carry none of the ${sweptTacticalValues.length} sweepable declared values; ${unsweepableTacticalValues.size} declared value(s) are covered by the key rule alone, each with a recorded reason; and ${surfaceBoundedIdentifiers} measurement(s) read from the ${tacticalBudgetSurfaces.length} declared DOM surface(s) meet no numeric literal at all, so an INVENTED bound is refused as readily as a copied one`);
 
 // 4. THE THRESHOLDS CI ENFORCES CAN FAIL, AND THEY FAIL AT THE DECLARED NUMBER.
 // scripts/test-tactical-visual-review.mjs needs a built client and a browser, so its comparisons

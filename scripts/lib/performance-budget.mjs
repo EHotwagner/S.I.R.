@@ -170,6 +170,19 @@ export const tacticalRuntimeEffectCap = Object.freeze({
   maximumEffectInstances: tacticalWorkloadBudgets.stress200.maximumEffects,
 });
 
+// WHERE EACH BUDGETED QUANTITY IS SURFACED TO A BROWSER CONSUMER.
+//
+// A consumer that reads one of these attributes off the live DOM is holding the MEASUREMENT, and the
+// only thing it may compare that measurement against is the declaration. Bounding it with a numeric
+// literal is either a restated budget or -- worse, and this is the half of S.I.R.#318 that had no
+// table row at all -- a fresh threshold invented at the point of use. The gate keyed off this list
+// refuses a numeric literal on any line that touches the identifier read from these attributes,
+// whatever the number is, so an invented bound is caught as readily as a copied one.
+export const tacticalBudgetSurfaces = Object.freeze([
+  Object.freeze({ quantity: "maximumDomNodes", attribute: "data-visual-node-estimate" }),
+  Object.freeze({ quantity: "maximumEffects", attribute: "data-effect-limit" }),
+]);
+
 // The manifest block `scripts/generate-tactical-visual-review.mjs` publishes, built HERE so that the
 // generator carries no budget key and no budget number at all. `sir-tactical-visual-review-v3`
 // renamed `measurementToleranceMilliseconds` to the cadence ceiling this module derives; v2 carried
