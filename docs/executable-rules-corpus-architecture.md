@@ -736,9 +736,28 @@ mistaken for accidents:
     by executing the corpus.
 
   An `Include` the check cannot evaluate is never walked past. An MSBuild property
-  expression, a reference to a project that is not in the tree, and a reference
-  resolving outside the repository are each **refused**, because whatever they name
-  would otherwise be invisible to exactly the check they sit inside.
+  expression, a reference to a project that is not in the tree, a reference
+  resolving outside the repository, and a project file whose XML does not parse are
+  each **refused**, because whatever they name would otherwise be invisible to
+  exactly the check they sit inside. The last of those is the reason the check
+  **parses** each project rather than matching its text: a reader that finds no
+  match in a file it could not interpret reports "this project compiles nothing",
+  which is the same answer it gives for a project that genuinely declares nothing.
+
+  **The reader reads MSBuild, not one shape of it** — and this too is stated
+  because the previous version was not complete and said it was. Round 1 matched
+  `Include` as an *attribute* rather than as the substring `<Tag Include="`, giving
+  attribute order as the reason; the reason does not stop at attribute order, and
+  the regex did. A single-quoted attribute value, a non-canonically-cased element
+  name, and a literal `>` inside an attribute value (which XML permits, and which
+  `[^>]*>` truncates) were all invisible to it, and each yielded *no items* rather
+  than an error — so `saturate` could leave the pinned `src/SIR.Domain/FixedPoint.fs`
+  through any of them with all four steps of the `rules` gate green. Each spelling
+  was confirmed legal by **building** it and observing the extracted type in the
+  emitted assembly, which also fixes the two boundaries the reader now relies on: a
+  lowercase `include=` *attribute* is not legal MSBuild (`MSB4232`), so the
+  attribute name is matched exactly; a semicolon-separated item list is legal and
+  compiles every member, so it is split rather than treated as one path.
 
 `source-correspondence.json` is the **mutable half**. It records, per declared
 source, the SHA-256 of that file's text after the normalization
@@ -805,8 +824,10 @@ To change a declared implementation source:
    moved, then `--write` to record their new digests, **in the same commit**.
    The tool rebinds only paths whose normalized text actually differs and refuses
    to add or remove a path. Before recording anything it builds **every project
-   that actually compiles a rebound path** — resolved by reading `Compile Include`
-   entries and comparing resolved paths, not by naming convention — plus the
+   that actually compiles a rebound path** — resolved by **parsing** each project's
+   `Compile` items and comparing resolved paths, not by naming convention and not
+   by matching the substring `Compile Include="`, which is blind to spellings
+   MSBuild builds — plus the
    corpus test project, and then executes the corpus fixtures; it refuses if any
    of those builds fails, if the fixtures refuse, or if **no project compiles a
    declared path at all**.

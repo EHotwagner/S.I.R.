@@ -347,6 +347,33 @@ enforce_source_correspondence() {
 # Condition="..." />`; a substring matcher sees only one of them, and the one it misses is a free
 # hiding place for exactly the extraction this arm exists to detect.
 #
+# That reasoning does not stop at attribute order, and the regex that first implemented it did.
+# `<Tag[[:space:]][^>]*>` plus `Include[[:space:]]*=[[:space:]]*"[^"]*"` is blind to three further
+# spellings, and each returned 0 WITH NO OUTPUT -- indistinguishable from "read it, found none",
+# which is the non-answer-as-confident-answer class (#266). Measured against S.I.R.#290's own
+# subject at head 1be41a7, extracting `saturate` out of the pinned `src/SIR.Domain/FixedPoint.fs`
+# into a new file listed on `SIR.Domain.fsproj`:
+#
+#   <Compile Include='FixedPointArithmetic.fs' />        single-quoted value  -- the attribute
+#                                                        regex demands a double quote
+#   <compile Include="FixedPointArithmetic.fs" />        non-canonical element case
+#   <Compile Condition="1 > 0" Include="..." />          a LITERAL `>` inside an attribute value,
+#                                                        which XML permits (only `<` and `&` are
+#                                                        forbidden there) and which `[^>]*>`
+#                                                        truncates before it reaches `Include`
+#
+# All three are legal MSBuild, and that was settled by BUILDING rather than by reading: each one
+# compiles the extracted file into the assembly (`dotnet build`, then the type name observed in the
+# emitted dll). The same measurement settles the two boundaries this reader now relies on -- a
+# lowercase `include=` ATTRIBUTE is *not* legal (MSB4232, the build fails, so there is no hiding
+# place behind it and this reader matches `Include` exactly), while a semicolon-separated item list
+# is legal and compiles EVERY member, so the list is split rather than emitted as one garbled path.
+#
+# Widening the regex would be the same defect with a longer pattern: the grammar has more spellings
+# than anyone enumerates -- entity and character references decode too -- so the reader parses the
+# XML instead of matching its text. `python3` is already a hard dependency of this script (the
+# probe fixtures below are built with it), so an actual parse costs no new dependency.
+#
 # An `Include` carrying an MSBuild property expression is emitted VERBATIM rather than resolved or
 # dropped: this function cannot evaluate it, and a caller must be able to tell "I could not evaluate
 # this" from a path (#266).
@@ -354,12 +381,53 @@ enforce_source_correspondence() {
 # Exit status distinguishes the two ways a project yields nothing, because the callers' policies
 # differ: 0 with no output means "read it, found none"; 2 means "the project does not exist at this
 # revision" (normal for a NEW project when reading the baseline, a refusal at HEAD); 1 means the
-# read itself failed and nothing may be concluded.
+# read itself failed and nothing may be concluded. A project whose XML does not parse is now the
+# THIRD case rather than the first: the regex reader reported it as "found none", and a file this
+# arm cannot interpret is the one place an extraction would most like to sit.
+
+# The MSBuild item reader itself, kept separate so the probes can drive it and so probe 27 can
+# carry it into its `timeout` subshell alongside the functions. Reads one project's XML on stdin
+# and writes one `Include` value per line; exits 3 when the XML cannot be parsed or when a value
+# cannot be represented line-wise, which the caller turns into "the read failed", never "none".
+msbuild_include_values() {  # tag [attribute]  (project XML on stdin)
+  python3 -c '
+import sys, xml.etree.ElementTree as ET
+
+tag = sys.argv[1].lower()
+attribute = sys.argv[2]
+try:
+    root = ET.fromstring(sys.stdin.buffer.read())
+except Exception as exc:
+    sys.stderr.write("  MSBuild XML did not parse: %s\n" % exc)
+    sys.exit(3)
+
+for element in root.iter():
+    name = element.tag
+    if not isinstance(name, str):
+        continue                      # comments and processing instructions are not elements
+    name = name.rsplit("}", 1)[-1]    # drop any xmlns, which old-style projects still carry
+    if name.lower() != tag:           # MSBuild element names are case-insensitive; measured
+        continue
+    value = element.get(attribute)    # attribute names are NOT; a lowercase one is MSB4232
+    if value is None:
+        continue
+    for part in value.split(";"):     # an MSBuild item list is semicolon-separated; measured
+        part = part.strip()
+        if not part:
+            continue
+        if "\n" in part or "\r" in part:
+            sys.stderr.write("  Include value spans lines and cannot be emitted line-wise: %r\n" % part)
+            sys.exit(3)
+        sys.stdout.write(part + "\n")
+' "$1" "${2:-Include}"
+}
+
 project_elements() {
   local tree_root=$1
   local project=$2
   local tag=$3
   local rev=${4:-}
+  local attribute=${5:-Include}
   local project_dir
   local content
   project_dir=$(dirname "$project")
@@ -370,18 +438,24 @@ project_elements() {
     test -f "$tree_root/$project" || return 2
     content=$(command cat "$tree_root/$project") || return 1
   fi
-  # `set -o pipefail` is in force, and grep exits 1 on NO MATCH -- an ordinary answer here, since
-  # most projects declare no ProjectReference at all. Each stage is therefore captured and its
-  # no-match arm separated from a real failure, rather than letting "found none" surface as "the
-  # read failed". The read failures that matter were already decided above, before this pipeline.
-  local elements
-  local attributes
-  elements=$(printf '%s\n' "$content" | tr '\n' ' ' | grep -oE "<$tag[[:space:]][^>]*>") || elements=""
-  test -n "$elements" || return 0
-  attributes=$(printf '%s\n' "$elements" | grep -oE 'Include[[:space:]]*=[[:space:]]*"[^"]*"') || attributes=""
-  test -n "$attributes" || return 0
-  printf '%s\n' "$attributes" \
-    | sed -E 's/^Include[[:space:]]*=[[:space:]]*"//; s/"$//' \
+  # No output is an ordinary answer here -- most projects declare no ProjectReference at all -- so
+  # the empty case returns 0 and only a genuine parse failure returns 1. `set -o pipefail` is in
+  # force, which is what carries the reader's exit 3 out of the pipeline to be caught here rather
+  # than being lost behind `printf`'s success. The read failures that matter for the file's
+  # EXISTENCE were already decided above, before this pipeline.
+  local includes
+  local includes_status=0
+  includes=$(printf '%s' "$content" | msbuild_include_values "$tag" "$attribute") || includes_status=$?
+  if test "$includes_status" -ne 0; then
+    echo "project file did not parse as MSBuild XML: $project" >&2
+    echo "  read at ${rev:-the working tree}" >&2
+    echo "  refusing rather than reporting 'no $tag items': a file this check cannot interpret is" >&2
+    echo "  the one place an extraction would most like to sit, and 'I could not evaluate this' is" >&2
+    echo "  never 'there is nothing there' (#266)" >&2
+    return 1
+  fi
+  test -n "$includes" || return 0
+  printf '%s\n' "$includes" \
     | tr '\\' '/' \
     | while IFS= read -r include; do
         test -n "$include" || continue
@@ -613,6 +687,59 @@ check_identity_closure_containment() {
     echo "no project compiles any declared implementation source: the closure check would examine nothing" >&2
     return 1
   }
+
+  # An item this arm never reads is the same hiding place as an item it misreads, and MSBuild
+  # supplies items from two places outside the project file. Neither is resolvable without
+  # evaluating MSBuild, which this check deliberately does not do -- so both are REFUSED inside the
+  # closure, exactly as an unevaluable `Include` is. Measured: a project carrying
+  # `<Import Project="Extra.props" />`, where `Extra.props` declares one `<Compile Include>`, puts
+  # that file in the built assembly while this arm sees nothing at all (exit 0, no output). No
+  # closure project carries an `<Import>` and the repository's `Directory.Build.props` declares
+  # only properties and a `PackageReference`, so both refusals cost nothing today -- which is the
+  # moment to install them, rather than after an extraction has used one.
+  local imported
+  local imported_status
+  for project in "${owning[@]}"; do
+    imported_status=0
+    imported=$(project_elements "$tree_root" "$project" Import "" Project) || imported_status=$?
+    test "$imported_status" -ne 1 || { echo "project file could not be read: $project" >&2; return 1; }
+    test -n "$imported" || continue
+    echo "a project in the rules implementation closure carries an <Import> this check cannot follow:" >&2
+    echo "  declared by: $project" >&2
+    printf '%s\n' "$imported" | sed 's/^/  imports: /' >&2
+    echo "  MSBuild compiles the items an imported file declares; this arm reads project files only," >&2
+    echo "  so whatever the import brings in is invisible to exactly the check it sits inside." >&2
+    echo "  Declare the compile items in the project file itself." >&2
+    return 1
+  done
+
+  # `Directory.Build.props` and `Directory.Build.targets` are imported by MSBuild with no `<Import>`
+  # element anywhere to see, so the guard above cannot reach them. An item declared there applies to
+  # EVERY project, the closure included. Refusing only the explicit form while leaving this one open
+  # would be an overclaimed limit -- the shape that makes a real gap invisible.
+  local auto_import
+  local auto_tag
+  local auto_items
+  local auto_status
+  for auto_import in "$tree_root/Directory.Build.props" "$tree_root/Directory.Build.targets"; do
+    test -f "$auto_import" || continue
+    for auto_tag in Compile ProjectReference; do
+      auto_status=0
+      auto_items=$(msbuild_include_values "$auto_tag" < "$auto_import") || auto_status=$?
+      if test "$auto_status" -ne 0; then
+        echo "an automatically imported MSBuild file did not parse: $auto_import" >&2
+        echo "  refusing rather than reporting that it declares no $auto_tag items" >&2
+        return 1
+      fi
+      test -n "$auto_items" || continue
+      echo "an automatically imported MSBuild file declares $auto_tag items: $auto_import" >&2
+      printf '%s\n' "$auto_items" | sed 's/^/  /' >&2
+      echo "  MSBuild applies these to EVERY project, the rules implementation closure included," >&2
+      echo "  and no <Import> element names this file, so nothing else here can see them." >&2
+      echo "  Declare compile items and project references in the project files themselves." >&2
+      return 1
+    done
+  done
 
   local current_items=""
   local baseline_items=""
@@ -1295,7 +1422,7 @@ if timeout 120 bash -c "
   set -euo pipefail
   repo_root='$repo_root'
   arm_invocations=\$(mktemp)
-  $(declare -f project_elements project_compile_items project_inventory closure_projects check_identity_closure_containment)
+  $(declare -f msbuild_include_values project_elements project_compile_items project_inventory closure_projects check_identity_closure_containment)
   check_identity_closure_containment '$source_manifest' '$correspondence_manifest' '$source_commit' '$graph_cycle'
 " >"$pin_probe_log" 2>&1; then
   pin_probe_fail "a reference cycle unexpectedly passed the identity-closure arm"
@@ -1326,6 +1453,267 @@ graph_closure_count=$(closure_projects "$repo_root" "" "$graph_declared_list" | 
 rm -f "$graph_declared_list"
 test "$graph_closure_count" -gt "$graph_direct_count" || {
   pin_probe_fail "the closure walk reaches no further than the directly-compiling projects ($graph_direct_count): ProjectReference is not being followed"
+}
+
+# ---------------------------------------------------------------------------------------------
+# The reader reads MSBuild, not one SHAPE of MSBuild (S.I.R.#290 round 2).
+#
+# Round 1 matched `Include` as an ATTRIBUTE rather than as the substring `<Tag Include="`, and gave
+# attribute order as its reason (probe 23). The reason does not stop at attribute order, and round
+# 1's regex did. Three further spellings were invisible to it, and -- worse than a miss -- each
+# yielded 0 WITH NO OUTPUT, which this file's own contract reads as "read it, found none". With
+# `saturate` extracted out of the pinned `src/SIR.Domain/FixedPoint.fs` into a new file listed in
+# any of them, all four steps of the production `rules` gate passed byte-identically to a clean
+# tree's green.
+#
+# Every spelling below is legal MSBuild, and that was settled by BUILDING each one and observing
+# the extracted type in the emitted assembly -- not by reading a schema. Each row is a controlled
+# PAIR: the same tree must be REFUSED while the path is unacknowledged and ACCEPTED once it is
+# acknowledged. The second half is what proves the reader resolved the CORRECT path rather than
+# merely emitting something -- `.outsideIdentity` matches by exact string, so a garbled path would
+# fail the acceptance half even though it passed the refusal half. The canonical spelling is a row
+# too, so the pair is a one-construct experiment against a spelling round 1 already handled.
+graph_spellings=$(mktemp /tmp/sir-rules-graph-spellings.XXXXXX)
+cat > "$graph_spellings" <<'SPELLINGS'
+single-quoted attribute value	<Compile Include='FixedPointArithmetic.fs' />
+non-canonical element case	<compile Include="FixedPointArithmetic.fs" />
+literal > inside an attribute value	<Compile Condition="1 > 0" Include="FixedPointArithmetic.fs" />
+semicolon-separated item list	<Compile Include="Rules.fs;FixedPointArithmetic.fs" />
+canonical spelling (already handled in round 1)	<Compile Include="FixedPointArithmetic.fs" />
+SPELLINGS
+graph_spelling_ack="$pin_probe_dir/graph-spelling-acknowledged.json"
+jq '.outsideIdentity += ["src/SIR.Domain/FixedPointArithmetic.fs"]' \
+  "$correspondence_manifest" > "$graph_spelling_ack"
+graph_spelling_index=0
+while IFS="$(printf '\t')" read -r spelling_label spelling_xml; do
+  test -n "$spelling_label" || continue
+  graph_spelling_index=$((graph_spelling_index + 1))
+  graph_spelling_tree="$pin_probe_dir/graph-spelling-$graph_spelling_index"
+  mkdir -p "$graph_spelling_tree"
+  graph_probe_tree "$graph_spelling_tree"
+  graph_reference_from "$graph_spelling_tree/src/SIR.Domain/SIR.Domain.fsproj" "$spelling_xml"
+
+  # 29. REFUSAL half. The extraction is detected whatever the spelling.
+  if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_spelling_tree" >"$pin_probe_log" 2>&1; then
+    rm -f "$graph_spellings"
+    pin_probe_fail "extraction hidden behind a $spelling_label unexpectedly passed: the reader is matching a shape of MSBuild, not MSBuild"
+  fi
+  search_quiet 'src/SIR.Domain/FixedPointArithmetic.fs' "$pin_probe_log" || {
+    rm -f "$graph_spellings"
+    pin_probe_fail "a $spelling_label was refused, but not for its own reason: the resolved path was not named"
+  }
+
+  # 30. ACCEPTANCE half. The register matches by exact string, so this passes only if the reader
+  #     resolved the same path a canonical spelling resolves to.
+  check_identity_closure_containment "$source_manifest" "$graph_spelling_ack" "$source_commit" "$graph_spelling_tree" >"$pin_probe_log" 2>&1 || {
+    rm -f "$graph_spellings"
+    pin_probe_fail "an acknowledged path behind a $spelling_label was still refused: the reader resolved some other string"
+  }
+done < "$graph_spellings"
+rm -f "$graph_spellings"
+test "$graph_spelling_index" -eq 5 || {
+  pin_probe_fail "the MSBuild spelling table did not run every row ($graph_spelling_index of 5): a fixture that silently shrinks demonstrates less than it claims"
+}
+
+# 31. A project whose XML DOES NOT PARSE is refused, not reported as "no Compile items". This is
+#     the non-answer-as-confident-answer class (#266) for this reader specifically: round 1's regex
+#     found no match in an unparseable file and returned the same 0-with-no-output it returns for a
+#     project that genuinely declares nothing, so the one file this check cannot interpret was also
+#     the one place an extraction was free to sit.
+graph_unparseable="$pin_probe_dir/graph-unparseable"
+mkdir -p "$graph_unparseable"
+graph_probe_tree "$graph_unparseable"
+printf '<Project Sdk="Microsoft.NET.Sdk">\n  <ItemGroup>\n    <Compile Include="Rules.fs" />\n' \
+  > "$graph_unparseable/src/SIR.Domain/SIR.Domain.fsproj"
+if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_unparseable" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "a project file whose XML does not parse unexpectedly passed: an uninterpretable project is a hiding place"
+fi
+search_quiet 'did not parse as MSBuild XML' "$pin_probe_log" || {
+  pin_probe_fail "an unparseable project failed without the actionable parse diagnostic: it was not refused for its own reason"
+}
+
+# 32. The BASELINE PROJECT LIST is computed at the SEALED COMMIT, independently of the working
+#     tree's. The comment above `closure_projects` calls that independence load-bearing, and until
+#     this probe nothing measured the PROJECT-LIST half of it: breaking only
+#     `baseline_projects=$(closure_projects "$tree_root" "$commit" ...)` to read the working tree
+#     left this suite at exit 0 with every other probe green.
+#
+#     Probes 20 and 21 cannot see it, and the reason is the whole point. They add BRAND NEW
+#     projects, whose compile items do not exist at the sealed commit either -- so computing the
+#     baseline project list from the working tree changes nothing for them. The move that separates
+#     the two is pulling an EXISTING project that was OUTSIDE the closure at the sealed commit INTO
+#     it with a new reference: `SIR.Tools` is in the tree at $source_commit and is correctly not in
+#     the 12-project closure there. Read the baseline project list from the working tree and
+#     `SIR.Tools/Program.fs` appears on BOTH sides and cancels; read it at the sealed commit, where
+#     the reference does not exist, and it is exactly the uncontained growth this arm exists to
+#     refuse.
+graph_baseline_projects="$pin_probe_dir/graph-baseline-projects"
+mkdir -p "$graph_baseline_projects"
+graph_probe_tree "$graph_baseline_projects"
+graph_reference_from "$graph_baseline_projects/src/SIR.Domain/SIR.Domain.fsproj" '<ProjectReference Include="../SIR.Tools/SIR.Tools.fsproj" />'
+if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_baseline_projects" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "a pre-existing project pulled into the closure by a NEW reference unexpectedly passed: the baseline project list is not computed at the sealed commit"
+fi
+search_quiet 'src/SIR.Tools/Program.fs' "$pin_probe_log" || {
+  pin_probe_fail "the baseline-project-list escape did not name the compile items the new reference pulled in"
+}
+
+# 33. And its control, so probe 32's red is attributable to the closure GROWING rather than to
+#     anything else about referencing `SIR.Tools`: acknowledge what the reference pulls in and the
+#     same tree passes.
+graph_baseline_ack="$pin_probe_dir/graph-baseline-acknowledged.json"
+jq '.outsideIdentity += ["src/SIR.Tools/Program.fs"]' "$correspondence_manifest" > "$graph_baseline_ack"
+check_identity_closure_containment "$source_manifest" "$graph_baseline_ack" "$source_commit" "$graph_baseline_projects" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "acknowledging the compile items a new ProjectReference pulls in did not make the tree acceptable: probe 32 reds for some other reason"
+}
+
+# 34. An `<Import>` inside the closure is refused. MSBuild compiles the items an imported file
+#     declares, and this arm reads project files only -- measured, a project importing a props file
+#     that carries one `<Compile Include>` builds that file into the assembly while the arm emits
+#     nothing at all. Parsing the project correctly does not help: the item is not in the project.
+graph_import="$pin_probe_dir/graph-import"
+mkdir -p "$graph_import"
+graph_probe_tree "$graph_import"
+printf '<Project>\n  <ItemGroup><Compile Include="FixedPointArithmetic.fs" /></ItemGroup>\n</Project>\n' \
+  > "$graph_import/src/SIR.Domain/Extra.props"
+graph_reference_from "$graph_import/src/SIR.Domain/SIR.Domain.fsproj" '</ItemGroup><Import Project="Extra.props" /><ItemGroup>'
+if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_import" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "a closure project carrying an <Import> unexpectedly passed: imported compile items are invisible to this arm"
+fi
+search_quiet 'carries an <Import> this check cannot follow' "$pin_probe_log" || {
+  pin_probe_fail "an <Import> inside the closure failed without the actionable import diagnostic"
+}
+
+# 35. And the route with NO `<Import>` element to catch. MSBuild imports `Directory.Build.props`
+#     automatically, so an item declared there reaches every project in the closure while probe 34
+#     has nothing to see. Refusing only the explicit form would be an overclaimed limit.
+graph_autoimport="$pin_probe_dir/graph-autoimport"
+mkdir -p "$graph_autoimport"
+graph_probe_tree "$graph_autoimport"
+printf '<Project>\n  <ItemGroup><Compile Include="FixedPointArithmetic.fs" /></ItemGroup>\n</Project>\n' \
+  > "$graph_autoimport/Directory.Build.props"
+if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_autoimport" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "a Directory.Build.props declaring Compile items unexpectedly passed: it applies to every closure project"
+fi
+search_quiet 'automatically imported MSBuild file declares Compile items' "$pin_probe_log" || {
+  pin_probe_fail "an item-declaring Directory.Build.props failed without the actionable auto-import diagnostic"
+}
+
+# 36. CONTROL for 34 and 35 together. The repository's own `Directory.Build.props` -- properties and
+#     a `PackageReference`, which is neither of the item kinds that can carry an extraction -- must
+#     pass, so those two refusals are attributable to the items and not to the file existing.
+graph_autoimport_ok="$pin_probe_dir/graph-autoimport-ok"
+mkdir -p "$graph_autoimport_ok"
+graph_probe_tree "$graph_autoimport_ok"
+cp "$repo_root/Directory.Build.props" "$graph_autoimport_ok/Directory.Build.props"
+check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_autoimport_ok" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "the repository's own Directory.Build.props was refused: probes 34 and 35 red for the wrong reason"
+}
+
+# 37. The writer's ITEM READER agrees with this verifier's, for the same reason probe 8 requires
+#     their normalizations to agree: the writer necessarily carries its own copy, and a divergence
+#     would make it build a different set of projects from the one this gate reasons about while
+#     both report success. Compared over every real project, so this is an agreement measured
+#     against the production tree rather than against a fixture either side authored.
+writer_reader=$(mktemp /tmp/sir-rules-writer-reader.XXXXXX)
+sed -n '/^project_compile_includes() {/,/^}/p' "$repo_root/scripts/rebind-rules-corpus-sources.sh" > "$writer_reader"
+test -s "$writer_reader" || {
+  rm -f "$writer_reader"
+  pin_probe_fail "the rebind writer no longer defines project_compile_includes: probe 37 would compare nothing"
+}
+# shellcheck disable=SC1090
+. "$writer_reader"
+rm -f "$writer_reader"
+#     The comparison subjects are the real projects AND the spelling fixtures built above. The real
+#     tree alone would make this probe DECORATIVE and it was measured to be: no project in it uses
+#     a spelling the substring form misses, so both readers agree there and reverting the writer to
+#     that form left this probe green. A gate that cannot fail on the thing it claims is worth less
+#     than no gate, so the fixtures that carry the escapes are part of its subject.
+reader_subjects=""
+while IFS= read -r probe_project; do
+  test -n "$probe_project" || continue
+  reader_subjects+="$repo_root/$probe_project"$'\n'
+done <<< "$(project_inventory "$repo_root" "")"
+reader_spelling_subjects=0
+for graph_spelling_index in 1 2 3 4 5; do
+  probe_project="$pin_probe_dir/graph-spelling-$graph_spelling_index/src/SIR.Domain/SIR.Domain.fsproj"
+  test -f "$probe_project" || continue
+  reader_subjects+="$probe_project"$'\n'
+  reader_spelling_subjects=$((reader_spelling_subjects + 1))
+done
+test "$reader_spelling_subjects" -eq 5 || {
+  pin_probe_fail "probe 37 found $reader_spelling_subjects of 5 spelling fixtures: without them it compares only projects both readers already agree on"
+}
+reader_disagreement=""
+while IFS= read -r probe_project; do
+  test -n "$probe_project" || continue
+  verifier_items=$(printf '%s' "$(command cat "$probe_project")" | msbuild_include_values Compile) || {
+    pin_probe_fail "the verifier reader failed on a project: $probe_project"
+  }
+  writer_items=$(project_compile_includes "$probe_project") || {
+    pin_probe_fail "the rebind writer reader failed on a project: $probe_project"
+  }
+  test "$verifier_items" = "$writer_items" || reader_disagreement+="$probe_project"$'\n'
+done <<< "$reader_subjects"
+test -z "$reader_disagreement" || {
+  echo "the rebind writer and this verifier read different Compile items from the same project:" >&2
+  printf '%s' "$reader_disagreement" | sed 's/^/  /' >&2
+  pin_probe_fail "writer and verifier MSBuild item readers have diverged"
+}
+
+# 38. And the writer must actually USE that reader. Probe 37 compares `project_compile_includes`
+#     against this verifier's; it says nothing about whether `owning_projects` -- the function that
+#     decides which projects get BUILT before new digests are recorded -- calls it. Measured: it
+#     does not have to. Reverting only `owning_projects` to the substring form left probe 37 green,
+#     because the function it compares was untouched. That is the shape where a property is named
+#     by one test and provided by another (.github#2223 step 4), so the writer's real resolution
+#     path is driven here against the same spelling fixtures, end to end.
+writer_owning=$(mktemp /tmp/sir-rules-writer-owning.XXXXXX)
+sed -n '/^owning_projects() {/,/^}/p' "$repo_root/scripts/rebind-rules-corpus-sources.sh" > "$writer_owning"
+test -s "$writer_owning" || {
+  rm -f "$writer_owning"
+  pin_probe_fail "the rebind writer no longer defines owning_projects: probe 38 would drive nothing"
+}
+# shellcheck disable=SC1090
+. "$writer_owning"
+rm -f "$writer_owning"
+writer_resolution_missing=""
+for graph_spelling_index in 1 2 3 4 5; do
+  writer_spelling_tree="$pin_probe_dir/graph-spelling-$graph_spelling_index"
+  test -d "$writer_spelling_tree" || continue
+  writer_resolved=$(
+    repo_root="$writer_spelling_tree"
+    owning_projects "src/SIR.Domain/FixedPointArithmetic.fs"
+  ) || writer_resolved=""
+  printf '%s\n' "$writer_resolved" | grep -Fxq 'src/SIR.Domain/SIR.Domain.fsproj' \
+    || writer_resolution_missing+="graph-spelling-$graph_spelling_index"$'\n'
+done
+test -z "$writer_resolution_missing" || {
+  echo "the rebind writer could not resolve the owning project of an extracted file in:" >&2
+  printf '%s' "$writer_resolution_missing" | sed 's/^/  /' >&2
+  echo "  owning_projects decides which projects are BUILT before new identity digests are" >&2
+  echo "  recorded, and it reports 'no project compiles <path>' for a spelling it merely could" >&2
+  echo "  not read -- a confident wrong answer to a question it did not evaluate." >&2
+  pin_probe_fail "the rebind writer's owning-project resolution does not use the parsing reader"
+}
+
+# 39. The writer's own non-answer guard. An unparseable project must make `owning_projects` FAIL,
+#     not return an empty owner list -- the caller turns an empty list into `no project compiles
+#     <path>` and exits, which reads as an established fact about the tree rather than as a file
+#     this script could not evaluate (#266). The two remedies are opposite, so the two outcomes
+#     must be distinguishable.
+writer_unparseable="$pin_probe_dir/writer-unparseable"
+mkdir -p "$writer_unparseable"
+graph_probe_tree "$writer_unparseable"
+printf '<Project Sdk="Microsoft.NET.Sdk">\n  <ItemGroup>\n    <Compile Include="Rules.fs" />\n' \
+  > "$writer_unparseable/src/SIR.Domain/SIR.Domain.fsproj"
+writer_unparseable_status=0
+(
+  repo_root="$writer_unparseable"
+  owning_projects "src/SIR.Domain/FixedPointArithmetic.fs"
+) >/dev/null 2>&1 || writer_unparseable_status=$?
+test "$writer_unparseable_status" -ne 0 || {
+  pin_probe_fail "the rebind writer read an unparseable project as 'this project compiles nothing': an unresolvable owner would be reported as an absent one"
 }
 
 # 18. WIRING. Both S.I.R.#290 arms must have run against the REAL tree and the REAL manifests
