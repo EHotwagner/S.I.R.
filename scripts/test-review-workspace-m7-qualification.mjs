@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-const [appRoot, panelViews, styles, projection, shellTests, projectionTests, browserSmoke, workerSmoke] =
+const [appRoot, panelViews, styles, projection, shellTests, projectionTests, browserSmoke, workerSmoke, tacticalSharedControls, tacticalScenePresentation] =
   await Promise.all([
     readFile("src/SIR.Client.Web/App.fs", "utf8"),
     readFile("src/SIR.Client.Web/PanelViews.fs", "utf8"),
@@ -10,11 +10,13 @@ const [appRoot, panelViews, styles, projection, shellTests, projectionTests, bro
     readFile("tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs", "utf8"),
     readFile("scripts/smoke-client.mjs", "utf8"),
     readFile("scripts/smoke-worker-roundtrip.mjs", "utf8"),
+    readFile("src/SIR.Client.Web/TacticalSharedControls.fs", "utf8"),
+    readFile("src/SIR.Client.Web/TacticalScenePresentation.fs", "utf8"),
   ]);
 
 // Review panels are an explicit view boundary; qualify their composed ownership
 // surface while App.fs remains the root Elmish shell.
-const app = `${appRoot}\n${panelViews}`;
+const app = `${appRoot}\n${panelViews}\n${tacticalSharedControls}\n${tacticalScenePresentation}`;
 
 const require = (condition, message) => {
   if (!condition) throw new Error(`Review M7 qualification failed: ${message}`);

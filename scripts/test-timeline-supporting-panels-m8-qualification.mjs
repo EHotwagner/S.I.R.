@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-const [app, featureRuntime, styles, layout, layoutInterface, layoutTests, browserSmoke, docsSmoke] =
+const [appRoot, featureRuntime, styles, layout, layoutInterface, layoutTests, browserSmoke, docsSmoke, tacticalSharedControls, tacticalScenePresentation] =
   await Promise.all([
     readFile("src/SIR.Client.Web/App.fs", "utf8"),
     readFile("src/SIR.Client.Web/ClientFeatureRuntime.fs", "utf8"),
@@ -10,7 +10,15 @@ const [app, featureRuntime, styles, layout, layoutInterface, layoutTests, browse
     readFile("tests/SIR.Client.Tests/TacticalWorkspaceLayoutQualification.fs", "utf8"),
     readFile("scripts/smoke-client.mjs", "utf8"),
     readFile("scripts/smoke-docs.mjs", "utf8"),
+    readFile("src/SIR.Client.Web/TacticalSharedControls.fs", "utf8"),
+    readFile("src/SIR.Client.Web/TacticalScenePresentation.fs", "utf8"),
   ]);
+
+// The tactical scene owner is an explicit view boundary extracted from App
+// (SIR.Client.Web.fsproj compiles it just before App.fs).  Qualify the composed
+// ownership surface, exactly as M0 and M7 already do, so relocating a view can
+// never mask a removed control while App.fs remains the root Elmish shell.
+const app = `${appRoot}\n${tacticalSharedControls}\n${tacticalScenePresentation}`;
 
 const require = (condition, message) => {
   if (!condition) throw new Error(`Timeline/supporting-panel M8 qualification failed: ${message}`);
@@ -45,16 +53,20 @@ for (const required of [
   require(app.includes(required), `persistent ownership token is missing: ${required}`);
 }
 for (const required of [
-  'elif panelId = "samples" then FeatureLoader.samples',
+  'elif panelId = "samples" then Some FeatureLoader.samples',
   "let samplesPanel model dispatch =",
   "FeatureLoader.stateFor FeatureLoader.samples model.ClientFeatures",
   "renderSamplesFeature root",
 ]) {
   require(featureRuntime.includes(required), `typed extracted Samples ownership token is missing: ${required}`);
 }
+// The timeline is now reached through one memoized owner, so its single production
+// call site is inside that owner's render function rather than the shell.  Still
+// exactly one definition and exactly one call: the invariant is unchanged.
 require(
-  (app.match(/tacticalTimeline model dispatch/g) ?? []).length === 2 &&
-    (app.match(/let private tacticalTimeline model dispatch/g) ?? []).length === 1,
+  (app.match(/let private tacticalTimeline model dispatch/g) ?? []).length === 1 &&
+    (app.match(/tacticalTimeline props\.Model props\.Dispatch/g) ?? []).length === 1 &&
+    (app.match(/tacticalTimelineOwner/g) ?? []).length === 2,
   "the unified timeline does not have exactly one definition and one production call site",
 );
 require(

@@ -86,11 +86,259 @@ test("visible View commands preserve a usable tactical workspace across authorin
   await page.goto("/");
   const workspace = page.getByRole("main", { name: "S.I.R. simulator and editor" });
   await expect(workspace).toBeVisible();
+  const battlefield = page.locator("#persistent-tactical-svg");
+  const terrainGeometryBeforeModes = await battlefield.locator("#persistent-layer-terrain-geometry").getAttribute("data-geometry-constructions");
+  const edgesGeometryBeforeModes = await battlefield.locator("#persistent-layer-edges-geometry").getAttribute("data-geometry-constructions");
+  const unitGeometryBeforeModes = await battlefield.locator("#persistent-layer-units").getAttribute("data-geometry-constructions");
+  const editorLayers = battlefield.locator("#persistent-editor-migrated-layers");
+  const editorLayersConstructionsBeforeModes = await editorLayers.getAttribute("data-editor-layer-constructions");
+  const viewMenu = page.getByRole("menu", { name: "View commands", includeHidden: true });
+  const helpMenu = page.getByRole("menu", { name: "Help commands", includeHidden: true });
+  const sharedSwitchEditorCommand = viewMenu.getByRole("menuitem", { name: /^Switch to Editor\b/, includeHidden: true });
+  const selectedUnitDocumentation = helpMenu.getByRole("menuitem", { name: "Selected unit documentation", exact: true, includeHidden: true });
+  const tacticalOverlayDocumentation = helpMenu.getByRole("menuitem", { name: "Tactical overlay documentation", exact: true, includeHidden: true });
+  await expect(sharedSwitchEditorCommand).toHaveCount(1);
+  await expect(selectedUnitDocumentation).toHaveCount(1);
+  await expect(tacticalOverlayDocumentation).toHaveCount(1);
+  await sharedSwitchEditorCommand.evaluate((shared, documentation) => {
+    window.__sirSharedMenuCommand = shared;
+    window.__sirSelectedDocumentationCommand = documentation[0];
+    window.__sirOverlayDocumentationCommand = documentation[1];
+  }, [await selectedUnitDocumentation.elementHandle(), await tacticalOverlayDocumentation.elementHandle()]);
+  await editorLayers.evaluate((node) => {
+    window.__sirEditorLayersNode = node;
+    window.__sirEditorLayersChildMutations = [];
+    window.__sirEditorLayersObserver = new MutationObserver((records) => {
+      for (const record of records) {
+        for (const changed of [...record.addedNodes, ...record.removedNodes]) {
+          if (changed === window.__sirEditorLayersNode) window.__sirEditorLayersChildMutations.push(record.type);
+        }
+      }
+    });
+    window.__sirEditorLayersObserver.observe(node.parentElement, { childList: true });
+  });
+  const rosterHost = page.locator('[data-persistent-roster-host="true"]');
+  const selectionHost = page.locator('[data-persistent-selection-host="true"]');
+  const toolsHost = page.locator('[data-persistent-tools-host="true"]');
+  await expect(rosterHost.locator("[data-roster-mode]")).toHaveCount(4);
+  await expect(selectionHost.locator("[data-selection-mode]")).toHaveCount(4);
+  await expect(toolsHost.locator("[data-tools-mode]")).toHaveCount(4);
+  expect(await rosterHost.locator('[data-roster-mode][hidden] [id]').count()).toBe(0);
+  await expect(page.locator("#persistent-tactical-svg")).toHaveCount(1);
+  await expect(page.getByLabel("Unified tactical timeline")).toHaveCount(1);
+  const editorRosterConstructions = await rosterHost.locator('[data-roster-mode="EditorWorkspace"] .persistent-roster-owner').getAttribute("data-roster-constructions");
+  const editorSelectionConstructions = await selectionHost.locator('[data-selection-mode="EditorWorkspace"] .persistent-selection-owner').getAttribute("data-selection-constructions");
+  const editorToolsConstructions = await toolsHost.locator('[data-tools-mode="EditorWorkspace"] .persistent-tools-owner').getAttribute("data-tools-constructions");
 
   for (const mode of ["Editor", "Plan", "Simulate", "Review"]) {
     await switchWorkspace(page, mode);
     await expect(workspace.getByRole("application")).toBeVisible();
+    const workspaceMode = mode === "Editor" ? "EditorWorkspace" : mode === "Plan" ? "PlanningWorkspace" : mode === "Simulate" ? "SimulatorWorkspace" : "ReplayWorkspace";
+    await expect(rosterHost.locator(`[data-roster-mode="${workspaceMode}"]`)).toBeVisible();
+    await expect(rosterHost.locator(`[data-roster-mode="${workspaceMode}"]`)).not.toHaveAttribute("inert", "");
+    await expect(rosterHost.locator("[data-roster-mode][hidden]")).toHaveCount(3);
+    const inactiveAcceptedFocus = await rosterHost.locator("[data-roster-mode][hidden]").first().evaluate((owner) => {
+      const candidate = owner.querySelector("button, input, select, [tabindex]");
+      candidate?.focus();
+      return candidate !== null && document.activeElement === candidate;
+    });
+    expect(inactiveAcceptedFocus).toBe(false);
+    const activeSelection = selectionHost.locator(`[data-selection-mode="${workspaceMode}"]`);
+    await expect(activeSelection).toBeVisible();
+    await expect(activeSelection).not.toHaveAttribute("inert", "");
+    await expect(selectionHost.locator("[data-selection-mode][hidden]")).toHaveCount(3);
+    const inactiveSelectionAcceptedFocus = await selectionHost.locator("[data-selection-mode][hidden]").first().evaluate((owner) => {
+      const candidate = owner.querySelector("button, input, select, textarea, [tabindex]");
+      candidate?.focus();
+      return candidate !== null && document.activeElement === candidate;
+    });
+    expect(inactiveSelectionAcceptedFocus).toBe(false);
+    const inactiveSelectionIdsAreScoped = await selectionHost.locator("[data-selection-mode][hidden]").evaluateAll((owners) => owners.every((owner) => {
+      const slug = owner.getAttribute("data-selection-mode") === "EditorWorkspace" ? "editor"
+        : owner.getAttribute("data-selection-mode") === "PlanningWorkspace" ? "plan"
+          : owner.getAttribute("data-selection-mode") === "SimulatorWorkspace" ? "simulate" : "review";
+      const prefix = `inactive-${slug}-selection-`;
+      return [...owner.querySelectorAll("[id]")].every((node) => node.id.startsWith(prefix))
+        && [...owner.querySelectorAll("label[for]")].every((label) => {
+          const target = label.getAttribute("for");
+          return target.startsWith(prefix) && owner.querySelector(`#${CSS.escape(target)}`) !== null;
+        });
+    }));
+    expect(inactiveSelectionIdsAreScoped).toBe(true);
+    const duplicateIds = await page.locator("[id]").evaluateAll((nodes) => {
+      const ids = nodes.map((node) => node.id);
+      return ids.filter((id, index) => ids.indexOf(id) !== index);
+    });
+    expect(duplicateIds).toEqual([]);
+    expect(await sharedSwitchEditorCommand.evaluate((node) => node === window.__sirSharedMenuCommand)).toBe(true);
+    expect(await selectedUnitDocumentation.evaluate((node) => node === window.__sirSelectedDocumentationCommand)).toBe(true);
+    expect(await tacticalOverlayDocumentation.evaluate((node) => node === window.__sirOverlayDocumentationCommand)).toBe(true);
+    const simulatorControllerCommand = page.getByRole("menu", { name: "Simulation commands", includeHidden: true }).getByRole("menuitem", { name: /^Set controller Manual\b/, includeHidden: true });
+    await expect(simulatorControllerCommand).toHaveCount(mode === "Simulate" ? 1 : 0);
+    const activeTools = toolsHost.locator(`[data-tools-mode="${workspaceMode}"]`);
+    await expect(activeTools).toBeVisible();
+    await expect(activeTools).not.toHaveAttribute("inert", "");
+    await expect(toolsHost.locator("[data-tools-mode][hidden]")).toHaveCount(3);
+    const inactiveToolsSafe = await toolsHost.locator("[data-tools-mode][hidden]").evaluateAll((owners) => owners.every((owner) => {
+      const slug = owner.getAttribute("data-tools-mode") === "EditorWorkspace" ? "editor"
+        : owner.getAttribute("data-tools-mode") === "PlanningWorkspace" ? "plan"
+          : owner.getAttribute("data-tools-mode") === "SimulatorWorkspace" ? "simulate" : "review";
+      const prefix = `inactive-${slug}-tools-`;
+      const focusable = owner.querySelector("button, input, select, textarea, [tabindex]");
+      focusable?.focus();
+      return document.activeElement !== focusable
+        && [...owner.querySelectorAll("[id]")].every((node) => node.id.startsWith(prefix))
+        && [...owner.querySelectorAll("label[for]")].every((label) => {
+          const target = label.getAttribute("for");
+          return target.startsWith(prefix) && owner.querySelector(`#${CSS.escape(target)}`) !== null;
+        })
+        && [...owner.querySelectorAll('input[type="file"]')].every((input) => input.files.length === 0);
+    }));
+    expect(inactiveToolsSafe).toBe(true);
+    await expect(editorLayers).toHaveCount(1);
+    expect(await editorLayers.evaluate((node) => node === window.__sirEditorLayersNode)).toBe(true);
+    await expect(editorLayers).toHaveAttribute("data-editor-layer-constructions", editorLayersConstructionsBeforeModes);
+    if (mode === "Editor") {
+      await expect(editorLayers).toHaveAttribute("data-editor-layers-active", "true");
+      await expect(editorLayers).toHaveAttribute("aria-hidden", "false");
+    } else {
+      await expect(editorLayers).toHaveAttribute("data-editor-layers-active", "false");
+      await expect(editorLayers).toHaveAttribute("aria-hidden", "true");
+      await expect(editorLayers).toHaveCSS("display", "none");
+      const inactiveEditorLayersExposed = await editorLayers.evaluate((owner) => {
+        const candidate = owner.querySelector("[tabindex], button, input, select, textarea, a[href]");
+        candidate?.focus();
+        return candidate !== null && document.activeElement === candidate;
+      });
+      expect(inactiveEditorLayersExposed).toBe(false);
+    }
   }
+  expect(await editorLayers.evaluate(() => { window.__sirEditorLayersObserver.disconnect(); return window.__sirEditorLayersChildMutations; })).toEqual([]);
+  // Switching workspaces changes no camera, so NO retained geometry may be
+  // rebuilt -- units included. Assert that here, before the wheel and Fit below
+  // deliberately move the camera.
+  await expect(battlefield.locator("#persistent-layer-terrain-geometry")).toHaveAttribute("data-geometry-constructions", terrainGeometryBeforeModes);
+  await expect(battlefield.locator("#persistent-layer-edges-geometry")).toHaveAttribute("data-geometry-constructions", edgesGeometryBeforeModes);
+  await expect(battlefield.locator("#persistent-layer-units")).toHaveAttribute("data-geometry-constructions", unitGeometryBeforeModes);
+  await switchWorkspace(page, "Editor");
+  const zoomBeforeMenuCommand = Number(await battlefield.getAttribute("data-camera-zoom"));
+  const battlefieldBox = await battlefield.boundingBox();
+  await page.mouse.move(battlefieldBox.x + battlefieldBox.width / 2, battlefieldBox.y + battlefieldBox.height / 2);
+  await page.mouse.wheel(0, -240);
+  await expect.poll(async () => Number(await battlefield.getAttribute("data-camera-zoom"))).not.toBe(zoomBeforeMenuCommand);
+  const zoomAfterWheel = Number(await battlefield.getAttribute("data-camera-zoom"));
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  await viewMenu.getByRole("menuitem", { name: /^Fit the complete map\b/ }).click();
+  await expect(viewMenu).toBeHidden();
+  await expect.poll(async () => Number(await battlefield.getAttribute("data-camera-zoom"))).not.toBe(zoomAfterWheel);
+  await expect(rosterHost.locator('[data-roster-mode="EditorWorkspace"] .persistent-roster-owner')).toHaveAttribute("data-roster-constructions", editorRosterConstructions);
+  await expect(toolsHost.locator('[data-tools-mode="EditorWorkspace"] .persistent-tools-owner')).toHaveAttribute("data-tools-constructions", editorToolsConstructions);
+  await expect(page.locator("#terrain-brush-size")).toHaveCount(1);
+  const editorToolsBeforeChange = Number(editorToolsConstructions);
+  await page.locator("#terrain-brush-size").fill("2");
+  await expect.poll(async () => Number(await toolsHost.locator('[data-tools-mode="EditorWorkspace"] .persistent-tools-owner').getAttribute("data-tools-constructions"))).toBeGreaterThan(editorToolsBeforeChange);
+  const activeEditorRoster = rosterHost.locator('[data-roster-mode="EditorWorkspace"]');
+  const editorRosterBeforeSelection = Number(await activeEditorRoster.locator(".persistent-roster-owner").getAttribute("data-roster-constructions"));
+  const firstEditorRosterCommand = activeEditorRoster.locator('button[aria-pressed="false"]').first();
+  const firstEditorRosterCommandName = await firstEditorRosterCommand.textContent();
+  const editorLayersBeforeSelection = Number(await editorLayers.getAttribute("data-editor-layer-constructions"));
+  await firstEditorRosterCommand.click();
+  await expect(activeEditorRoster.getByRole("button", { name: firstEditorRosterCommandName, exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(async () => Number(await activeEditorRoster.locator(".persistent-roster-owner").getAttribute("data-roster-constructions"))).toBeGreaterThan(editorRosterBeforeSelection);
+  await expect.poll(async () => Number(await selectionHost.locator('[data-selection-mode="EditorWorkspace"] .persistent-selection-owner').getAttribute("data-selection-constructions"))).toBeGreaterThan(Number(editorSelectionConstructions));
+  await expect.poll(async () => Number(await editorLayers.getAttribute("data-editor-layer-constructions"))).toBeGreaterThan(editorLayersBeforeSelection);
+  await expect(page.locator("#editor-unit-controller")).toHaveCount(1);
+  await switchWorkspace(page, "Simulate");
+  const simulatorSelectionOwner = selectionHost.locator('[data-selection-mode="SimulatorWorkspace"] .persistent-selection-owner');
+  const simulatorSelectionBefore = Number(await simulatorSelectionOwner.getAttribute("data-selection-constructions"));
+  const simulatorRosterCommand = rosterHost.locator('[data-roster-mode="SimulatorWorkspace"] button[aria-pressed="false"]').first();
+  const simulatorRosterCommandName = await simulatorRosterCommand.textContent();
+  await simulatorRosterCommand.click();
+  await expect(rosterHost.locator('[data-roster-mode="SimulatorWorkspace"]').getByRole("button", { name: simulatorRosterCommandName, exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(async () => Number(await simulatorSelectionOwner.getAttribute("data-selection-constructions"))).toBeGreaterThan(simulatorSelectionBefore);
+  await expect(page.locator("#unit-controller")).toHaveCount(1);
+  await expect(page.locator("#editor-unit-controller")).toHaveCount(1);
+  await expect(page.locator("#persistent-tactical-svg")).toHaveCount(1);
+  await expect(page.locator("#persistent-editor-migrated-layers")).toHaveCount(1);
+  await expect(page.getByLabel("Unified tactical timeline")).toHaveCount(1);
+  await switchWorkspace(page, "Review");
+  await expect(page.locator("#replay-position")).toHaveCount(1);
+  await expect(page.locator("#playback-speed")).toHaveCount(1);
+  const activeReplayFile = toolsHost.locator('[data-tools-mode="ReplayWorkspace"] input[type="file"]');
+  await expect(activeReplayFile).toHaveCount(1);
+  await expect(activeReplayFile).toHaveAttribute("accept", ".sirr,application/octet-stream");
+  await expect(activeReplayFile).toBeEnabled();
+  // Terrain and edges are NOT viewport-culled, so the wheel zoom and Fit above
+  // must not have rebuilt them at all -- their content cannot change with the
+  // camera, and keying them on the chunk window is exactly the over-invalidation
+  // this asserts against.
+  await expect(battlefield.locator("#persistent-layer-terrain-geometry")).toHaveAttribute("data-geometry-constructions", terrainGeometryBeforeModes);
+  await expect(battlefield.locator("#persistent-layer-edges-geometry")).toHaveAttribute("data-geometry-constructions", edgesGeometryBeforeModes);
+  // Units ARE viewport-culled and tier-sensitive, so a camera change legitimately
+  // rebuilds their glyphs; asserting otherwise would demand that culling not
+  // work. What must still hold is that they are stable once the camera settles:
+  // capture after the zoom and Fit, then require the later workspace switches and
+  // selections to have rebuilt nothing further.
+  const unitGeometryAfterCamera = await battlefield.locator("#persistent-layer-units").getAttribute("data-geometry-constructions");
+  await switchWorkspace(page, "Plan");
+  await switchWorkspace(page, "Review");
+  await expect(battlefield.locator("#persistent-layer-units")).toHaveAttribute("data-geometry-constructions", unitGeometryAfterCamera);
+});
+
+test("visible Plan worker status renders while background Plan completion stays isolated", async ({ page }) => {
+  // The shim delays MAIN -> WORKER only; the worker's reply is untouched, so the
+  // observable "Connecting" window is exactly this delay. Expanding the document
+  // panel costs several round-trips, so that work happens BEFORE entering Plan --
+  // otherwise the window closes while the panel is still opening and the test
+  // races a transient the product does in fact render.
+  await page.addInitScript(() => {
+    const nativePostMessage = Worker.prototype.postMessage;
+    Worker.prototype.postMessage = function (...args) {
+      setTimeout(() => nativePostMessage.apply(this, args), 2000);
+    };
+  });
+  await page.goto("/");
+  const app = page.getByRole("main", { name: "S.I.R. simulator and editor" });
+  const constructionsBeforePlan = Number(await app.getAttribute("data-app-view-constructions"));
+  const documentPanel = await expandPanel(page, "document");
+  await switchWorkspace(page, "Plan");
+  const status = documentPanel.locator(".planning-worker-status");
+  await expect(status).toHaveText("Connecting to planning worker");
+  const planRoster = page.locator('[data-roster-mode="PlanningWorkspace"] .persistent-roster-owner');
+  const planTools = page.locator('[data-tools-mode="PlanningWorkspace"] .persistent-tools-owner');
+  const planSelection = page.locator('[data-selection-mode="PlanningWorkspace"] .persistent-selection-owner');
+  const leftSidebar = page.locator("#tactical-sidebar-left");
+  const rightSidebar = page.locator("#tactical-sidebar-right");
+  const planRosterConstructionsBeforeReady = await planRoster.getAttribute("data-roster-constructions");
+  const planToolsConstructionsBeforeReady = await planTools.getAttribute("data-tools-constructions");
+  const planSelectionConstructionsBeforeReady = await planSelection.getAttribute("data-selection-constructions");
+  const leftConstructionsBeforeReady = await leftSidebar.getAttribute("data-sidebar-constructions");
+  const rightConstructionsBeforeReady = await rightSidebar.getAttribute("data-sidebar-constructions");
+  const statusConstructionsBeforeReady = Number(await status.getAttribute("data-planning-worker-status-constructions"));
+  await expect(status).toHaveText("Planning worker ready");
+  await expect(planRoster).toHaveAttribute("data-roster-constructions", planRosterConstructionsBeforeReady);
+  await expect(planTools).toHaveAttribute("data-tools-constructions", planToolsConstructionsBeforeReady);
+  await expect(planSelection).toHaveAttribute("data-selection-constructions", planSelectionConstructionsBeforeReady);
+  await expect(leftSidebar).toHaveAttribute("data-sidebar-constructions", leftConstructionsBeforeReady);
+  await expect(rightSidebar).toHaveAttribute("data-sidebar-constructions", rightConstructionsBeforeReady);
+  await expect(status).toHaveAttribute("data-planning-worker-status-constructions", String(statusConstructionsBeforeReady + 1));
+
+  const planToolsBeforeToolChange = Number(await planTools.getAttribute("data-tools-constructions"));
+  const planSelectionBeforeToolChange = Number(await planSelection.getAttribute("data-selection-constructions"));
+  await planTools.getByRole("button", { name: /^Hold · H$/ }).click();
+  await expect(planTools.getByRole("button", { name: /^Hold · H$/ })).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(async () => Number(await planTools.getAttribute("data-tools-constructions"))).toBeGreaterThan(planToolsBeforeToolChange);
+  await expect.poll(async () => Number(await planSelection.getAttribute("data-selection-constructions"))).toBeGreaterThan(planSelectionBeforeToolChange);
+
+  const planRosterBeforeSelection = Number(await planRoster.getAttribute("data-roster-constructions"));
+  const planSelectionBeforeRosterSelection = Number(await planSelection.getAttribute("data-selection-constructions"));
+  const alternateUnit = planRoster.locator('button[aria-pressed="false"]').first();
+  const alternateUnitName = await alternateUnit.textContent();
+  await alternateUnit.click();
+  await expect(planRoster.getByRole("button", { name: alternateUnitName, exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(async () => Number(await planRoster.getAttribute("data-roster-constructions"))).toBeGreaterThan(planRosterBeforeSelection);
+  await expect.poll(async () => Number(await planSelection.getAttribute("data-selection-constructions"))).toBeGreaterThan(planSelectionBeforeRosterSelection);
+  expect(Number(await app.getAttribute("data-app-view-constructions"))).toBeGreaterThan(constructionsBeforePlan);
 });
 
 test("the production tactical visual system preserves causal feedback under reduced motion", async ({ page }) => {
@@ -109,7 +357,10 @@ test("the production tactical visual system preserves causal feedback under redu
   expect(paintedOrder).toBe(await battlefield.getAttribute("data-layer-order"));
   await expect(battlefield.locator("#persistent-layer-effects")).toHaveAttribute("data-effect-motion", "emphasis-120ms");
 
+  const timeline = page.getByLabel("Unified tactical timeline");
+  const timelineConstructionsBeforeAdvance = Number(await timeline.getAttribute("data-timeline-constructions"));
   await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
+  await expect.poll(async () => Number(await timeline.getAttribute("data-timeline-constructions"))).toBeGreaterThan(timelineConstructionsBeforeAdvance);
   const effectCount = Number(await battlefield.getAttribute("data-effect-count"));
   const effectLimit = Number(await battlefield.getAttribute("data-effect-limit"));
   const unitCount = Number(await battlefield.getAttribute("data-visual-unit-count"));
@@ -140,6 +391,128 @@ test("the production tactical visual system preserves causal feedback under redu
   expect(samples[Math.floor(samples.length * 0.95)]).toBeLessThan(16.67);
 });
 
+test("large-project viewport chunking and semantic zoom bound the production SVG", async ({ page }) => {
+  await page.setViewportSize({ width: 960, height: 640 });
+  await page.goto("/");
+  await switchWorkspace(page, "Editor");
+  const documentPanel = await expandPanel(page, "document");
+  const battlefield = page.locator("#persistent-tactical-svg");
+  const terrainGeometryBeforeImport = Number(await battlefield.locator("#persistent-layer-terrain-geometry").getAttribute("data-geometry-constructions"));
+  const edgesGeometryBeforeImport = Number(await battlefield.locator("#persistent-layer-edges-geometry").getAttribute("data-geometry-constructions"));
+  const unitGeometryBeforeImport = Number(await battlefield.locator("#persistent-layer-units").getAttribute("data-geometry-constructions"));
+  const lines = ["SIR-MAP 2", "size 40 40"];
+  for (let index = 0; index < 200; index += 1) {
+    const column = index % 40;
+    // Keep the same 200-unit workload while distributing its five rows over
+    // the complete map. A center-anchored semantic-zoom journey must retain
+    // observable unit glyphs after viewport culling instead of accidentally
+    // moving beyond a top-edge-only fixture.
+    const row = Math.floor(index / 40) * 8;
+    const script = Array(8).fill("E").join(",");
+    lines.push(`unit ${index + 1} ${index % 2 ? "red" : "blue"} rifleman ${column} ${row} 1 12 12 scripted ${script}`);
+  }
+  await documentPanel.getByLabel("Import SIR map", { exact: true }).setInputFiles({
+    name: "viewport-large-project.sir-map",
+    mimeType: "text/plain",
+    buffer: Buffer.from(`${lines.join("\n")}\n`),
+  });
+  await expect(page.getByRole("alert")).toContainText("Imported map viewport-large-project.sir-map.");
+  await expect.poll(async () => Number(await battlefield.locator("#persistent-layer-terrain-geometry").getAttribute("data-geometry-constructions"))).toBeGreaterThan(terrainGeometryBeforeImport);
+  await expect.poll(async () => Number(await battlefield.locator("#persistent-layer-edges-geometry").getAttribute("data-geometry-constructions"))).toBeGreaterThan(edgesGeometryBeforeImport);
+  await expect.poll(async () => Number(await battlefield.locator("#persistent-layer-units").getAttribute("data-geometry-constructions"))).toBeGreaterThan(unitGeometryBeforeImport);
+  await page.getByRole("button", { name: "Fit the complete map", exact: true }).click();
+
+  const box = await battlefield.boundingBox();
+  const viewBoxSize = await battlefield.evaluate((root) => [root.viewBox.baseVal.width, root.viewBox.baseVal.height]);
+  expect(Math.abs(viewBoxSize[0] - box.width)).toBeLessThanOrEqual(1);
+  expect(Math.abs(viewBoxSize[1] - box.height)).toBeLessThanOrEqual(1);
+  for (let step = 0; step < 15; step += 1) {
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.wheel(0, -240);
+  }
+  await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+  await expect.poll(async () => Number(await battlefield.getAttribute("data-viewport-queried-chunks"))).toBeLessThanOrEqual(24);
+  const { emitted, candidates, global } = await battlefield.evaluate((root) => ({
+    emitted: Number(root.dataset.viewportEmittedPrimitives),
+    candidates: Number(root.dataset.viewportCandidatePrimitives),
+    global: Number(root.dataset.viewportGlobalPrimitives),
+  }));
+  expect(emitted).toBeLessThanOrEqual(1600);
+  expect(candidates).toBeGreaterThanOrEqual(emitted);
+  expect(global).toBeGreaterThan(candidates);
+  const primitiveIds = await battlefield.locator("[data-primitive-id]").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("data-primitive-id")));
+  expect(new Set(primitiveIds).size).toBe(primitiveIds.length);
+  expect(await battlefield.locator('[data-unit-id][tabindex="0"]').count()).toBeLessThanOrEqual(1);
+
+  const app = page.getByRole("main", { name: "S.I.R. simulator and editor" });
+  const constructionsBeforePan = Number(await app.getAttribute("data-app-view-constructions"));
+  const panBox = await battlefield.boundingBox();
+  const cameraBeforePan = {
+    panX: Number(await battlefield.getAttribute("data-camera-pan-x")),
+    panY: Number(await battlefield.getAttribute("data-camera-pan-y")),
+    zoom: Number(await battlefield.getAttribute("data-camera-zoom")),
+  };
+  expect(Math.abs(cameraBeforePan.panX) + Math.abs(cameraBeforePan.panY)).toBeGreaterThan(0);
+  await page.mouse.move(panBox.x + panBox.width / 2, panBox.y + panBox.height / 2);
+  await page.mouse.down({ button: "right" });
+  await page.mouse.move(panBox.x + panBox.width / 2 + 60, panBox.y + panBox.height / 2 + 30, { steps: 6 });
+  await page.mouse.up({ button: "right" });
+  await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+  const authoritativeCamera = [
+    Number(await battlefield.getAttribute("data-camera-pan-x")),
+    Number(await battlefield.getAttribute("data-camera-pan-y")),
+    Number(await battlefield.getAttribute("data-camera-zoom")),
+  ];
+  const presentedCamera = (await battlefield.getAttribute("data-presentation-camera")).split(":").map(Number);
+  expect(presentedCamera).toEqual(authoritativeCamera);
+  expect(Number(await app.getAttribute("data-app-view-constructions"))).toBe(constructionsBeforePan);
+
+  for (let step = 0; step < 20 && await battlefield.getAttribute("data-semantic-tier") !== "overview"; step += 1) {
+    await page.mouse.wheel(0, 240);
+  }
+  await expect(battlefield).toHaveAttribute("data-semantic-tier", "overview");
+  const unitGeometryAtOverview = Number(await battlefield.locator("#persistent-layer-units").getAttribute("data-geometry-constructions"));
+  const overviewUnit = battlefield.locator("#persistent-layer-units [data-unit-id]").first();
+  await expect(overviewUnit).toHaveAttribute("data-unit-class", "rifleman");
+  await expect(overviewUnit.locator(".semantic-unit-detail")).toHaveCSS("display", "none");
+
+  for (let step = 0; step < 20 && await battlefield.getAttribute("data-semantic-tier") === "overview"; step += 1) {
+    await page.mouse.wheel(0, -120);
+  }
+  await expect(battlefield).toHaveAttribute("data-semantic-tier", "tactical");
+  await expect.poll(async () => Number(await battlefield.locator("#persistent-layer-units").getAttribute("data-geometry-constructions"))).toBeGreaterThan(unitGeometryAtOverview);
+  await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+  const visibleTacticalUnitId = await battlefield.locator("#persistent-layer-units [data-unit-id]").evaluateAll((nodes, rootBox) => {
+    const rootRight = rootBox.x + rootBox.width;
+    const rootBottom = rootBox.y + rootBox.height;
+    const visible = nodes.find((node) => {
+      const bounds = node.getBoundingClientRect();
+      return bounds.width > 0 && bounds.height > 0
+        && bounds.right > rootBox.x && bounds.left < rootRight
+        && bounds.bottom > rootBox.y && bounds.top < rootBottom;
+    });
+    return visible?.getAttribute("data-unit-id") ?? null;
+  }, await battlefield.boundingBox());
+  expect(visibleTacticalUnitId).not.toBeNull();
+  const tacticalUnit = battlefield.locator(`#persistent-layer-units [data-unit-id="${visibleTacticalUnitId}"]`);
+  const terrainConstructionsBeforeSelection = await battlefield.locator("#persistent-layer-terrain").getAttribute("data-layer-constructions");
+  const projectionConstructionsBeforeSelection = await battlefield.getAttribute("data-editor-projection-constructions");
+  const toolbarConstructionsBeforeSelection = await page.locator(".tactical-compact-toolbar").getAttribute("data-toolbar-constructions");
+  const timelineConstructionsBeforeSelection = await page.getByLabel("Unified tactical timeline").getAttribute("data-timeline-constructions");
+  const unitGeometryBeforeSelection = await battlefield.locator("#persistent-layer-units").getAttribute("data-geometry-constructions");
+  await expect(tacticalUnit).toHaveAttribute("data-unit-class", "rifleman");
+  await tacticalUnit.focus();
+  await page.keyboard.press("Shift+Enter");
+  await expect(tacticalUnit).toHaveAttribute("data-semantic-selected", "true");
+  await expect(battlefield.locator("#persistent-layer-terrain")).toHaveAttribute("data-layer-constructions", terrainConstructionsBeforeSelection);
+  await expect(battlefield).toHaveAttribute("data-editor-projection-constructions", projectionConstructionsBeforeSelection);
+  await expect(page.locator(".tactical-compact-toolbar")).toHaveAttribute("data-toolbar-constructions", toolbarConstructionsBeforeSelection);
+  await expect(page.getByLabel("Unified tactical timeline")).toHaveAttribute("data-timeline-constructions", timelineConstructionsBeforeSelection);
+  await expect(battlefield.locator("#persistent-layer-units")).toHaveAttribute("data-geometry-constructions", unitGeometryBeforeSelection);
+  await expect(tacticalUnit.locator(".semantic-unit-detail")).toHaveCSS("display", "inline");
+  await expect(battlefield.locator("desc")).toContainText(/Selected unit|Selected disclosed unit/);
+});
+
 test("View analysis overlays share pointer and keyboard commands and restore independently", async ({ page }) => {
   await page.goto("/");
   const battlefield = page.locator("#persistent-tactical-svg");
@@ -159,8 +532,12 @@ test("View analysis overlays share pointer and keyboard commands and restore ind
 
   await page.reload();
   await expect(battlefield).toHaveAttribute("data-overlay-preferences", /spatial\.exact-los=selection/);
+  const projectionConstructionsBeforeOverlay = await battlefield.getAttribute("data-editor-projection-constructions");
+  const timelineConstructionsBeforeOverlay = await page.getByLabel("Unified tactical timeline").getAttribute("data-timeline-constructions");
   await page.keyboard.press("Alt+l");
   await expect(battlefield).toHaveAttribute("data-overlay-preferences", /spatial\.exact-los=off/);
+  await expect(battlefield).toHaveAttribute("data-editor-projection-constructions", projectionConstructionsBeforeOverlay);
+  await expect(page.getByLabel("Unified tactical timeline")).toHaveAttribute("data-timeline-constructions", timelineConstructionsBeforeOverlay);
 
   const footprint = battlefield.locator('[data-overlay-id="unit.footprints"] rect').first();
   await expect(footprint).toBeVisible();

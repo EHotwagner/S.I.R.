@@ -69,7 +69,19 @@ const workloadExpression = (units) => `(async () => {
   await waitFor("deferred Curated samples feature", () => document.querySelector('[aria-label="Curated samples feature"]'));
   globalThis.__sirTacticalStage = "simulate"; if (!globalThis.__sirSamplesFeature.runVisualQualificationSample(${units})) throw new Error("Missing density qualification route");
   const svg = document.querySelector("#persistent-tactical-svg");
-  await waitFor("production tactical density ${units} simulator scene", () => svg.getAttribute("data-scene-owner") === "SimulatorScene" && svg.querySelectorAll("[data-unit-id]").length === ${units});
+  // Units follow the visible chunks plus overscan now, so a density workload is
+  // only entirely resident once the camera frames it.  Frame first, then measure
+  // -- the same discipline scripts/measure-svg-pipeline.mjs uses when it sets the
+  // viewport before clicking Fit.  The counts stay EXACT; nothing is relaxed.
+  await waitFor("simulator scene owner", () => svg.getAttribute("data-scene-owner") === "SimulatorScene");
+  // The fit control is labelled per workspace: "Fit the complete map" in Editor,
+  // "Reset battlefield camera" in the tactical workspaces.
+  for (const fitLabel of ["Fit the complete map", "Reset battlefield camera"]) {
+    const fit = [...document.querySelectorAll("button")].find((candidate) => candidate.textContent.trim() === fitLabel || candidate.getAttribute("aria-label") === fitLabel);
+    if (fit) { fit.click(); break; }
+  }
+  await wait(50);
+  await waitFor("production tactical density ${units} simulator scene", () => svg.getAttribute("data-scene-owner") === "SimulatorScene" && Number(svg.getAttribute("data-visual-global-unit-count")) === ${units} && svg.querySelectorAll("[data-unit-id]").length === ${units});
   await settleCapture();
   const percentile80 = (values) => [...values].sort((left, right) => left - right)[3];
   const inputToPaintSamples = [];
@@ -89,7 +101,12 @@ const workloadExpression = (units) => `(async () => {
     unit.dispatchEvent(new MouseEvent("click", { bubbles: true })); await wait(25);
     clickButton("Move route preview up"); clickButton("Move route preview up"); await wait(25);
     clickButton("Commit clear route preview");
-    await waitFor("committed route " + (routeIndex + 1), () => svg.querySelectorAll("#persistent-layer-routes > polyline").length >= routeIndex + 1);
+    // Wait for the COMMITTED route, not for any polyline: the uncommitted preview
+    // is itself a polyline, so the old wait was satisfied before the commit
+    // landed and the loop measured a scene whose last route was still a preview.
+    // Presentation is frame-coalesced now, so that commit lands one frame later
+    // and the race stopped being winnable by accident.
+    await waitFor("committed route " + (routeIndex + 1), () => [...svg.querySelectorAll("#persistent-layer-routes > polyline")].filter((route) => (route.getAttribute("data-primitive-id") || "").endsWith(":planned")).length >= routeIndex + 1);
   }
   const frameTimes = [];
   for (let sample = 0; sample < 6; sample += 1) frameTimes.push(await new Promise((resolve) => requestAnimationFrame(resolve)));
@@ -100,7 +117,16 @@ const workloadExpression = (units) => `(async () => {
   const currentLifecycles = [...new Set(currentEffects.map((effect) => effect.getAttribute("data-effect-lifecycle")).filter(Boolean))].sort();
   globalThis.__sirTacticalStage = "measure"; globalThis.__sirTacticalWorkload = {
     requestedUnits: ${units}, renderedUnits: svg.querySelectorAll("[data-unit-id]").length,
-    terrainCells: svg.querySelectorAll("#persistent-layer-terrain > *").length,
+    globalUnits: Number(svg.getAttribute("data-visual-global-unit-count")),
+    queriedChunks: Number(svg.getAttribute("data-viewport-queried-chunks")),
+    candidatePrimitives: Number(svg.getAttribute("data-viewport-candidate-primitives")),
+    emittedPrimitives: Number(svg.getAttribute("data-viewport-emitted-primitives")),
+    globalPrimitives: Number(svg.getAttribute("data-viewport-global-primitives")),
+    semanticTier: svg.getAttribute("data-semantic-tier"),
+    // Terrain is retained in one keyed geometry group, so counting the layer's
+    // direct children now counts that group (1) instead of the terrain.  Count
+    // the terrain itself, or this number silently stops meaning anything.
+    terrainCells: svg.querySelectorAll("#persistent-layer-terrain [data-terrain]").length,
     routes: svg.querySelectorAll("#persistent-layer-routes > *").length,
     routeGeometries: [...svg.querySelectorAll("#persistent-layer-routes > polyline")].map((route) => route.getAttribute("points")),
     plannedRouteUnits: [...svg.querySelectorAll("[data-unit-status]")].filter((unit) => unit.getAttribute("data-unit-status").includes("route-planned")).length,
@@ -120,7 +146,7 @@ for (const units of [100, 200]) {
   const path = resolve(reviewOutput, `production-density-${units}.png`);
   const result = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: path, prepareExpression: workloadExpression(units), captureStyleText: reviewFontCss, reducedMotion: true });
   const workload = result.wide.visualSystem.workload;
-  if (workload.renderedUnits !== units || workload.effects < 1 || workload.overlays < 1 || workload.currentAttackEffects < 1) throw new Error(`Production density workload ${units} is incomplete: ${JSON.stringify(workload)}`);
+  if (workload.globalUnits !== units || workload.renderedUnits < 1 || workload.renderedUnits > workload.globalUnits || workload.effects < 1 || workload.overlays < 1 || workload.currentAttackEffects < 1) throw new Error(`Production density workload ${units} is incomplete: ${JSON.stringify(workload)}`);
   const { inputToPaintMilliseconds, animationFrameIntervalMilliseconds, usedJsHeapBytes, ...structure } = workload;
   densityAudits.push({ units, path: `production-density-${units}.png`, sha256: hash(await readFile(path)), workload: structure });
   telemetryScenes.push({ units, inputToPaintMilliseconds, animationFrameIntervalMilliseconds, usedJsHeapBytes });

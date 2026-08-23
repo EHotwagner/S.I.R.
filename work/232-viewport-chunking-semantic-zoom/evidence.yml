@@ -1,0 +1,665 @@
+schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: [AC-001]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs, tests/SIR.Browser.Tests/visible-workflows.spec.js]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: [AC-002]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: [AC-003]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs, src/SIR.Client.Web/styles.css]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: [AC-004]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: [AC-005]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: [AC-006]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV006]
+    artifacts: [tests/SIR.Browser.Tests/visible-workflows.spec.js, work/232-viewport-chunking-semantic-zoom/mutation-evidence.md]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-001]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-002]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-003]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-004]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: [AC-001]
+    clarificationDecisionRefs: [DEC-001]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV011]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs, tests/SIR.Browser.Tests/visible-workflows.spec.js]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: [AC-002]
+    clarificationDecisionRefs: [DEC-002]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV012]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: [AC-003]
+    clarificationDecisionRefs: [DEC-003]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV013]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs, src/SIR.Client.Web/styles.css]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: [AC-004]
+    clarificationDecisionRefs: [DEC-004]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV014]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: [AC-005]
+    clarificationDecisionRefs: [DEC-004]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV015]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-003, PD-007, PD-008]
+    obligationRefs: [EV016]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-005]
+    obligationRefs: [EV017]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-004]
+    obligationRefs: [EV018]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-006]
+    obligationRefs: [EV019]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV020
+    kind: deferral
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV020]
+    artifacts: [src/SIR.Client/TacticalSceneProjection.fsi]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: "The contract surface is unchanged in a way that needs no migration, but no test in this item exercises a schema migration path, so a pass would assert coverage this item does not have."
+    owner: EHotwagner/S.I.R. projection contract surface
+    scope: PM-001 migration posture only.
+    laterLifecycleVisibility: Revisit when the projection contract surface next changes shape.
+    notes: []
+  - id: EV021
+    kind: deferral
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV021]
+    artifacts: [readiness/232-viewport-chunking-semantic-zoom/analysis.json]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: "Generated-view currency is established by the lifecycle generators, not by any product test run, so no honest observed run can discharge it and a bare pass would remain unobserved forever."
+    owner: EHotwagner/S.I.R. lifecycle generated views
+    scope: GV-001 generated-view currency only.
+    laterLifecycleVisibility: Re-run refresh at the implementation head before any protected-boundary handoff.
+    notes: ["Deferred generated-view evidence is intentionally not laundered through a test receipt."]
+  - id: EV022
+    kind: deferral
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV022]
+    artifacts: [readiness/232-viewport-chunking-semantic-zoom/performance-evidence.json]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: "The declared viewport-visible-v1 TIMING budget is not met on the exact candidate; the structural half of the same intent is met and gated separately. Measured values, the declared budget, the per-journey breaches and the upstream dependency are recorded in the cited artifact. No performanceBudget block is declared here because the intent cannot bind while its required production-chromium-trace capability does not exist."
+    owner: "EHotwagner/S.I.R. client presentation, blocked upstream on FS-GG/FS.GG.Rendering#1256"
+    scope: The timing clauses of performance intent viewport-visible-work-v1 only.
+    laterLifecycleVisibility: Re-measure with the recorded command once the transition-aware Elmish host adapter lands, then declare the budget once its intent can bind.
+    notes: ["Budget intent relocated to the cited readiness artifact, not discarded."]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: [AC-007]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV023]
+    artifacts: [tests/SIR.Browser.Tests/visible-workflows.spec.js]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV024
+    kind: deferral
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV024]
+    artifacts: [src/SIR.Client.Web/BrowserInfrastructure.fs]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: "The requestAnimationFrame presentation owner is implemented and its coalescing, cancellation and disposal are in the delivered head, but the HIDDEN-TAB CONVERGENCE half of AC-008 is not: cancel clears the pending value, so nothing re-presents the last accepted camera when the page becomes visible again, and no test anywhere exercises a visibility transition."
+    owner: EHotwagner/S.I.R. client presentation scheduler
+    scope: Hidden-tab cancellation and convergence-on-return only; the visible-frame coalescing clauses of AC-008 are met.
+    laterLifecycleVisibility: "Tracked on EHotwagner/S.I.R.#234 AC-004, which remains open for exactly this reason."
+    notes: ["Deferred rather than claimed; the per-criterion audit of S.I.R. 234 records the same gap."]
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-005]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV025]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV026
+    kind: deferral
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-006]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV026]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: "The requestAnimationFrame presentation owner is implemented and its coalescing, cancellation and disposal are in the delivered head, but the HIDDEN-TAB CONVERGENCE half of AC-008 is not: cancel clears the pending value, so nothing re-presents the last accepted camera when the page becomes visible again, and no test anywhere exercises a visibility transition."
+    owner: EHotwagner/S.I.R. client presentation scheduler
+    scope: Hidden-tab cancellation and convergence-on-return only; the visible-frame coalescing clauses of AC-008 are met.
+    laterLifecycleVisibility: "Tracked on EHotwagner/S.I.R.#234 AC-004, which remains open for exactly this reason."
+    notes: ["Deferred rather than claimed; the per-criterion audit of S.I.R. 234 records the same gap."]
+  - id: EV027
+    kind: verification
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: [AC-007]
+    clarificationDecisionRefs: [DEC-005]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV027]
+    artifacts: [tests/SIR.Browser.Tests/visible-workflows.spec.js]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV028
+    kind: deferral
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-006]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV028]
+    artifacts: [src/SIR.Client.Web/BrowserInfrastructure.fs]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: "The requestAnimationFrame presentation owner is implemented and its coalescing, cancellation and disposal are in the delivered head, but the HIDDEN-TAB CONVERGENCE half of AC-008 is not: cancel clears the pending value, so nothing re-presents the last accepted camera when the page becomes visible again, and no test anywhere exercises a visibility transition."
+    owner: EHotwagner/S.I.R. client presentation scheduler
+    scope: Hidden-tab cancellation and convergence-on-return only; the visible-frame coalescing clauses of AC-008 are met.
+    laterLifecycleVisibility: "Tracked on EHotwagner/S.I.R.#234 AC-004, which remains open for exactly this reason."
+    notes: ["Deferred rather than claimed; the per-criterion audit of S.I.R. 234 records the same gap."]
+  - id: EV029
+    kind: verification
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV029]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV030
+    kind: deferral
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV030]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: "The requestAnimationFrame presentation owner is implemented and its coalescing, cancellation and disposal are in the delivered head, but the HIDDEN-TAB CONVERGENCE half of AC-008 is not: cancel clears the pending value, so nothing re-presents the last accepted camera when the page becomes visible again, and no test anywhere exercises a visibility transition."
+    owner: EHotwagner/S.I.R. client presentation scheduler
+    scope: Hidden-tab cancellation and convergence-on-return only; the visible-frame coalescing clauses of AC-008 are met.
+    laterLifecycleVisibility: "Tracked on EHotwagner/S.I.R.#234 AC-004, which remains open for exactly this reason."
+    notes: ["Deferred rather than claimed; the per-criterion audit of S.I.R. 234 records the same gap."]
+  - id: EV031
+    kind: verification
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: [AC-009]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV031]
+    artifacts: [scripts/test-svg-pipeline-measurement.mjs, scripts/measure-svg-pipeline.mjs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV032
+    kind: verification
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-007]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV032]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV033
+    kind: verification
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: [AC-009]
+    clarificationDecisionRefs: [DEC-007]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV033]
+    artifacts: [scripts/test-svg-pipeline-measurement.mjs, scripts/measure-svg-pipeline.mjs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV034
+    kind: verification
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV034]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV035
+    kind: verification
+    subject:
+      type: task
+      id: T035
+    taskRefs: [T035]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-008]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV035]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+  - id: EV036
+    kind: deferral
+    subject:
+      type: task
+      id: T036
+    taskRefs: [T036]
+    requirementRefs: [FR-007, FR-008]
+    acceptanceScenarioRefs: [AC-007, AC-008]
+    clarificationDecisionRefs: [DEC-008]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV036]
+    artifacts: [tests/SIR.Browser.Tests/visible-workflows.spec.js]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: "The requestAnimationFrame presentation owner is implemented and its coalescing, cancellation and disposal are in the delivered head, but the HIDDEN-TAB CONVERGENCE half of AC-008 is not: cancel clears the pending value, so nothing re-presents the last accepted camera when the page becomes visible again, and no test anywhere exercises a visibility transition."
+    owner: EHotwagner/S.I.R. client presentation scheduler
+    scope: Hidden-tab cancellation and convergence-on-return only; the visible-frame coalescing clauses of AC-008 are met.
+    laterLifecycleVisibility: "Tracked on EHotwagner/S.I.R.#234 AC-004, which remains open for exactly this reason."
+    notes: ["Deferred rather than claimed; the per-criterion audit of S.I.R. 234 records the same gap."]
+  - id: EV037
+    kind: verification
+    subject:
+      type: task
+      id: T037
+    taskRefs: [T037]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV037]
+    artifacts: [tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    notes: []
+lifecycleNotes:
+  - "Next lifecycle action: verify."

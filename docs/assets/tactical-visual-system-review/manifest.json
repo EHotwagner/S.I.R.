@@ -25,15 +25,15 @@
     "browserUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
     "browserVersion": "Chrome/151.0.7922.34"
   },
-  "productionBundleSha256": "039ae6e2d6ec45f9e5333d2352c9209199574225cfabcd5ae9450d610771eedc",
-  "productionStylesSha256": "ad754e09906d39d57e1f7cbf3eb77ac23ee2796e2af8df33cdd8fe43ce4d1117",
+  "productionBundleSha256": "dbaa6041abdbf874dd562f026aaafee7436538c9139a054b83d8f6bf0bb6b69e",
+  "productionStylesSha256": "8467b289da91600fb79195d1bff06b707d2e910a6ecf65a7d98b92331b23ae1f",
   "before": {
     "path": "../persistent-workspace-m9-review/field-focus.png",
-    "sha256": "226ee11badc7d6bf1e9c3d501d15c772df5b5bb76d827e3893293f6bc414146c"
+    "sha256": "528abbafbeb2caca74db807d13f7ee84f13e2052dbe92a5f318fc02991bd5860"
   },
   "after": {
     "path": "after-production.png",
-    "sha256": "39fe6c2a045bfe0500917fd261d76c060527d6b3e4872d654d34440c3f81641e",
+    "sha256": "1c2d3d26b6028052bb4b73daec884f34438e47d00cde09d3d9a94f0ad736cd55",
     "captureKind": "actual-production-shell-chromium-screenshot",
     "semantic": {
       "identity": "tactical-visual-system-v1",
@@ -43,7 +43,7 @@
       "effectCount": 4,
       "effectLimit": 256,
       "unitCount": 4,
-      "nodeEstimate": 739,
+      "nodeEstimate": 481,
       "paintedLayerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
       "effectKinds": [
         "event",
@@ -74,15 +74,21 @@
     {
       "units": 100,
       "path": "production-density-100.png",
-      "sha256": "0054eab4daf682aa208de6c6be9979f36db94324f10c35aabd2c012751953aed",
+      "sha256": "c5959363ea0928275f702a897512b521cfe87f267a7b151b890bf479b8b1b584",
       "workload": {
         "requestedUnits": 100,
         "renderedUnits": 100,
-        "terrainCells": 1680,
+        "globalUnits": 100,
+        "queriedChunks": 77,
+        "candidatePrimitives": 1946,
+        "emittedPrimitives": 1946,
+        "globalPrimitives": 1720,
+        "semanticTier": "overview",
+        "terrainCells": 1600,
         "routes": 2,
         "routeGeometries": [
-          "32,544 32,480 32,416",
-          "160,544 160,480 160,416"
+          "12,204 12,180 12,156",
+          "60,204 60,180 60,156"
         ],
         "plannedRouteUnits": 2,
         "overlays": 107,
@@ -98,21 +104,27 @@
           "committed",
           "predicted"
         ],
-        "domNodes": 4060
+        "domNodes": 4448
       }
     },
     {
       "units": 200,
       "path": "production-density-200.png",
-      "sha256": "5bbb259b59123ceb975207b503e7635e2b412e5861c404be9fc45e8d09343adc",
+      "sha256": "9e18688ed2754d95e4850b27c7e0128434520a88ea6d55f7cb88d3a314897d7f",
       "workload": {
         "requestedUnits": 200,
         "renderedUnits": 200,
-        "terrainCells": 1680,
+        "globalUnits": 200,
+        "queriedChunks": 77,
+        "candidatePrimitives": 2280,
+        "emittedPrimitives": 2280,
+        "globalPrimitives": 1820,
+        "semanticTier": "overview",
+        "terrainCells": 1600,
         "routes": 2,
         "routeGeometries": [
-          "32,544 32,480 32,416",
-          "160,544 160,480 160,416"
+          "12,204 12,180 12,156",
+          "60,204 60,180 60,156"
         ],
         "plannedRouteUnits": 2,
         "overlays": 207,
@@ -128,7 +140,7 @@
           "committed",
           "predicted"
         ],
-        "domNodes": 6408
+        "domNodes": 7096
       }
     }
   ],
@@ -140,7 +152,7 @@
     "effectCount": 4,
     "effectLimit": 256,
     "unitCount": 4,
-    "nodeEstimate": 739,
+    "nodeEstimate": 481,
     "paintedLayerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
     "effectKinds": [
       "event",

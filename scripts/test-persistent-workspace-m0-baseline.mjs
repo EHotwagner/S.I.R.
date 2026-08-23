@@ -20,6 +20,8 @@ const [
   roadmap,
   packageJson,
   inventoryText,
+  tacticalSharedControls,
+  tacticalScenePresentation,
 ] =
   await Promise.all([
     readFile("src/SIR.Client.Web/App.fs", "utf8"),
@@ -43,12 +45,14 @@ const [
       "tests/fixtures/persistent-workspace-m0-inventory.json",
       "utf8",
     ),
+    readFile("src/SIR.Client.Web/TacticalSharedControls.fs", "utf8"),
+    readFile("src/SIR.Client.Web/TacticalScenePresentation.fs", "utf8"),
   ]);
 const inventory = JSON.parse(inventoryText);
 // View ownership is deliberately split from the Elmish root. M0 assertions
 // inspect the composed source surface so moving a view cannot mask a removed
 // player control while App.fs remains the shell/program owner.
-const app = `${appRoot}\n${appTypes}\n${appShell}\n${commandRegistry}\n${modeAdapters}\n${sceneAdapters}\n${browserInfrastructure}\n${panelViews}`;
+const app = `${appRoot}\n${appTypes}\n${appShell}\n${commandRegistry}\n${modeAdapters}\n${sceneAdapters}\n${browserInfrastructure}\n${panelViews}\n${tacticalSharedControls}\n${tacticalScenePresentation}`;
 
 const requireText = (source, token, message) => {
   if (!source.includes(token)) throw new Error(message);
@@ -184,7 +188,7 @@ for (const token of [
   "planningPanelBody",
   "reviewPanelBody",
   "sourcePanel model dispatch",
-  "controls model dispatch",
+  "controls idPrefix model dispatch",
   "tacticalShell model dispatch transientContent",
   "OpenSupportingPanel panelId",
   '"scene.camera.zoom-out"',

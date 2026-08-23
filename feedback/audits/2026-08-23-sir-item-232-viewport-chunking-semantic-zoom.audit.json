@@ -1,0 +1,506 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-23-sir-item-232-viewport-chunking-semantic-zoom.md",
+  "reportSha256": "0dfc7c00aeb1c3beae7da5c5dbc91ebced96db0ace2f7edfd64b3c384d2e75c2",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:npm run build:client && npm run review:map-editor && npm run review:persistent-workspace-m9 && npm run review:tactical-visual && node scripts/test-composed-app-surface-inversions.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-composed-app-surface-inversions.mjs",
+          "result": "verified",
+          "sha256": "4174bb4dc57644ed63e9b1f49bd8470efc696831dcc46d91c34e46ff5ea6592c"
+        }
+      ],
+      "confidenceLimits": [
+        "7/7 red-on-inversion with green baselines reproduced by me, exit 0. Earlier, at a head where the review artifacts were stale, the same harness reported 4/7 and refused to certify the remaining three — that refusal is the green-baseline pre-check working on its own author, and the entry now states the precondition. All three boundaries are in the text and the side-effect one is fixed in the harness rather than only disclosed",
+        "Report gap, not an action blocker: no cross-reference to §4.16, which is now the finding explaining why the precondition needed a gate repair"
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "incomplete",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:scripts/fsgg-coord delivery-route show EHotwagner/S.I.R.#232",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#232",
+          "result": "claim-only"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#274",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "three of four legs remain author-assertion recorded against a board state that no longer exists, against a compiled engine whose internals are unreadable; they are now labelled rather than presented as verified. The one checkable leg claims what the command shows — a working-tree read — which is what I measured. #274's subject matches the composite claim. Retained-with-label is the right disposition; I do not recommend cutting it"
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet tool run fsgg-sdd -- --version",
+          "result": "verified"
+        },
+        {
+          "locator": "file:.config/dotnet-tools.json",
+          "result": "verified",
+          "sha256": "eba0d44fad3d39d521cdf8de8428bdd1911ed8d899a626ec832a62d4bf3fb4ab"
+        }
+      ],
+      "confidenceLimits": [
+        "shadowing verified in both directions — the pinned run prints 1.0.1 and the PATH binary prints 1.1.0. The rewrite-and-revert impact leaves no trace in history and is claim-only",
+        "Report gap, not an action blocker: which stage run rewrote the generator stamp; no artifact in history ever carried 1.1.0"
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "incomplete",
+      "missingFacts": [
+        "the PR body at the time of the run is not quoted; no note that #253's body has since been repaired, so the cited command can no longer show the reported state"
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "command:scripts/fsgg-coord verify-paths --pr 253 --repo S.I.R.",
+          "result": "non-reproducing"
+        },
+        {
+          "locator": "file:.claude/skills/pnext-item/SKILL.md",
+          "result": "verified",
+          "sha256": "e83687f31ad81c34010157fad1fd9a959df126249acf38616bd6839b12a63646"
+        }
+      ],
+      "confidenceLimits": [
+        "skill text verified verbatim at SKILL.md:185. The run now returns OK and emits no closing-keyword verdict of any kind, which corroborates the doc-versus-behaviour gap. The branch-name-binding mechanism is claim-only"
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/verify-rules-corpus.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "file:tests/fixtures/rules-corpus/v2/implementation-sources.json",
+          "result": "verified",
+          "sha256": "b2da1137ad609cd372c7888169acaeabd3769a9963106082f819ca467cd08bfd"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#264",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "I ran the gate: exit 1, \"current implementation source differs from package pin: src/SIR.Client.Web/App.fs\", while App.fs sits at 7,553 lines — under the ceiling. That is the corrected mechanism, not the retracted unsatisfiable-pair framing. Arithmetic checked independently: 8,192 lines at eb0b2c29, the 8,200 literal at test-map-editor-qualification.mjs:100, a 7-line margin because the gate counts split-on-newline, and the origin/main ancestry requirement at verify-rules-corpus.sh:37,43. #264's subject matches"
+      ]
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:node scripts/measure-svg-pipeline.mjs --out artifacts/232-svg --fixtures all --journeys all",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/measure-svg-pipeline.mjs",
+          "result": "verified",
+          "sha256": "2935d4956c42290f342c7fbc4475046fbb1beaf9db02120eb416c7d932b3b286"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#268",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "both halves verified in source: origin/main read the wrong manifest path and HEAD reads wwwroot; the result literal sits at L300 and L309 with no budget comparison anywhere in the harness or its library, which instead gates on that constant. No workflow or package.json script invokes the harness. The produced artifact corroborates the defect in one file, carrying producerVerdictField \"pass\" beside satisfiesDeclaredBudget false. #268's subject matches"
+      ]
+    },
+    {
+      "id": "§4.7",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:src/SIR.Client.Web/TacticalScenePresentation.fs",
+          "result": "verified",
+          "sha256": "4343af3f58ee0f6cfa8653ed9a88141d2398308ac3e616ad4a3848713f92fca7"
+        },
+        {
+          "locator": "command:node scripts/test-map-editor-qualification.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "file:work/232-viewport-chunking-semantic-zoom/mutation-evidence.md",
+          "result": "verified",
+          "sha256": "01968dfe76509914ffab57f2f149c2fc93991247ca4818c73f5a58295442b238"
+        }
+      ],
+      "confidenceLimits": [
+        "the gate is green so the cited command is live; it was non-reproducing at an earlier head with stale review artifacts. The commit diffs carry the comparator fixes and are the strongest corroboration; the commit messages themselves are author-written",
+        "Report gap, not an action blocker: the six regressions are not enumerated with locators; \"six\" here against \"seven\" in §10 and the PR table"
+      ]
+    },
+    {
+      "id": "§4.8",
+      "status": "incomplete",
+      "missingFacts": [
+        "the fourteen behaviours remain unenumerated and the pre-fix gate run is not retained as an artifact"
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-map-editor-qualification.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "I ran the .NET suite: green. That proves only that it is green now. The load-bearing historical claim — green while fourteen DOM behaviours were broken — is unverifiable from the repaired head, and the entry says so in its own known-unknown line. The label stays incomplete because the disclosure changes the report's honesty, not the evidence's strength"
+      ]
+    },
+    {
+      "id": "§4.9",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs",
+          "result": "verified",
+          "sha256": "7e5860eb7d6159d6961bbeea4926064cc96ae8ec9eeb32b60be2893c78456ed6"
+        },
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "all seven exact forms present verbatim at HEAD, at lines 510, 829, 849, 860, 1438, 1452 and 1486-1492; the restoring commit's diff shows the relaxed-to-exact change at seven require sites; suite re-run green, so \"all seven pass unchanged\" is reproduced rather than asserted",
+        "Report gap, not an action blocker: the seven assertions are named only in the commit, not in the report"
+      ]
+    },
+    {
+      "id": "§4.10",
+      "status": "unsupported",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:npm run build:client",
+          "result": "claim-only"
+        },
+        {
+          "locator": "file:src/SIR.Client/TacticalSceneProjection.fs",
+          "result": "claim-only",
+          "sha256": "ed3cf84e8d68e9018e8676aa25684aa363d1a73f428586d008602e297e755038"
+        }
+      ],
+      "confidenceLimits": [
+        "Double.IsFinite appears in no source file at any ref; a pickaxe search across all refs finds it only inside the checkpoint text that restates the claim. The file carries the IsNaN/IsInfinity shape of the described workaround, which is not evidence the rejection happened. Correctly retained as a disclosed observation under an explicit INHERITED, UNSUPPORTED label rather than presented as a finding"
+      ]
+    },
+    {
+      "id": "§4.11",
+      "status": "incomplete",
+      "missingFacts": [
+        "the three failing assertions are not named"
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/lib/persistent-workspace-browser-audit.mjs",
+          "result": "verified",
+          "sha256": "b9a04a392ff64dc7eb44030362c7192acc7ccf4128f3596489db0d815dabeade"
+        },
+        {
+          "locator": "command:npm run review:tactical-visual",
+          "result": "claim-only"
+        }
+      ],
+      "confidenceLimits": [
+        "origin/main used a bare first-match querySelector; HEAD filters with find over querySelectorAll excluding hidden, inert and boxless candidates. Defect and repair both verified from history. The browser gate was not run — slow — and was inspected instead"
+      ]
+    },
+    {
+      "id": "§4.12",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/generate-tactical-visual-review.mjs",
+          "result": "verified",
+          "sha256": "063a9e9132eceeae050b9c94c11efe3d6d5f7002352b8c597e6543f62a17f5cd"
+        }
+      ],
+      "confidenceLimits": [
+        "origin/main:92 waited on any polyline in the routes layer; HEAD:109 filters on a primitive id ending :planned. Defect and repair both verified from history. The frame-coalescing causal story — that the race had been winning by accident until the commit moved a frame later — is claim-only",
+        "Report gap, not an action blocker: the review artifact that recorded the bad measurement is not identified"
+      ]
+    },
+    {
+      "id": "§4.13",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:readiness/232-viewport-chunking-semantic-zoom/performance-evidence.json",
+          "result": "verified",
+          "sha256": "d82d4299a04f3ee6a5a19d6ee58acb064a9afd2768a095aafead0eb0ae8b6a40"
+        },
+        {
+          "locator": "file:work/232-viewport-chunking-semantic-zoom/evidence.yml",
+          "result": "verified",
+          "sha256": "e75a49139ef3126276445d69160d60854768ea243573d692f7466d6c58a6705b"
+        }
+      ],
+      "confidenceLimits": [
+        "every cell of the per-journey table matches the artifact to the rounding: playback 9 drops / 213.028 / 261.903, modality-transition 21 / 37.667 / 45.185, pan p95 19.876 with input-to-paint 18.431, zoom 17.134 / 17.218, selection input-to-paint 20.379 with no frame breach, idle and dense-overlay clean. breachingJourneys is exactly the five named and satisfiesDeclaredBudget is false. An earlier version of this artifact self-declared a commit the rebase had orphaned; it now declares 15cee9e, which I confirmed is an ancestor of HEAD — that finding of mine is fixed, not assumed. EV022 carries all four required deferral fields"
+      ]
+    },
+    {
+      "id": "§4.14",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet tool run fsgg-sdd -- evidence --work 232-viewport-chunking-semantic-zoom --json",
+          "result": "verified"
+        },
+        {
+          "locator": "file:work/232-viewport-chunking-semantic-zoom/evidence.yml",
+          "result": "verified",
+          "sha256": "e75a49139ef3126276445d69160d60854768ea243573d692f7466d6c58a6705b"
+        },
+        {
+          "locator": "file:work/184-scenario-catalog/evidence.yml",
+          "result": "verified",
+          "sha256": "fb83ee83aaf8054f4e404f69dbf7224233247c196f89ccbd11b660cd62c69605"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#271",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "RE-JUDGED: incomplete -> actionable, and the evidence.yml locator moves contradictory -> verified. All three stale lines I raised twice are corrected, and the \"What was actually shipped\" paragraph now describes the file as it is — a four-field deferral with no performanceBudget block, evidenceReady at 29 supported / 8 deferred / 0 invalid, budget relocated to the cited readiness artifact. The core contradiction still reproduces: evidence.performanceIntentUnbound fires with relatedIds [viewport-visible-work-v1], and outcome is blocked with changedArtifacts empty. 184's disposition: active at line 67 and the 7,977-byte artifact both re-confirmed. #271's subject matches exactly. The bisection's five rows are author-run and not reproduced by me; the entry states that boundness is the one variable it could not vary, which is the right disclosure",
+        "Report gap, not an action blocker: the staleCount: 0 figure on the writing run is host-reported; I reproduced only the no-op case"
+      ]
+    },
+    {
+      "id": "§4.15",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:node scripts/measure-svg-pipeline.mjs --out artifacts/232-svg --fixtures all --journeys all",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/measure-svg-pipeline.mjs",
+          "result": "verified",
+          "sha256": "2935d4956c42290f342c7fbc4475046fbb1beaf9db02120eb416c7d932b3b286"
+        }
+      ],
+      "confidenceLimits": [
+        "this clears the bar §4.10 fails, and I applied the same standard to both. The harness has no source-attributed timing path at all — it extracts stages, frame health and input-to-paint, with no stack-trace, sourceURL or profiler handling — so \"source-isolated Elmish/React timing was unavailable\" is a structural property I confirmed by reading. The second half is corroborated harder: validateCullingMeasurementContract is new in this branch, absent from origin/main, and enforces separate candidate and global growth reporting plus emitted-visible equality — a guard that only makes sense if the inherited harness conflated them",
+        "Report gap, not an action blocker: the \"three aborted trace attempts plus one diagnostic trace\" cost rests solely on the prior worker's checkpoint, with no retained artifact"
+      ]
+    },
+    {
+      "id": "§4.16",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-timeline-supporting-panels-m8-qualification.mjs",
+          "result": "verified",
+          "sha256": "5daa31584fff8c25f87e037a7164b22e8cc9c84adb4f532864bde7909ddfdd2f"
+        },
+        {
+          "locator": "file:src/SIR.Client.Web/ClientFeatureRuntime.fs",
+          "result": "verified",
+          "sha256": "f77e6ff70524f5b994bffc17ec76812549eac5c3a44d0b55aa8473f96c423362"
+        },
+        {
+          "locator": "command:npm run test:composed-app-surface-inversions",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "the gate at line 56 now pins the post-refactor shape; panelFeature is at ClientFeatureRuntime.fs:124 and consumed at 132; the recurrence claim checks out because a pickaxe search over the M0 token hits a commit inside this cycle. Genuinely distinct from §4.1 — that is a gate re-pointed at a new surface, this is a pin whose text moved underneath it. Not padding"
+      ]
+    },
+    {
+      "id": "§4.17",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/qualify-pr.sh",
+          "result": "verified",
+          "sha256": "7be22dc7885caacf979bbf1c52af33cb18d0de1f7f66916eb6609c5a9d8568a3"
+        },
+        {
+          "locator": "file:work/232-viewport-chunking-semantic-zoom/tasks.yml",
+          "result": "verified",
+          "sha256": "eac002c4fd6ccc33fd5e60130ee8095c58bcf92f7dad3e2f6040922ed355b574"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#272",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "line 444 is exactly the -f guard on work/<id>/evidence.yml and line 445 is the verify call it skips — the line number is precise and the mechanism unambiguous. The three-row experiment isolates causation by moving one variable at a time, which is the right shape. The stale \"blocks exactly one of 37\" is now withdrawn, cross-referenced, scoped to the moment it was true, and paired with a note that the gate-skip defect is unaffected either way. #272's subject matches"
+      ]
+    },
+    {
+      "id": "§4.18",
+      "status": "incomplete",
+      "missingFacts": [
+        "the 4.0-second baseline run and the three hypotheses have no retained artifact"
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "command:npx playwright test in-app-docs --config tests/SIR.Browser.Tests/playwright.config.js",
+          "result": "claim-only"
+        },
+        {
+          "locator": "file:src/SIR.Client/MapEditorWorkspace.fs",
+          "result": "verified",
+          "sha256": "c251ae65fa46924efa869bd24179cad74a6812fe1e31fef0796364e2fe8604e7"
+        }
+      ],
+      "confidenceLimits": [
+        "the merge of the cut confidence entry is correct and this is now the strongest passage in the report. The retraction names §4.9 and §4.19 as the confident-and-right counterexamples from this same document, which makes the withdrawal auditable in a way the original claim never was — it states what would refute it. What survives is one checkable behavioural claim: the rule was applied to one failure and skipped on the next, an hour apart. The investigation narrative is not reconstructible from the tree"
+      ]
+    },
+    {
+      "id": "§4.19",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:src/SIR.Client/MapEditorWorkspace.fs",
+          "result": "verified",
+          "sha256": "c251ae65fa46924efa869bd24179cad74a6812fe1e31fef0796364e2fe8604e7"
+        },
+        {
+          "locator": "file:tests/SIR.Browser.Tests/in-app-docs.spec.js",
+          "result": "verified",
+          "sha256": "1a9be1d62d1f77686cfcc9bbf63b45e0dd630d72a1361022e3c9e358b34b1ceb"
+        },
+        {
+          "locator": "file:src/SIR.Client.Web/App.fs",
+          "result": "verified",
+          "sha256": "1591a3ed8f71b31ff84d45b5b136bbb3e3f6bae804fb3afbda1b14f042ea1a81"
+        }
+      ],
+      "confidenceLimits": [
+        "RE-JUDGED and clean. \"That intermediate state fixed A\" resolves the last inconsistency; the shipped figure of 0 failed / 40.3s now stands unambiguously at line 366 and in §10, with no competing end state. I re-counted the ordering myself rather than accepting the correction: three call sites precede their goto — client-feature-loader.spec.js:4 with goto at :12, desktop-command-surface.spec.js:52 with goto at :53, visible-workflows.spec.js:395 with goto at :396 — and one, in-app-docs.spec.js:74, runs mid-journey. All four are now named in the text. App.fs:361, in-app-docs.spec.js:108, the single setViewportSize in that file and the one-shot latch at MapEditorWorkspace.fs:65/130/502/508 are all re-confirmed. The unmeasured-boot-frame paragraph remains the best-calibrated passage in the report"
+      ]
+    },
+    {
+      "id": "§4.20",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs",
+          "result": "verified",
+          "sha256": "7e5860eb7d6159d6961bbeea4926064cc96ae8ec9eeb32b60be2893c78456ed6"
+        },
+        {
+          "locator": "file:src/SIR.Client/MapEditorWorkspace.fs",
+          "result": "verified",
+          "sha256": "c251ae65fa46924efa869bd24179cad74a6812fe1e31fef0796364e2fe8604e7"
+        }
+      ],
+      "confidenceLimits": [
+        "the third clause exists at lines 296-311 with the stated one-shot semantics, and its failure message formats both the before and after cameras, confirming the claim that a regression reports what changed rather than that something did. Short, but exact and independently checkable"
+      ]
+    },
+    {
+      "id": "§4.21",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:tests/SIR.Browser.Tests/visible-workflows.spec.js",
+          "result": "verified",
+          "sha256": "5a522bd83896ce80e02b8e100ae782f4fef22cc5a1cf22051abac3a85318507e"
+        },
+        {
+          "locator": "file:tests/SIR.Browser.Tests/in-app-docs.spec.js",
+          "result": "verified",
+          "sha256": "1a9be1d62d1f77686cfcc9bbf63b45e0dd630d72a1361022e3c9e358b34b1ceb"
+        },
+        {
+          "locator": "file:src/SIR.Client/MapEditorWorkspace.fs",
+          "result": "verified",
+          "sha256": "c251ae65fa46924efa869bd24179cad74a6812fe1e31fef0796364e2fe8604e7"
+        }
+      ],
+      "confidenceLimits": [
+        "the named test is at :85, the units construction count is read at :92 and asserted at :222, and the repair comment at :217-218 states the ordering mechanism the finding describes. Distinct from §4.18: those are failures to measure a baseline, this is a measurement that succeeds and mislabels its cause"
+      ]
+    },
+    {
+      "id": "§4.22",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:work/232-viewport-chunking-semantic-zoom/tasks.yml",
+          "result": "verified",
+          "sha256": "eac002c4fd6ccc33fd5e60130ee8095c58bcf92f7dad3e2f6040922ed355b574"
+        },
+        {
+          "locator": "command:dotnet tool run fsgg-sdd -- verify --work 232-viewport-chunking-semantic-zoom --text",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "the ordering claim is verified from the commit graph, which is the entry's whole value: 2b12731 committed at 03:02:05 changing only the ledger by two lines, 15cee9e at 03:04:45 changing only evidence.yml by 665, linear ancestry, 2m40s apart. I read the pre-registered checkpoint text: it carries the observed-run hypothesis and no outcome. The outcome reproduces exactly — evidence returns evidenceReady with 29 supported, 8 deferred, 0 invalid, 0 missing over 37 obligations; verify blocks on exactly verify.unobservedRequiredTest across 29 EV ids and evidence.performanceIntentUnbound; the observedRun count in evidence.yml is 0 and verifyEvidenceObserved is 0 against verifyEvidenceSelfAttested 29. The \"deliberately not concluded\" paragraph is correctly scoped",
+        "Report gap, not an action blocker: the \"Also predicted\" sub-claim — that #271 blocks exactly one obligation — is NOT in the pre-registered checkpoint, so that half of the correction is against a claim never pre-registered"
+      ]
+    },
+    {
+      "id": "§4.23",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsi reflecting FS.GG.Coord.ReviewWait over FS.GG.Coord.Core.dll 0.71.0",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#255",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "FIRST JUDGEMENT, and I reflected on the assembly rather than taking the claim. The help reads verbatim \"append a bounded durable review-wait entry/completion/cancellation/timeout event\" — that is the transition vocabulary. Reflection shows FS.GG.Coord.ReviewWait+Kind carries exactly two cases, InitialReview and RepairConfirmation, while FS.GG.Coord.ReviewWait+Transition is a separate type carrying Enter, Complete, Cancel and Timeout, and WaitReceipt.Kind is typed Kind. So the field named kind accepts neither of the values the help names. WaitReceipt.ClaimGeneration is String, against FS.GG.Coord.Cli.Render+ClaimReceipt.MarkerId typed FSharpOption<Int64>. #255's subject matches the contract-versus-engine divergence class",
+        "Report gap, not an action blocker: the specific refusals — that kind \"entry\" and kind \"initial\" both return unknown kind — rest on the author's transcript; I did not run review wait, because it writes"
+      ]
+    }
+  ]
+}

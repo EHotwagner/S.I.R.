@@ -16,6 +16,23 @@ const styles = await readFile(
   "utf8",
 );
 const appSource = await readFile(resolve("src/SIR.Client.Web/App.fs"), "utf8");
+// App's ownership ceiling is enforced per file, so an extracted boundary must be
+// measured and scanned too. Otherwise "extract a typed boundary" degrades into a
+// laundering route: move the growth next door and every App-scoped assertion below
+// goes quiet while the composition is exactly as large as before.
+const tacticalSharedControlsSource = await readFile(
+  resolve("src/SIR.Client.Web/TacticalSharedControls.fs"),
+  "utf8",
+);
+const tacticalScenePresentationSource = await readFile(
+  resolve("src/SIR.Client.Web/TacticalScenePresentation.fs"),
+  "utf8",
+);
+const appCompositionSources = [
+  appSource,
+  tacticalSharedControlsSource,
+  tacticalScenePresentationSource,
+];
 const browserInfrastructureSource = await readFile(
   resolve("src/SIR.Client.Web/BrowserInfrastructure.fs"),
   "utf8",
@@ -82,6 +99,14 @@ require(storageProbe, "Happy DOM did not retain a direct localStorage write.");
 require(
   appSource.split("\n").length <= 8200,
   "App composition exceeded its 8,200-line ownership ceiling; extract a typed boundary instead of regrowing it",
+);
+require(
+  tacticalScenePresentationSource.split("\n").length <= 2400,
+  "Tactical scene presentation exceeded its 2,400-line ownership ceiling; extract a typed boundary instead of regrowing it",
+);
+require(
+  tacticalSharedControlsSource.split("\n").length <= 900,
+  "Tactical shared controls exceeded its 900-line ownership ceiling; it owns shared primitives, not views",
 );
 require(
   mapEditorSource.split("\n").length <= 4500,
@@ -240,7 +265,10 @@ for (const token of [
   "let private editorGrid",
   'svg.id "editor-map-stage"',
 ]) {
-  require(!appSource.includes(token), `dead Editor renderer source remains: ${token}`);
+  require(
+    appCompositionSources.every((source) => !source.includes(token)),
+    `dead Editor renderer source remains: ${token}`,
+  );
 }
 for (const token of [".editor-battlefield-svg", ".editor-map-stage", ".editor-canvas", ".map-unit-symbol", ".map-cell"]) {
   require(!styles.includes(token), `dead Editor renderer CSS remains: ${token}`);

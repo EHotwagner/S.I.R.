@@ -54,7 +54,10 @@ export function validateDefinitions(definition) {
 
 export function makeMap(fixture) {
   const [width, height] = fixture.mapExtent;
-  const lines = ["SIR-MAP 2", `size ${width} ${height}`];
+  // Use the current canonical-cell format. Older formats are migrated at
+  // import by doubling map, coordinate, and footprint dimensions, which
+  // silently changes the declared viewport-density workload.
+  const lines = ["SIR-MAP 4", `size ${width} ${height}`];
   for (let index = 0; index < Math.min(width * height, fixture.routeOverlayComplexity); index += 1) lines.push(`terrain ${index % width} ${Math.floor(index / width) % height} ${index % 5 === 0 ? "objective" : "rough"}`);
   const visibleWidth = Math.min(width, Math.max(1, Math.ceil(Math.sqrt(fixture.visibleDensity))));
   const visibleHeight = Math.max(1, Math.ceil(fixture.visibleDensity / visibleWidth));
@@ -81,7 +84,7 @@ export function makeMap(fixture) {
     const [column, row] = positions[index];
     const scriptSize = Math.floor(fixture.supportingListSize / fixture.globalUnitCount) + (index < fixture.supportingListSize % fixture.globalUnitCount ? 1 : 0);
     const script = scriptSize > 0 ? Array(scriptSize).fill("E").join(",") : "-";
-    lines.push(`unit ${index + 1} ${index % 2 ? "red" : "blue"} rifleman ${column} ${row} 1 12 12 scripted ${script}`);
+    lines.push(`unit ${index + 1} ${index % 2 ? "red" : "blue"} rifleman ${column} ${row} 1 12 12 scripted ${script} N N`);
   }
   return `${lines.join("\n")}\n`;
 }
@@ -90,6 +93,18 @@ export function workloadRecipe(fixture) {
   const playbackWindowMilliseconds = 250;
   const eventIntervalMilliseconds = 1000 / fixture.eventRateHz;
   return { targetVisibleUnits: fixture.visibleDensity, eventRateHz: fixture.eventRateHz, eventIntervalMilliseconds, playbackWindowMilliseconds, playbackSteps: Math.floor(playbackWindowMilliseconds / eventIntervalMilliseconds) + 1, supportingRecords: fixture.supportingListSize };
+}
+
+export function validateCullingMeasurementContract(source) {
+  const resize = source.indexOf("await page.setViewportSize({ width: fixture.viewport[0], height: fixture.viewport[1] });");
+  const fit = source.indexOf('await page.locator(\'button[aria-label="Fit the complete map"]\').evaluate((button) => button.click());');
+  if (resize < 0 || fit < 0 || resize > fit) throw new Error("production measurement must resize before Fit");
+  const between = source.slice(resize, fit);
+  if (!/waitForFunction[\s\S]*viewBox\.width - bounds\.width[\s\S]*viewBox\.height - bounds\.height/.test(between)) throw new Error("production measurement must await matching SVG and CSS viewport dimensions before Fit");
+  if (!/controlledStructural\.emittedUnits !== fixture\.visibleDensity/.test(source)) throw new Error("production measurement must assert emitted-visible equality");
+  if (!/journey === "selection" && selectionRootConstructions > 1/.test(source)) throw new Error("production measurement must bound selection root reconstruction");
+  if (!/candidatePrimitives/.test(source) || !/globalPrimitives/.test(source)) throw new Error("production measurement must report candidate and global growth separately");
+  return true;
 }
 
 export function validateEvidenceReceipt(receipt, definitions, authority) {
@@ -146,6 +161,8 @@ export function validateRetainedRawEvidence(receipt, authority, manifest, readRa
 
 export function validateObservedControls(summary, definitions) {
   const fixtures = new Map(definitions.fixtures.map((fixture) => [fixture.id, fixture]));
+  const cullingAware = (summary.runs || []).length > 0
+    && (summary.runs || []).every((run) => Number.isFinite(run.structural?.visible?.emittedUnits));
   const byIdentity = new Map((summary.runs || []).map((run) => [`${run.fixture}\u0000${run.journey}`, run]));
   const runsForPair = (axis) => {
     const [baselineId, variantId] = definitions.controlledAxes[axis];
@@ -158,10 +175,16 @@ export function validateObservedControls(summary, definitions) {
   };
   for (const { baseline, variant } of runsForPair("visibleDensity")) {
     if (baseline.structural?.visible?.visualUnits === variant.structural?.visible?.visualUnits
+        || (cullingAware && baseline.structural?.visible?.emittedUnits === variant.structural?.visible?.emittedUnits)
         || stableJson(baseline.structural?.cameraControl) !== stableJson(variant.structural?.cameraControl)) throw new Error("production visible-density observation is uncontrolled");
   }
   for (const { baseline, variant } of runsForPair("globalUnitCount")) {
-    if (baseline.structural?.visible?.visualUnits !== variant.structural?.visible?.visualUnits
+    if (cullingAware) {
+      if (baseline.structural?.visible?.visualUnits !== variant.structural?.visible?.visualUnits
+          || baseline.structural?.visible?.emittedUnits !== variant.structural?.visible?.emittedUnits
+          || baseline.structural?.visible?.globalPrimitives === variant.structural?.visible?.globalPrimitives
+          || stableJson(baseline.structural?.cameraControl) !== stableJson(variant.structural?.cameraControl)) throw new Error("production global-unit observation changes emitted-visible work or fails to report global growth");
+    } else if (baseline.structural?.visible?.visualUnits !== variant.structural?.visible?.visualUnits
         || baseline.structural?.visible?.projectedUnits === variant.structural?.visible?.projectedUnits
         || stableJson(baseline.structural?.cameraControl) !== stableJson(variant.structural?.cameraControl)) throw new Error("production global-unit observation changes visible density or fails to change projected count");
   }
@@ -169,7 +192,10 @@ export function validateObservedControls(summary, definitions) {
     const fixture = fixtures.get(run.fixture);
     if (!fixture) throw new Error(`production structural observation names unknown fixture ${run.fixture}`);
     if (run.structural?.visible?.visualUnits !== fixture.visibleDensity) throw new Error(`production viewport observation is stale for ${run.fixture}`);
-    if (run.structural?.visible?.projectedUnits !== fixture.globalUnitCount) throw new Error(`production projected-unit observation is stale for ${run.fixture}`);
+    if (cullingAware) {
+      if (run.structural?.visible?.emittedUnits !== fixture.visibleDensity) throw new Error(`production emitted-unit observation is stale for ${run.fixture}`);
+      if (!Number.isFinite(run.structural?.visible?.candidatePrimitives) || !Number.isFinite(run.structural?.visible?.globalPrimitives)) throw new Error(`production candidate/global observation is missing for ${run.fixture}`);
+    } else if (run.structural?.visible?.projectedUnits !== fixture.globalUnitCount) throw new Error(`production projected-unit observation is stale for ${run.fixture}`);
   }
   return summary;
 }
