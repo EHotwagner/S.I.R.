@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { tmpdir } from "node:os";
+import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
 
@@ -197,5 +199,50 @@ for (const journey of source.journeys) {
 assert.equal(source.journeys.length, 7, "the closed journey domain this loop asserts over must not silently shrink");
 assert.ok(budget.exemptJourneys.every((journey) => source.journeys.includes(journey)),
   "an exempt journey that is not a declared journey would exempt nothing");
+
+// The CONSUMER side, exercised as a process rather than as a library.
+//
+// Removing the finalizer's refusal left this suite green while the finalizer accepted a matrix with a
+// 231 ms frame: the refusal was demonstrated by hand and asserted nowhere. That is the same shape as
+// .github#304 -- a check whose evidence read a manual run to decide rather than the thing under test.
+// So this runs the real script, in a sandbox root it resolves for itself, and reads its exit status.
+const sandbox = mkdtempSync(resolve(tmpdir(), "sir-svg-finalizer-"));
+mkdirSync(resolve(sandbox, "scripts/lib"), { recursive: true });
+mkdirSync(resolve(sandbox, "work/231-svg-pipeline-measurement"), { recursive: true });
+for (const file of ["finalize-svg-pipeline-evidence.mjs", "svg-pipeline-fixtures.v1.json", "lib/svg-pipeline-measurement.mjs"])
+  copyFileSync(new URL(`./${file}`, import.meta.url), resolve(sandbox, "scripts", file));
+copyFileSync(new URL("../work/231-svg-pipeline-measurement/raw-trace-manifest.json", import.meta.url),
+  resolve(sandbox, "work/231-svg-pipeline-measurement/raw-trace-manifest.json"));
+
+const finalize = (summary) => {
+  const path = resolve(sandbox, "candidate.json");
+  writeFileSync(path, JSON.stringify(summary));
+  return spawnSync(process.execPath, [resolve(sandbox, "scripts/finalize-svg-pipeline-evidence.mjs"), path], { encoding: "utf8" });
+};
+
+// the retained production matrix, unmodified: it breaches, so the finalizer must REFUSE it
+const breaching = finalize(budgetMatrix);
+assert.notEqual(breaching.status, 0, "the finalizer must refuse a matrix that breaches the declared budget");
+assert.match(`${breaching.stderr}`, /breaches the declared frame budget/,
+  "and it must refuse it FOR the budget, not incidentally for some other reason");
+
+// the same matrix with one dimension changed -- every frame brought within the ceiling -- must be ACCEPTED,
+// so the refusal is shown discriminating rather than refusing everything handed to it
+const conforming = structuredClone(budgetMatrix);
+for (const run of conforming.runs) {
+  const durations = run.frameHealth?.frameDurationsMilliseconds;
+  if (Array.isArray(durations) && durations.length) run.frameHealth.frameDurationsMilliseconds = durations.map((value) => Math.min(value, 12));
+}
+const accepted = finalize(conforming);
+assert.equal(accepted.status, 0, `a conforming matrix must finalize, got: ${accepted.stderr}`);
+
+// and an artifact that CLAIMS a pass its own measurements do not support must be refused, because the
+// finalizer re-derives instead of trusting the field -- this is the route a bad merge reintroduces
+const lying = structuredClone(budgetMatrix);
+for (const run of lying.runs) run.frameBudget = { result: "pass" };
+lying.result = "pass";
+assert.notEqual(finalize(lying).status, 0, "an artifact whose claimed verdicts contradict its measurements must be refused");
+rmSync(sandbox, { recursive: true, force: true });
+console.log("JUSTIFIED frame-budget-finalizer: the real finalizer refuses a breaching matrix and a self-contradicting one, and accepts a conforming one");
 
 console.log("JUSTIFIED frame-budget-verdict: derived per-run and artifact verdicts red on the retained breaching matrix, green on its conforming runs, and fail closed on unmeasured input");
