@@ -220,8 +220,10 @@ run pass "shim restored: dotnet --version"                  "$H" "$FRESH_PATH" /
 
 section "I. DOTNET_ROOT — the exported root is what an APPHOST consults (S.I.R.#277)"
 # WHY THIS SECTION EXISTS. Before it did, `export DOTNET_ROOT="$candidate"` could be deleted from the
-# shim and all 36 checks above stayed green (measured as mutation S8 in PR #260 review round 1, and
-# reproduced at this head). That is not because the line does nothing — it is because every probe
+# shim and the ENTIRE suite stayed green — 36 checks, 0 unexpected (measured as mutation S8 in PR
+# #260 review round 1, and reproduced at base f69f1e6). At THIS head the same deletion still leaves
+# all 36 checks above green and reds only this section, which is the whole point: the 36/0 result is
+# a property of the base commit and does not reproduce here. That is not because the line does nothing — it is because every probe
 # above reaches the SDK through the MUXER, and the muxer resolves SDKs relative to its own location
 # and ignores DOTNET_ROOT for that. The file therefore asserted a purpose for that line which nothing
 # here could falsify. These two checks are that falsifier.
