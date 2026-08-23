@@ -561,7 +561,30 @@ jobs:
           done
           for pid in "${pids[@]}"; do wait "$pid" || status=1; done
           if [[ '${{ needs.route.outputs.browser }}' == 'true' ]]; then
-            ./scripts/run-ci-gate.sh browser-delivery artifacts/ci/results/browser-delivery.json || status=1
+            # S.I.R.#263 (root cause of S.I.R.#326). This gate runs SERIALLY, after the `wait` above,
+            # inside a job it shares with the concurrent gates. run-ci-gate.sh computes
+            # `setup_ms = command_started - runner_started` against SIR_CI_RUNNER_START_MS -- the
+            # JOB's first step -- so without re-anchoring this receipt is charged for every gate that
+            # ran before it. Measured on run 32662598661: browser-delivery setup=115208, which is
+            # `rules` total 115154 plus 54ms of `wait` overhead, and 115208 + test 55891 = total
+            # 171099 exactly. Across five runs its total tracked the JOB's wall clock at 96.2-97.3%.
+            # That is why it was the wave-2 maximum in all ten sampled runs BY CONSTRUCTION: it is
+            # structurally >= every gate that preceded it, so `pr-verdict`'s feedback ceiling has
+            # been roughly one concurrent-gate-runtime tighter than intended for every route that
+            # runs both.
+            #
+            # CONDITIONAL, and the condition is the whole correctness of it. Re-anchor ONLY when
+            # concurrent gates actually preceded this one, because then the job preamble is already
+            # counted inside THEIR totals and the wave maximum takes a max, not a sum. On a `browser`
+            # route the gates array is EMPTY -- that classification selects `browser` without
+            # `rules`/`spatial`/`cancellation` -- and there this gate is the only thing the job runs,
+            # so the original job anchor is correct and re-anchoring unconditionally would silently
+            # DROP the ~23s preamble and under-report the wave. A gate that under-reports is worse
+            # than one that over-reports, so the branch is load-bearing, not defensive.
+            delivery_anchor=$SIR_CI_RUNNER_START_MS
+            if [[ ${#gates[@]} -gt 0 ]]; then delivery_anchor=$(date +%s%3N); fi
+            SIR_CI_RUNNER_START_MS=$delivery_anchor \
+              ./scripts/run-ci-gate.sh browser-delivery artifacts/ci/results/browser-delivery.json || status=1
           fi
           exit "$status"
       - if: always()
