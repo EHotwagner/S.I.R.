@@ -238,6 +238,61 @@ let run () =
             SelectedUnits = Set.ofList [ firstUnit; secondUnit; 999 ]
             SelectedRegion = Some regionId }
     let workspace = MapEditorWorkspace.initial false
+
+    // The SVG viewBox is expressed in VIEWPORT pixels so culling, hit-testing and
+    // the retained camera transform share one finite contract.  A board-sized
+    // viewBox used to centre the board for free; a viewport-pixel one centres
+    // nothing, so "the board is framed, not pinned at the origin" is now a camera
+    // property and nothing asserted it.  When it silently stopped holding, the
+    // only thing that noticed was an intercepted click in an unrelated
+    // documentation journey, because the board sat under the sidebar's resize
+    // separator.  Name the property here so the next camera or default-viewport
+    // change cannot reintroduce it quietly.
+    let framedViewportWidth, framedViewportHeight = 1440.0, 900.0
+    let framedWorkspace =
+        MapEditorWorkspace.update
+            editor.Map
+            None
+            (ResizeViewport(framedViewportWidth, framedViewportHeight))
+            (MapEditorWorkspace.initial false)
+    let framedCamera = framedWorkspace.Camera
+    let framedBoardWidth = float editor.Map.Width * Battlefield.CellSize * framedCamera.Zoom
+    let framedBoardHeight = float editor.Map.Height * Battlefield.CellSize * framedCamera.Zoom
+    let framedRight = framedCamera.PanX + framedBoardWidth
+    let framedBottom = framedCamera.PanY + framedBoardHeight
+    let framedHorizontalSlack = framedViewportWidth - framedBoardWidth
+    let framedVerticalSlack = framedViewportHeight - framedBoardHeight
+    require
+        (framedWorkspace.ViewportWidth = framedViewportWidth
+         && framedWorkspace.ViewportHeight = framedViewportHeight
+         && framedCamera.Zoom > 0.0
+         && framedCamera.PanX > 0.0
+         && framedCamera.PanY > 0.0
+         && framedRight <= framedViewportWidth
+         && framedBottom <= framedViewportHeight
+         && abs (framedCamera.PanX - framedHorizontalSlack / 2.0) < 0.5
+         && abs (framedCamera.PanY - framedVerticalSlack / 2.0) < 0.5)
+        (sprintf
+            "An untouched camera did not frame the board inside the viewport after a resize: pan=%f,%f zoom=%f board=%fx%f viewport=%fx%f."
+            framedCamera.PanX
+            framedCamera.PanY
+            framedCamera.Zoom
+            framedBoardWidth
+            framedBoardHeight
+            framedViewportWidth
+            framedViewportHeight)
+    let movedWorkspace =
+        MapEditorWorkspace.update
+            editor.Map
+            None
+            (ResizeViewport(1920.0, 1080.0))
+            { framedWorkspace with
+                Camera = { framedCamera with PanX = framedCamera.PanX + 123.0 } }
+    require
+        (movedWorkspace.Camera.PanX = framedCamera.PanX + 123.0
+         && movedWorkspace.Camera.PanY = framedCamera.PanY
+         && movedWorkspace.Camera.Zoom = framedCamera.Zoom)
+        "A resize moved a camera the operator had already moved."
     let editorInput =
         { EditorState = editor
           EditorWorkspace = workspace
