@@ -1,12 +1,12 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-255-review-contract-divergence-2.md",
-  "reportSha256": "24d8974053d1a981b3e5376407a2f74835312f0a4eb833d2eba7dbc05bfbece1",
+  "reportSha256": "88dac3f54e2e7cc8f35be615fce7363c002f047a8f1316e12ade7d471fa604ac",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
     {
-      "id": "\u00a74.1",
+      "id": "§4.1",
       "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
@@ -17,16 +17,16 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "f7180f138364c8d61a8119e90eed59b664a84bc30c1d23b1295c7b3db072d26a"
+          "sha256": "f367abad3c5ae9be04d1d0bd68f05ec4dfc26a26f8f46d43fca9438a58e09da7"
         }
       ],
       "confidenceLimits": [
         "the locator supports the mutation count only; the 18-of-21 attribution split was reproduced by the critic through direct execution but is not itself carried by a locator",
-        "whether earlier rounds' authors relied on the mis-scored evidence is declared not-measured in \u00a71"
+        "whether earlier rounds' authors relied on the mis-scored evidence is declared not-measured in §1"
       ]
     },
     {
-      "id": "\u00a74.2",
+      "id": "§4.2",
       "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
@@ -37,7 +37,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "f7180f138364c8d61a8119e90eed59b664a84bc30c1d23b1295c7b3db072d26a"
+          "sha256": "f367abad3c5ae9be04d1d0bd68f05ec4dfc26a26f8f46d43fca9438a58e09da7"
         }
       ],
       "confidenceLimits": [
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "id": "\u00a74.3",
+      "id": "§4.3",
       "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
@@ -56,7 +56,7 @@
         {
           "locator": "file:docs/coordination-engine-contracts.md",
           "result": "verified",
-          "sha256": "ce71581de6b99392057697a976c18f5e3c9555d8e664569779f6d08e6f8b49eb"
+          "sha256": "cc4774e898cd0ae2008e35f47d4394b1a1691d8f14c3619a53e197d6de459dd9"
         }
       ],
       "confidenceLimits": [
@@ -65,7 +65,7 @@
       ]
     },
     {
-      "id": "\u00a74.4",
+      "id": "§4.4",
       "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
@@ -88,14 +88,14 @@
       ]
     },
     {
-      "id": "\u00a74.5",
+      "id": "§4.5",
       "status": "positive-pattern",
       "missingFacts": [],
       "checkedEvidence": [
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "f7180f138364c8d61a8119e90eed59b664a84bc30c1d23b1295c7b3db072d26a"
+          "sha256": "f367abad3c5ae9be04d1d0bd68f05ec4dfc26a26f8f46d43fca9438a58e09da7"
         },
         {
           "locator": "command:bash scripts/test-review-contract-coherence.sh",
@@ -107,7 +107,7 @@
       ]
     },
     {
-      "id": "\u00a74.6",
+      "id": "§4.6",
       "status": "duplicate",
       "missingFacts": [],
       "checkedEvidence": [
@@ -125,7 +125,7 @@
       ]
     },
     {
-      "id": "\u00a74.7",
+      "id": "§4.7",
       "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
@@ -143,7 +143,7 @@
       ]
     },
     {
-      "id": "\u00a74.8",
+      "id": "§4.8",
       "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
@@ -154,16 +154,16 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "f7180f138364c8d61a8119e90eed59b664a84bc30c1d23b1295c7b3db072d26a"
+          "sha256": "f367abad3c5ae9be04d1d0bd68f05ec4dfc26a26f8f46d43fca9438a58e09da7"
         }
       ],
       "confidenceLimits": [
         "'three checks parsed with re.search or [0]' understates the idiom's spread: six sites carry it; the understatement does not affect the disposition",
-        "this finding's Disposition sentence claimed every cell parse was total; that was false when sealed and is corrected in place \u2014 see \u00a74.9, which is the defect it concealed"
+        "this finding's Disposition sentence claimed every cell parse was total; that was false when sealed and is corrected in place — see §4.9, which is the defect it concealed"
       ]
     },
     {
-      "id": "\u00a74.9",
+      "id": "§4.9",
       "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
@@ -174,17 +174,17 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "f7180f138364c8d61a8119e90eed59b664a84bc30c1d23b1295c7b3db072d26a"
+          "sha256": "f367abad3c5ae9be04d1d0bd68f05ec4dfc26a26f8f46d43fca9438a58e09da7"
         }
       ],
       "confidenceLimits": [
-        "written after the actionability critic's final pass and therefore not covered by it; the finding is instead evidenced by execution \u2014 round 1's critic `merlin-2693` independently constructed X1-X4 from the head document and measured three surviving at exit 0, and the implementer reproduced all four before repairing",
+        "written after the actionability critic's final pass and therefore not covered by it; the finding is instead evidenced by execution — round 1's critic `merlin-2693` independently constructed X1-X4 from the head document and measured three surviving at exit 0, and the implementer reproduced all four before repairing",
         "the repaired gate was re-run against both critics' exact escapes (X1-X4 and W1-W7), all red by name, per independent-review step 7",
-        "round 2's totalisation was itself phrasing-specific and was defeated by rephrasing; see \u00a74.10"
+        "round 2's totalisation was itself phrasing-specific and was defeated by rephrasing; see §4.10"
       ]
     },
     {
-      "id": "\u00a74.10",
+      "id": "§4.10",
       "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
@@ -195,13 +195,71 @@
         {
           "locator": "file:docs/coordination-engine-contracts.md",
           "result": "verified",
-          "sha256": "ce71581de6b99392057697a976c18f5e3c9555d8e664569779f6d08e6f8b49eb"
+          "sha256": "cc4774e898cd0ae2008e35f47d4394b1a1691d8f14c3619a53e197d6de459dd9"
         }
       ],
       "confidenceLimits": [
-        "written after the actionability critic's final pass and therefore not covered by it; evidenced instead by execution \u2014 round 2's critic `avocet-dac3` independently constructed Y1-Y3 and measured all three surviving at exit 0, and the implementer reproduced them before repairing",
+        "written after the actionability critic's final pass and therefore not covered by it; evidenced instead by execution — round 2's critic `avocet-dac3` independently constructed Y1-Y3 and measured all three surviving at exit 0, and the implementer reproduced them before repairing",
         "re-run per independent-review step 7 against every round's escapes AND against four phrasings no round supplied (Roman numeral, spelled-out caps, bare digit in a new clause, and a claim carrying no numeral at all); all red via doc:scalar-region-purity, W1-W7 unregressed",
         "the transcription of governed regions is a deliberate rigidity: a purely cosmetic reword of a governed region now reds. That cost is stated in the finding rather than hidden, and is the price of the region carrying no free prose"
+      ]
+    },
+    {
+      "id": "§4.11",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh --inner <mutant>",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "f367abad3c5ae9be04d1d0bd68f05ec4dfc26a26f8f46d43fca9438a58e09da7"
+        },
+        {
+          "locator": "file:docs/coordination-engine-contracts.md",
+          "result": "verified",
+          "sha256": "cc4774e898cd0ae2008e35f47d4394b1a1691d8f14c3619a53e197d6de459dd9"
+        }
+      ],
+      "confidenceLimits": [
+        "BEFORE measured first, on the unrepaired head f61e23af: P1/P3/P4/P5/P6/P7 each reproduced at exit 0, 86 mutations, zero FAILED, on BOTH the direct production route and the --inner re-entry route. The repair's before-state is measured rather than asserted",
+        "AFTER, both routes: P5, P6, P7 red on doc:scalar-region-purity by name, each naming BOTH the id-uniqueness rule ('governed by 2 regions') and the transcription equality ('region 2 of 2'), so neither rule depends on the other having run; not a parse abort",
+        "P1, P3 and P4 STILL SURVIVE and are reported as surviving. F6 was closed by weakening the printed claim to the marked-region property, not by widening the check. The passing footer now prints the boundary explicitly, so the run no longer asserts what it does not check",
+        "unregressed and re-executed at the repaired head per step 7: round 3's Y1, Y2, N1, N6 and the purely cosmetic reword C1 all still red via doc:scalar-region-purity; F4 remains deleted (no WIDENING_REFUSED_AT_PARSE symbol, no widen-attempt direction); NO_NARROWING still holds exactly two entries",
+        "mutation count rose 86 -> 87 because the duplicate-id widening was added to STEP 3's own catalogue; it carries no digit, no listed number word and no shape token, so the token rules cannot see it and only the new totality reds it",
+        "the partition alternative was considered and rejected in writing: it requires freezing the document or marking every passage exempt, and unproven exemptions are this report's own §4.9"
+      ]
+    },
+    {
+      "id": "§4.12",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:scripts/fsgg-coord review 255 --pr 285 --json (captured immediately before and immediately after the force claim)",
+          "result": "verified"
+        },
+        {
+          "locator": "command:scripts/fsgg-coord adopt 255 --text",
+          "result": "verified"
+        },
+        {
+          "locator": "https://github.com/EHotwagner/S.I.R./pull/285#issuecomment-5383644645",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "the oracle pair is a measurement, not a reconstruction: both snapshots were captured by the same command minutes apart, and the after-state was re-read a second time and was identical, so it is stable rather than transient",
+        "the cause is attributed to claimGeneration by elimination — the only board delta between the two reads was the claim marker (5384265669 deleted, 5384652804 created) — and is consistent with the engine's own documented binding of claimGeneration to the claim marker's GitHub comment id; the engine internals were NOT decompiled by this worker",
+        "not repairable in this repository: the oracle is engine-owned. Filed by the host as FS-GG/.github#2860",
+        "recorded here rather than only in the issue because it is the same defect class as this item's subject, and it occurred to this item during its own repair"
       ]
     }
   ]

@@ -417,10 +417,20 @@ has never escaped. Every literal in both columns is probed against the engine, s
 
 **The prose that used to state these values no longer states them.** Each such passage is wrapped in
 `<!-- scalar-governed:<id> -->` … `<!-- /scalar-governed -->`, and the gate refuses any digit, any
-number word, and any `<a>:<b>` shape token inside a governed region. That is a rule about **where a
-claim may live**, not about how a sentence may be phrased, so it does not need to anticipate the next
-author's wording — which is the property every previous repair here lacked. Write the value in the
-table; write `N` in the prose.
+number word, and any `<a>:<b>` shape token inside a governed region. Exactly one region may bear an
+id, and each region's text is **transcribed into the gate and compared for equality** — so any edit
+inside one, including a purely cosmetic reword that names no value at all, reds until the
+transcription is updated deliberately. That cost is the point rather than a side effect: equality is
+the only comparison that is independent of the next author's wording, and every wording-dependent
+rule tried on this page was defeated by the next round. Write the value in the table; write `N` in
+the prose.
+
+**What this rule does not cover, stated here because the gate cannot state it for you.** It binds
+*marked* regions only, and the marking is authored — so the rule is exactly as total as the marking
+is, and no more. Prose outside every marked region is not examined: a value restated one line after a
+closing marker passes the gate. Read an unmarked passage as reviewed by people rather than by the
+check, and when you find one stating a value, move the value into the table instead of marking the
+passage around it.
 
 ### Rules with two outcomes, stated as outcomes
 
@@ -539,8 +549,8 @@ Field by field, because three of these are not guessable:
   draft written from it.
 - `routeApplicability` / `routeEvidence` — required on every record, including acceptance. **The host
   did not execute a route comparison; the critic did.** Attesting to a comparison you did not run
-  would be false, so use `not-meaningful` with exactly one entry saying what the acceptance actually
-  is. Do not copy the critic's four-part evidence into your own record.
+  would be false, so use `not-meaningful` with the entry count the Scalar invariants table gives for
+  `not-meaningful-evidence-count`, saying what the acceptance actually is. Do not copy the critic's four-part evidence into your own record.
 - `initialReview` and `precedingReview` — **production-only**: both must be exact comment URLs, and
   `precedingReview` must additionally equal the `complete` wait event's `evidenceRef`. Using the
   critic record's `commentUrl` for all three satisfies every rule at once.

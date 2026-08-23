@@ -553,6 +553,91 @@ It did not survive the test, and the replacement is the main result below.
   `Y1`–`Y3`, `N1` (Roman numeral), `N3` (spelled-out caps), `N5`, `N6` (no numeral at all) and a
   purely cosmetic reword all red; `W1`–`W7` unregressed.
 
+#### §4.11 A check whose expectation is parsed out of the document it governs can never be more total than that document's own markup — so the fourth escape was the third one relocated, and the fix was to stop claiming the total
+
+- **Observed.** Round 3's repair left two escapes, both executed on both routes at head `f61e23af`,
+  each false against pinned `fs.gg.coord.cli` 0.71.0, each leaving `86 mutations, zero FAILED,
+  exit 0`. **F6:** the purity rule constrains text *between* `scalar-governed` markers, and its own
+  inversions inject only inside `_gov[0]`, so prose outside every marked region had never been
+  exercised — three widenings survived there, two of them (`P3`, `P4`) round 2's `Y1`/`Y2`
+  **relocated rather than rephrased**. **F7:** the transcription was looked up with a per-id
+  `re.search` — the FIRST match — so a *second* region bearing an id already governed was compared
+  against nothing and reached only the token rules, which the file's own comment concedes are
+  insufficient; `P5` (a Roman numeral), `P6` (*"increments it by a single unit"*) and `P7` (*"may
+  triple that ceiling"*) all survived.
+- **Root cause, one cause for both.** The check derives its expectation by parsing the document it
+  governs. `GOVERNED_TEXT` is a transcription of the page's own prose, and the *set of governed
+  places* is read from markers the page itself authors. **A document that authors the expectation can
+  always author around it**, and no amount of tightening the parse changes that — which is precisely
+  why each round's repair reappeared one layer up: presence → direction → exemption → phrasing →
+  position. F7 is the sharper instance: it is **round 1's `§4.1` first-match defect reintroduced by
+  the mechanism that replaced round 2's escape**, in the same file, under the STEP 1 banner at `:119`
+  that forbids it (*"NO PARSE BELOW PRODUCES A CHECK'S EXPECTATION FROM A FIRST MATCH"*) and clause 3
+  at `:134` permitting `re.search` *"only as a LOCATOR"*.
+- **Impact.** The gate printed *"NO claim is stated in prose"* on every green run while
+  `docs/coordination-engine-contracts.md:542` stated *"use `not-meaningful` with exactly one entry"*
+  in unclassified prose. **The page was already in the escaped state, unmutated.** The footer's own
+  next clause recorded that two earlier versions of itself had overclaimed; this was the third.
+- **Avoidable cost:** four review rounds, three of which repaired an instance and re-created the
+  generator.
+- **Disposition:** product fix — repaired in round 4, in **two different ways, deliberately**, because
+  the two findings are not the same kind of problem.
+  1. **F7 is a real hole, so it was closed by mechanism.** The region parse is now total: every
+     region's body is collected in the one `finditer` pass under its marker label, an id governed by
+     more than one region is itself a violation (`sole()`'s discipline, which this file already had
+     and had not applied to governance), and the transcription equality is compared against **every**
+     region bearing the label rather than the first. Both rules fire independently — `P5`–`P7` each
+     red on `doc:scalar-region-purity` naming *"governed by 2 regions"* **and** *"region 2 of 2"* — so
+     neither depends on the other having run. A duplicate-id widening was added to STEP 3's own
+     catalogue, carrying no digit, no listed number word and no shape token, so it is invisible to the
+     token rules and only the new totality reds it (86 → 87 attributed mutations).
+  2. **F6 is an overclaim, so the CLAIM was weakened to what the mechanism delivers.** Building a
+     total partition of the page was considered and rejected: it requires either freezing the whole
+     document or marking every existing passage exempt, and unproven exemptions are `§4.9` — a defect
+     class this chain already fought. The binding contract answers this directly, and had answered it
+     before the escape was written: *"When a gate's false positive comes from prose, the fix is not to
+     enumerate the shapes prose takes; prose has more shapes than anyone enumerates. The fix is to
+     match the structure of the thing being asserted."* The structure asserted by *"no claim is
+     stated in prose"* is a partition of the page, and **this page has no partition**. So the footer
+     and STEP 1's clause 2 now state the marked-region property and print the boundary explicitly:
+     prose outside a marked region is not examined, the marking is authored, and the gate does not
+     stand behind what is outside it. `:542` — the live instance — was fixed by moving the value into
+     the table rather than by marking the sentence around it.
+  **`P1`, `P3` and `P4` still survive, and that is the reported result, not an oversight.** They are
+  the disclosed boundary; the footer now says so in the same run that passes. A narrower true claim
+  was chosen over a broader one that would fail again in round 5 — which is the choice this file has
+  made correctly twice before (`known-blind:`, the transcription labels).
+- **The rule was available and was not applied.** `independent-review.md` contains the answer to both
+  findings, in a worked example, and it is the contract governing the very reviews that missed them.
+  That is evidence about how these escapes survive: not a missing rule, an unapplied one.
+
+#### §4.12 A protocol oracle answered `noVerdict` and a confident directive in the same breath — a failed read presented as a decision, on the item about checks that report what they did not verify
+
+- **Observed.** Round 4's implementer took the item over from a dead holder with the engine's own
+  documented recovery verb (`claim --force`; `reap` and `adopt` both refuse a live-lease holder with
+  an open `item/<n>-*` PR, permanently, so neither was ever reachable here). Oracle snapshots were
+  taken immediately before and after. The claim moved — and so did the protocol state:
+  `verdict: next → noVerdict`, `state: awaitingImplementerRepair → null`, `stateRound: 4 → null`,
+  `waitStatus: completed → ordinaryExhaustion`.
+- **Root cause.** The durable round-3 wait receipt records `claimGeneration` as **the claim marker's
+  GitHub comment id** — the exact object `--force` deletes. With that binding dangling, the oracle
+  re-read a **repair-phase** round-3 confirmation as an **ordinary-chain** round-3 exhaustion. The
+  board's own provenance contradicted it throughout: PR #285 carries
+  `fsgg:independent-review-repair-phase:v1`, and PR #259 is closed with two escalation markers.
+  Not self-healing: the deleted comment id can never be reissued.
+- **Impact.** The oracle emitted `noVerdict` **and** a confident instruction — *"record exactly one
+  structured escalation for repair-phase entry — never dispatch or resume ordinary round four"*.
+  Acting on it would have recorded a second repair-phase entry for an item already in its repair
+  phase, which `independent-review` forbids outright, or parked #255 on a false exhaustion. This is
+  `#266`'s shape at the protocol layer: *"I could not evaluate this"* rendered as *"I evaluated it
+  and it passed"* — and the engine already refuses exactly this elsewhere, calling it *"a FAILED
+  READ, not an empty answer"*. The implementer refused to author a wait entry against it and stopped.
+- **Avoidable cost:** one halted round, two host decisions, and a permanently dangling ledger binding.
+- **Disposition:** filed by the host as `FS-GG/.github#2860` (engine-owned; not repairable here). The
+  first fix named there is the non-answer, not the binding: an oracle that cannot decide must refuse,
+  not direct. Recorded here because it happened **to this item, while repairing this item's own
+  defect class** — a check reporting a state it had not verified.
+
 ## §5 Did not exercise
 
 - **`scaffold-onboarding`.** This phase inherited a live workspace, an existing branch and an existing
@@ -651,6 +736,7 @@ It did not survive the test, and the replacement is the main result below.
   | round 1, `b6b1d36` | 68 — 30 widening, 38 narrowing | 22.9s |
   | round 2 | 78 — 39 widening, 38 narrowing, 1 widen-attempt | 22.7s |
   | round 3 | 86 — 45 widening, 41 narrowing | 28.6s |
+  | round 4 | 87 — 46 widening, 41 narrowing | 26.3s |
 
   **3.2x the mutations for the same wall clock as the sweep it replaces** — but that is parallelism,
   not efficiency, and the honest counterpart belongs in the same paragraph: **CPU went from ~26s user
@@ -712,7 +798,11 @@ It did not survive the test, and the replacement is the main result below.
 | Full gate at round 0, 47 mutations | 13.5s | `time ./scripts/test-review-contract-coherence.sh` |
 | Baseline it replaces, 21 mutations | 22.5s | same command at the branch point |
 | Checks emitted on a clean document | 39 `doc:*`, 6 `engine:*`, 1 `known-blind:*` | gate output at head |
-| Mutations after round 3 | 86 — 45 widening, 41 narrowing, 28.6s | gate output at head |
+| Mutations after round 3 | 86 — 45 widening, 41 narrowing, 28.6s | gate output at that head |
+| Mutations after round 4 | 87 — 46 widening, 41 narrowing, 26.3s | gate output at head |
+| Round 3's five escapes (`Y1`,`Y2`,`N1`,`N6`,`C1`), re-run per step 7 | all still red, each `doc:scalar-region-purity` | §4.11 |
+| Round 3's escapes `P5`–`P7` (duplicate-id regions) | were green, now red by name | §4.11, both routes |
+| Round 3's escapes `P1`,`P3`,`P4` (unmarked prose) | still green — the DISCLOSED boundary | §4.11; the footer now states it |
 | `doc:*` checks with a NARROWING inversion | all, or a printed reason (2 rows) | enforced by the gate itself |
 | `doc:*` checks with a WIDENING inversion | all, or a printed reason (10 rows) | enforced by the gate itself |
 | Round 0's seven escapes, re-run per step 7 | all red, each attributed | §4.8 |

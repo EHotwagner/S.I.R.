@@ -129,8 +129,13 @@ ticked = lambda s: re.findall(r"`([^`]+)`", s)
 #   2. NO scalar is parsed from prose at all. The five that were -- the wait-window ceiling, the
 #      initial round, the two contiguity rounds, the two cardinalities and the generation-token shape
 #      -- are rows in the Scalar invariants table with accepted and refused columns, probed exactly
-#      like vocabulary rows. Their old prose regions are `scalar-governed` and may contain no digit,
-#      number word or shape token, so a value cannot be restated in prose in ANY phrasing.
+#      like vocabulary rows. Their old prose regions are `scalar-governed`: each is transcribed and
+#      compared for EQUALITY, and exactly one region may bear an id, so a value cannot be restated
+#      inside a marked region in any phrasing, nor smuggled in by a second region repeating an id.
+#      That is the whole of the property. Prose OUTSIDE every marked region is not governed at all;
+#      the marking is authored, so this rule cannot be more total than the marking is. See the
+#      boundary clause the passing footer prints -- it is a limit of this gate, not a property of
+#      the page, and stating it as though it were the latter is what the footer did three times.
 #   3. `re.search` survives only as a LOCATOR: `section()` and `bullet()` find the region to parse.
 #      A locator cannot be widened into a false claim, because it produces no expectation.
 #   4. `sole()` refuses where a second statement is genuinely ambiguous rather than additive.
@@ -319,11 +324,22 @@ violations = []
 # comma-separated list. Every id it names must exist in the table, and every table row must be
 # governed somewhere, in both directions.
 governed = set()
+# TOTAL, AND PER ID. `region_bodies` keeps EVERY region's body under its raw marker label, and
+# `id_regions` records every region each id appears in. Round 3 collected regions here with
+# `finditer` but then looked the transcription up with a per-id `re.search` -- the FIRST match --
+# so a second region bearing an id already governed was compared against nothing and reached only
+# the token rules, which the comment below concedes are insufficient. That is `sole()`'s case, and
+# it is the defect this chain's own STEP 1 banner forbids at :119. Both dictionaries are built in
+# this single pass so no later read can reintroduce a first match.
+region_bodies, id_regions = {}, {}
 for m in re.finditer(r"<!-- scalar-governed:([a-z,-]+) -->(.*?)<!-- /scalar-governed -->", doc, re.S):
     rids = [r.strip() for r in m.group(1).split(",") if r.strip()]
     body = m.group(2)
     governed.update(rids)
     label = ",".join(rids)
+    region_bodies.setdefault(m.group(1), []).append(body)
+    for rid in rids:
+        id_regions.setdefault(rid, []).append(label)
     for rid in rids:
         if rid not in scalars:
             violations.append("%s: governed region has no row in the scalar table" % rid)
@@ -338,6 +354,16 @@ for m in re.finditer(r"<!-- scalar-governed:([a-z,-]+) -->(.*?)<!-- /scalar-gove
 for key in scalars:
     if key not in governed:
         violations.append("%s: scalar row has no governed prose region" % key)
+# EXACTLY ONE REGION PER ID -- the `sole()` discipline, applied to governance itself. A second
+# region bearing an id the document already governs is not additive; it is an unchecked restatement
+# standing beside a checked one, and it is invisible to an equality compared against the first.
+for rid, labels in sorted(id_regions.items()):
+    if len(labels) > 1:
+        violations.append("%s: governed by %d regions (%s) -- exactly one region may bear an id. A "
+                          "second region carrying an id already governed restates the value beside "
+                          "the transcription rather than inside it; merge it into the governed "
+                          "region, or move the claim to the scalar table"
+                          % (rid, len(labels), ", ".join(labels)))
 # TRANSCRIBED, AND DELIBERATELY SO. The token rules above are a fast, legible first line -- they name
 # what went wrong when they fire. They are not sufficient: round 2's critic defeated each previous
 # repair by rephrasing, and a purely token-based rule is defeated by the next phrasing nobody listed
@@ -352,13 +378,19 @@ for key in scalars:
 # is what "this region carries no claims" has to mean if it is to be enforceable rather than hoped for.
 GOVERNED_TEXT = json.loads(r'''{"wait-window-max-hours": "\n- **`expiresAt - enteredAt` has a hard ceiling**, and exceeding it is refused with a message of the\n  form *a review wait may be bounded for at most N hours*, where N is `wait-window-max-hours` in the\n  Scalar invariants table. There is no way to open a longer window.\n", "initial-round": "\n- An `initial` record must carry the `initial-round` value from the Scalar invariants table; the\n  validator refuses any other.\n", "confirmation-round-first,confirmation-round-second": "\n- **`confirmation round must be contiguous within its generation`** \u2014 the first `confirmation` record\n  carries `confirmation-round-first` from the Scalar invariants table, the next carries\n  `confirmation-round-second`, and so on; the validator names the number it expected. A round below\n  the first is refused twice over, also as `confirmation round must be positive`. **A successor critic\n  cannot pick its round freely**, and this is the rule it needs \u2014 ask the review oracle, which reports\n  the round it is waiting for.\n", "meaningful-evidence-count,not-meaningful-evidence-count": "\n- `routeApplicability: \"meaningful\"` requires exactly `meaningful-evidence-count` `routeEvidence`\n  entries, and `\"not-meaningful\"` exactly `not-meaningful-evidence-count` \u2014 both in the Scalar\n  invariants table.\n", "generation-token-shape": "\n**`reviewGeneration` is not a hash either.** `ReviewWait.generationToken` returns a literal string\nwhose shape is `generation-token-shape` in the Scalar invariants table. The ledger reader compares your\nreceipt against the output of that same function, so composing the string by hand is safe \u2014 but\ncalling the function is safer, and it is a public static on `FS.GG.Coord.Core.dll`. Note that it is\n**curried**: `generationToken head kind round`, not a tupled call.\n"}''')
 for rid, body in sorted(GOVERNED_TEXT.items()):
-    found = re.search(r"<!-- scalar-governed:%s -->(.*?)<!-- /scalar-governed -->" % re.escape(rid), doc, re.S)
-    if not found:
+    # EVERY region under this label, not the first. If the id-uniqueness rule above has already
+    # fired there will be more than one; comparing all of them means the equality still binds each,
+    # so neither check depends on the other having run.
+    bodies = region_bodies.get(rid, [])
+    if not bodies:
         violations.append("%s: governed region is missing entirely" % rid)
-    elif found.group(1) != body:
-        violations.append("%s: governed prose differs from its transcription -- a governed region is "
-                          "not free prose; move the claim to the scalar table, or update the "
-                          "transcription deliberately" % rid)
+    for i, got in enumerate(bodies):
+        if got != body:
+            violations.append("%s: governed prose differs from its transcription%s -- a governed "
+                              "region is not free prose; move the claim to the scalar table, or "
+                              "update the transcription deliberately"
+                              % (rid, "" if len(bodies) == 1 else " (region %d of %d)"
+                                 % (i + 1, len(bodies))))
 out["governedViolations"] = violations
 out["governedRegions"] = sorted(governed)
 
@@ -1088,6 +1120,22 @@ if _gov:
         emit("doc:scalar-region-purity", WIDEN,
              "%s is smuggled into a governed region" % _label,
              text[:_g.end()] + _inject + text[_g.end():])
+    # A SECOND REGION BEARING AN ID THE DOCUMENT ALREADY GOVERNS. Every widening above injects
+    # inside `_gov[0]`, so until this one the check had never been shown against a restatement that
+    # arrives as its OWN region -- the case round 3 left first-match and round 4 closed. The
+    # injected sentence carries no digit, no listed number word and no shape token, so the token
+    # rules cannot see it: only the id-uniqueness rule reds, which is the point of adding it.
+    _full = re.search(r"<!-- scalar-governed:([a-z,-]+) -->(.*?)<!-- /scalar-governed -->", text, re.S)
+    if _full:
+        emit("doc:scalar-region-purity", WIDEN,
+             "a second region repeats an id already governed and restates the value with no numeral",
+             text[:_full.end()]
+             + "\n\n<!-- scalar-governed:%s -->\nIn a repair-phase chain the validator increments "
+               "that round by a single unit before comparing it.\n<!-- /scalar-governed -->"
+               % _full.group(1)
+             + text[_full.end():])
+    else:
+        problems.append("no complete governed region found to duplicate")
     # The narrowing direction for purity is removing the governance itself: a scalar row whose prose
     # region has gone unmarked can restate the value freely again.
     emit("doc:scalar-region-purity", NARROW, "a governed region loses its marker",
@@ -1242,7 +1290,9 @@ for _case in ("same-critic-after-changes-required", "different-critic-after-chan
 # This registry is the honest half of the direction requirement: `NOT_MEASURED`, never a pass. A check
 # that appears in neither the widening manifest nor here fails the run, so a claim added later cannot
 # quietly inherit narrowing-only evidence the way 22 checks did.
-# Symmetric to NO_WIDENING, and required for the same reason: a check with no narrowing must say so
+# The ONLY exemption registry. Its widening counterpart was deleted with F4 and is not coming back:
+# a widening is the class that defeated every round here, so it gets no excuse column. A check with
+# no narrowing must still say so
 # rather than appear covered. Both registries are printed on every pass, so "which direction has this
 # check actually been shown to catch?" is answerable by reading the run rather than the source.
 NO_NARROWING = {
@@ -1334,8 +1384,10 @@ fi
 if (( ${#no_widen[@]} )); then
   echo "  these DERIVED checks have no attributed WIDENING inversion and no declared reason." >&2
   echo "  A widening keeps the claim's text and adds a permitted-but-wrong alternative; it is the" >&2
-  echo "  class that survived three ordinary rounds and the first repair-phase attempt. Add one, or" >&2
-  echo "  declare in NO_WIDENING why none can be constructed:" >&2
+  echo "  class that survived three ordinary rounds and the first repair-phase attempt. Add one." >&2
+  echo "  There is NO widening-exemption registry: the one that existed was deleted deliberately," >&2
+  echo "  because each exemption it held stood in for a widening nobody had tried to build. A check" >&2
+  echo "  that genuinely cannot carry one has a claim too weak to keep:" >&2
   printf '      %s\n' "${no_widen[@]}" >&2
   status=1
 fi
@@ -1420,12 +1472,18 @@ echo "    (keep the claim's text, add a permitted-but-wrong alternative). A chec
 echo "    one is listed above with the reason, never silently counted as covered. Widening is the"
 echo "    class that survived three ordinary rounds and this phase's first attempt, so a check shown"
 echo "    to catch only replacements is not shown to work."
-echo "  - NO claim is stated in prose. Every value lives in a table cell with an accepted and a"
-echo "    refused column; the prose that used to carry one is a governed region in which no digit,"
-echo "    number word or shape token may appear at all. That is a rule about WHERE a claim lives,"
-echo "    not about how a sentence is phrased, so it does not have to anticipate the next author's"
-echo "    wording — which is what three rounds of regex patching kept failing to do."
-echo "  - the proof of each clause above is the widening mutations, not this sentence. Two earlier"
-echo "    versions of this footer claimed a stronger property than the file delivered, and both were"
-echo "    printed on runs where a widening passed."
+echo "  - no scalar value is stated inside a MARKED region. Every value lives in a table cell with"
+echo "    an accepted and a refused column; each scalar row has exactly one \`scalar-governed\`"
+echo "    region, every such region is compared to its transcription for EQUALITY, and a second"
+echo "    region repeating an id is refused — so a value cannot be restated inside a marked region"
+echo "    in any phrasing, nor smuggled in beside one."
+echo "  - AND THAT IS ALL THIS CHECKS. Prose OUTSIDE every marked region is not examined: a value"
+echo "    restated one line after a closing marker, or anywhere else on the page, passes this gate."
+echo "    The marking is authored, so the rule cannot be more total than the marking. Three earlier"
+echo "    versions of this footer claimed the document-wide property instead, and each was false on"
+echo "    the run that printed it — the third while the page itself restated a cardinality in"
+echo "    unmarked prose. This clause states the boundary so there is no fourth: what is outside a"
+echo "    marked region is reviewed by people, and this gate does not stand behind it."
+echo "  - the proof of each clause above is the widening mutations, not this sentence. A footer that"
+echo "    records its own past overclaims is not a check; the mutations are the check."
 echo "  - every LITERAL-ONLY claim is present, and no inversion is claimed over them."
