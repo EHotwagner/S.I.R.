@@ -99,4 +99,115 @@ grep -F "qualify-pr: routed hosted verification is missing or not a regular file
 
 cp -p "$hook_backup" "$hook"
 
-echo "CI evidence clean-checkout mutations passed: tracked observed evidence verifies, missing cited evidence fails closed, hosted verification failure propagates, and absent/non-executable routed hooks fail closed."
+# S.I.R.#272 — an absent evidence.yml must never be a silent skip. Before the repair,
+# scripts/qualify-pr.sh guarded the per-work-item verify with
+# `[[ -f "work/$work_id/evidence.yml" ]] || continue`, so "checked and passed" and "not checked"
+# produced the same exit status and the same (empty) record. These three mutations pin the three
+# outcomes apart. They run under the stubbed dotnet/npm PATH because what is under test is the
+# gate's own classification and coverage record, not fsgg-sdd's verdict — the unstubbed verify is
+# already exercised by the first mutation in this file.
+coverage="$checkout/artifacts/ci/results/evidence-coverage.json"
+evidence_declaration="$checkout/work/220-bounded-pr-ci/evidence.yml"
+evidence_backup="$temporary/evidence.yml"
+tasks_declaration="$checkout/work/220-bounded-pr-ci/tasks.yml"
+tasks_backup="$temporary/tasks.yml"
+cp -p "$evidence_declaration" "$evidence_backup"
+cp -p "$tasks_declaration" "$tasks_backup"
+
+printf '%s\n' work/220-bounded-pr-ci/evidence.yml >"$checkout/artifacts/ci/changed-paths.txt"
+(
+  cd "$checkout"
+  ./scripts/qualify-pr.sh route artifacts/ci/changed-paths.txt
+)
+
+run_evidence_gate() {
+  (cd "$checkout" && PATH="$fake_bin:$PATH" ./scripts/qualify-pr.sh gate evidence)
+}
+
+coverage_field() {
+  node - "$coverage" "$1" "$2" <<'NODE'
+const { readFileSync } = require("node:fs");
+const [path, workId, field] = process.argv.slice(2);
+const record = JSON.parse(readFileSync(path, "utf8"));
+const entry = (record.items ?? []).find((item) => item.workId === workId);
+process.stdout.write(entry === undefined ? "<absent>" : String(entry[field]));
+NODE
+}
+
+# 1. Evidence present: the item is checked, and the record says so.
+rm -f -- "$coverage"
+set +e
+run_evidence_gate >"$temporary/coverage-present.log" 2>&1
+present_status=$?
+set -e
+if [[ $present_status -ne 0 ]]; then
+  echo "ci-evidence coverage: a tree with evidence present did not pass the gate (got $present_status)" >&2
+  sed -n '1,160p' "$temporary/coverage-present.log" >&2
+  exit 1
+fi
+if [[ ! -f "$coverage" ]]; then
+  echo "ci-evidence coverage: the evidence gate recorded no coverage artifact at artifacts/ci/results/evidence-coverage.json" >&2
+  exit 1
+fi
+if [[ "$(coverage_field 220-bounded-pr-ci outcome)" != verified || "$(coverage_field 220-bounded-pr-ci checked)" != true ]]; then
+  echo "ci-evidence coverage: a checked-and-passed item was not recorded as checked/verified" >&2
+  cat "$coverage" >&2
+  exit 1
+fi
+
+# 2. Evidence deleted while the package still declares completed implementation: fails closed.
+#    This is the defect in S.I.R.#272 — before the repair this run was green and silent.
+rm -- "$evidence_declaration"
+rm -f -- "$coverage"
+set +e
+run_evidence_gate >"$temporary/coverage-absent.log" 2>&1
+absent_status=$?
+set -e
+if [[ $absent_status -eq 0 ]]; then
+  echo "ci-evidence coverage: deleting evidence.yml left the gate green for a package that still declares completed implementation" >&2
+  sed -n '1,160p' "$temporary/coverage-absent.log" >&2
+  exit 1
+fi
+grep -F "qualify-pr: routed evidence declaration is missing while tasks still declare completed implementation: work/220-bounded-pr-ci/evidence.yml" "$temporary/coverage-absent.log" >/dev/null || {
+  echo "ci-evidence coverage: absent evidence.yml failed for the wrong reason" >&2
+  sed -n '1,160p' "$temporary/coverage-absent.log" >&2
+  exit 1
+}
+if [[ ! -f "$coverage" ]]; then
+  echo "ci-evidence coverage: a failing evidence gate recorded no coverage artifact" >&2
+  exit 1
+fi
+if [[ "$(coverage_field 220-bounded-pr-ci outcome)" != not-evidenced || "$(coverage_field 220-bounded-pr-ci checked)" != false ]]; then
+  echo "ci-evidence coverage: an unchecked item was not recorded as not-evidenced/unchecked" >&2
+  cat "$coverage" >&2
+  exit 1
+fi
+
+# 3. Evidence absent for a package legitimately mid-lifecycle (no completed tasks): passes, and the
+#    non-coverage is still recorded, so "not checked" never reads as "checked and passed".
+sed -i 's/^    status: done$/    status: pending/' "$tasks_declaration"
+rm -f -- "$coverage"
+set +e
+run_evidence_gate >"$temporary/coverage-midlifecycle.log" 2>&1
+midlifecycle_status=$?
+set -e
+if [[ $midlifecycle_status -ne 0 ]]; then
+  echo "ci-evidence coverage: a package with no completed tasks and no evidence.yml was failed outright (got $midlifecycle_status)" >&2
+  sed -n '1,160p' "$temporary/coverage-midlifecycle.log" >&2
+  exit 1
+fi
+if [[ "$(coverage_field 220-bounded-pr-ci outcome)" != not-evidenced || "$(coverage_field 220-bounded-pr-ci checked)" != false ]]; then
+  echo "ci-evidence coverage: a passing run hid the fact that the item was never checked" >&2
+  cat "$coverage" >&2
+  exit 1
+fi
+grep -F "qualify-pr: evidence coverage not-evidenced: work/220-bounded-pr-ci" "$temporary/coverage-midlifecycle.log" >/dev/null || {
+  echo "ci-evidence coverage: a passing run did not report the uncovered item on its output" >&2
+  sed -n '1,160p' "$temporary/coverage-midlifecycle.log" >&2
+  exit 1
+}
+
+cp -p "$evidence_backup" "$evidence_declaration"
+cp -p "$tasks_backup" "$tasks_declaration"
+
+echo "CI evidence clean-checkout mutations passed: tracked observed evidence verifies, missing cited evidence fails closed, hosted verification failure propagates, absent/non-executable routed hooks fail closed, every routed work item gets a recorded coverage outcome, and an absent evidence.yml is reported rather than skipped — fatally when the package still declares completed implementation."
