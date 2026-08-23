@@ -38,6 +38,11 @@ const predicates = {
   // verdict could not have differed. Selecting on it would therefore add cost that cannot ever
   // report a finding — a decorative selector added while removing a decorative gate. If the
   // mirrors are ever brought under a check that reads them, this list is where that path goes.
+  //
+  // AND THIS LIST IS THE WHOLE SELECTION, which is not true of the five subjects above it: see
+  // `costBoundedSubjects` below. They also run under three conservative fallbacks; this one does
+  // not, so a path absent from this list does not reach the gate by any other route on a pull
+  // request. Read the two together — the predicate alone understates what is excluded.
   "review-contract": (path) => [
     "docs/coordination-engine-contracts.md",
     ".config/dotnet-tools.json",
