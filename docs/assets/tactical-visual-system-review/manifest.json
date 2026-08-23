@@ -25,15 +25,15 @@
     "browserUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
     "browserVersion": "Chrome/151.0.7922.34"
   },
-  "productionBundleSha256": "960e1cadb0895ce6c4bd8172692a0b7c96be1cc273b82292f1642ba022cb42eb",
+  "productionBundleSha256": "dbaa6041abdbf874dd562f026aaafee7436538c9139a054b83d8f6bf0bb6b69e",
   "productionStylesSha256": "8467b289da91600fb79195d1bff06b707d2e910a6ecf65a7d98b92331b23ae1f",
   "before": {
     "path": "../persistent-workspace-m9-review/field-focus.png",
-    "sha256": "26b5b9bea4439beda10c6fe836158982787626eaddf1f8d40865f7ea81e5d9ca"
+    "sha256": "528abbafbeb2caca74db807d13f7ee84f13e2052dbe92a5f318fc02991bd5860"
   },
   "after": {
     "path": "after-production.png",
-    "sha256": "601557785b466b28a66790da2f9d1fb2f20c44fd48509b51e17178c3f2e22c65",
+    "sha256": "1c2d3d26b6028052bb4b73daec884f34438e47d00cde09d3d9a94f0ad736cd55",
     "captureKind": "actual-production-shell-chromium-screenshot",
     "semantic": {
       "identity": "tactical-visual-system-v1",
@@ -43,7 +43,7 @@
       "effectCount": 4,
       "effectLimit": 256,
       "unitCount": 4,
-      "nodeEstimate": 739,
+      "nodeEstimate": 481,
       "paintedLayerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
       "effectKinds": [
         "event",
@@ -152,7 +152,7 @@
     "effectCount": 4,
     "effectLimit": 256,
     "unitCount": 4,
-    "nodeEstimate": 739,
+    "nodeEstimate": 481,
     "paintedLayerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
     "effectKinds": [
       "event",
