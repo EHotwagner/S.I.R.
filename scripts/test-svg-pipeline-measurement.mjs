@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
@@ -189,24 +189,44 @@ assert.equal(evaluateRunFrameVerdict(discriminatingHealth, "zoom", budget).resul
 // cannot reach -- the Chromium review generator and the Playwright spec, both of which need a browser
 // to execute -- from drifting back into their own copy of the number. A file that contains no literal
 // ceiling cannot hold a stale one, whatever it does at runtime.
+//
+// The consumer set is DERIVED from the tree, not enumerated. It was a hand-maintained list, and it
+// silently omitted finalize-svg-pipeline-evidence.mjs -- one of only two scripts that receive the
+// composed budget -- so a stale ceiling planted there was invisible to this scan (S.I.R.#299 F1). A
+// hand-maintained list of consumers, inside the gate that exists to stop hand-maintained copies of a
+// number, is the same disease one level up. Anything that imports the declaration or receives the
+// composed budget is scanned, whether or not anyone remembered to add it.
 const declaredCeilingLiteral = String(tacticalFrameBudget.callbackMillisecondsCeiling);
-const derivedConsumers = [
-  "lib/svg-pipeline-measurement.mjs", "svg-pipeline-fixtures.v1.json", "measure-svg-pipeline.mjs",
-  "generate-tactical-visual-review.mjs", "test-svg-pipeline-measurement.mjs",
-  "../tests/SIR.Browser.Tests/visible-workflows.spec.js",
-];
-for (const consumer of derivedConsumers) {
-  const text = readFileSync(new URL(`./${consumer}`, import.meta.url), "utf8");
+const consumesBudget = /performance-budget\.mjs|definitions\.frameBudget|validateDefinitions\(/;
+const sourceRoots = [["./", ".mjs"], ["./lib/", ".mjs"], ["../tests/SIR.Browser.Tests/", ".spec.js"]];
+const budgetConsumers = sourceRoots.flatMap(([dir, extension]) => readdirSync(new URL(dir, import.meta.url))
+  .filter((name) => name.endsWith(extension))
+  .map((name) => `${dir}${name}`)
+  // the declaration itself is the ONE place the literal belongs
+  .filter((path) => path !== "./lib/performance-budget.mjs")
+  .filter((path) => consumesBudget.test(readFileSync(new URL(path, import.meta.url), "utf8"))));
+
+assert.ok(budgetConsumers.length >= 5, `the consumer sweep found only ${budgetConsumers.length} files; it is not reaching the tree and would pass vacuously`);
+for (const consumer of budgetConsumers) {
+  const text = readFileSync(new URL(consumer, import.meta.url), "utf8");
   assert.ok(!text.includes(declaredCeilingLiteral),
     `${consumer} restates the declared ceiling as the literal ${declaredCeilingLiteral}. Import it from lib/performance-budget.mjs instead; a second copy that agrees today is exactly the defect S.I.R.#299 removed.`);
 }
-// and the two that cannot be exercised in-process must actually READ the declaration
-for (const consumer of ["generate-tactical-visual-review.mjs", "../tests/SIR.Browser.Tests/visible-workflows.spec.js"]) {
-  const text = readFileSync(new URL(`./${consumer}`, import.meta.url), "utf8");
+// the fixture CONTRACT is data rather than code, so it is checked structurally instead: validateDefinitions
+// refuses a restated ceiling outright, and the raw-file assertion above proves the key is absent.
+assert.ok(!readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url), "utf8").includes(declaredCeilingLiteral),
+  "the fixture contract must not restate the declared ceiling");
+// the two that cannot be exercised in-process must actually READ the declaration
+for (const consumer of ["./generate-tactical-visual-review.mjs", "../tests/SIR.Browser.Tests/visible-workflows.spec.js"]) {
+  assert.ok(budgetConsumers.includes(consumer), `${consumer} must be reached by the consumer sweep`);
+  const text = readFileSync(new URL(consumer, import.meta.url), "utf8");
   assert.match(text, /performance-budget\.mjs/, `${consumer} must import the single declaration`);
   assert.match(text, /tacticalFrameBudget\.callbackMillisecondsCeiling/, `${consumer} must read the declared ceiling`);
 }
-console.log(`JUSTIFIED frame-budget-no-restatement: ${derivedConsumers.length} consumers contain no literal ${declaredCeilingLiteral}, and the two browser-route consumers read the declaration by name`);
+// and the consumer this gate MISSED must now be reached by it, by derivation rather than by memory
+assert.ok(budgetConsumers.includes("./finalize-svg-pipeline-evidence.mjs"),
+  "the finalizer receives the composed budget and must be reached by the consumer sweep");
+console.log(`JUSTIFIED frame-budget-no-restatement: ${budgetConsumers.length} budget consumers DERIVED from the tree contain no literal ${declaredCeilingLiteral}, the fixture contract restates nothing, and the two browser-route consumers read the declaration by name`);
 console.log(`JUSTIFIED frame-budget-single-declaration: the fixture file, the composed budget, the drop threshold and ${publishedCeilings.length} published table cell(s) all resolve to the one declaration, a restated ceiling is refused, and a frame ${overCeiling} ms long -- uncounted under the old undeclared threshold -- is counted as dropped and fails its verdict`);
 
 // the declared ceiling discriminates, in BOTH directions -- a gate that only ever reds is as useless as
@@ -320,6 +340,42 @@ for (const run of conforming.runs) {
 }
 const accepted = finalize(conforming);
 assert.equal(accepted.status, 0, `a conforming matrix must finalize, got: ${accepted.stderr}`);
+
+// F1: NEITHER fixture above can observe the threshold this refusal is NAMED for. `breaching` carries a
+// 231 ms frame that breaches EVERY candidate ceiling; `conforming` clamps to 12 ms, which conforms to
+// EVERY candidate. Both sit outside the discriminating band, so the pair returns the same verdict
+// whether the finalizer gates on the declared ceiling or on the undeclared 25 ms literal this item
+// removed -- the refusal was decorative with respect to its own number, while asserting it refused
+// "FOR the budget". That is the same defect this suite repaired for extractFrameHealth, one file over.
+//
+// The superseded literal is named ON PURPOSE: a band fixture is only meaningful relative to the
+// alternative it must exclude, and without it the band value is just another magic number.
+const supersededDropThresholdMilliseconds = 25;
+const bandMilliseconds = tacticalFrameBudget.callbackMillisecondsCeiling + 3.33;
+assert.ok(tacticalFrameBudget.callbackMillisecondsCeiling < bandMilliseconds && bandMilliseconds < supersededDropThresholdMilliseconds,
+  `the band fixture must lie strictly between the declared ceiling and the superseded ${supersededDropThresholdMilliseconds} ms literal, or it discriminates nothing`);
+
+const inBand = structuredClone(conforming);
+for (const run of inBand.runs) {
+  const durations = run.frameHealth?.frameDurationsMilliseconds;
+  if (Array.isArray(durations) && durations.length) run.frameHealth.frameDurationsMilliseconds = durations.map(() => bandMilliseconds);
+}
+// Prove the two sides CAN differ before trusting the refusal: the SAME matrix must be judged fail by the
+// declared budget and pass by the superseded one. Without this the refusal below could be firing for a
+// reason unrelated to the ceiling, and this gate would measure nothing.
+const bandUnderDeclared = evaluateArtifactVerdict(inBand.runs.map((run) => ({ frameBudget: evaluateRunFrameVerdict(run.frameHealth, run.journey, budget) })));
+const bandUnderSuperseded = evaluateArtifactVerdict(inBand.runs.map((run) => ({ frameBudget: evaluateRunFrameVerdict(run.frameHealth, run.journey, { ...budget, callbackMillisecondsCeiling: supersededDropThresholdMilliseconds }) })));
+assert.equal(bandUnderDeclared.result, "fail", "the band matrix must BREACH the declared ceiling");
+assert.equal(bandUnderSuperseded.result, "pass",
+  `the band matrix must CONFORM to the superseded ${supersededDropThresholdMilliseconds} ms literal -- if it failed under both, this fixture would discriminate nothing`);
+
+// and now the real consumer, as a process: it must refuse the band matrix, and refuse it FOR the budget
+const bandRefused = finalize(inBand);
+assert.notEqual(bandRefused.status, 0,
+  `the finalizer must refuse a matrix that breaches the DECLARED ceiling but would pass the superseded ${supersededDropThresholdMilliseconds} ms literal; accepting it means the finalizer is gating on a threshold no document declares`);
+assert.match(`${bandRefused.stderr}`, /breaches the declared frame budget/,
+  "and it must refuse the band matrix FOR the budget, not incidentally for some other reason");
+console.log(`JUSTIFIED frame-budget-finalizer-discriminates: the finalizer refuses a matrix at ${bandMilliseconds} ms, which breaches the declared ceiling and conforms to the superseded ${supersededDropThresholdMilliseconds} ms literal, so its refusal observes the declared number rather than agreeing with it by accident`);
 
 // and an artifact that CLAIMS a pass its own measurements do not support must be refused, because the
 // finalizer re-derives instead of trusting the field -- this is the route a bad merge reintroduces
