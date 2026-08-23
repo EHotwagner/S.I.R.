@@ -117,7 +117,7 @@ export function validateEvidenceReceipt(receipt, definitions, authority) {
       || receipt.matrix?.runCount !== authority.runCount) throw new Error("evidence authority binding is stale");
   for (const value of [receipt.candidate?.commit, receipt.candidate?.tree]) if (!/^[0-9a-f]{40}$/.test(value || "") || /^0+$/.test(value)) throw new Error("evidence candidate binding is missing");
   for (const value of [receipt.buildIdentity?.clientManifestSha256, receipt.buildIdentity?.serverAssemblySha256, receipt.matrix?.rawSummarySha256, receipt.matrix?.rawTraceManifestSha256, receipt.matrix?.orderedTraceDigestSha256]) if (!hex.test(value || "") || /^0+$/.test(value)) throw new Error("evidence digest binding is missing");
-  if (receipt.fixtureDefinition?.sha256 !== digest(definitions)) throw new Error("evidence fixture binding is stale");
+  if (receipt.fixtureDefinition?.sha256 !== fixtureIdentityDigest(definitions)) throw new Error("evidence fixture binding is stale");
   if (receipt.matrix?.result !== "pass"
       || receipt.matrix?.fixtureCount !== definitions.fixtures.length
       || receipt.matrix?.journeyCount !== definitions.journeys.length
@@ -244,6 +244,18 @@ export function extractFrameHealth(trace) {
 
 // Nearest-rank percentile. This is the convention finalize-svg-pipeline-evidence.mjs already used;
 // it is shared here so the producer and the consumer cannot drift into two different definitions.
+// The fixture binding threaded through artifact -> raw-trace manifest -> authority -> evidence receipt
+// identifies the WORKLOAD that produced a measurement: the maps, densities, journeys and cycle counts.
+// frameBudget is deliberately excluded from it, because a budget is the policy applied to a result, not
+// part of the workload's identity. Keeping them separate is what makes it coherent to re-evaluate an
+// existing measurement against a corrected budget -- if a budget edit changed the workload digest, every
+// historical artifact would instead be reported as coming from different fixtures, which is false.
+// The budget actually in force is recorded in the artifact's own frameBudget.declared block.
+export function fixtureIdentityDigest(definitions) {
+  const { frameBudget, ...workload } = definitions || {};
+  return digest(workload);
+}
+
 export function percentile(values, proportion) {
   if (!Array.isArray(values) || values.length === 0) return null;
   const sorted = [...values].sort((left, right) => left - right);
