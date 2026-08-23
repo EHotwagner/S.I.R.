@@ -475,9 +475,38 @@ module MapEditorWorkspace =
         =
         match action with
         | ResizeViewport(width, height) ->
+            let nextWidth = max 1.0 (finiteOr state.ViewportWidth width)
+            let nextHeight = max 1.0 (finiteOr state.ViewportHeight height)
+            // A BOARD-sized SVG viewBox used to centre the board for free, via
+            // SVG's default preserveAspectRatio.  The VIEWPORT-pixel viewBox this
+            // item introduced -- so culling, pointer hit-testing and the retained
+            // camera transform share one finite contract -- centres nothing, so
+            // the framing has to come from the camera instead.  Without this the
+            // board sits hard against the SVG's left edge at boot, underneath the
+            // sidebar's resize separator, and units near the origin cannot be
+            // clicked at all.
+            //
+            // Re-fit only while the camera is still the one WE chose: the
+            // untouched initial camera, or the fit computed for the viewport we
+            // are replacing.  An operator's camera is never moved by a resize.
+            // Re-fit only while the camera is still one WE chose: the untouched
+            // initial camera, or the fit computed for the viewport being replaced.
+            // A camera the operator has moved is never touched by a resize.
+            //
+            // NOTE: this makes an unmoved camera a function of viewport size, which
+            // is in tension with the retained-scene invariant asserted by
+            // in-app-docs.spec.js:108.  See the report; the tension is real and is
+            // escalated rather than resolved by weakening either side.
+            let untouched =
+                state.Camera = { PanX = CameraPadding; PanY = CameraPadding; Zoom = 1.0 }
+                || state.Camera =
+                    fitBoard state.ViewportWidth state.ViewportHeight map.Width map.Height
             { state with
-                ViewportWidth = max 1.0 (finiteOr state.ViewportWidth width)
-                ViewportHeight = max 1.0 (finiteOr state.ViewportHeight height) }
+                ViewportWidth = nextWidth
+                ViewportHeight = nextHeight
+                Camera =
+                    if untouched then fitBoard nextWidth nextHeight map.Width map.Height
+                    else state.Camera }
         | PanEditorBy(x, y) ->
             { state with Camera = panBy x y state.Camera }
         | ZoomEditorAt(x, y, factor) ->
