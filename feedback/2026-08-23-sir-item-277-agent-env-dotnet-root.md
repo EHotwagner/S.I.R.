@@ -100,6 +100,14 @@ asserted a second one that no committed script actually exercises — see §4.5.
 findings rather than smoothed over, because together they are evidence about how far the new
 check's protection actually reaches: it proves the mechanism and polices none of the prose.
 
+**And the shape recurred three times, which is no longer a coincidence worth absorbing into
+individual findings.** §4.14's inversion inventory, §4.8(a)'s unreproducible `mkdir` shape, and the
+retracted §4.7(a) are all the same failure: **a finding whose evidence lived in a transcript rather
+than in the tree.** This item keeps generating them because the thing it is about *is* the gap
+between those two places — so every claim made while working on it is drafted in exactly the medium
+the item exists to distrust, and reads as true there. Each was caught by someone attempting to
+reproduce it from the repository alone, and none by anyone re-reading the text.
+
 ## §4 Findings
 
 #### §4.1 A 36-check suite could not falsify its subject because it exercised only one consumer class
@@ -383,7 +391,15 @@ useful content.***
 - **Observed:** **(a)** The first lock did `mkdir "$LOCKDIR"` and, on failure, tested whether the
   directory *existed*. A losing `mkdir` leaves the **holder's** directory in place, so that test
   always succeeded: run against a live holder, the suite executed in full and returned `0`. It
-  passed its own concurrency test. Fixed by tracking acquisition explicitly. **(b)** The commit
+  passed its own concurrency test. Fixed by tracking acquisition explicitly.
+  **(a) IS NOT REPRODUCIBLE FROM THIS REPOSITORY, AND THAT IS PART OF THE FINDING.** The broken
+  `mkdir` + `[ -d "$LOCKDIR" ]` shape exists in **no committed revision**: every commit carrying a
+  lock — `439bede`, `8279c89`, `1020717`, `ced8fac`, `4ec2925` — already tracks `acquired`
+  explicitly, because the defect was caught during authoring and fixed before the commit. So (a)
+  rests on a source comment and on this report, not on anything at rest. That is **exactly (b)'s own
+  condition one level up**: a claim about the repository that the repository does not contain, inside
+  the finding about claims the repository does not contain. Found by an independent audit that went
+  looking for the revision and could not find one. **(b)** The commit
   message then stated the guard "ships with evidence it can fail" and listed four inversions. **The
   repository contained none of them.** All 38 checks were environment checks and
   `grep -cE '^run (pass|fail).*(lock|REFUSED|99|reclaim)'` returned `0`; the inversions existed in a
@@ -429,7 +445,14 @@ useful content.***
   but the shim is deleted" **passed**, because the caller's intact shim had been sourced instead.
   Fixed in `1020717` by cd-ing in a subshell before `env -i`; the `BASH_ENV` value is deliberately
   unchanged, since the host-configured form is what is under test.
-- **Evidence:** file:scripts/test-agent-env.sh; command:git worktree add --detach ../sir-277-base f69f1e6cdc203121bd908a3a1bd025545e0aff56 && sed -i -e '\|export DOTNET_ROOT="$candidate"|d' ../sir-277-base/scripts/agent-env.sh && ( cd ../sir-277-base && ./scripts/test-agent-env.sh ) && git worktree remove --force ../sir-277-base
+- **Evidence:** file:scripts/test-agent-env.sh; command:git worktree add --detach ../sir-277-base f69f1e6cdc203121bd908a3a1bd025545e0aff56 && mv ../sir-277-base/scripts/agent-env.sh ../sir-277-base/scripts/ae.held && ../sir-277-base/scripts/test-agent-env.sh ../sir-277-base || true && git worktree remove --force ../sir-277-base
+- **Locator corrected after review, and the correction is the finding restating itself.** An earlier
+  revision cited §4.1's command, which `cd`s **into** the base root — so caller cwd equalled `$ROOT`,
+  the divergence this finding is about could not arise, and the command returned `36 checks, 0
+  unexpected`: it reproduced §4.1's S8 baseline rather than §4.9's defect. A locator for a
+  caller-versus-root divergence that runs from inside the root cannot show it. The command above
+  invokes the base worktree's own suite **from a foreign cwd**, with that worktree passed as
+  `[repo-root]` and its shim moved aside, and emits the exact line quoted below.
 - **Version:** fixed at commit `1020717a4f9aec5df7d79aac57bce474f621c870` (a *fix* commit, not the
   frontmatter's described commit); the defect predates this
   cycle and is present at base `f69f1e6`.

@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-277-agent-env-dotnet-root.md",
-  "reportSha256": "da58747faf42927fb2972b5b62e7850fb2bffc67f893428bc23f1cf8ab4ccdf0",
+  "reportSha256": "9efc50365fc3eebeebc8df6876edea4e7f3c75333a1bf438d5e741e76d1a61dc",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -200,7 +200,7 @@
           "sha256": "929cdb2bc4cceda1bcb12e8bd549e0fa52bcd7f6304f4ed10173c0234d40d8db"
         },
         {
-          "locator": "command:git worktree add --detach ../sir-277-base f69f1e6cdc203121bd908a3a1bd025545e0aff56 && sed -i -e '\\|export DOTNET_ROOT=\"$candidate\"|d' ../sir-277-base/scripts/agent-env.sh && ( cd ../sir-277-base && ./scripts/test-agent-env.sh ) && git worktree remove --force ../sir-277-base",
+          "locator": "command:git worktree add --detach ../sir-277-base f69f1e6cdc203121bd908a3a1bd025545e0aff56 && mv ../sir-277-base/scripts/agent-env.sh ../sir-277-base/scripts/ae.held && ../sir-277-base/scripts/test-agent-env.sh ../sir-277-base || true && git worktree remove --force ../sir-277-base",
           "result": "verified"
         }
       ],
