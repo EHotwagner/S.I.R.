@@ -199,7 +199,42 @@ assert.throws(() => gateResult("unknown", "pass"), /unknown gate result/u);
 
 const workflow = readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8");
 const routeSource = readFileSync(new URL("./ci-route.mjs", import.meta.url), "utf8");
-const jobBody = (name) => new RegExp(`^  ${name}:\\n([\\s\\S]*?)(?=^  [a-z][a-z-]*:\\n)`, "mu").exec(workflow)?.[1] ?? "";
+// ONE parse of the workflow's job graph, shared by every assertion below -- the body, the job's
+// own `if:` (inline or folded), and its `needs:`. A lazy body match needs a real terminator: `$`
+// under /m/ matches the end of EVERY line, so an alternation with it truncates each body at its
+// first newline while still looking like it read the job. The sentinel job is that terminator,
+// and it is also why the LAST job in the file now has a body at all.
+const workflowJobs = (() => {
+  const section = `${workflow.slice(workflow.indexOf("\njobs:\n"))}\n  zzsentinel:\n`;
+  const parsed = {};
+  for (const [, name, body] of section.matchAll(/^  ([a-z][a-z0-9-]*):\n([\s\S]*?)(?=^  [a-z][a-z0-9-]*:\n)/gmu)) {
+    if (name === "zzsentinel") continue;
+    const head = /^    if: (.*)$/mu.exec(body);
+    let condition = head ? head[1].trim() : null;
+    if (condition !== null && /^[>|][-+]?$/u.test(condition)) {
+      // A folded block scalar joins its continuation lines with spaces: one expression, written
+      // over several lines because a guard with one clause per producer does not fit on one.
+      const lines = [];
+      for (const line of body.slice(head.index + head[0].length + 1).split("\n")) {
+        if (line.trim() === "") continue;
+        if (line.length - line.trimStart().length <= 4) break;
+        lines.push(line.trim());
+      }
+      condition = lines.join(" ");
+    }
+    const needsRaw = /^    needs: (.+)$/mu.exec(body)?.[1]?.trim() ?? null;
+    parsed[name] = {
+      name,
+      body,
+      if: condition,
+      needs: needsRaw === null ? [] : needsRaw.startsWith("[")
+        ? needsRaw.slice(1, -1).split(",").map((entry) => entry.trim()).filter(Boolean)
+        : [needsRaw],
+    };
+  }
+  return parsed;
+})();
+const jobBody = (name) => workflowJobs[name]?.body ?? "";
 const contracts = JSON.parse(readFileSync(new URL("../tests/fixtures/ci-qualification/v1/contracts.json", import.meta.url), "utf8"));
 assert.equal(contracts.feedbackBudgetMilliseconds, feedbackBudgetMilliseconds);
 assert.equal(contracts.feedbackAcceptanceTargetMilliseconds, feedbackAcceptanceTargetMilliseconds);
@@ -288,7 +323,13 @@ assert.match(jobBody("prepare-native"), /if: needs\.route\.outputs\.prepare_nati
 assert.doesNotMatch(workflow, /^  prepare:$/mu);
 assert.doesNotMatch(workflow, /prepared-candidate/u);
 assert.match(workflow, /domain-conformance:\n[\s\S]*?needs: \[route, prepare-native, prepare-fable, prepare-web\]/u);
-assert.match(jobBody("domain-conformance"), /extract-parts native fable web[\s\S]*gates\+=\(rules\)[\s\S]*gates\+=\(spatial\)[\s\S]*gates\+=\(cancellation\)[\s\S]*for gate in[\s\S]*run-ci-gate\.sh "\$gate"[\s\S]*for pid in[^\n]*wait[^\n]*done[\s\S]*run-ci-gate\.sh browser-delivery[\s\S]*gate-domain-conformance/u);
+// S.I.R.#309 made the extracted part set DERIVED rather than the literal `native fable web`.
+// The literal was the consumption half of the same defect: a `domain` route prepares no `web`
+// part, so an unconditional `extract-parts ... web` turns the skip this job stopped being into
+// a red download step instead. The gate list itself is unchanged and still pinned in order.
+assert.match(jobBody("domain-conformance"), /parts\+=\(native\)[\s\S]*parts\+=\(fable\)[\s\S]*parts\+=\(web\)[\s\S]*extract-parts "\$\{parts\[@\]\}"[\s\S]*gates\+=\(rules\)[\s\S]*gates\+=\(spatial\)[\s\S]*gates\+=\(cancellation\)[\s\S]*for gate in[\s\S]*run-ci-gate\.sh "\$gate"[\s\S]*for pid in[^\n]*wait[^\n]*done[\s\S]*run-ci-gate\.sh browser-delivery[\s\S]*gate-domain-conformance/u);
+assert.doesNotMatch(jobBody("domain-conformance"), /extract-parts native fable web/u,
+  "the extracted part set must be derived from the route's producer flags, never a fixed literal");
 assert.doesNotMatch(jobBody("domain-conformance"), /gates\+=\(browser-delivery\)/u);
 assert.doesNotMatch(jobBody("domain-conformance"), /actions\/cache@|npm ci|dotnet tool restore|cache: npm/u);
 assert.doesNotMatch(jobBody("domain-conformance"), /gates\+=\(cross-runtime\)/u);
@@ -352,7 +393,12 @@ assert.match(gateRunner, /SIR_CI_PREFLIGHT_REUSED/u);
 // The consumer honouring the flag is only half the contract. domain-conformance extracts the
 // prepared parts ONCE and then runs several gates concurrently in that same job, so it must also
 // SET the flag; without it each of those gates re-extracts the same artifacts.
-assert.match(jobBody("domain-conformance"), /extract-parts native fable web/u);
+// S.I.R.#309 made the part LIST derived, so this states the "once" property directly instead of
+// through a literal that no longer appears: exactly one extraction, and it precedes the gate loop.
+assert.equal(jobBody("domain-conformance").match(/qualify-pr\.sh extract-parts/gu)?.length, 1,
+  "domain-conformance must extract the prepared parts exactly once, before its concurrent gates");
+assert.ok(jobBody("domain-conformance").indexOf("extract-parts") < jobBody("domain-conformance").indexOf("for gate in"),
+  "the single extraction must precede the gate loop that reuses it");
 assert.match(jobBody("domain-conformance"), /SIR_CI_PREFLIGHT_REUSED: "true"/u);
 assert.match(gateRunner, /ci-gate-artifact-bindings\.sh" "\$repo_root" "\$\{preflight_parts\[@\]\}"/u);
 assert.match(workflow, /pr-verdict:\n[\s\S]*?needs: \[[^\]]*prepare-docs[^\]]*spatial-mutations[^\]]*cancellation-mutations[^\]]*browser-general-helper[^\]]*browser-delivery[^\]]*domain-conformance[^\]]*cross-runtime[^\]]*\]/u);
@@ -668,24 +714,82 @@ for (const producer of producerOrder) {
 // Evaluate ci.yml's own condition TEXT, so this models the workflow whatever shape the condition
 // takes -- a derived flag, a classification test, or a negation. Modelling only the shape we just
 // wrote would make the check agree with itself; this one disagrees when the workflow is wrong.
-const evalWorkflowTerm = (term, outputs) => {
-  if (term === "always()") return true;
-  const parsed = /^(.+?)\s*(==|!=)\s*'([^']*)'$/u.exec(term);
-  assert.ok(parsed, `unparsed ci.yml condition term: ${term}`);
-  const [, lhsRaw, operator, literal] = parsed;
-  const lhs = lhsRaw.trim();
-  let actual;
-  if (lhs === "github.event_name") actual = "pull_request";
-  else {
-    const output = /^needs\.route\.outputs\.([a-z_]+)$/u.exec(lhs);
-    assert.ok(output, `unparsed ci.yml condition operand: ${lhs}`);
-    assert.ok(output[1] in outputs, `ci.yml reads needs.route.outputs.${output[1]}, which the route job never emits`);
-    actual = outputs[output[1]];
+// Split on a top-level operator only. S.I.R.#309 put parenthesised clauses into a job `if:`
+// (a producer-readiness guard is `(A || B)` per producer), and a naive `.split("||")` cuts
+// straight through them -- it would read the guard as a disjunction of half-terms and quietly
+// answer about an expression the workflow does not contain.
+const splitTopLevel = (expression, operator) => {
+  const parts = [];
+  let depth = 0;
+  let current = "";
+  for (let index = 0; index < expression.length; index += 1) {
+    const character = expression[index];
+    if (character === "(") depth += 1;
+    if (character === ")") depth -= 1;
+    if (depth === 0 && expression.startsWith(operator, index)) {
+      parts.push(current);
+      current = "";
+      index += operator.length - 1;
+      continue;
+    }
+    current += character;
   }
-  return operator === "==" ? actual === literal : actual !== literal;
+  parts.push(current);
+  return parts;
 };
-const evalWorkflowCondition = (expression, outputs) => expression.split("||")
-  .some((clause) => clause.split("&&").every((term) => evalWorkflowTerm(term.trim(), outputs)));
+const evalWorkflowTerm = (term, context) => {
+  let text = term.trim();
+  let negate = false;
+  while (text.startsWith("!") && !text.startsWith("!=")) { negate = !negate; text = text.slice(1).trim(); }
+  // A wholly parenthesised term is a sub-expression, not an operand.
+  if (text.startsWith("(") && text.endsWith(")")) {
+    let depth = 0;
+    let whole = true;
+    for (let index = 0; index < text.length; index += 1) {
+      if (text[index] === "(") depth += 1;
+      else if (text[index] === ")") { depth -= 1; if (depth === 0 && index !== text.length - 1) { whole = false; break; } }
+    }
+    if (whole) {
+      const inner = evalWorkflowCondition(text.slice(1, -1).trim(), context);
+      return negate ? !inner : inner;
+    }
+  }
+  let value;
+  // Status-check functions. `always()` is true and `cancelled()` is false for the runs modelled
+  // here (a PR run nobody cancelled); their PRESENCE is separately load-bearing, because it is
+  // what lifts GitHub's implicit "every need succeeded" requirement -- see runsUnder below.
+  if (text === "always()") value = true;
+  else if (text === "cancelled()") value = false;
+  else {
+    const parsed = /^(.+?)\s*(==|!=)\s*'([^']*)'$/u.exec(text);
+    assert.ok(parsed, `unparsed ci.yml condition term: ${term}`);
+    const [, lhsRaw, operator, literal] = parsed;
+    const lhs = lhsRaw.trim();
+    let actual;
+    if (lhs === "github.event_name") actual = "pull_request";
+    else {
+      const output = /^needs\.route\.outputs\.([a-z_]+)$/u.exec(lhs);
+      // `needs.<job>.result`, written either way round. Index syntax is what ci.yml uses for a
+      // hyphenated job id; both spellings are read here so the check does not depend on which.
+      const jobResult = /^needs(?:\.([a-z][a-z0-9-]*)|\['([a-z][a-z0-9-]*)'\])\.result$/u.exec(lhs);
+      if (output) {
+        assert.ok(output[1] in context.outputs, `ci.yml reads needs.route.outputs.${output[1]}, which the route job never emits`);
+        actual = context.outputs[output[1]];
+      } else {
+        assert.ok(jobResult, `unparsed ci.yml condition operand: ${lhs}`);
+        const jobName = jobResult[1] ?? jobResult[2];
+        assert.ok(jobName in context.results, `ci.yml reads needs.${jobName}.result, which that job does not declare in its own needs:`);
+        actual = context.results[jobName];
+      }
+    }
+    value = operator === "==" ? actual === literal : actual !== literal;
+  }
+  return negate ? !value : value;
+};
+function evalWorkflowCondition(expression, context) {
+  return splitTopLevel(expression, "||")
+    .some((clause) => splitTopLevel(clause, "&&").every((term) => evalWorkflowTerm(term, context)));
+}
 // Exactly what `route --github-output` writes, derived the same way the CLI derives it.
 const emittedRouteOutputs = (candidate) => {
   const outputs = { classification: candidate.classification, prepare: String(candidate.selectedGates.some((gate) => gate !== "evidence")) };
@@ -695,7 +799,8 @@ const emittedRouteOutputs = (candidate) => {
   return outputs;
 };
 const producersWorkflowRuns = (candidate) => producerOrder.filter((producer) =>
-  evalWorkflowCondition(/^    if: (.+)$/mu.exec(jobBody(producer))?.[1] ?? "", emittedRouteOutputs(candidate)));
+  evalWorkflowCondition(workflowJobs[producer].if ?? "always()",
+    { outputs: emittedRouteOutputs(candidate), results: { route: "success" } }));
 const sixRoutes = {
   documentation: ["docs/index.md"],
   domain: ["src/SIR.Domain/Rules.fs"],
@@ -717,20 +822,241 @@ for (const [classification, paths] of Object.entries(sixRoutes)) {
   assert.deepEqual([...ran].sort(), [...expected].sort(),
     `${classification}: ci.yml runs [${ran}] but pr-verdict expects [${expected}] -- these must be one declaration`);
 }
-// END TO END, through the real join: feed `joinRoute` the producer set ci.yml actually runs and
-// require a verdict with no producer complaint. This is the assertion that would have caught the
-// defect at authoring time -- the suite's existing join fixtures were all built from the EXPECTED
-// set, so they modelled a pipeline that never ran prepare-native for `documentation`, which is
-// precisely the run the real workflow produced and the real join refused.
+// --- S.I.R.#309: every classification's job graph must be SATISFIABLE -----------------------
+// S.I.R.#304 made producer SELECTION one declaration. It did not, and could not, decide whether
+// the workflow's `needs:` GRAPH can be satisfied once that selection is correct -- and it is a
+// separate question, because `needs:` is static YAML that no run-time declaration can rewrite.
+//
+// One correction to how #308's PR body put it, established by its own critic and accepted by its
+// author: correct producer derivation does NOT cause `prepare-web` to be skipped for `domain`.
+// The pre-#304 hand-written condition (`classification == 'documentation' || 'browser' ||
+// 'performance' || 'cross-cutting'`) already excluded `domain`, so the skip -- and this single
+// invariant violation -- is present identically at `630d656` and at `d500145`. #304 leaves
+// `domain`'s skip unchanged in BOTH directions; it neither causes nor repairs it. The conclusion
+// that the repair belongs here rather than in producer selection is unaffected.
+//
+// `domain-conformance` hosts three gates whose parts differ, so its `needs:` must name the UNION
+// while any one route selects a subset. GitHub skips a job whose `needs:` were skipped, so the
+// job was skipped with its own `if:` true and `rules`/`spatial` were never written.
+//
+// The generalisation, which is what this block enforces: A JOB WHOSE STATIC `needs:` IS A STRICT
+// SUPERSET OF WHAT SOME ROUTE SELECTS IS UNSATISFIABLE ON THAT ROUTE. That is a property of the
+// graph, not of `domain-conformance`, so it is checked for every job on every classification.
+
+// Which jobs actually run, applying GitHub's own rule: a job runs when its own `if:` is true AND
+// -- unless that `if:` contains a status-check function -- every job it needs SUCCEEDED.
+const runsUnder = (outputs, { failed = [] } = {}) => {
+  const results = {};
+  const names = Object.keys(workflowJobs);
+  let progressed = true;
+  while (progressed) {
+    progressed = false;
+    for (const name of names) {
+      if (name in results) continue;
+      const job = workflowJobs[name];
+      if (job.needs.some((need) => !(need in results))) continue;
+      // Only this job's OWN needs are readable from its `if:`; anything else is a workflow error
+      // the evaluator must report rather than quietly answer.
+      const visible = Object.fromEntries(job.needs.map((need) => [need, results[need]]));
+      const condition = job.if ?? "always()";
+      const own = evalWorkflowCondition(condition, { outputs, results: visible });
+      const statusFunction = /\b(?:always|success|failure|cancelled)\s*\(\s*\)/u.test(condition);
+      const needsMet = statusFunction || job.needs.every((need) => results[need] === "success");
+      results[name] = !own || !needsMet ? "skipped" : failed.includes(name) ? "failure" : "success";
+      progressed = true;
+    }
+  }
+  assert.equal(Object.keys(results).length, names.length, "every ci.yml job must be schedulable -- an unresolved job means a needs: cycle");
+  return results;
+};
+
+// A job's own `if:` read as though every job it needs had SUCCEEDED. This is what separates "this
+// route does not want this job" from "this route wants it and cannot have it": once the readiness
+// guard is inside the `if:`, a plain reading can no longer tell those two apart.
+const ownConditionHolds = (job, outputs) => evalWorkflowCondition(job.if ?? "always()",
+  { outputs, results: Object.fromEntries(job.needs.map((need) => [need, "success"])) });
+
+// Which gate receipts a job WRITES, read off ci.yml's own steps -- the YAML step `if:` and the
+// bash guard its `run:` block puts around each invocation. Nothing here is a hand-kept list, so a
+// gate that moves between jobs moves here too.
+const gatesWrittenBy = (body, outputs) => {
+  const context = { outputs, results: {} };
+  const written = [];
+  let stepCondition = null;
+  let bashGuards = [];
+  let inStep = false;
+  for (const line of body.split("\n")) {
+    if (/^      - /u.test(line)) { inStep = true; stepCondition = null; bashGuards = []; }
+    if (!inStep) continue;
+    const stepIf = /^      (?:- )?if: (.+)$/u.exec(line);
+    if (stepIf) { stepCondition = stepIf[1].trim(); continue; }
+    if (/^\s*if \[\[ /u.test(line)) {
+      const guard = /\$\{\{\s*(.+?)\s*\}\}'?\s*(==|!=)\s*'([^']*)'/u.exec(line);
+      bashGuards.push(guard ? `${guard[1]} ${guard[2]} '${guard[3]}'` : "always()");
+      continue;
+    }
+    if (/^\s*fi\s*$/u.test(line)) { bashGuards.pop(); continue; }
+    const inlineGuarded = /\[\[\s*'\$\{\{\s*(.+?)\s*\}\}'\s*(==|!=)\s*'([^']*)'\s*\]\]\s*&&\s*gates\+=\(([a-z-]+)\)/u.exec(line);
+    const literal = /run-ci-gate\.sh ([a-z][a-z-]*) /u.exec(line);
+    const preparePart = /qualify-pr\.sh prepare-part ([a-z]+)\s*$/u.exec(line);
+    const found = inlineGuarded ? { gate: inlineGuarded[4], extra: `${inlineGuarded[1]} ${inlineGuarded[2]} '${inlineGuarded[3]}'` }
+      : literal ? { gate: literal[1], extra: null }
+        : preparePart ? { gate: `prepare-${preparePart[1]}`, extra: null } : null;
+    if (!found) continue;
+    const guards = [...bashGuards, ...(found.extra ? [found.extra] : []), ...(stepCondition ? [stepCondition] : [])];
+    if (!guards.every((guard) => evalWorkflowCondition(guard, context))) continue;
+    if (!written.includes(found.gate)) written.push(found.gate);
+  }
+  return written;
+};
+
+// SELF-TEST FIRST, on the same principle as #304's block above: a check that has never been red
+// is equally consistent with "the graph is satisfiable" and "this cannot detect anything". Each
+// of the three moving parts is shown to fire before any verdict below is trusted.
+{
+  const outputs = emittedRouteOutputs(route(sixRoutes.domain));
+  // (1) skip propagation is modelled at all. A probe job whose own `if:` this route satisfies,
+  // but which needs a producer this route does not select, must come out SKIPPED -- and its twin
+  // with a status-check function must come out run. Same route, same producer, one difference.
+  const probe = { name: "probe", body: "", if: "needs.route.outputs.rules == 'true'", needs: ["route", "prepare-web"] };
+  const scheduleWith = (extra) => {
+    const real = runsUnder(outputs);
+    const visible = Object.fromEntries(extra.needs.map((need) => [need, real[need]]));
+    const own = evalWorkflowCondition(extra.if, { outputs, results: visible });
+    const statusFunction = /\b(?:always|success|failure|cancelled)\s*\(\s*\)/u.test(extra.if);
+    return !own || !(statusFunction || extra.needs.every((need) => real[need] === "success")) ? "skipped" : "success";
+  };
+  assert.equal(runsUnder(outputs)["prepare-web"], "skipped", "self-test premise: a domain route does not select prepare-web");
+  assert.equal(scheduleWith(probe), "skipped",
+    "self-test: a job needing an unselected producer must be modelled as skipped -- this is the defect");
+  assert.equal(scheduleWith({ ...probe, if: `!cancelled() && ${probe.if}` }), "success",
+    "self-test: and a status-check function must be modelled as lifting that implicit requirement");
+  // (2) the optimistic reading really is optimistic -- it ignores a skipped need.
+  assert.equal(ownConditionHolds(probe, outputs), true,
+    "self-test: the optimistic reading must hold even when a need was skipped");
+  assert.equal(ownConditionHolds({ ...probe, if: "needs.route.outputs.browser == 'true'" }, outputs), false,
+    "self-test: the optimistic reading must still be false when the route does not want the job");
+  // (3) parenthesised guards are evaluated as guards, not cut through by the || split.
+  assert.equal(evalWorkflowCondition("(needs.route.outputs.rules == 'true' || needs.route.outputs.browser == 'true') && needs.route.outputs.browser == 'true'",
+    { outputs, results: {} }), false, "self-test: a top-level && after a parenthesised group must still bind");
+  assert.equal(evalWorkflowCondition("!cancelled() && (needs.route.outputs.prepare_web != 'true' || needs['prepare-web'].result == 'success')",
+    { outputs, results: { "prepare-web": "skipped" } }), true,
+    "self-test: an unselected producer must satisfy its readiness clause");
+  assert.equal(evalWorkflowCondition("!cancelled() && (needs.route.outputs.prepare_native != 'true' || needs['prepare-native'].result == 'success')",
+    { outputs, results: { "prepare-native": "failure" } }), false,
+    "self-test: a producer this route DID select and that failed must NOT satisfy its readiness clause");
+  // (4) the receipt reader can tell a written gate from an unwritten one.
+  assert.deepEqual(gatesWrittenBy(jobBody("cross-runtime"), outputs), ["cross-runtime"],
+    "self-test: the receipt reader must read a job's gate off its own steps");
+  assert.deepEqual(gatesWrittenBy(jobBody("domain-conformance"), outputs).sort(), ["rules", "spatial"],
+    "self-test: a domain route's domain-conformance writes rules and spatial, and not cancellation");
+}
+
+// AC-4. THE INVARIANT, for every job on every classification: a job's own `if:` -- read as though
+// every job it needs had succeeded -- must imply that the job actually runs. A job that is true
+// under that reading and skipped in the real schedule was skipped by `needs:` propagation alone.
+// This is the assertion the reintroduced static edge in AC-5 goes red against.
+const unsatisfiableJobs = (candidate) => {
+  const outputs = emittedRouteOutputs(candidate);
+  const results = runsUnder(outputs);
+  return Object.values(workflowJobs)
+    .filter((job) => results[job.name] === "skipped" && ownConditionHolds(job, outputs))
+    .map((job) => ({ job: job.name, skippedNeeds: job.needs.filter((need) => results[need] !== "success") }));
+};
+for (const [classification, paths] of Object.entries(sixRoutes)) {
+  assert.deepEqual(unsatisfiableJobs(route(paths)), [],
+    `${classification}: a job whose own if: is satisfied was skipped because its needs: were -- this route's job graph is unsatisfiable`);
+}
+
+// The structural half, and the reason this class does not come back one job at a time. `needs:`
+// cannot be GENERATED -- GitHub reads it as static YAML before anything of ours runs -- so it is
+// CHECKED against the same `gateParts` declaration #304 made the single source of producer truth.
+// Which gates a job hosts is itself read off ci.yml under the widest route, so neither side of
+// this equality is hand-kept and there is no second place to update.
+const widestOutputs = emittedRouteOutputs(route(sixRoutes["cross-cutting"]));
+const derivedProducerNeeds = (job) => [...new Set(gatesWrittenBy(job.body, widestOutputs).flatMap((gate) => gateParts[gate] ?? []))]
+  .map((part) => `prepare-${part}`).sort();
+for (const job of Object.values(workflowJobs)) {
+  // pr-verdict is the JOIN, not a consumer: it needs every producer by construction and carries
+  // `always()`, so the equality below does not describe it. It is pinned separately above.
+  if (job.name === "pr-verdict") continue;
+  const declared = job.needs.filter((need) => producerOrder.includes(need)).sort();
+  assert.deepEqual(declared, derivedProducerNeeds(job),
+    `${job.name}: needs: names producers [${declared}] but the gates it hosts consume [${derivedProducerNeeds(job)}]`
+    + " -- a producer edge no hosted gate consumes makes this job unsatisfiable on any route that omits it");
+}
+
+// The CONSUMPTION half of the same invariant, and the half a `needs:`-only reading misses. Fixing
+// participation alone would have turned the skip into a RED download step: `domain-conformance`
+// asked for `prepared-part-web` unconditionally, and on a `domain` route that artifact does not
+// exist because its producer correctly never ran. So: no job may download a part this route did
+// not prepare, on any classification it runs on.
+const preparedPartDownloads = (body) => {
+  const found = [];
+  let stepCondition = null;
+  for (const line of body.split("\n")) {
+    if (/^      - /u.test(line)) stepCondition = null;
+    const stepIf = /^      (?:- )?if: (.+)$/u.exec(line);
+    if (stepIf) { stepCondition = stepIf[1].trim(); continue; }
+    const part = /name: prepared-part-([a-z]+)/u.exec(line);
+    if (part) found.push({ part: part[1], condition: stepCondition });
+  }
+  return found;
+};
+// Self-test: the reader must find the downloads at all, and must read their guards.
+{
+  const found = preparedPartDownloads(jobBody("domain-conformance"));
+  assert.deepEqual(found.map(({ part }) => part), ["native", "fable", "web"],
+    "self-test: the download reader must see every prepared-part download in the job");
+  assert.ok(found.every(({ condition }) => condition !== null),
+    "self-test: each of those downloads must carry a guard for this check to be about anything");
+}
+for (const [classification, paths] of Object.entries(sixRoutes)) {
+  const outputs = emittedRouteOutputs(route(paths));
+  const results = runsUnder(outputs);
+  for (const job of Object.values(workflowJobs)) {
+    if (results[job.name] !== "success") continue;
+    for (const { part, condition } of preparedPartDownloads(job.body)) {
+      if (condition !== null && !evalWorkflowCondition(condition, { outputs, results: {} })) continue;
+      assert.equal(outputs[`prepare_${part}`], "true",
+        `${classification}: ${job.name} downloads prepared-part-${part}, which this route never prepared`
+        + " -- that artifact does not exist, so the job fails on the download rather than being repaired");
+    }
+  }
+}
+
+// AC-3. Lifting GitHub's implicit success requirement must not lift the real one. A producer this
+// route DID select and that FAILED still blocks every job that consumes it -- otherwise the repair
+// would have traded a skipped gate for a gate that runs against inputs that were never built.
+for (const producer of ["prepare-native", "prepare-fable", "prepare-web"]) {
+  const outputs = emittedRouteOutputs(route(sixRoutes["cross-cutting"]));
+  const results = runsUnder(outputs, { failed: [producer] });
+  assert.equal(results[producer], "failure", `${producer} must be modelled as failing for this case to mean anything`);
+  assert.equal(results["domain-conformance"], "skipped",
+    `domain-conformance must not run when ${producer}, which this route selected, failed`);
+}
+// ...and the control: with nothing failing, it does run. Without this the assertion above is also
+// satisfied by a job that never runs at all.
+assert.equal(runsUnder(emittedRouteOutputs(route(sixRoutes["cross-cutting"])))["domain-conformance"], "success",
+  "control: domain-conformance must run when every producer this route selected succeeded");
+
+// AC-1 and AC-2. END TO END, through the real join, for all six: feed `joinRoute` exactly the
+// receipts the surviving jobs write and require `pass`.
+//
+// The subject set is built from the jobs that SURVIVE skip propagation, never from the selected
+// gate list. That distinction is this item: the block #304 shipped here built its subjects from
+// `...selected`, so for `domain` it supplied `rules` and `spatial` receipts that production never
+// writes, and asserted `pass` for the one classification where production `pr-verdict` failed. It
+// was green and production was red, and both were correct about what they measured.
 for (const [classification, paths] of Object.entries(sixRoutes)) {
   const candidate = route(paths);
-  const selected = candidate.selectedGates;
-  const producersRun = producersWorkflowRuns(candidate);
-  const subjects = ["integrity", ...producersRun,
-    ...(selected.includes("spatial") ? ["spatial-mutations"] : []),
-    ...(selected.includes("cancellation") ? ["cancellation-mutations"] : []),
-    ...(selected.includes("browser") ? ["browser-general-helper", "browser-delivery"] : []),
-    ...selected];
+  const outputs = emittedRouteOutputs(candidate);
+  const results = runsUnder(outputs);
+  const subjects = [];
+  for (const name of Object.keys(workflowJobs)) {
+    if (results[name] !== "success") continue;
+    for (const gate of gatesWrittenBy(workflowJobs[name].body, outputs)) if (!subjects.includes(gate)) subjects.push(gate);
+  }
   const digestsFor = (part) => ({ native: "c", fable: "d", web: "e", docs: "f" }[part] ?? "e").repeat(64);
   const receipt = (gate) => gateResult(gate, "pass", { setup: 100, restore: 200, build: 300, test: 400, total: 1_000 }, {
     source: candidate.source,
@@ -751,7 +1077,7 @@ for (const [classification, paths] of Object.entries(sixRoutes)) {
   assert.deepEqual(producerComplaints, [],
     `${classification}: pr-verdict must not refuse the producer set ci.yml runs, got ${JSON.stringify(producerComplaints)}`);
   assert.equal(verdict.result, "pass",
-    `${classification}: pr-verdict must pass when every gate ci.yml runs reports pass, got ${JSON.stringify(verdict.failures)}`);
+    `${classification}: pr-verdict must pass when every gate ci.yml RUNS reports pass, got ${JSON.stringify(verdict.failures)}`);
 }
 
 // The two routes the defect made unsatisfiable, stated explicitly so a regression names itself.
