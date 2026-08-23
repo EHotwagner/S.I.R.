@@ -116,12 +116,40 @@ fi
 # behave as the corpus says (S.I.R.#264 round 1). So execute the corpus before recording anything.
 # This is defence in depth, not the guard: scripts/verify-rules-corpus.sh runs the same conformance
 # route, so a hand-edited correspondence file that never went through this tool is still refused.
-echo "building and executing the rules corpus before recording new identity digests..." >&2
-dotnet build "$repo_root/tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj" -c Release >/dev/null 2>&1 || {
-  echo "refusing to rebind: the corpus test project does not build" >&2
-  echo "  a correspondence digest recorded for text nobody compiled is an untestable assertion" >&2
-  exit 1
+# Build the project that OWNS each rebound path, not one fixed project. This tool originally built
+# only src/SIR.Simulation, whose compile list plus its SIR.Domain reference covers 9 of the 19
+# declared paths; the other 10 -- all of SIR.Client.Web, SIR.Client, SIR.Match and SIR.Server --
+# were never compiled, so the claim to refuse a tree that does not build was false for them
+# (S.I.R.#264 review round 1, M2). The corpus project is always built because it executes the rules.
+owning_project() {
+  local artifact_path=$1
+  local project_dir=${artifact_path#src/}
+  project_dir=${project_dir%%/*}
+  printf 'src/%s/%s.fsproj' "$project_dir" "$project_dir"
 }
+
+build_projects=()
+for artifact_path in "${drifted[@]}"; do
+  project=$(owning_project "$artifact_path")
+  test -f "$repo_root/$project" || {
+    echo "refusing to rebind: cannot resolve the project that owns $artifact_path" >&2
+    echo "  expected $project; a path whose owning project cannot be found cannot be compiled, and an" >&2
+    echo "  uncompiled path is exactly what this guard exists to refuse" >&2
+    exit 1
+  }
+  printf '%s\n' "${build_projects[@]-}" | grep -Fxq -- "$project" || build_projects+=("$project")
+done
+corpus_project=tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj
+printf '%s\n' "${build_projects[@]-}" | grep -Fxq -- "$corpus_project" || build_projects+=("$corpus_project")
+
+for project in "${build_projects[@]}"; do
+  echo "building $project before recording new identity digests..." >&2
+  dotnet build "$repo_root/$project" -c Release >/dev/null 2>&1 || {
+    echo "refusing to rebind: $project does not build" >&2
+    echo "  a correspondence digest recorded for text nobody compiled is an untestable assertion" >&2
+    exit 1
+  }
+done
 conformance_log=$(mktemp /tmp/sir-rules-rebind-conformance.XXXXXX)
 if ! dotnet run --project "$repo_root/tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj" -c Release --no-build >"$conformance_log" 2>&1; then
   echo "refusing to rebind: registered executable behaviour does not satisfy the rules corpus fixtures" >&2

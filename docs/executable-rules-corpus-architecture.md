@@ -731,9 +731,13 @@ To change a declared implementation source:
 1. Make the source change.
 2. Run `scripts/rebind-rules-corpus-sources.sh` to see which identity subjects
    moved, then `--write` to record their new digests, **in the same commit**.
-   The tool rebinds only paths whose normalized text actually differs, refuses to
-   add or remove a path, and refuses to record a digest for a tree that does not
-   build.
+   The tool rebinds only paths whose normalized text actually differs and refuses
+   to add or remove a path. Before recording anything it builds **the project that
+   owns each rebound path** — resolved as `src/<Project>/<Project>.fsproj` — plus
+   the corpus test project, and then executes the corpus fixtures; it refuses if
+   any of those builds fails or if the fixtures refuse. The build guard is
+   per-path by construction: an earlier version built one fixed project, which
+   compiled 9 of the 19 declared paths and silently blessed the other 10.
 3. Review the `source-correspondence.json` diff. It names exactly the identity
    subjects that moved, and that diff is the record of the decision.
 
