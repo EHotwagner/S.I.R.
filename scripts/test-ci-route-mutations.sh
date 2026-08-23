@@ -133,6 +133,36 @@ expect_red scripts/qualify-pr.sh '/SIR_BROWSER_SHARD_INDEX="$second_index"/d;'
 expect_red scripts/qualify-pr.sh '/wait "$second_pid"/d;'
 
 
+# --- S.I.R.#309: every classification's job graph must stay SATISFIABLE. ---------------------
+# S.I.R.#304 held the run set and the expected set to one declaration. These hold the `needs:`
+# GRAPH to the same one. Each mutation below makes some classification's graph unsatisfiable, or
+# lets a job run against inputs that were never built; none of them is visible in a `cross-cutting`
+# run, which is what 33 of the last 40 merges to `main` were, and which is why the original defect
+# survived unseen. They must all fail red.
+
+# THE DEFECT ITSELF, reintroduced in one line. Swapping the status-check function for an ordinary
+# true term restores GitHub's implicit "every need succeeded" requirement, so `domain` -- which
+# legitimately does not select the `web` part -- skips domain-conformance with its own `if:` true
+# and never writes `rules` or `spatial`. The expression stays well-formed and true; only the
+# scheduling rule changes.
+expect_red .github/workflows/ci.yml "s/      !cancelled()/      github.event_name == 'pull_request'/;"
+# A static `needs:` edge on a producer no gate this job hosts consumes. Nothing about the job's own
+# condition changes; the graph simply stops being satisfiable on every route that omits that
+# producer. This is the AC-5 inversion stated as a mutation.
+expect_red .github/workflows/ci.yml 's/    needs: \[route, prepare-native, prepare-fable, prepare-web\]/    needs: [route, prepare-native, prepare-fable, prepare-web, prepare-docs]/;'
+# Weaken a readiness clause into the trap this item's third acceptance criterion names: a producer
+# that RAN and FAILED must still block the job. `!= 'cancelled'` admits a failure, which trades a
+# skipped gate for a gate running against inputs that were never built.
+expect_red .github/workflows/ci.yml "s/needs\['prepare-web'\].result == 'success'/needs['prepare-web'].result != 'cancelled'/;"
+# Drop a readiness clause altogether -- same escape, reached by deletion rather than by weakening.
+expect_red .github/workflows/ci.yml "/prepare_web != 'true' || needs\['prepare-web'\].result/d;"
+# Fixing participation without fixing CONSUMPTION only moves the failure: on a `domain` route the
+# `prepared-part-web` artifact does not exist, so an unconditional download reds the job instead of
+# skipping it. The gate must refuse a route that asks for a part it never prepared.
+expect_red .github/workflows/ci.yml "s/- if: needs.route.outputs.prepare_web == 'true'/- if: always()/;"
+# The same half again, at the extraction rather than the download.
+expect_red .github/workflows/ci.yml 's#extract-parts "\${parts\[@\]}"#extract-parts native fable web#;'
+
 # --- S.I.R.#280: the feedback-timing ceiling must stay a live gate. -----------------------
 # Every way of "fixing" the unsatisfiable cross-cutting deadline by widening or removing the
 # check turns this repair into a disablement, and each one below would leave the PR that made
@@ -163,4 +193,4 @@ expect_red scripts/ci-route.mjs 's/if (byGate.has(subject) \&\& usableTotal(subj
 # Let the documented contract drift from the enforced one.
 expect_red tests/fixtures/ci-qualification/v1/contracts.json 's/"feedbackWaveBudgetMilliseconds": 180000/"feedbackWaveBudgetMilliseconds": 900000/;'
 
-echo "CI route policy, producer run-set/expected-set agreement (S.I.R.#304), feedback-timing ceiling inversions, production-review freshness/preparer wiring, performance scope/headroom, prepared Playwright runtime reuse, co-scheduled rules/spatial receipts, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."
+echo "CI route policy, producer run-set/expected-set agreement (S.I.R.#304), job-graph satisfiability across all six classifications (S.I.R.#309), feedback-timing ceiling inversions, production-review freshness/preparer wiring, performance scope/headroom, prepared Playwright runtime reuse, co-scheduled rules/spatial receipts, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."

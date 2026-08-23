@@ -31,6 +31,26 @@ growth behind component-local rendering estimates.
 | Representative 100-unit replay | ≤ 5,000 | ≤ 128 | < 4 ms | < 16.67 ms |
 | Stress 200-unit replay | ≤ 9,000 | ≤ 256 | < 8 ms | < 16.67 ms |
 
+The `Browser callback/main-thread inspection` column is **not declared here.** It
+is a projection of the single declaration in
+`scripts/lib/performance-budget.mjs` (`tacticalFrameBudget`), which every
+consumer that gates on it imports. `scripts/test-svg-pipeline-measurement.mjs`
+re-reads the cells above and refuses any divergence between this table and that
+module, in either direction, so the prose and the code cannot drift into two
+numbers. Change the module; this table follows, and the gate proves it did.
+
+A **dropped frame** is a frame whose duration exceeds that same ceiling, and
+`frameHealth.droppedFrames` counts exactly those. This is the one threshold, not
+a second one: at 60 Hz a callback that overruns its frame period has already
+missed the next vsync, and the count is taken over the same array of durations
+the verdict is derived from. It is reported as a diagnostic and is not
+separately gated. Before S.I.R.#299 that count used a bare inline 25 ms
+threshold that no document declared and that contradicted this column by
+8.33 ms -- a 20 ms frame breached the budget and was not counted as dropped,
+while a 26 ms frame was counted against a threshold nothing published. That
+literal entered with the measurement library's first commit carrying no
+derivation, comment or cited source, so nothing was preserved by keeping it.
+
 The fixtures include overlapping routes, statuses, attacks, and review
 annotations. They preserve the inherited 200/400-unit `Battlefield` structural
 guards as a second scale check. The browser number measures one animation-frame
@@ -534,6 +554,17 @@ estimate. The budgets are 4,096 path expansions, 256 LOS evaluations per tick,
 256 combat resolutions per tick, and 8,000 scene nodes. Release elapsed-time
 budgets remain 20 ms p95 and 50 ms p99. Headless browser evidence proves the
 real boot-to-visible-outcome journey; it does not claim compositor frame rate.
+
+**Subject of these figures.** The 20 ms p95 / 50 ms p99 above bound the
+**Release elapsed time of the item-184 scenario-catalog qualification** -- an
+import, route preview, eight simulation ticks and their scene projections,
+measured end to end in .NET. They are **not** a frame budget and they do not
+govern the tactical visual system: they are a different subject, on a different
+route, measured with a different instrument. The per-frame browser main-thread
+ceiling is the `Tactical visual-system budget` table above, and it is the only
+declaration for that quantity. Neither figure is authoritative for the other,
+and a reader comparing them is comparing two different measurements that happen
+to share a unit.
 
 ## Open parameters
 

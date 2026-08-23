@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { auditPersistentWorkspaceBrowser } from "./lib/persistent-workspace-browser-audit.mjs";
+import { tacticalFrameBudget } from "./lib/performance-budget.mjs";
 
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 let clientRoot = "artifacts/client";
@@ -135,9 +136,13 @@ const manifest = {
   after: { path: "after-production.png", sha256: hash(afterBytes), captureKind: "actual-production-shell-chromium-screenshot", semantic: system },
   densityScenes: densityAudits,
   visualSystem: system,
+  // targetAnimationFrameMilliseconds is DERIVED from the single declaration (S.I.R.#299); it was a
+  // bare numeric literal here, one of five independent copies of one number. The other figures on
+  // these rows are still literals: they are a different quantity, out of this item's scope, and
+  // carried by a follow-up rather than fixed silently here.
   budgets: {
-    representative100: { maximumDomNodes: 5000, maximumEffects: 128, maximumInputToPaintMilliseconds: 100, targetAnimationFrameMilliseconds: 16.67, measurementToleranceMilliseconds: 1 },
-    stress200: { maximumDomNodes: 9000, maximumEffects: 256, maximumInputToPaintMilliseconds: 150, targetAnimationFrameMilliseconds: 16.67, measurementToleranceMilliseconds: 1 },
+    representative100: { maximumDomNodes: 5000, maximumEffects: 128, maximumInputToPaintMilliseconds: 100, targetAnimationFrameMilliseconds: tacticalFrameBudget.callbackMillisecondsCeiling, measurementToleranceMilliseconds: 1 },
+    stress200: { maximumDomNodes: 9000, maximumEffects: 256, maximumInputToPaintMilliseconds: 150, targetAnimationFrameMilliseconds: tacticalFrameBudget.callbackMillisecondsCeiling, measurementToleranceMilliseconds: 1 },
   },
 };
 await writeFile(resolve(reviewOutput, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");

@@ -12,7 +12,12 @@
 #   * add or remove a path -- the frozen set is owned by implementation-sources.json .sources, and
 #     scripts/verify-rules-corpus.sh independently refuses any divergence;
 #   * touch sourceCommit, the sealed implementation digest, or any generated corpus fixture --
-#     those belong to the immutable half of the pin and are not this tool's business.
+#     those belong to the immutable half of the pin and are not this tool's business;
+#   * add, remove or otherwise decide the `.outsideIdentity` register (S.I.R.#290). That register
+#     declares which compile items are knowingly OUTSIDE the sealed identity set, and acknowledging
+#     a loss of correspondence coverage is a reviewed judgement, not a mechanical rebind. This tool
+#     rewrites only `.paths`, and every other field -- schema, register, and its notes -- is carried
+#     through untouched, so an acknowledgement can only ever enter the file by someone editing it.
 #
 # Usage:
 #   scripts/rebind-rules-corpus-sources.sh              # report what would be rebound, write nothing
@@ -129,12 +134,56 @@ fi
 #
 # So resolve by reading Compile Include entries and comparing resolved paths. A path that no
 # project compiles is refused rather than silently blessed.
+#
+# Those entries are read by PARSING the project, not by matching the substring `Compile Include="`,
+# and this reader deliberately mirrors the verifier's (S.I.R.#290 round 2). The substring form was
+# blind to attribute order, to a single-quoted value, to a non-canonically-cased element, and to a
+# literal `>` earlier in the tag -- all legal MSBuild, all of which BUILD. Here that blindness is
+# fail-closed rather than an escape, because a declared path whose owner cannot be resolved is
+# refused a few lines below; but "refused" would then be reported as `no project compiles <path>`,
+# which is a confident wrong answer to a question this reader could not evaluate, and a path
+# compiled by TWO projects where only one is seen is rebound having built less than this file
+# claims it builds. Both are the same defect the verifier carries the repair for, so the two
+# readers are kept in step; probe 37 in scripts/verify-rules-corpus.sh fails if they diverge.
+project_compile_includes() {  # absolute project path
+  python3 -c '
+import sys, xml.etree.ElementTree as ET
+
+try:
+    root = ET.parse(sys.argv[1]).getroot()
+except Exception as exc:
+    sys.stderr.write("project did not parse as MSBuild XML: %s: %s\n" % (sys.argv[1], exc))
+    sys.exit(3)
+
+for element in root.iter():
+    name = element.tag
+    if not isinstance(name, str):
+        continue
+    if name.rsplit("}", 1)[-1].lower() != "compile":
+        continue
+    value = element.get("Include")
+    if value is None:
+        continue
+    for part in value.split(";"):
+        part = part.strip()
+        if not part:
+            continue
+        if "\n" in part or "\r" in part:
+            sys.stderr.write("Include value spans lines: %r\n" % part)
+            sys.exit(3)
+        sys.stdout.write(part + "\n")
+' "$1"
+}
+
 owning_projects() {
   local artifact_path=$1
-  local project project_dir include resolved
+  local project project_dir include resolved items items_status
   while IFS= read -r project; do
     test -n "$project" || continue
     project_dir=$(dirname "$project")
+    items_status=0
+    items=$(project_compile_includes "$repo_root/$project") || items_status=$?
+    test "$items_status" -eq 0 || return 1
     while IFS= read -r include; do
       test -n "$include" || continue
       resolved=$(realpath -m --relative-to="$repo_root" "$repo_root/$project_dir/$include" 2>/dev/null) || continue
@@ -142,17 +191,28 @@ owning_projects() {
         printf '%s\n' "$project"
         break
       fi
-    done <<< "$(grep -o 'Compile Include="[^"]*"' "$repo_root/$project" | sed 's/^Compile Include="//; s/"$//')"
+    done <<< "$items"
   done <<< "$(cd "$repo_root" && find src tests -name '*.fsproj' | sort)"
 }
 
 build_projects=()
 for artifact_path in "${drifted[@]}"; do
   owners=()
+  owners_out=""
+  owners_status=0
+  owners_out=$(owning_projects "$artifact_path") || owners_status=$?
+  # An unreadable project is not an absent owner. Separating the two matters here because the two
+  # remedies are opposite: one is "declare the compile item", the other is "fix the project file".
+  if test "$owners_status" -ne 0; then
+    echo "refusing to rebind: a project file could not be read as MSBuild XML (diagnostic above)" >&2
+    echo "  owning-project resolution for $artifact_path is incomplete, and an owner this script" >&2
+    echo "  could not evaluate is not an owner it established does not exist" >&2
+    exit 1
+  fi
   while IFS= read -r project; do
     test -n "$project" || continue
     owners+=("$project")
-  done <<< "$(owning_projects "$artifact_path")"
+  done <<< "$owners_out"
   if test ${#owners[@]} -eq 0; then
     echo "refusing to rebind: no project compiles $artifact_path" >&2
     echo "  a correspondence digest recorded for text nobody compiles is an untestable assertion," >&2

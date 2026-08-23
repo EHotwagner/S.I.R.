@@ -38,6 +38,11 @@ jobs:
       prepare_fable: ${{ steps.route.outputs.prepare_fable }}
       prepare_web: ${{ steps.route.outputs.prepare_web }}
       prepare_docs: ${{ steps.route.outputs.prepare_docs }}
+      # S.I.R.#311. Published by the step below -- by THIS file, never by the head's router --
+      # so `pr-verdict` can name a stale route contract instead of reporting its consequences.
+      contract_drift: ${{ steps.contract.outputs.drift }}
+      contract_missing: ${{ steps.contract.outputs.missing }}
+      contract_unexpected: ${{ steps.contract.outputs.unexpected }}
     steps:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
@@ -58,6 +63,107 @@ jobs:
             --tree "$(git rev-parse '${{ github.event.pull_request.head.sha }}^{tree}')" \
             --output artifacts/ci/route.json \
             --github-output "$GITHUB_OUTPUT"
+      # S.I.R.#311. For a `pull_request` GitHub runs THIS workflow from the base branch while
+      # executing the head branch's `scripts/`. A contract between the two therefore breaks every
+      # branch based before it landed, and said nothing about why: the four `prepare-*` jobs read
+      # `needs.route.outputs.prepare_*`, an output the head's router never published reads as the
+      # empty string, all four skip, `browser`/`documentation`/`cross-runtime`/`domain-conformance`
+      # skip by `needs:` propagation, and `pr-verdict` reports `missing-gate-result` naming four
+      # gates the branch never asked to skip. Each instance below is named by RUN, not by PR, so it
+      # can be checked rather than taken on trust -- the whole hazard here is a symptom that is
+      # indistinguishable from its cause without the run's timestamp. The contract landed on `main`
+      # at 2026-08-23T09:48:02Z (`d500145`). After it:
+      #   * PR #310, run 32632975380 (10:09:16Z, head 3180497): all four `prepare-*` skipped,
+      #     `pr-verdict` failed `missing-gate-result`.
+      #   * PR #307, run 32634022856 (10:32:19Z, head a914d64): the same, on a second branch.
+      # Both heads' routers predate `3db14a6`. PR #310's NEXT run, 32633609791 at 10:23:16Z, went
+      # green with all four producers running once it had taken its base -- the same branch, the
+      # same workflow, fourteen minutes later. That pair is the remedy below, observed in production.
+      #
+      # The required keys are declared HERE and deliberately NOT derived from `scripts/`. That is
+      # the whole point rather than a shortcut: `scripts/` is head-supplied, and a head that
+      # predates the contract cannot describe the contract. A detector needing the head's
+      # cooperation could not diagnose the only heads it exists for. The same-tree half of this
+      # agreement is already asserted by scripts/test-ci-route.mjs, which refuses any
+      # `needs.route.outputs.X` this repo's router does not emit; no in-tree suite can reach the
+      # cross-revision half, because it has only one revision in the tree.
+      - id: contract
+        name: State the route outputs this head emitted and check them against this workflow
+        shell: bash
+        env:
+          SIR_ROUTE_EMITTED: ${{ toJSON(steps.route.outputs) }}
+          # Exactly the `needs.route.outputs.*` keys this workflow's own run conditions read --
+          # ten job-level `if:` and one step-level one (`evidence`, on the integrity job's evidence
+          # step, which a head omitting that key would silently skip). `classification` and
+          # `prepare` are published but gated on by nothing, so they are NOT required: a head that
+          # omits them breaks no job graph and this step must not invent a failure for them.
+          SIR_ROUTE_REQUIRED: >-
+            rules spatial cancellation cross_runtime browser documentation evidence
+            prepare_native prepare_fable prepare_web prepare_docs
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          let emitted;
+          try {
+            emitted = JSON.parse(process.env.SIR_ROUTE_EMITTED ?? "");
+          } catch (error) {
+            // "I could not read this" is never "I read it and it was fine": refuse rather than
+            // decide, the same discipline pr-verdict's collection-coverage check applies.
+            console.error(`route-contract: the route step's outputs are unreadable (${error.message});`
+              + " refusing rather than deciding.");
+            process.exit(1);
+          }
+          if (emitted === null || typeof emitted !== "object" || Array.isArray(emitted)) {
+            console.error(`route-contract: the route step's outputs are not an object`
+              + ` (got ${emitted === null ? "null" : Array.isArray(emitted) ? "array" : typeof emitted});`
+              + " refusing rather than deciding.");
+            process.exit(1);
+          }
+          const required = (process.env.SIR_ROUTE_REQUIRED ?? "").split(/\s+/u).filter(Boolean);
+          if (required.length === 0) {
+            console.error("route-contract: this workflow declared no required route outputs;"
+              + " refusing rather than deciding.");
+            process.exit(1);
+          }
+          const emittedKeys = Object.keys(emitted).sort();
+          const producerKeys = emittedKeys.filter((key) => key.startsWith("prepare_"));
+          // AC-2: one log states what this head emitted and what this workflow needs, so the
+          // mismatch is readable without checking out a second revision of the router.
+          console.log(`route-contract: this head's scripts/ci-route.mjs emitted ${emittedKeys.length}`
+            + ` route output(s): ${emittedKeys.join(", ") || "(none)"}`);
+          console.log(`route-contract: of those, producer keys: ${producerKeys.join(", ") || "(none)"}`);
+          console.log(`route-contract: this workflow's run conditions read: ${required.join(", ")}`);
+          const missing = required.filter((key) => !(key in emitted));
+          // The other direction of the same split: a head whose router emits a producer this
+          // workflow has no job for. Nothing runs it, and the head's own join then expects a
+          // receipt that could not exist. Same cause, opposite side, so it is named here too --
+          // and naming it is what keeps the declared list above from going quietly stale.
+          const unexpected = producerKeys.filter((key) => !required.includes(key));
+          const write = (key, value) => fs.appendFileSync(process.env.GITHUB_OUTPUT, `${key}=${value}\n`);
+          write("missing", missing.join(" "));
+          write("unexpected", unexpected.join(" "));
+          write("drift", String(missing.length > 0 || unexpected.length > 0));
+          if (missing.length === 0 && unexpected.length === 0) {
+            console.log("route-contract: satisfied -- this head's router publishes every output this workflow gates on.");
+            process.exit(0);
+          }
+          // Drift is annotated here but NOT failed here, deliberately. Job outputs of a failed job
+          // are not dependably readable from `needs:`, and `pr-verdict` must be able to read this
+          // verdict to report the cause instead of its consequences -- so failing this job would
+          // cost exactly the diagnosis this step exists to deliver. `pr-verdict` owns the failure;
+          // this annotation only makes the cause visible at the top of the run rather than at the
+          // end of it. The run as a whole still fails.
+          if (missing.length > 0) {
+            console.log(`::error title=stale-route-contract::This branch's scripts/ci-route.mjs does not publish`
+              + ` ${missing.length} route output(s) this workflow gates on: ${missing.join(", ")}.`
+              + " The jobs reading them will skip. See the pr-verdict job for the remedy.");
+          }
+          if (unexpected.length > 0) {
+            console.log(`::error title=unknown-route-contract::This branch's scripts/ci-route.mjs publishes`
+              + ` producer key(s) this workflow has no job for: ${unexpected.join(", ")}.`
+              + " Nothing will run them. See the pr-verdict job for the remedy.");
+          }
+          NODE
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with: { name: ci-route, path: artifacts/ci, retention-days: 1 }
@@ -364,8 +470,34 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with: { name: gate-prepare-docs, path: artifacts/ci/results, retention-days: 1 }
 
+  # S.I.R.#309. This job hosts THREE gates whose parts differ (rules->native, spatial->native+fable,
+  # cancellation->native+web), so its `needs:` must statically name the UNION -- but any one route
+  # selects only a subset, and GitHub skips a job whose `needs:` were skipped. That is the whole
+  # defect: a `domain` route legitimately does not select `web`, `prepare-web` correctly did not run,
+  # and this job was skipped with its own `if:` true, so `rules` and `spatial` were never written and
+  # `pr-verdict` reported `missing-gate-result` for both. `needs:` is static YAML and cannot be
+  # derived at run time; what CAN be derived is PARTICIPATION, and it is derived here from the same
+  # `expectedProducersFor` declaration S.I.R.#304 made the single source of producer selection.
+  #
+  # `!cancelled()` is what lifts GitHub's implicit "every need succeeded" requirement -- without a
+  # status-check function the job is skipped before this expression is ever consulted. Lifting it
+  # would also let a genuinely FAILED producer through, so each producer is re-admitted explicitly
+  # and only when this route did not select it: `prepare_X != 'true'` is the route saying it was
+  # never needed, and nothing else satisfies the clause. A producer that ran and failed keeps
+  # `prepare_X == 'true'` with a non-success result, and still blocks the job.
+  #
+  # Index syntax (`needs['prepare-native']`) rather than dot dereference: a hyphenated job id has no
+  # precedent anywhere in this repository's workflows, and no linter here can decide whether GitHub's
+  # expression parser reads that hyphen as part of the name or as subtraction. Index syntax is
+  # unambiguous under either reading, so the question does not need answering.
   domain-conformance:
-    if: needs.route.outputs.rules == 'true' || needs.route.outputs.spatial == 'true' || needs.route.outputs.cancellation == 'true'
+    if: >-
+      !cancelled()
+      && needs.route.result == 'success'
+      && (needs.route.outputs.rules == 'true' || needs.route.outputs.spatial == 'true' || needs.route.outputs.cancellation == 'true')
+      && (needs.route.outputs.prepare_native != 'true' || needs['prepare-native'].result == 'success')
+      && (needs.route.outputs.prepare_fable != 'true' || needs['prepare-fable'].result == 'success')
+      && (needs.route.outputs.prepare_web != 'true' || needs['prepare-web'].result == 'success')
     needs: [route, prepare-native, prepare-fable, prepare-web]
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -380,14 +512,32 @@ jobs:
         with: { node-version: 26.5.0 }
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: ci-route, path: artifacts/ci }
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      # Consumption follows the same derived flags as participation. A part this route never
+      # prepared has no artifact to download and nothing to extract; asking for it unconditionally
+      # would turn the skip this job just stopped being into a red download step instead.
+      - if: needs.route.outputs.prepare_native == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: prepared-part-native, path: artifacts/ci/parts }
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - if: needs.route.outputs.prepare_fable == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: prepared-part-fable, path: artifacts/ci/parts }
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - if: needs.route.outputs.prepare_web == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: prepared-part-web, path: artifacts/ci/parts }
-      - name: Extract verified domain inputs once
-        run: ./scripts/qualify-pr.sh extract-parts native fable web
+      - name: Extract exactly the verified domain inputs this route prepared
+        shell: bash
+        run: |
+          parts=()
+          [[ '${{ needs.route.outputs.prepare_native }}' == 'true' ]] && parts+=(native)
+          [[ '${{ needs.route.outputs.prepare_fable }}' == 'true' ]] && parts+=(fable)
+          [[ '${{ needs.route.outputs.prepare_web }}' == 'true' ]] && parts+=(web)
+          # Every gate this job hosts consumes `native`, so an empty set means the route flags and
+          # this job's own run condition disagree -- refuse rather than extract nothing and proceed.
+          if [[ ${#parts[@]} -eq 0 ]]; then
+            echo "domain-conformance: this route prepared none of native/fable/web, yet the job ran." >&2
+            exit 1
+          fi
+          ./scripts/qualify-pr.sh extract-parts "${parts[@]}"
       - name: Run independently receipted domain gates concurrently
         shell: bash
         env:
@@ -624,6 +774,141 @@ jobs:
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         continue-on-error: true
         with: { pattern: gate-*, path: artifacts/ci/gates }
+      # S.I.R.#311. Runs before EVERY step that reads the receipts, because on a branch whose
+      # router predates this workflow's producer contract those steps report consequences and not
+      # the cause: the join names `browser`, `documentation`, `cross-runtime` and
+      # `domain-conformance`, none of which the branch asked to skip, and says nothing about the
+      # router. It is placed ahead of the collection check too, not merely ahead of the join, so
+      # that a run whose route job could not even reach a verdict still names the route job rather
+      # than complaining that no gate artifact arrived -- which is the same consequence one step
+      # earlier. This step names the cause, and separates it from gates that genuinely ran and
+      # genuinely failed, so a branch that is merely too old and a branch that is actually broken
+      # do not report the same thing.
+      - name: Name a stale route contract before reading the receipts
+        shell: bash
+        env:
+          SIR_ROUTE_CONTRACT_DRIFT: ${{ needs.route.outputs.contract_drift }}
+          SIR_ROUTE_CONTRACT_MISSING: ${{ needs.route.outputs.contract_missing }}
+          SIR_ROUTE_CONTRACT_UNEXPECTED: ${{ needs.route.outputs.contract_unexpected }}
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const path = require("node:path");
+          const drift = process.env.SIR_ROUTE_CONTRACT_DRIFT ?? "";
+          // A route job that never reported is not a route job that reported "no drift". The
+          // check is declared by THIS file, so an empty value means the route job did not run
+          // this step at all -- refuse rather than decide.
+          if (drift === "") {
+            console.error("route-contract: the route job published no contract verdict; refusing rather than deciding."
+              + " Inspect the route job's \"State the route outputs this head emitted\" step.");
+            process.exit(1);
+          }
+          if (drift !== "true") {
+            console.log("route-contract: satisfied -- this head's router publishes every output this workflow gates on.");
+            process.exit(0);
+          }
+          const missing = (process.env.SIR_ROUTE_CONTRACT_MISSING ?? "").split(/\s+/u).filter(Boolean);
+          const unexpected = (process.env.SIR_ROUTE_CONTRACT_UNEXPECTED ?? "").split(/\s+/u).filter(Boolean);
+          const say = (line) => console.error(line);
+          say("");
+          say("=========================== STALE ROUTE CONTRACT ===========================");
+          say("");
+          say("This run did not fail because a gate found a defect. It failed because this");
+          say("branch's scripts/ci-route.mjs and this workflow disagree about the route");
+          say("outputs the pipeline is wired on.");
+          say("");
+          say("For a `pull_request`, GitHub runs .github/workflows/ci.yml from the BASE branch");
+          say("and executes scripts/ from the HEAD branch. This branch is based before the");
+          say("contract that the base's workflow now gates on, so:");
+          say("");
+          if (missing.length > 0) {
+            say(`  * this branch's router never publishes: ${missing.join(", ")}`);
+            say("  * every job or step whose `if:` reads one of those sees the empty string,");
+            say("    so it SKIPS");
+            say("  * that skip propagates through `needs:` to their consumers");
+            say("  * the join then reports those receipts missing, naming gates this branch");
+            say("    never asked to skip");
+          }
+          if (unexpected.length > 0) {
+            say(`  * this branch's router publishes producer key(s) the base workflow has no job`);
+            say(`    for: ${unexpected.join(", ")} -- so nothing runs them, and this branch's own`);
+            say("    join then expects a receipt that could not have been produced");
+          }
+          say("");
+          say("Do NOT repair the gates the join names below. They are consequences. Nothing is");
+          say("wrong with them, and changing them will not make this run pass.");
+          say("");
+          say("--------------------------------- REMEDY -----------------------------------");
+          say("");
+          say("Take the base's contract onto this branch. WHICH command depends on one");
+          say("condition, and the reflex answer is wrong about half the time:");
+          say("");
+          say("  Does anything COMMITTED on this branch cite this branch's OWN commit SHAs?");
+          say("  Report front-matter `commit:` fields, an audit ledger binding a commit, an");
+          say("  evidence receipt anchored to a suite run, and a review marker naming an exact");
+          say("  head are all such citations.");
+          say("");
+          say("    YES -> git fetch origin && git merge origin/main");
+          say("           A rebase rewrites every commit on this branch, which turns each of");
+          say("           those citations into a claim about a commit that no longer exists.");
+          say("           Merging leaves the cited commits reachable and the citations true.");
+          say("");
+          say("    NO  -> git fetch origin && git rebase origin/main");
+          say("           Nothing on the branch depends on its own commit identities, so a");
+          say("           linear history costs nothing.");
+          say("");
+          say("Either way, push and re-run. This message disappears when the branch's router");
+          say("publishes what the base's workflow gates on.");
+          say("");
+          // The receipts that DID arrive are still evidence. A branch can be both too old and
+          // genuinely broken; reporting only the first would hide the second behind a rebase.
+          const root = "artifacts/ci/results";
+          const genuine = [];
+          let readable = true;
+          try {
+            for (const name of fs.readdirSync(root).sort()) {
+              if (!name.endsWith(".json")) continue;
+              let result;
+              try {
+                result = JSON.parse(fs.readFileSync(path.join(root, name), "utf8"));
+              } catch {
+                genuine.push(`${name} (unreadable -- not counted as passing)`);
+                continue;
+              }
+              if (result === null || typeof result !== "object" || result.status === undefined) {
+                // Parseable but not a gate receipt this workflow recognises. "I could not read
+                // this" is never "I read it and it passed", so it is surfaced rather than skipped.
+                genuine.push(`${name} (no recognisable status field -- not counted as passing)`);
+              } else if (result.status !== "pass") {
+                const stage = typeof result.failureStage === "string" ? `, failureStage: ${result.failureStage}` : "";
+                genuine.push(`${result.gate ?? name} (status: ${result.status}${stage})`);
+              }
+            }
+          } catch {
+            readable = false;
+          }
+          say("---------------------- GATES THAT RAN ON THIS BRANCH ------------------------");
+          say("");
+          if (!readable) {
+            say("  No gate receipts were collected, so nothing can be said about them here.");
+          } else if (genuine.length === 0) {
+            say("  Every gate that ran reported pass. Nothing here needs repair; this branch");
+            say("  needs its base, not a fix.");
+          } else {
+            say("  These gates RAN and FAILED. They are independent of the contract drift above");
+            say("  and will still be failing after you take the base -- repair them as well:");
+            say("");
+            for (const entry of genuine) say(`    * ${entry}`);
+          }
+          say("");
+          say("============================================================================");
+          const codes = [missing.length > 0 ? "stale-route-contract" : null,
+            unexpected.length > 0 ? "unknown-route-contract" : null].filter(Boolean);
+          console.log(`::error title=${codes[0]}::pr-verdict: ${codes.join(" + ")} --`
+            + " this branch's router and the base's workflow disagree on the route outputs the"
+            + " pipeline is wired on. See this step's log for the deciding merge-vs-rebase condition.");
+          process.exit(1);
+          NODE
       - name: Verify every produced gate result was collected
         shell: bash
         run: |
