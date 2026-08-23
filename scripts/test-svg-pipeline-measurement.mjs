@@ -663,10 +663,8 @@ for (const entry of declaredBudgetEntries)
 // claim nothing checks, and the fixture that was supposed to exclude it has quietly stopped.
 const sweptConsumerText = budgetConsumers.map((consumer) => readFileSync(new URL(consumer, import.meta.url), "utf8")).join("\n");
 for (const superseded of supersededTacticalFigures) {
-  assert.ok(new RegExp(`\\b${superseded.identifier}\\b`).test(sweptConsumerText),
-    `the declaration records ${superseded.identifier} (${superseded.value}, retired by ${superseded.retiredBy}) as a superseded figure, and no suite names it any more. Either a discriminating fixture stopped excluding it, or the record is stale.`);
   assert.ok(new RegExp(`(?:const|let)\\s+${superseded.identifier}\\s*=\\s*${String(superseded.value).replace(".", "\\.")}\\b`).test(sweptConsumerText),
-    `${superseded.identifier} is named, but not bound to the superseded value ${superseded.value} the declaration records for it. A fixture excluding a different number than the one that was retired excludes nothing.`);
+    `the declaration records ${superseded.identifier} = ${superseded.value} (retired by ${superseded.retiredBy}) as a superseded figure, and no suite binds that identifier to that value. Either a discriminating fixture stopped excluding it, was renamed, or now excludes a different number than the one that was retired -- and a fixture excluding the wrong number excludes nothing.`);
 }
 
 const restatesValue = (text) => sweptTacticalValues.filter((value) => new RegExp(`(?<![\\d.\\w])${String(value).replace(".", "\\.")}(?![\\d.\\w])`).test(text));
