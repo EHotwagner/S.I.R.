@@ -54,7 +54,18 @@ hook_backup="$temporary/hosted-verification.sh"
 cp -p "$hook" "$hook_backup"
 fake_bin="$temporary/fake-bin"
 mkdir -p "$fake_bin"
-printf '#!/usr/bin/env bash\nexit 0\n' >"$fake_bin/dotnet"
+# `dotnet restore` and the scaffold build are stubbed because this harness is about the gate's own
+# classification, not about compiling the product. `dotnet fsgg-sdd` is deliberately NOT stubbed:
+# after S.I.R.#272's repair the owed / not-owed / cannot-determine decision is ANSWERED by fsgg-sdd
+# parsing tasks.yml, so a stub that answered it here would make every tasks.yml mutation below
+# decorative — the fixture would be simpler than production in precisely the way this gate exists to
+# catch. Passing the real tool through is what keeps those mutations load-bearing.
+real_dotnet=$(command -v dotnet)
+cat >"$fake_bin/dotnet" <<STUB
+#!/usr/bin/env bash
+[[ "\${1:-}" == fsgg-sdd ]] && exec "$real_dotnet" "\$@"
+exit 0
+STUB
 printf '#!/usr/bin/env bash\nexit 0\n' >"$fake_bin/npm"
 chmod +x "$fake_bin/dotnet" "$fake_bin/npm"
 
@@ -314,4 +325,176 @@ if [[ "$(coverage_field 220-bounded-pr-ci outcome)" != failed \
   exit 1
 fi
 
-echo "CI evidence clean-checkout mutations passed: tracked observed evidence verifies, missing cited evidence fails closed, hosted verification failure propagates, absent/non-executable routed hooks fail closed, every routed work item gets a recorded coverage outcome (verified, failed, not-evidenced, work-package-removed, not-reached), an absent evidence.yml is reported rather than skipped — fatally when the package still declares completed implementation — and a checked run is never byte-identical to an unchecked one."
+# The mutations below exist because the FIRST repair of S.I.R.#272 was itself silenceable. It moved
+# the load-bearing existence condition from evidence.yml onto tasks.yml, and matched `status: done`
+# as text. Cases 8-12 break the SUBJECT in the four ways that escape a text match over a file that is
+# assumed to be readable, plus one that no file-level mutation can reach at all.
+printf '%s\n' work/220-bounded-pr-ci/spec.md >"$checkout/artifacts/ci/changed-paths.txt"
+(
+  cd "$checkout"
+  ./scripts/qualify-pr.sh route artifacts/ci/changed-paths.txt
+)
+
+expect_indeterminate() {
+  local label=$1 log=$2 status=$3
+  if [[ $status -eq 0 ]]; then
+    echo "ci-evidence coverage: $label left the gate green instead of refusing to decide" >&2
+    sed -n '1,160p' "$log" >&2
+    exit 1
+  fi
+  if [[ "$(coverage_field 220-bounded-pr-ci outcome)" != evidence-owed-indeterminate \
+     || "$(coverage_field 220-bounded-pr-ci fatal)" != true \
+     || "$(coverage_field 220-bounded-pr-ci checked)" != false ]]; then
+    echo "ci-evidence coverage: $label was not recorded as evidence-owed-indeterminate/fatal/unchecked" >&2
+    cat "$coverage" >&2
+    exit 1
+  fi
+  # The record must not ASSERT that no evidence is owed. "I could not evaluate this" is never
+  # "I evaluated it and nothing is owed" (#266).
+  if coverage_field 220-bounded-pr-ci detail | grep -qF "declares no completed implementation"; then
+    echo "ci-evidence coverage: $label recorded a confident not-owed claim about an input it never evaluated" >&2
+    cat "$coverage" >&2
+    exit 1
+  fi
+}
+
+run_absent_evidence_gate() {
+  rm -f -- "$coverage"
+  set +e
+  run_evidence_gate >"$1" 2>&1
+  absent_evidence_status=$?
+  set -e
+}
+
+echo "ci-evidence mutation 8: quoted YAML scalar status: \"done\""
+# 8. The quoted YAML scalar. `status: "done"` and `status: done` are the SAME scalar, and fsgg-sdd
+#    reads them the same way; the text match this replaced saw only the second. Nothing in the tree
+#    uses the quoted spelling today, which is a fact about today's tree and not about the format.
+rm -- "$evidence_declaration"
+python3 - "$tasks_declaration" <<'PYQUOTE'
+import re, sys
+path = sys.argv[1]
+source = open(path, encoding="utf-8").read()
+rewritten, count = re.subn(r'(?m)^(\s*)status: done\s*$', r'\1status: "done"', source)
+if count == 0:
+    raise SystemExit("no unquoted `status: done` entries to rewrite; fixture no longer reproduces the subject")
+open(path, "w", encoding="utf-8").write(rewritten)
+PYQUOTE
+run_absent_evidence_gate "$temporary/coverage-quoted.log"
+if [[ $absent_evidence_status -eq 0 ]]; then
+  echo "ci-evidence coverage: quoting the YAML scalar as \"done\" silenced the gate" >&2
+  sed -n '1,160p' "$temporary/coverage-quoted.log" >&2
+  exit 1
+fi
+if [[ "$(coverage_field 220-bounded-pr-ci outcome)" != not-evidenced \
+   || "$(coverage_field 220-bounded-pr-ci fatal)" != true ]]; then
+  echo "ci-evidence coverage: a quoted-scalar done task was not recorded as not-evidenced/fatal" >&2
+  cat "$coverage" >&2
+  exit 1
+fi
+# Parity with the tool this gate wraps is the actual claim, so it is measured rather than asserted.
+set +e
+(cd "$checkout" && PATH="$fake_bin:$PATH" dotnet fsgg-sdd verify --work 220-bounded-pr-ci --root . --text) \
+  >"$temporary/quoted-sdd.log" 2>&1
+quoted_sdd_status=$?
+set -e
+if [[ $quoted_sdd_status -eq 0 ]]; then
+  echo "ci-evidence coverage: fixture no longer reproduces the subject — fsgg-sdd accepted the quoted-scalar tree" >&2
+  exit 1
+fi
+cp -p "$tasks_backup" "$tasks_declaration"
+
+echo "ci-evidence mutation 9: tasks.yml deleted"
+# 9. tasks.yml deleted. This is the escape the first repair introduced: `rm work/<id>/tasks.yml` is
+#    one extra command in the same commit that deletes evidence.yml.
+rm -- "$tasks_declaration"
+run_absent_evidence_gate "$temporary/coverage-tasks-deleted.log"
+expect_indeterminate "a deleted tasks.yml" "$temporary/coverage-tasks-deleted.log" "$absent_evidence_status"
+cp -p "$tasks_backup" "$tasks_declaration"
+
+echo "ci-evidence mutation 10: tasks.yml unparseable"
+# 10. tasks.yml present but unparseable.
+printf 'tasks:\n  - id: [T001\n    status: done\n   broken: {{{\n' >"$tasks_declaration"
+run_absent_evidence_gate "$temporary/coverage-tasks-malformed.log"
+expect_indeterminate "an unparseable tasks.yml" "$temporary/coverage-tasks-malformed.log" "$absent_evidence_status"
+cp -p "$tasks_backup" "$tasks_declaration"
+
+echo "ci-evidence mutation 11: tasks.yml unreadable"
+# 11. tasks.yml present and well-formed but unreadable. The measurement is guarded: running as a user
+#     who can read a 000-mode file (root) would make this pass without reproducing the condition, so
+#     the harness aborts rather than banking a green it did not earn.
+chmod 000 "$tasks_declaration"
+if [[ -r "$tasks_declaration" ]]; then
+  chmod 644 "$tasks_declaration"
+  echo "ci-evidence coverage: this harness cannot measure the unreadable-tasks case as a user that can read a 000-mode file (uid $(id -u)); run it unprivileged" >&2
+  exit 1
+fi
+run_absent_evidence_gate "$temporary/coverage-tasks-unreadable.log"
+chmod 644 "$tasks_declaration"
+expect_indeterminate "an unreadable tasks.yml" "$temporary/coverage-tasks-unreadable.log" "$absent_evidence_status"
+cp -p "$tasks_backup" "$tasks_declaration"
+
+echo "ci-evidence mutation 12: tool report carries no doneCount / is not JSON"
+# 12. The shape no file-level mutation can reach: tasks.yml is perfectly fine, and the TOOL's report
+#     no longer carries the count. This is why the predicate rests on a positive integer rather than
+#     on the absence of a diagnostic — a renamed field or a changed schema must refuse, not silently
+#     read as "nothing is owed". A gate that enumerated the broken-file shapes above would pass this
+#     while being wrong.
+schema_drift_bin="$temporary/schema-drift-bin"
+mkdir -p "$schema_drift_bin"
+cat >"$schema_drift_bin/dotnet" <<'STUB'
+#!/usr/bin/env bash
+if [[ "${1:-}" == fsgg-sdd ]]; then
+  printf '%s\n' '{"tasks":{"workId":"220-bounded-pr-ci","stage":"tasks","status":"tasksReady"}}'
+  exit 0
+fi
+exit 0
+STUB
+chmod +x "$schema_drift_bin/dotnet"
+rm -f -- "$coverage"
+set +e
+(cd "$checkout" && PATH="$schema_drift_bin:$fake_bin:$PATH" ./scripts/qualify-pr.sh gate evidence) \
+  >"$temporary/coverage-schema-drift.log" 2>&1
+absent_evidence_status=$?
+set -e
+expect_indeterminate "a report whose tasks block carries no doneCount" \
+  "$temporary/coverage-schema-drift.log" "$absent_evidence_status"
+
+cat >"$schema_drift_bin/dotnet" <<'STUB'
+#!/usr/bin/env bash
+if [[ "${1:-}" == fsgg-sdd ]]; then
+  printf '%s\n' 'not json at all'
+  exit 0
+fi
+exit 0
+STUB
+chmod +x "$schema_drift_bin/dotnet"
+rm -f -- "$coverage"
+set +e
+(cd "$checkout" && PATH="$schema_drift_bin:$fake_bin:$PATH" ./scripts/qualify-pr.sh gate evidence) \
+  >"$temporary/coverage-nonjson.log" 2>&1
+absent_evidence_status=$?
+set -e
+expect_indeterminate "a report that is not JSON" "$temporary/coverage-nonjson.log" "$absent_evidence_status"
+
+echo "ci-evidence mutation 13: restored control tree must still pass"
+# 13. The paired control. Every refusal above must be caused by the mutation and nothing else, so the
+#     restored tree with no completed tasks and no evidence.yml must still PASS. Without this, a
+#     harness that refused unconditionally would read as twelve successful demonstrations.
+sed -i 's/^\( *\)status: done$/\1status: pending/' "$tasks_declaration"
+run_absent_evidence_gate "$temporary/coverage-control.log"
+if [[ $absent_evidence_status -ne 0 ]]; then
+  echo "ci-evidence coverage: the restored control tree was refused, so the refusals above are not attributable to their mutations (got $absent_evidence_status)" >&2
+  sed -n '1,160p' "$temporary/coverage-control.log" >&2
+  exit 1
+fi
+if [[ "$(coverage_field 220-bounded-pr-ci outcome)" != not-evidenced \
+   || "$(coverage_field 220-bounded-pr-ci fatal)" != false ]]; then
+  echo "ci-evidence coverage: the control tree was not recorded as not-evidenced/non-fatal" >&2
+  cat "$coverage" >&2
+  exit 1
+fi
+cp -p "$tasks_backup" "$tasks_declaration"
+cp -p "$evidence_backup" "$evidence_declaration"
+
+echo "CI evidence clean-checkout mutations passed: tracked observed evidence verifies, missing cited evidence fails closed, hosted verification failure propagates, absent/non-executable routed hooks fail closed, every routed work item gets a recorded coverage outcome (verified, failed, not-evidenced, work-package-removed, not-reached), an absent evidence.yml is reported rather than skipped — fatally when the package still declares completed implementation — a checked run is never byte-identical to an unchecked one, and whether evidence is owed is REFUSED rather than guessed when tasks.yml is deleted, unparseable or unreadable, when the quoted YAML scalar is used, and when the tool's own report carries no task count — with a restored control tree still passing."

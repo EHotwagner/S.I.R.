@@ -33,21 +33,47 @@ append_traced_builds() {
   done < <(sort "$trace_log")
 }
 
-# S.I.R.#272 — a work package's evidence declaration is authored in the repository, so any gate that
-# pre-conditions itself on that file's existence can be silenced by deleting the file. The package's
-# own tasks.yml carries the fact that decides whether evidence is owed: `fsgg-sdd verify` blocks with
-# doneTaskMissingEvidence exactly when a task is `done` and no evidence declaration backs it. Reading
-# the same fact here keeps this gate from being weaker than the tool it wraps, without duplicating any
-# other lifecycle policy. Only task entries count — the `work:` block carries its own `status:` key.
+# S.I.R.#272 — whether a work package still owes evidence is a THREE-valued question: owed, not
+# owed, or impossible to determine. Answering it with two values is how this gate was silenced
+# twice. The original defect pre-conditioned the check on `work/<id>/evidence.yml` existing, so
+# deleting that file removed the check. The first repair moved the load-bearing existence condition
+# one file to the left, onto `work/<id>/tasks.yml` — `rm work/<id>/tasks.yml` restored the escape in
+# one extra command — and its text match (`$2 == "done"`) disagreed with the tool it claimed parity
+# with on `status: "done"`, a legal and identical YAML scalar. Both are one class: a mechanism
+# returning a confident answer about an input it never evaluated.
+#
+# So this function does not read tasks.yml. It asks the tool that owns the format and reads the count
+# that tool reports. The answer rests on a POSITIVE fact — an integer `tasks.doneCount` in fsgg-sdd's
+# own report — and never on the absence of a diagnostic. Anything that stops the tool producing that
+# integer (tasks.yml deleted, unreadable, unparseable, a report schema that changes under us, output
+# that is not JSON, a toolchain that is not installed at all) therefore arrives here as "cannot
+# determine" WITHOUT this code enumerating those shapes — which is the property the enumeration it
+# replaced could not have, because a fourth shape always exists. `--dry-run` keeps the question
+# read-only. The tool's exit code is deliberately NOT consulted: it is a verdict about lifecycle
+# readiness, not a statement about whether tasks.yml could be parsed, and conflating those two is
+# the confusion this gate exists to prevent.
+#
+#   0 = evidence is owed   ·   1 = evidence is not owed   ·   2 = cannot determine (fails closed)
 work_declares_completed_implementation() {
-  local tasks="work/$1/tasks.yml"
-  [[ -f "$tasks" ]] || return 1
-  awk '
-    /^tasks:[[:space:]]*$/ { in_tasks = 1; next }
-    /^[^[:space:]]/ { in_tasks = 0 }
-    in_tasks && $1 == "status:" && $2 == "done" { found = 1 }
-    END { exit found ? 0 : 1 }
-  ' "$tasks"
+  local work_id=$1 report_path status=0
+  report_path=$(mktemp "${TMPDIR:-/tmp}/sir-evidence-owed.XXXXXX")
+  dotnet fsgg-sdd verify --work "$work_id" --root . --json --dry-run >"$report_path" 2>/dev/null || true
+  node - "$report_path" <<'NODE' || status=$?
+const { readFileSync } = require("node:fs");
+let report;
+try {
+  report = JSON.parse(readFileSync(process.argv[2], "utf8"));
+} catch {
+  process.exit(2);
+}
+const tasks = report !== null && typeof report === "object" ? report.tasks : null;
+if (tasks === null || typeof tasks !== "object") process.exit(2);
+const done = tasks.doneCount;
+if (!Number.isSafeInteger(done) || done < 0) process.exit(2);
+process.exit(done > 0 ? 0 : 1);
+NODE
+  rm -f -- "$report_path"
+  return "$status"
 }
 
 run_browser_shard_pair() {
@@ -490,9 +516,12 @@ NODE
             evidence_coverage_reached=true
             # A routed work item is never skipped in silence. Absence is classified, reported on the
             # gate's output, and recorded in artifacts/ci/results/evidence-coverage.json. Absence is
-            # fatal exactly when the package still declares completed implementation, which is the
-            # state `fsgg-sdd verify` itself blocks on; a package that has genuinely not reached the
-            # evidence stage passes with its non-coverage recorded rather than failed outright.
+            # fatal when the package still declares completed implementation, which is the state
+            # `fsgg-sdd verify` itself blocks on, AND when whether it does so cannot be determined at
+            # all; a package that has genuinely not reached the evidence stage passes with its
+            # non-coverage recorded rather than failed outright. Those three outcomes are distinct
+            # rows in the coverage artifact, so "not checked", "checked and passed" and "could not be
+            # evaluated" are never the same CI result (#272).
             for work_id in "${work_ids[@]}"; do
               if [[ $evidence_status -ne 0 ]]; then
                 record_evidence_coverage "$work_id" not-reached false false \
@@ -505,15 +534,26 @@ NODE
                 continue
               fi
               if [[ ! -f "work/$work_id/evidence.yml" ]]; then
-                if work_declares_completed_implementation "$work_id"; then
-                  echo "qualify-pr: routed evidence declaration is missing while tasks still declare completed implementation: work/$work_id/evidence.yml" >&2
-                  record_evidence_coverage "$work_id" not-evidenced false true \
-                    "evidence.yml is absent while work/$work_id/tasks.yml still declares completed implementation"
-                  evidence_status=1
-                  continue
-                fi
-                record_evidence_coverage "$work_id" not-evidenced false false \
-                  "evidence.yml is absent and work/$work_id/tasks.yml declares no completed implementation, so evidence is not yet owed"
+                evidence_owed=0
+                work_declares_completed_implementation "$work_id" || evidence_owed=$?
+                case $evidence_owed in
+                  0)
+                    echo "qualify-pr: routed evidence declaration is missing while tasks still declare completed implementation: work/$work_id/evidence.yml" >&2
+                    record_evidence_coverage "$work_id" not-evidenced false true \
+                      "evidence.yml is absent while work/$work_id/tasks.yml still declares completed implementation"
+                    evidence_status=1
+                    ;;
+                  1)
+                    record_evidence_coverage "$work_id" not-evidenced false false \
+                      "evidence.yml is absent and work/$work_id/tasks.yml declares no completed implementation, so evidence is not yet owed"
+                    ;;
+                  *)
+                    echo "qualify-pr: cannot determine whether work/$work_id owes evidence: fsgg-sdd reported no task count for work/$work_id/tasks.yml" >&2
+                    record_evidence_coverage "$work_id" evidence-owed-indeterminate false true \
+                      "evidence.yml is absent and whether work/$work_id/tasks.yml declares completed implementation could not be determined, so the gate refuses rather than reporting that evidence is not owed"
+                    evidence_status=1
+                    ;;
+                esac
                 continue
               fi
               dotnet fsgg-sdd verify --work "$work_id" --root . --text
