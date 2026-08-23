@@ -293,6 +293,28 @@ let run () =
          && movedWorkspace.Camera.PanY = framedCamera.PanY
          && movedWorkspace.Camera.Zoom = framedCamera.Zoom)
         "A resize moved a camera the operator had already moved."
+    // The framing fit is ONE SHOT. A second resize must leave even an untouched
+    // camera alone, or a retained scene stops surviving a resize -- which the
+    // in-app documentation journey asserts by resizing, never restoring, and
+    // comparing the camera fingerprint afterwards.
+    let resizedAgain =
+        MapEditorWorkspace.update
+            editor.Map
+            None
+            (ResizeViewport(320.0, 720.0))
+            framedWorkspace
+    require
+        (resizedAgain.ViewportWidth = 320.0
+         && resizedAgain.ViewportHeight = 720.0
+         && resizedAgain.Camera = framedCamera)
+        (sprintf
+            "A later resize re-framed an already-framed camera: pan=%f,%f zoom=%f became pan=%f,%f zoom=%f."
+            framedCamera.PanX
+            framedCamera.PanY
+            framedCamera.Zoom
+            resizedAgain.Camera.PanX
+            resizedAgain.Camera.PanY
+            resizedAgain.Camera.Zoom)
     let editorInput =
         { EditorState = editor
           EditorWorkspace = workspace

@@ -214,6 +214,12 @@ test("visible View commands preserve a usable tactical workspace across authorin
     }
   }
   expect(await editorLayers.evaluate(() => { window.__sirEditorLayersObserver.disconnect(); return window.__sirEditorLayersChildMutations; })).toEqual([]);
+  // Switching workspaces changes no camera, so NO retained geometry may be
+  // rebuilt -- units included. Assert that here, before the wheel and Fit below
+  // deliberately move the camera.
+  await expect(battlefield.locator("#persistent-layer-terrain-geometry")).toHaveAttribute("data-geometry-constructions", terrainGeometryBeforeModes);
+  await expect(battlefield.locator("#persistent-layer-edges-geometry")).toHaveAttribute("data-geometry-constructions", edgesGeometryBeforeModes);
+  await expect(battlefield.locator("#persistent-layer-units")).toHaveAttribute("data-geometry-constructions", unitGeometryBeforeModes);
   await switchWorkspace(page, "Editor");
   const zoomBeforeMenuCommand = Number(await battlefield.getAttribute("data-camera-zoom"));
   const battlefieldBox = await battlefield.boundingBox();
@@ -262,9 +268,21 @@ test("visible View commands preserve a usable tactical workspace across authorin
   await expect(activeReplayFile).toHaveCount(1);
   await expect(activeReplayFile).toHaveAttribute("accept", ".sirr,application/octet-stream");
   await expect(activeReplayFile).toBeEnabled();
+  // Terrain and edges are NOT viewport-culled, so the wheel zoom and Fit above
+  // must not have rebuilt them at all -- their content cannot change with the
+  // camera, and keying them on the chunk window is exactly the over-invalidation
+  // this asserts against.
   await expect(battlefield.locator("#persistent-layer-terrain-geometry")).toHaveAttribute("data-geometry-constructions", terrainGeometryBeforeModes);
   await expect(battlefield.locator("#persistent-layer-edges-geometry")).toHaveAttribute("data-geometry-constructions", edgesGeometryBeforeModes);
-  await expect(battlefield.locator("#persistent-layer-units")).toHaveAttribute("data-geometry-constructions", unitGeometryBeforeModes);
+  // Units ARE viewport-culled and tier-sensitive, so a camera change legitimately
+  // rebuilds their glyphs; asserting otherwise would demand that culling not
+  // work. What must still hold is that they are stable once the camera settles:
+  // capture after the zoom and Fit, then require the later workspace switches and
+  // selections to have rebuilt nothing further.
+  const unitGeometryAfterCamera = await battlefield.locator("#persistent-layer-units").getAttribute("data-geometry-constructions");
+  await switchWorkspace(page, "Plan");
+  await switchWorkspace(page, "Review");
+  await expect(battlefield.locator("#persistent-layer-units")).toHaveAttribute("data-geometry-constructions", unitGeometryAfterCamera);
 });
 
 test("visible Plan worker status renders while background Plan completion stays isolated", async ({ page }) => {
