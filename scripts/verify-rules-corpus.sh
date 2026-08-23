@@ -475,12 +475,26 @@ rm -f "$conformance_log"
 
 # And prove that execution is not vacuous: a divergence injected into the combat route -- the same
 # class as the critic's mutation, without needing a rebuild -- must be refused.
+#
+# The exit code alone CANNOT establish that. `--inject-combat-divergence` computes its offset with
+# Array.findIndex, which THROWS when the two evaluations agree, and then failwiths regardless -- so
+# the process aborts whether or not a divergence was found, and an exit-code-only check passes even
+# when its subject is broken. That is the vacuity this whole gate exists to refuse, and the first
+# version of this guard had it (S.I.R.#264 review round 1). Assert the diagnostic, exactly as the
+# adjacent rules-corpus mutation below does: if CombatFixtures.evaluate stops diverging, findIndex
+# throws before printing and this line is absent.
 combat_divergence_log=$(mktemp /tmp/sir-rules-combat-divergence.XXXXXX)
 if dotnet run --project "$project" -c Release --no-build -- --inject-combat-divergence >"$combat_divergence_log" 2>&1; then
   echo "combat divergence mutation unexpectedly passed the corpus conformance route" >&2
   rm -f "$combat_divergence_log"
   exit 1
 fi
+search_quiet 'first divergence: fixture=physical-combat' "$combat_divergence_log" || {
+  echo "combat divergence mutation failed without the actionable divergence diagnostic" >&2
+  echo "  the injected mutation did not actually diverge, so this guard proved nothing" >&2
+  rm -f "$combat_divergence_log"
+  exit 1
+}
 rm -f "$combat_divergence_log"
 
 mutation_log=$(mktemp /tmp/sir-rules-mutation.XXXXXX)

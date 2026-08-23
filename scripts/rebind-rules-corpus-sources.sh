@@ -116,28 +116,52 @@ fi
 # behave as the corpus says (S.I.R.#264 round 1). So execute the corpus before recording anything.
 # This is defence in depth, not the guard: scripts/verify-rules-corpus.sh runs the same conformance
 # route, so a hand-edited correspondence file that never went through this tool is still refused.
-# Build the project that OWNS each rebound path, not one fixed project. This tool originally built
-# only src/SIR.Simulation, whose compile list plus its SIR.Domain reference covers 9 of the 19
-# declared paths; the other 10 -- all of SIR.Client.Web, SIR.Client, SIR.Match and SIR.Server --
-# were never compiled, so the claim to refuse a tree that does not build was false for them
-# (S.I.R.#264 review round 1, M2). The corpus project is always built because it executes the rules.
-owning_project() {
+# Build the project that actually COMPILES each rebound path.
+#
+# Two earlier versions of this guard were wrong in the same way: they named a project by convention
+# and never checked that it compiles the file. The first built only src/SIR.Simulation, covering 9
+# of the 19 declared paths. The second resolved src/<Project>/<Project>.fsproj -- right for App.fs,
+# wrong for three others: RulesExplorer.fs is compiled by SIR.RulesExplorer.Web.fsproj, and Lab.fs
+# and EngineCatalog.fs are compiled by src/SIR.Replay.Core/SIR.Replay.Core.fsproj through a
+# ../SIR.Client/ include, a different directory entirely. Both versions resolved to a project that
+# EXISTS and BUILDS while leaving the changed file uncompiled, so a digest was recorded for text
+# nobody compiled (S.I.R.#264 review rounds 1 and 2).
+#
+# So resolve by reading Compile Include entries and comparing resolved paths. A path that no
+# project compiles is refused rather than silently blessed.
+owning_projects() {
   local artifact_path=$1
-  local project_dir=${artifact_path#src/}
-  project_dir=${project_dir%%/*}
-  printf 'src/%s/%s.fsproj' "$project_dir" "$project_dir"
+  local project project_dir include resolved
+  while IFS= read -r project; do
+    test -n "$project" || continue
+    project_dir=$(dirname "$project")
+    while IFS= read -r include; do
+      test -n "$include" || continue
+      resolved=$(realpath -m --relative-to="$repo_root" "$repo_root/$project_dir/$include" 2>/dev/null) || continue
+      if test "$resolved" = "$artifact_path"; then
+        printf '%s\n' "$project"
+        break
+      fi
+    done <<< "$(grep -o 'Compile Include="[^"]*"' "$repo_root/$project" | sed 's/^Compile Include="//; s/"$//')"
+  done <<< "$(cd "$repo_root" && find src tests -name '*.fsproj' | sort)"
 }
 
 build_projects=()
 for artifact_path in "${drifted[@]}"; do
-  project=$(owning_project "$artifact_path")
-  test -f "$repo_root/$project" || {
-    echo "refusing to rebind: cannot resolve the project that owns $artifact_path" >&2
-    echo "  expected $project; a path whose owning project cannot be found cannot be compiled, and an" >&2
-    echo "  uncompiled path is exactly what this guard exists to refuse" >&2
+  owners=()
+  while IFS= read -r project; do
+    test -n "$project" || continue
+    owners+=("$project")
+  done <<< "$(owning_projects "$artifact_path")"
+  if test ${#owners[@]} -eq 0; then
+    echo "refusing to rebind: no project compiles $artifact_path" >&2
+    echo "  a correspondence digest recorded for text nobody compiles is an untestable assertion," >&2
+    echo "  and this guard cannot verify a path that no build covers" >&2
     exit 1
-  }
-  printf '%s\n' "${build_projects[@]-}" | grep -Fxq -- "$project" || build_projects+=("$project")
+  fi
+  for project in "${owners[@]}"; do
+    printf '%s\n' "${build_projects[@]-}" | grep -Fxq -- "$project" || build_projects+=("$project")
+  done
 done
 corpus_project=tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj
 printf '%s\n' "${build_projects[@]-}" | grep -Fxq -- "$corpus_project" || build_projects+=("$corpus_project")
@@ -150,6 +174,7 @@ for project in "${build_projects[@]}"; do
     exit 1
   }
 done
+
 conformance_log=$(mktemp /tmp/sir-rules-rebind-conformance.XXXXXX)
 if ! dotnet run --project "$repo_root/tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj" -c Release --no-build >"$conformance_log" 2>&1; then
   echo "refusing to rebind: registered executable behaviour does not satisfy the rules corpus fixtures" >&2
