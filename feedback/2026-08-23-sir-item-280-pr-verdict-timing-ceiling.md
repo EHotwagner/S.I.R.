@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-280-pr-verdict-timing-ceiling
 lane: none
 toolVersion: 1.0.1
-commit: acd7b2eb21cdcd95b4b74f342e0f06ee75f2362b
+commit: dcd6df709904e1c84deb42ce3fd20a4a58164c54
 ---
 
 # S.I.R. item 280 — pr-verdict timing ceiling
@@ -14,7 +14,7 @@ commit: acd7b2eb21cdcd95b4b74f342e0f06ee75f2362b
 
 - **Cycle:** `item-280-pr-verdict-timing-ceiling`; board item `S.I.R.#280` (High, defect); PR #281.
 - **Worker:** `heron-a9b8`, minted via `scripts/fsgg-coord whoami --mint`, single claim, converged.
-- **Commit described:** `acd7b2eb21cdcd95b4b74f342e0f06ee75f2362b`.
+- **Commit described:** `dcd6df709904e1c84deb42ce3fd20a4a58164c54`.
 - **Lane:** `none`. No SDD package governs this item; the delivery-route receipt (revision 1, digest
   `561aa65109c3a91eced31a87ad442dbc1ee62d0c22a6aebb2d68097a3349a893`) recorded route `lightweight`
   with `sddWorkId: null`, so charter→analyze was correctly not run.
@@ -39,16 +39,31 @@ commit: acd7b2eb21cdcd95b4b74f342e0f06ee75f2362b
 - **Critic:** fresh-context subagent, `actionability-v1`. It contradicted §4.5's headline mechanism
   and owner, corrected §4.2's queue figure, corrected §4.1's recurrence count, reclassified §4.4 as a
   duplicate, and identified an undisclosed tension in §4.3 that is now §4.7. Those corrections are
-  incorporated below rather than argued with.
+  incorporated below rather than argued with. It did **not** catch §4.8 — the report's central
+  evidence claim was false and its own critic verified the citations without executing the harness
+  they described. That was found later by independent review critic `avocet-d92c` on PR #281.
 
 ## §2 What worked
 
-`scripts/test-ci-route-mutations.sh` is the single most valuable artifact in this cycle. It copies
-the sources into an isolated fixture tree, applies one `sed` mutation, and asserts the route contract
-goes red. Adding eleven inversions for a newly-shaped gate cost one function call each and produced
-verified gate-inversion evidence in a single command. Because a `sed` that matches nothing leaves the
-fixture unmutated and the suite green, the harness also self-verifies that each mutation actually
-applied — a property worth copying to other mutation harnesses.
+`scripts/test-ci-route-mutations.sh` is the most valuable artifact in this cycle **after** the repair
+described in §4.8, and was actively misleading before it. It copies the sources into an isolated
+fixture tree, applies one `sed` mutation, and asserts the route contract goes red. Adding eleven
+inversions for a newly-shaped gate cost one function call each.
+
+An earlier revision of this section claimed the opposite of the truth and is corrected here rather
+than softened. It said: *"Because a `sed` that matches nothing leaves the fixture unmutated and the
+suite green, the harness also self-verifies that each mutation actually applied."* Both halves were
+false. The fixture copied seven files while the contract imports two further modules and reads twenty
+sibling sources, so an unmutated fixture exited 1 on `ERR_MODULE_NOT_FOUND` — it did **not** go green
+— and since `expect_red` was satisfied by any nonzero exit, a no-op `sed` was silently counted as a
+success rather than exposed. The tree carried a live counterexample the whole time: case 14,
+`/run_delivery=true/d`, named a variable that had been refactored out of `ci.yml`, matched nothing,
+and passed. `grep -c run_delivery .github/workflows/ci.yml` returns 0.
+
+The property is real only now that the harness builds a complete fixture, runs a null-mutation control
+that must pass before any case is evaluated, refuses a `sed` that matches nothing, and requires each
+failure to carry an `AssertionError` rather than any nonzero exit. All three guards were exercised and
+watched rather than assumed — see §4.8.
 
 Writing the acceptance boundary as a runnable probe *before* touching the implementation paid for
 itself twice. It first reproduced the exact reported failure (`feedback-budget-exceeded actual
@@ -260,6 +275,42 @@ editing would have caught it immediately.
 - **Avoidable cost:** none; caught at critique before the report was preserved
 - **Disposition:** accepted
 
+#### §4.8 The mutation harness could not execute its subject, so a green suite proved nothing — and I attested to it anyway
+
+- **Kind:** defect
+- **Impact:** `scripts/test-ci-route-mutations.sh` is the repository's gate-inversion mechanism. Every
+  `expect_red` case exited nonzero before its mutation was evaluated, and `expect_red` treats any
+  nonzero exit as success, so **an unmutated tree satisfied it**. Every inversion claim the harness has
+  backed since `ef17850` was unearned, including this cycle's.
+- **Expected:** A mutation harness distinguishes "the mutation broke the contract" from "the fixture
+  could not start".
+- **Observed:** The fixture copied seven files. `scripts/test-ci-route.mjs` imports
+  `browser-shard-capacity.mjs` and `browser-junit.mjs` and reads twenty sibling sources, so every case
+  died on `ERR_MODULE_NOT_FOUND`. It stayed invisible because `expect_red` wrote the child's output to
+  `mutation.log`, never read it, and the `trap` deleted it — the evidence was produced and discarded on
+  every run. Two consequences compounded it. A `sed` matching nothing was counted as a success, and the
+  tree carried a live instance: case 14, `/run_delivery=true/d`, names a variable refactored out of
+  `ci.yml` (`grep -c run_delivery .github/workflows/ci.yml` → 0). And repairing the harness turned four
+  cases green, each a contract gap rather than a harness bug: the `documentation` gate and `prepare-docs`
+  keying off the route's `documentation` output rather than the classification (a `browser` or
+  `cross-cutting` production-review route sets it without being classified `documentation`);
+  `domain-conformance` setting `SIR_CI_PREFLIGHT_REUSED` after its single `extract-parts`;
+  `qualify-pr.sh`'s publish root remaining the browser-composition target; and the stale case 14.
+  My own part in this is the part worth recording. I spot-checked three mutations by hand and reported
+  them as verified, but my ad-hoc tree copied `browser-shard-capacity.mjs` and `browser-junit.mjs` —
+  the exact files the shipped fixture omits. I verified my own harness and attested to the shipped one.
+  That claim then propagated into the PR body, §2, §10, §12 of this report, and **both content-digest-bound
+  narratives in `scripts/audit-binding-exceptions.json`**. Digest-binding makes an attestation durable;
+  it does not make it true. The ledger narratives now carry an explicit retraction.
+- **Evidence:** file:scripts/test-ci-route-mutations.sh; file:scripts/ci-integrity-plan.mjs
+- **Version:** Pre-existing since `ef17850`; repaired in this branch.
+- **Owner:** S.I.R./scripts/test-ci-route-mutations.sh
+- **Recurrence:** new; found by independent review critic `avocet-d92c` on PR #281, not by the author
+  and not by this report's own actionability critic
+- **Avoidable cost:** one review round, plus the retraction of four artifacts including two durable
+  digest-bound attestations
+- **Disposition:** product fix
+
 ## §5 Did not exercise
 
 - Scaffolding and onboarding: this is an existing repository; no scaffold was generated.
@@ -339,8 +390,11 @@ spent on making gates faster to fit an unsatisfiable ceiling (§4.1).
 - Time to first reproduction of the defect in a unit fixture: one probe iteration after the structural
   analysis; the probe reproduced the exact reported failure codes and `actual: 469739`.
 - First green on the full route contract after the fix: same working session.
-- Gate-inversion evidence: eleven mutations, all red, each confirmed to fail on an assertion rather
-  than a syntax error (three spot-checked explicitly).
+- Gate-inversion evidence: 34 mutations in a harness that can now execute its subject, green only
+  when every case produces an `AssertionError`. The first revision of this line claimed eleven
+  mutations "each confirmed to fail on an assertion rather than a syntax error (three spot-checked
+  explicitly)". The three spot-checks were real but were run against an ad-hoc tree that supplied the
+  modules the shipped fixture omits, so they said nothing about the harness CI actually runs. See §4.8.
 - Ship readiness: PR #281 opened, `verify-paths` OK, delivery obligations declared, review-wait entered,
   oracle at `dispatchCritic` / `awaitingInitialReview`.
 - Estimates: elapsed developer time is not recorded precisely and is not estimated here.
@@ -379,7 +433,7 @@ spent on making gates faster to fit an unsatisfiable ceiling (§4.1).
 | sdd-authoring | not-exercised | `lane: none`; route receipt records `sddWorkId: null`, correctly. |
 | implementation-apis | exercised | `joinRoute`'s existing `gateParts` structure carried the dependency relation the wave model needed; no new parallel description of the workflow was required. |
 | dependencies-build | partial | `npm`/`node` paths exercised; the .NET build was not, and `--no-build` harnesses fail in a fresh worktree (§4.6). |
-| testing | exercised | `scripts/test-ci-route.mjs` extended; eleven inversions added to `scripts/test-ci-route-mutations.sh`, all verified red on assertions. |
+| testing | exercised | `scripts/test-ci-route.mjs` extended; eleven inversions added to `scripts/test-ci-route-mutations.sh`. The harness could not execute its subject (§4.8); repaired with a null-mutation control, a no-op guard, and a failure-branch assertion, and all three guards were watched firing. Repair exposed four long-dead mutations, each now backed by the contract assertion it lacked. |
 | evidence | exercised | Actions REST API used to re-derive per-job timings and refute the issue body's reconstruction (§4.3); the run's `pr-verdict` artifact was not retrievable (§1). |
 | runtime-playtest | not-exercised | CI harness change; no product runtime surface. |
 | performance | partial | The subject is CI feedback latency, measured and re-derived from real runs; no product-performance budget was touched, and `performance-first` was correctly not invoked. |

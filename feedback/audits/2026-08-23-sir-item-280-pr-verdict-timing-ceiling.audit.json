@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-280-pr-verdict-timing-ceiling.md",
-  "reportSha256": "362c05725068bab2acd61aa954d7fc0c196e96d4303990066e0af147d1ab4d69",
+  "reportSha256": "fca5521305eac59dd2e2777570da84b479c21c432be14d15a2c1f234303c95f4",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -134,7 +134,28 @@
         {
           "locator": "file:scripts/test-ci-route.mjs",
           "result": "verified",
-          "sha256": "c101d68e08ad919dc9afb345c92df022c9111d40851ce3ac0c489a1df41aa9af"
+          "sha256": "3950ebdf0ab889d98cde5f61785cbd6b784664312982b45b038e49119f3c7a96"
+        }
+      ]
+    },
+    {
+      "id": "§4.8",
+      "status": "actionable",
+      "missingFacts": [],
+      "confidenceLimits": [
+        "Found by independent review critic avocet-d92c during round 1 of PR #281's review, not by the author and not by this report's actionability critic, which verified §2's citations without executing the harness they described.",
+        "The three guards (null control, no-op refusal, wrong-reason refusal) were each exercised deliberately and observed firing before this finding was written."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-ci-route-mutations.sh",
+          "result": "verified",
+          "sha256": "6d462cd33455ba0e6cea11c2110db0e72a0d19b44e2c81ce3996b05069e7fc7d"
+        },
+        {
+          "locator": "file:scripts/ci-integrity-plan.mjs",
+          "result": "verified",
+          "sha256": "e1e557d5c1af9538f2cdbcfd61b0802f833696f648711d535c20e76688205b8d"
         }
       ]
     }
