@@ -150,6 +150,44 @@ module SpatialQueryFixtures =
         let diagonalOnlyPackagePath = SpatialQuery.packagePointPath 16 (fun position -> position = cell 0 0 || position = cell 1 1) (cell 0 0) (cell 1 1)
         require diagonalOnlyPackagePath.IsNone "Package path adapter stopped enforcing FourWay neighbourhood semantics."
 
+        // AC 2 / F2: boundary resolution answers FIRST-DECLARATION-WINS, exactly as the
+        // `List.tryFind` scan it replaced. An index built with `Map.ofList` would keep the LAST
+        // declaration and silently invert this world's answer.
+        //
+        // BOTH RESOLUTION PATHS ARE EXERCISED, AND THAT IS THE POINT. Resolution is a per-query
+        // cost decision: a query that probes few times keeps the scan, and only a query that
+        // probes past the threshold builds the keyed index. Asserting this on a small query alone
+        // is VACUOUS for the index - it never runs - which is exactly what happened here until
+        // `scripts/test-working-set-gate-mutations.sh` inverted the index and watched the
+        // assertion pass anyway. The pair below pins the real invariant: the two paths agree.
+        let duplicateEdgeWorld =
+            world 7L 3L
+                [ boundary (cell 0 0) (cell 1 0) false false false "duplicate:first"
+                  boundary (cell 0 0) (cell 1 0) true true true "duplicate:second" ]
+                Map.empty
+                Set.empty
+        let duplicatedEdge = edge (cell 0 0) (cell 1 0)
+
+        // Few probes: resolved by the linear scan.
+        let scannedDuplicate, _ =
+            SpatialQuery.evaluate
+                duplicateEdgeWorld
+                (request "duplicate-edge-scanned" SpatialQueryKind.LineTrace SpatialModality.Vision (cell 0 0) (cell 1 0) [ cell 0 0 ] bounds)
+        require
+            (not scannedDuplicate.Visible && scannedDuplicate.Explanation.CoverContributors = [ duplicatedEdge ])
+            "Scanned boundary resolution stopped answering first-declaration-wins."
+
+        // A 4x4 footprint over eight columns is 256 origin/target pairs, which probes far past the
+        // threshold, so this query resolves through the keyed index instead.
+        let indexedFootprint = [ for row in 0 .. 3 do for col in 0 .. 3 -> cell col row ]
+        let indexedDuplicate, _ =
+            SpatialQuery.evaluate
+                duplicateEdgeWorld
+                (request "duplicate-edge-indexed" SpatialQueryKind.ExactLineOfSight SpatialModality.Vision (cell 0 0) (cell 7 0) indexedFootprint bounds)
+        require
+            (indexedDuplicate.Explanation.CoverContributors |> List.contains duplicatedEdge)
+            "Indexed boundary resolution stopped answering first-declaration-wins."
+
         let canonical =
             [ SpatialQuery.canonicalResultBytes blocked
               SpatialQuery.canonicalResultBytes pathResult
@@ -164,6 +202,59 @@ module SpatialQueryFixtures =
         else canonical
 
 #if !FABLE_COMPILER
+    /// S.I.R.#249 F4 - `neighbours` must be evaluated ONCE per expansion in `boundedPath`'s
+    /// fallback loop. That property has no result-level signature: `neighbours` is deterministic and
+    /// side-effect free, so evaluating it twice leaves the path, the cost, the expansion count and
+    /// the canonical bytes byte-identical. ALLOCATION is the signature it does have - the duplicate
+    /// evaluation rebuilds a candidate list, and every boundary and terrain probe inside it, for
+    /// every expansion.
+    ///
+    /// The world is wall-dense ON PURPOSE. `anchorPassable` does not consult boundaries while
+    /// `transitionPassable` does, so the package A* candidate is REJECTED and the fallback loop -
+    /// the subject of F4 - becomes the path actually taken. On an open map the loop never runs and
+    /// this measurement would be vacuous.
+    let private wallDensePathWorkload () =
+        let boundaries =
+            [ for row in 0 .. 23 do
+                for col in 0 .. 22 do
+                    if (col + row) % 3 = 0 then
+                        match Edges.edgeBetween (cell col row) (cell (col + 1) row) with
+                        | Some value ->
+                            yield
+                                { Edge = value
+                                  Permeability = { Ground = false; Vision = true; Projectile = true }
+                                  RevisionToken = sprintf "edge:%d:%d" col row }
+                        | None -> () ]
+        let pathWorld =
+            { Identity = identity 1L 1L
+              Minimum = cell 0 0
+              Maximum = cell 23 23
+              Terrain = Map.empty
+              Boundaries = boundaries
+              Occupancy = Map.empty
+              DisclosedRevisionTokens = Set.empty }
+        let pathRequest =
+            request "allocation-path" SpatialQueryKind.BoundedPath SpatialModality.GroundMovement (cell 0 0) (cell 20 20) [ cell 0 0 ] SpatialQuery.defaultBounds
+        pathWorld, pathRequest
+
+    /// Allocated bytes for ONE such evaluation, measured on this thread with the heap settled.
+    /// Reported alongside the structural counters so a number that moved because the query did
+    /// something different is distinguishable from one that moved because it did the same thing
+    /// more wastefully.
+    let pathAllocationWorkload () =
+        let pathWorld, pathRequest = wallDensePathWorkload ()
+        // Warm every JIT path the measured call will take, or the measurement bills first-call
+        // compilation to the implementation.
+        for _ in 1 .. 3 do
+            SpatialQuery.evaluate pathWorld pathRequest |> ignore
+        System.GC.Collect()
+        System.GC.WaitForPendingFinalizers()
+        System.GC.Collect()
+        let before = System.GC.GetAllocatedBytesForCurrentThread()
+        let result, _ = SpatialQuery.evaluate pathWorld pathRequest
+        let allocated = System.GC.GetAllocatedBytesForCurrentThread() - before
+        allocated, result.Explanation.Expansions, result.Path.Length, result.MovementCost, result.Outcome, pathWorld.Boundaries.Length
+
     let performanceWorkload () =
         let bounds = SpatialQuery.defaultBounds
         let identity = identity 101L 17L

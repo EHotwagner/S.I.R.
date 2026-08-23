@@ -387,6 +387,41 @@ let private tacticalEnvironmentEvidence () =
          && (not enforceProductPerformanceBudgets || invalidationClock.Elapsed.TotalMilliseconds < 10.0))
         "Exact 256-receipt invalidation did not inspect/remove every dependent entry within 10 ms."
 
+    // AC 3 / F3: the dynamic tier is BOUNDED. Before this, insertion was an unconditional cons
+    // with no ceiling, so a long-lived session's dynamic tier grew without limit while every
+    // lookup scanned it linearly - past some working-set size the cache cost more than the
+    // evaluation it exists to avoid.
+    //
+    // THE 256-RECEIPT FIXTURE ABOVE IS DELIBERATELY LEFT UNTOUCHED. The ceiling was chosen to sit
+    // ABOVE every working set this repository exercises, precisely so that no existing outcome
+    // moves: that fixture is the evidence behind `docs/performance-budget.md`'s 10 ms
+    // local-invalidation target, and shrinking it as a side effect of an unrelated optimisation
+    // would have quietly weakened an already-green budget that nothing asked this item to touch.
+    // So the bound gets its own fixture here rather than being inferred from that one.
+    //
+    // The tier is newest-first, so eviction drops the OLDEST entries; the survivors are the most
+    // recent `SpatialQuery.dynamicCacheCapacity` insertions. Only the dynamic tier is bounded -
+    // static entries carry no dependency tokens and are the geometry results the cache is for.
+    let overflowingCache =
+        [ 0 .. 1024 ]
+        |> List.fold (fun cache index ->
+            let overflowRequest = { request with QueryId = sprintf "bounded-receipt-%04d" index }
+            let _, next, _ = SpatialQuery.evaluateCached cache world overflowRequest
+            next) SpatialQuery.emptyCache
+    let survivingQueryIds =
+        overflowingCache.DynamicEntries
+        |> List.map (fun entry -> entry.Result.Explanation.QueryId)
+        |> Set.ofList
+    require
+        (overflowingCache.DynamicEntries.Length = 1024)
+        (sprintf
+            "The dynamic spatial cache tier was not bounded: 1025 distinct keys left %d entries."
+            overflowingCache.DynamicEntries.Length)
+    require
+        (Set.contains "bounded-receipt-1024" survivingQueryIds
+         && not (Set.contains "bounded-receipt-0000" survivingQueryIds))
+        "Dynamic cache eviction did not drop the oldest entry and retain the newest."
+
     let coverKnowledge =
         { knowledge with KnownEnvironmentFeatureIds = Set [ "slot-1:yard-cover" ] }
     let firstDamage =
