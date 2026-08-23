@@ -43,19 +43,24 @@ export const gateParts = {
   // the JOB's first step, `evidence.total` contained it, `evidence` was the wave-1 maximum, and its
   // 23.0s landed directly on the feedback critical path (`feedback-headroom-eroded` 332580 > 312000,
   // run 32654620076). Here it is its own job, parallel with a wave-2 maximum that has been
-  // 116972-151605ms across five sampled runs, so it contributes nothing to the maximum.
+  // far above this gate's own cost in every sampled run, so it contributes nothing to that maximum.
   //
   // That is DAG parallelism, not concealment: this subject emits its own joined
   // sir.ci-gate-result/v1 receipt with its own timings, and `pr-verdict` requires it like any other.
-  // And it does not lean on S.I.R.#326's inflated reused receipt: strip `browser-delivery` from the
-  // wave entirely and the maximum is still `browser` at 77288ms against this gate's ~25s.
+  //
+  // NO FIGURE FOR THE WAVE MAXIMUM IS QUOTED HERE, ON PURPOSE. Earlier revisions cited a range and a
+  // counterfactual; both went stale within hours and disagreed with each other and with the runs,
+  // because that quantity is S.I.R.#326's subject and is not stable. What this file needs to state
+  // is the RELATION -- this gate is the maximum of neither wave -- and the join checks that against
+  // live receipts rather than against a constant restated here.
   //
   // ROUTING BOUNDARY, stated because it is a decision and not a gap: a `domain` route changes
   // src/SIR.Simulation -- this harness's only ProjectReference, so genuinely a compile input -- and
-  // does NOT select this gate. That is intended. Collections.fs calls nothing from it (its only
-  // external call in a measured loop is FS.GG.Game.Core's Edges.edgeBetween), so such a change
-  // cannot move a ratio; it can only break the build, which prepare-native already covers. The
-  // reasoning lives at the top of Collections.fs alongside what the gate does and does not guard.
+  // does NOT select this gate. That is intended: every occurrence of SpatialQuery, Simulation or
+  // TacticalSceneProjection in Collections.fs is a comment or a string literal, and its only opens
+  // are System, System.Diagnostics, System.Collections.Generic and FS.GG.Game.Core -- so a change
+  // there cannot move a ratio; it can only break the build, which prepare-native already covers.
+  // The reasoning lives at the top of Collections.fs alongside what the gate does and does not guard.
   "collection-strategies": ["native"],
 };
 // S.I.R.#304. THE one derivation of "which producers does this route need". Both sides of the
