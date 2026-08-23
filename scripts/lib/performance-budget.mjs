@@ -312,7 +312,45 @@ export const tacticalDeclaredBudgetObjects = Object.freeze([
 export const tacticalBudgetSurfaces = Object.freeze([
   Object.freeze({ quantity: "maximumDomNodes", attribute: "data-visual-node-estimate" }),
   Object.freeze({ quantity: "maximumEffects", attribute: "data-effect-limit" }),
-  Object.freeze({ quantity: "maximumOverlayDomNodes", attribute: "data-overlay-node-estimate" }),
+  // SELF-REPORTED, AND THE BUDGET IS NOT ABOUT IT (S.I.R.#327 review round 1).
+  //
+  // `data-overlay-node-estimate` is the product's own report of the overlay layer's cost, and it is
+  // NOT identical to that cost: review of this item measured the estimate under-reporting the counted
+  // nodes on the static hosting route (12 reported against 13 counted). A budget bound to a
+  // self-report enforces the report rather than the cost, so the consumer gates on the COUNTED nodes
+  // and cross-checks this attribute against them.
+  //
+  // `selfReported` is what makes that cross-check MANDATORY rather than incidental. The first version
+  // of this entry justified moving the bound onto the estimate by pointing at the equality assertion
+  // beside it -- while nothing required that assertion to exist, so deleting it left the gate green
+  // and the justification gone. A property a rule leans on is a property the rule has to demand.
+  Object.freeze({ quantity: "maximumOverlayDomNodes", attribute: "data-overlay-node-estimate", selfReported: true }),
+]);
+
+// EXACT-EQUALITY ASSERTIONS, BY PROPERTY RATHER THAN BY SPELLING (S.I.R.#327 review round 1).
+//
+// The no-restatement subject rule transfers a literal ban from a declared surface measurement onto
+// any identifier the consumer has proved EQUAL to it. What licenses that transfer is exact equality
+// -- not the word `toBe`. The first version of the rule spelled the matcher literally as `\.toBe\(`
+// while its stated subject was "any identifier proved equal", so a literal-identical restatement
+// written with `.toEqual` passed it. That is not hypothetical: `.toEqual` is a live idiom here.
+//
+// Pinning the spellings someone happened to think of is the check this rule exists to delete
+// (S.I.R.#265, which spent three rounds on exactly this shape). So the matchers are DECLARED, and
+// the gate proves the declaration COMPLETE against the tree: every matcher a swept consumer actually
+// uses to relate two identifiers must be classified by one of these two lists, and an unclassified
+// one is REFUSED rather than assumed harmless -- "I have not seen this before" is never "it is safe".
+export const tacticalExactEqualityMatchers = Object.freeze(["toBe", "toEqual", "toStrictEqual"]);
+
+// Matchers that relate two identifiers WITHOUT proving them equal, declared for the same reason: so
+// the classification is exhaustive and a matcher cannot join the unchecked set by being new.
+export const tacticalNonEqualityMatchers = Object.freeze([
+  "toBeLessThanOrEqual",
+  "toBeGreaterThanOrEqual",
+  "toBeLessThan",
+  "toBeGreaterThan",
+  "toContain",
+  "toMatch",
 ]);
 
 // The manifest block `scripts/generate-tactical-visual-review.mjs` publishes, built HERE so that the

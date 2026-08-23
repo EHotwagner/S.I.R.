@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
-import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
+import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalExactEqualityMatchers, tacticalNonEqualityMatchers, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 // validateDefinitions COMPOSES the budget: workload policy from the fixture file, ceiling from the
@@ -768,6 +768,32 @@ for (const consumer of tacticalConsumersByName) {
 // line: the only thing a measurement may be compared against is the declaration. It fails closed --
 // a declared surface no consumer reads at all is a failure, not a skip, because a rule with nothing
 // to check would pass vacuously forever.
+// THE EQUALITY-MATCHER CLASSIFICATION IS PROVED COMPLETE AGAINST THE TREE (S.I.R.#327 round 1).
+//
+// Rule C's mirror detection transfers a literal ban across an exact-equality assertion. Which
+// matchers PROVE equality is therefore load-bearing, and a hand-written regex over the one spelling
+// somebody happened to use is not a classification -- it is a guess that reds nothing when it is
+// wrong. So the two lists live in the declaration, and this derives every matcher the swept
+// consumers ACTUALLY use to relate two identifiers and refuses any the declaration does not
+// classify. An unclassified matcher is a REFUSAL, never a silent pass (#266): "I have not seen this
+// matcher before" is not "this matcher cannot prove equality".
+const equalityMatchers = tacticalExactEqualityMatchers;
+const overlappingMatchers = equalityMatchers.filter((matcher) => tacticalNonEqualityMatchers.includes(matcher));
+assert.deepEqual(overlappingMatchers, [],
+  `${overlappingMatchers.join(", ")} is classified BOTH as proving equality and as not proving it; the classification contradicts itself`);
+const identifierPairMatchers = [];
+for (const consumer of budgetConsumers)
+  for (const match of readFileSync(new URL(consumer, import.meta.url), "utf8")
+    .matchAll(/expect\(\s*[A-Za-z_$][\w$]*\s*\)\s*\.\s*([A-Za-z]\w*)\(\s*[A-Za-z_$][\w$]*\s*\)/g))
+    if (!identifierPairMatchers.includes(match[1])) identifierPairMatchers.push(match[1]);
+assert.ok(identifierPairMatchers.length > 0,
+  "no swept consumer relates two identifiers with any matcher, so this classification check is inspecting nothing and would pass vacuously");
+const unclassifiedMatchers = identifierPairMatchers.filter((matcher) =>
+  !equalityMatchers.includes(matcher) && !tacticalNonEqualityMatchers.includes(matcher));
+assert.deepEqual(unclassifiedMatchers, [],
+  `${unclassifiedMatchers.join(", ")} relate(s) two identifiers in a swept consumer and the declaration classifies it as neither proving equality nor not proving it. Rule C cannot know whether it transfers a literal ban, so this is refused rather than assumed harmless. Classify it in tacticalExactEqualityMatchers or tacticalNonEqualityMatchers.`);
+console.log(`JUSTIFIED tactical-budget-equality-classification: ${identifierPairMatchers.length} matcher(s) used to relate two identifiers across the swept consumers are each classified by the declaration, ${equalityMatchers.length} of them declared to prove exact equality; an unclassified matcher is refused rather than assumed not to transfer the ban`);
+
 let surfaceBoundedIdentifiers = 0;
 for (const surface of tacticalBudgetSurfaces) {
   let readingConsumers = 0;
@@ -788,29 +814,38 @@ for (const surface of tacticalBudgetSurfaces) {
     //
     // Keying only off the getAttribute-bound name leaves an exact bypass open, and it is not
     // hypothetical -- it is the shape the overlay assertion was ALREADY in. The spec counted the
-    // live nodes into a second identifier, asserted `expect(counted).toBe(published)`, and then
-    // bounded the COUNTED one with the literal. Every line the rule inspected was clean; the
-    // restatement sat one identifier away, on a value the equality assertion had just proved
-    // identical. A rule that refuses a literal on the published measurement and permits it on a
-    // measurement proved equal to that measurement refuses nothing.
+    // live nodes into a second identifier, asserted they were equal, and then bounded the COUNTED
+    // one with the literal. Every line the rule inspected was clean; the restatement sat one
+    // identifier away, on a value the equality assertion had just proved identical.
     //
-    // Bounded deliberately to `.toBe(...)`, an exact-equality assertion: that is what makes the
-    // other identifier the SAME number rather than merely a related one, so the ban transfers on a
-    // proof rather than on a guess. `.toBeLessThanOrEqual(...)` is not matched -- it relates two
-    // numbers without equating them, and it is the shape of the legitimate comparison against the
-    // declaration itself.
-    const mirrorPatterns = [
-      new RegExp(`expect\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)\\s*\\.toBe\\(\\s*${identifier}\\s*\\)`, "g"),
-      new RegExp(`expect\\(\\s*${identifier}\\s*\\)\\s*\\.toBe\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)`, "g"),
-    ];
+    // MATCHED ON THE PROPERTY, NOT ON A SPELLING (review round 1). The first version of this rule
+    // wrote the matcher literally as `\.toBe\(` while claiming "any identifier proved equal", so a
+    // literal-identical restatement written with `.toEqual` -- a live idiom in this repository --
+    // walked straight through it. The matchers are declared in the declaration module and their
+    // classification is proved COMPLETE against the tree just below, so a matcher this repository
+    // starts using cannot silently join the unchecked set.
+    const mirrorPatterns = equalityMatchers.flatMap((matcher) => [
+      new RegExp(`expect\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)\\s*\\.\\s*${matcher}\\(\\s*${identifier}\\s*\\)`, "g"),
+      new RegExp(`expect\\(\\s*${identifier}\\s*\\)\\s*\\.\\s*${matcher}\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)`, "g"),
+    ]);
     const mirrors = [...new Set(mirrorPatterns.flatMap((pattern) => [...text.matchAll(pattern)].map((match) => match[1])))];
+    // A SELF-REPORTED SURFACE MUST BE CROSS-CHECKED, AND THAT IS DEMANDED RATHER THAN HOPED FOR.
+    // The budget for such a surface is gated on a counted measurement, and what makes the attribute
+    // trustworthy beside it is the equality assertion. An earlier version of this item LEANED on
+    // that assertion -- it moved the bound onto the attribute and cited the assertion as the
+    // licence -- while nothing here required the assertion to exist: deleting it left this suite
+    // green and the justification silently gone. A property a rule depends on is a property the
+    // rule has to require.
+    if (surface.selfReported)
+      assert.ok(mirrors.length > 0,
+        `${consumer} reads the self-reported ${surface.attribute} into ${identifier} and never asserts it equal to an independently measured identifier. That cross-check is what keeps the telemetry honest; without it the attribute is an unchecked self-report, and the budget beside it is gated on a number nothing corroborates.`);
     const boundedIdentifiers = [identifier, ...mirrors];
     const identifierLines = text.split("\n").filter((line) => boundedIdentifiers.some((name) => new RegExp(`\\b${name}\\b`).test(line)));
     assert.ok(identifierLines.length >= 2,
       `${consumer} reads ${surface.attribute} into ${identifier} and never uses it. A declared surface that is read and then not gated on means the assertion beside it is bounded by something other than the declaration, or is gone.`);
     for (const line of identifierLines) {
       assert.doesNotMatch(line, /(?<![\w.$])\d/,
-        `${consumer} bounds ${identifier}${mirrors.length ? ` (or ${mirrors.join(", ")}, which it asserts equal to it)` : ""} -- the measurement it read from ${surface.attribute} -- with a numeric literal: ${line.trim()}. A measurement may only be compared against the declaration; a number written here is either a restated budget or a threshold this repository declares nowhere, which is the defect S.I.R.#318 removed.`);
+        `${consumer} bounds ${identifier}${mirrors.length ? ` (or ${mirrors.join(", ")}, which it asserts EQUAL to it)` : ""} -- the measurement it read from ${surface.attribute} -- with a numeric literal: ${line.trim()}. A measurement may only be compared against the declaration; a number written here is either a restated budget or a threshold this repository declares nowhere, which is the defect S.I.R.#318 removed.`);
     }
   }
   assert.ok(readingConsumers > 0,

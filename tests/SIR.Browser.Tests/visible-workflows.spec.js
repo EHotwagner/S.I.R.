@@ -193,11 +193,17 @@ test("View analysis overlays share pointer and keyboard commands and restore ind
   // from the single declaration, which states it as its own quantity -- it is not the whole-scene
   // node cap asserted in the reduced-motion test above, whose value it merely happens to share.
   //
-  // Gated on the PUBLISHED estimate rather than on the counted nodes because the assertion directly
-  // above has just proved those are the same number, and the published attribute is the subject the
-  // no-restatement rule keys off -- so a literal written back onto either identifier is refused.
+  // Gated on the COUNTED nodes, not on the published estimate. The budget is about the overlay
+  // layer's real DOM cost; the attribute is the product's own report of that cost, and the two are
+  // not the same thing -- review of this item measured the estimate under-reporting the counted
+  // nodes on the static hosting route. A budget bound to a self-report enforces the report.
+  //
+  // The equality assertion directly above therefore keeps the telemetry honest rather than
+  // licensing this bound, and the no-restatement rule now REQUIRES it to exist: an earlier version
+  // of this test leaned on it while nothing demanded it, so deleting it would have left the gate
+  // green. Both identifiers are covered by that rule, so a literal written onto either is refused.
   // No number appears in this assertion, deliberately: a comment carrying one is a copy too.
-  expect(overlayNodeEstimate).toBeLessThanOrEqual(tacticalOverlayLayerBudget.maximumOverlayDomNodes);
+  expect(actualOverlayNodes).toBeLessThanOrEqual(tacticalOverlayLayerBudget.maximumOverlayDomNodes);
   const footprintBox = await footprint.boundingBox();
   expect(footprintBox?.width).toBeGreaterThan(20);
   expect(footprintBox?.height).toBeGreaterThan(20);
