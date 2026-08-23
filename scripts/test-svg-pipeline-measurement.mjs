@@ -649,8 +649,16 @@ for (const surface of tacticalBudgetSurfaces) {
     readingConsumers += 1;
     surfaceBoundedIdentifiers += 1;
     const [, identifier] = binding;
-    for (const line of text.split("\n")) {
-      if (!new RegExp(`\\b${identifier}\\b`).test(line)) continue;
+    // AND IT MUST ACTUALLY BE USED. Refusing a literal on the lines that mention the identifier is no
+    // protection at all if the identifier can simply be dropped: replacing
+    // `toBeLessThanOrEqual(effectLimit)` with a literal removes the very name this rule keys off, and
+    // deleting the node assertion outright leaves nothing for it to inspect. Both survived until this
+    // assertion was added. A consumer that reads a declared surface and then gates on something else
+    // -- or on nothing -- has stopped deriving, whatever it left bound above.
+    const identifierLines = text.split("\n").filter((line) => new RegExp(`\\b${identifier}\\b`).test(line));
+    assert.ok(identifierLines.length >= 2,
+      `${consumer} reads ${surface.attribute} into ${identifier} and never uses it. A declared surface that is read and then not gated on means the assertion beside it is bounded by something other than the declaration, or is gone.`);
+    for (const line of identifierLines) {
       assert.doesNotMatch(line, /(?<![\w.$])\d/,
         `${consumer} bounds ${identifier} -- the measurement it read from ${surface.attribute} -- with a numeric literal: ${line.trim()}. A measurement may only be compared against the declaration; a number written here is either a restated budget or a threshold this repository declares nowhere, which is the defect S.I.R.#318 removed.`);
     }
