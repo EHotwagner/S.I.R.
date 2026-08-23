@@ -890,10 +890,22 @@ assert.match(overlaySpec, /import\s*\{[^}]*\bassertTacticalOverlayLayerBudget\b[
   "the browser spec must import the THROWING overlay assertion from the single declaration");
 assert.match(overlaySpec, /\bassertTacticalOverlayLayerBudget\s*\(/,
   "the browser spec must REFERENCE the throwing overlay assertion; importing it and never naming it is not wiring. This is a wiring check only -- that the reference is reached at runtime is established by the evaluation guard and the run-level refusal, not here.");
-// AND THE TEST THAT CARRIES THE BUDGET MUST STILL BE TAGGED, or the run-level refusal has nothing to
-// key off and would pass vacuously on every run -- including one where the test was skipped.
-assert.match(overlaySpec, new RegExp(`\\btacticalOverlayLayerBudgetTag\\b`),
-  "the browser spec must tag the budget-bearing test with the declared tag; without it the run-level refusal cannot tell a skipped budget test from a shard that never carried one");
+// AND THE BUDGET CALL MUST SIT IN A TEST DECLARED THROUGH THE GUARDED CONSTRUCTOR.
+//
+// WIRING ONLY, AND DELIBERATELY WEAK. Detaching the constructor -- `overlayBudgetTest(` back to
+// `test(` -- removes both runtime nets at once, and no runtime mechanism can object because neither
+// one is installed any more. That is the declared residual: deliberate suppression, an edit to the
+// test's declaration whose only effect is to remove a guard. This check does not close it and is not
+// claimed to; it makes the edit visible to anything that runs this file, which is worth its two
+// lines and nothing more.
+//
+// An earlier version of this check searched the whole spec for the tag name and was satisfied by the
+// IMPORT line, so removing the tag from the declaration left it green. The tag is now injected by
+// the constructor, so this asserts the CONSTRUCTOR is used rather than that a name appears.
+assert.match(overlaySpec, /\boverlayBudgetTest\s*\(\s*["'`]/,
+  "the budget-bearing test must be declared through the guarded constructor; declaring it with the bare `test` removes the per-test evaluation guard and the run-level tag together");
+assert.match(overlaySpec, /const overlayBudgetTest = \(title, body\) => guardedBudgetTest\(title, \{ tag: tacticalOverlayLayerBudgetTag \}/,
+  "the guarded constructor must inject the declared tag itself; a tag written at the declaration instead can be dropped without dropping the guard, which is how the run-level net was once silently defanged");
 // AND IT MUST NOT USE THE RETURNING FORM, which puts an assertion obligation back at the call site.
 // With the reason form called directly, `.toBeDefined()`, `.toBeTruthy()` and discarding the result
 // each left this suite green while a breach returned a reason nobody read.
