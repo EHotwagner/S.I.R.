@@ -134,19 +134,6 @@ case "$mode" in
     # correct document and 1 on a falsified one alike. Here the subject is planned and gated exactly
     # like the five above it, so the sweep covers it for free and per-PR cost stays path-conditional.
     if integrity_runs review-contract; then ./scripts/test-review-contract-coherence.sh; fi
-    # S.I.R.#263. The collection-strategy regression gate. Like `review-contract` above it, this is
-    # an INTEGRITY SUBJECT rather than a `gate` subject: it needs no prepared producer part, and
-    # `ci-route.mjs` refuses a subject id it does not know, so the gate route would exit 1 on a
-    # correct tree and 1 on a broken one alike (S.I.R.#255 measured that and reverted it at
-    # c3b10be). Here it is planned, selected and dispatched exactly like the six above it, so the
-    # off-PR sweep covers it for free and per-PR cost stays path-conditional.
-    #
-    # ONE statement, and its status is the guard's status. The script ends with the harness's own
-    # exit code and carries no `|| true`; that is what makes a red benchmark a `fail` in the
-    # sir.ci-gate-result/v1 receipt pr-verdict joins, rather than a FAILED line inside a green log.
-    # test-ci-integrity-plan.mjs executes this guard with the command below forced to fail and
-    # requires the guard to fail with it, so the property is measured and not asserted in prose.
-    if integrity_runs collection-strategies; then ./scripts/verify-collection-strategies.sh; fi
     ;;
   prepare-part)
     part=${1:?qualify-pr prepare-part requires native|fable|web|server|docs}
@@ -403,6 +390,7 @@ NODE
       cancellation) gate_parts=(native web) ;;
       browser|browser-general-helper|browser-delivery) gate_parts=(web native) ;;
       documentation) gate_parts=(web docs) ;;
+      collection-strategies) gate_parts=(native) ;;
     esac
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
       receipt_part=${gate_parts[0]}
@@ -471,6 +459,11 @@ NODE
       documentation)
         ./scripts/build-docs.sh --reuse-build-receipt "$receipt" --reuse-build-owner scripts/qualify-pr.sh --prepared-pr --reuse-site-build
         ;;
+      # S.I.R.#263. The collection-strategy regression gate. ONE statement, and its status is this
+      # arm's status: the script ends with the harness's own exit code and carries no `|| true`, so
+      # a red benchmark becomes `status: fail` in the sir.ci-gate-result/v1 receipt pr-verdict
+      # joins rather than a FAILED line inside a green log (the escape S.I.R.#265 measured).
+      collection-strategies) ./scripts/verify-collection-strategies.sh ;;
       evidence)
         # Every routed work item gets exactly one recorded outcome, whether or not it was checked, so
         # that "checked and passed" and "not checked" can never again be the same CI result (#272).

@@ -302,14 +302,16 @@ assert.ok(unknownScenarioOwner.failures.some(({ code, invocation }) =>
   code === "unknown-build-invocation" && invocation === "fable:tests/SIR.Client.Tests/UnknownRuntime.fsproj"));
 assert.deepEqual(contracts.timingPhases, ["queue", "setup", "restore", "build", "transport", "test", "total"]);
 assert.deepEqual(contracts.schemas, { route: routeSchema, artifactManifest: "sir.ci-artifact-manifest/v2", gateResult: gateSchema, timing: timingSchema, join: joinSchema });
-for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-mutations:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-docs:", "domain-conformance:", "cross-runtime:", "browser:", "browser-general-helper:", "browser-delivery:", "documentation:", "pr-verdict:", "cost-observer:", "protected-preflight:", "full-qualification:", "protected-verdict:", "integrity-sweep:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
+for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-mutations:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-docs:", "domain-conformance:", "cross-runtime:", "browser:", "browser-general-helper:", "browser-delivery:", "documentation:", "collection-strategies:", "pr-verdict:", "cost-observer:", "protected-preflight:", "full-qualification:", "protected-verdict:", "integrity-sweep:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
 for (const removedJob of ["browser-general-helper-2", "browser-general-helper-3"]) assert.doesNotMatch(workflow, new RegExp(`^  ${removedJob}:$`, "mu"));
 assert.match(workflow, /if: always\(\)/u);
 assert.match(workflow, /if: always\(\) && github\.event_name == 'pull_request'/u);
 assert.match(workflow, /schedule:/u);
 assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/u);
 assert.match(workflow, /hashFiles\('\*\*\/packages\.lock\.json', 'Directory\.Packages\.props', '\.config\/dotnet-tools\.json'\)/u);
-assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 19);
+// S.I.R.#263 added the `collection-strategies` job, so 19 became 20. An absolute count, updated
+// deliberately: it is what goes red if a job is added or removed without a look.
+assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 20);
 for (const part of ["native", "fable", "web", "docs"]) assert.match(workflow, new RegExp(`qualify-pr\\.sh prepare-part ${part}`, "u"));
 assert.doesNotMatch(workflow, /qualify-pr\.sh prepare-part server/u);
 // S.I.R.#304. This line used to read `/classification != 'evidence-only'/` -- it PINNED the
@@ -554,7 +556,9 @@ assert.match(fullQualification, /if \[\[ -n \$\{SIR_PROTECTED_PREFLIGHT_RECEIPT:
 assert.match(fullQualification, /src\/SIR\.Replay\.Web\/SIR\.Replay\.Web\.fsproj="\$protected_main_fable_builds"/u);
 assert.match(fullQualification, /src\/SIR\.Client\.Web\/SIR\.RulesExplorer\.Web\.fsproj="\$protected_main_fable_builds"/u);
 for (const subject of ["rules", "spatial", "cancellation", "cross-runtime", "historical-compatibility", "governance", "production-browser", "documentation", "performance", "sdd-verify"]) assert.match(fullQualification, new RegExp(`"${subject}"`, "u"));
-assert.equal(gateOrder.length, 7);
+// S.I.R.#263 added `collection-strategies`, so 7 became 8. Absolute by design: this is the line
+// that goes red when a gate is added or removed without a deliberate look at the pins below it.
+assert.equal(gateOrder.length, 8);
 
 
 // ---------------------------------------------------------------------------------------
@@ -572,6 +576,10 @@ const emittingJob = {
   "browser-delivery": "browser-delivery", "cross-runtime": "cross-runtime",
   browser: "browser", "browser-general-helper": "browser-general-helper",
   documentation: "documentation",
+  // S.I.R.#263. Its own job, which is the whole placement decision: as an `integrity` subject it
+  // would have emitted from the job that also emits `evidence`, and that job's receipt `total` is
+  // anchored at the JOB's first step, so its cost would have been inside the wave-1 maximum.
+  "collection-strategies": "collection-strategies",
 };
 for (const subject of subjectOrder) {
   const needsLine = /^\s*needs: (.+)$/mu.exec(jobBody(emittingJob[subject]))?.[1] ?? "";
@@ -610,6 +618,13 @@ const measuredTotals = {
   "prepare-native": 104_000, "prepare-fable": 98_000, "prepare-web": 120_000, "prepare-docs": 102_000,
   rules: 120_000, spatial: 120_000, cancellation: 120_000, "browser-delivery": 120_000,
   "cross-runtime": 70_000, browser: 89_000, "browser-general-helper": 78_000, documentation: 49_000,
+  // S.I.R.#263. NOT from run 32607930272, which predates this gate -- stated rather than smuggled
+  // in among numbers that do come from it. 23_010ms is this gate's own measured marginal cost on
+  // run 32654620076 (restore+build 15_530 + measurement 7_480), where it still ran as an
+  // `integrity` subject; the wave-2 job wrapper differs, so treat it as the right MAGNITUDE rather
+  // than a reading of the wave-2 job. That is all this fixture needs it to be: the two wave maxima
+  // asserted below are unchanged by its presence, which is the placement claim itself.
+  "collection-strategies": 23_010,
 };
 const measuredReceipt = (gate, override) => {
   const total = override ?? measuredTotals[gate];

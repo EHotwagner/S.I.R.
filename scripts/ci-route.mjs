@@ -23,7 +23,7 @@ export const feedbackAcceptanceTargetMilliseconds = feedbackBudgetMilliseconds -
 export const feedbackPipelineOverheadMilliseconds = 30_000;
 export const feedbackWaveBudgetMilliseconds = 180_000;
 export const feedbackHeadroomBasisPoints = 2_000;
-export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence"];
+export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence", "collection-strategies"];
 export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web", "prepare-docs"];
 export const helperOrder = ["spatial-mutations", "cancellation-mutations", "browser-general-helper", "browser-delivery"];
 export const subjectOrder = ["integrity", ...producerOrder, ...helperOrder, ...gateOrder];
@@ -37,6 +37,19 @@ export const gateParts = {
   "browser-delivery": ["web", "native"],
   documentation: ["web", "docs"],
   evidence: [],
+  // S.I.R.#263. `["native"]` puts this gate in WAVE 2 (subjectWave reads exactly this), and the
+  // wave is the whole point of the placement. As an `integrity` subject it sat in wave 1 inside the
+  // job that also runs `evidence` -- and because run-ci-gate.sh anchors every receipt's `total` at
+  // the JOB's first step, `evidence.total` contained it, `evidence` was the wave-1 maximum, and its
+  // 23.0s landed directly on the feedback critical path (`feedback-headroom-eroded` 332580 > 312000,
+  // run 32654620076). Here it is its own job, parallel with a wave-2 maximum that has been
+  // 116972-151605ms across five sampled runs, so it contributes nothing to the maximum.
+  //
+  // That is DAG parallelism, not concealment: this subject emits its own joined
+  // sir.ci-gate-result/v1 receipt with its own timings, and `pr-verdict` requires it like any other.
+  // And it does not lean on S.I.R.#326's inflated reused receipt: strip `browser-delivery` from the
+  // wave entirely and the maximum is still `browser` at 77288ms against this gate's ~25s.
+  "collection-strategies": ["native"],
 };
 // S.I.R.#304. THE one derivation of "which producers does this route need". Both sides of the
 // pipeline read it: `joinRoute` builds its expected set from it, and `route --github-output`
@@ -89,6 +102,10 @@ export const expectedBuildInvocations = {
   "browser-delivery": [],
   documentation: [],
   evidence: [],
+  // S.I.R.#263. `dotnet restore` and `dotnet run --no-build` are not traced (see
+  // scripts/dotnet-invocation-trace.sh: restore has no arm, and a `run` carrying `--no-build`
+  // falls through to a passthrough exec). The one traced invocation is the harness build.
+  "collection-strategies": ["build:tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj"],
 };
 
 const classifications = {
