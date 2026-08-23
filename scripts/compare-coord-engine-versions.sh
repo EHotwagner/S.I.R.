@@ -16,8 +16,25 @@
 #
 # The decisive one is the review ledger. It is append-only and load-bearing for every lane's merge
 # gate, so the question is not "does the new engine work" but "do an OLD-engine lane and a NEW-engine
-# lane agree about the same ledger". Pass --write-probe to answer that directly: the NEW engine
-# writes a review-wait entry and BOTH engines are then made to read it.
+# lane agree about the same ledger".
+#
+# THIS SCRIPT DOES NOT WRITE THAT ENTRY FOR YOU, AND AN EARLIER VERSION LIED ABOUT IT. It carried a
+# `--write-probe` flag whose help said "the NEW engine writes a review-wait entry and BOTH engines are
+# then made to read it". It wrote nothing: the flag re-ran the same read and graded it a passing
+# comparison, so a green `--write-probe` was evidence of nothing and was *more* confidently worded than
+# the unflagged path while checking strictly less. It only ever looked right because a newer-engine
+# entry already happened to be on the PR under test. The flag is removed rather than implemented,
+# because a comparison tool that mutates the board contradicts confound 3 below.
+#
+# To answer the ledger question, write the entry yourself through the ordinary route and then run this
+# script, which reads:
+#
+#   scripts/fsgg-coord review wait <ref> <enter-event.json> --pr N   # through the NEW engine
+#   scripts/compare-coord-engine-versions.sh --old <OLD> --new <NEW> --ref <ref> --pr N
+#   scripts/fsgg-coord review wait <ref> <cancel-event.json> --pr N  # if the entry is not wanted
+#
+# The entry is durable and yours to cancel. Cancelling is not optional politeness: a stray `waiting`
+# entry at the wrong generation blocks critic dispatch until it is cancelled.
 #
 # HOW IT AVOIDS LYING TO YOU. Three confounds are handled explicitly, because each one produced a
 # wrong answer during S.I.R.#250 before it was handled:
@@ -44,9 +61,29 @@
 #
 # and diff the two engines' `command-contract --json` and their `--help` PROSE, not only their flags.
 #
+# EVIDENCE THIS SCRIPT CAN FAIL - every row below was run, and each breaks the gate's SUBJECT rather
+# than its predicate. A gate that has never been red cannot be told apart from one that cannot fire.
+# Rows marked (R1) were added in repair round 1, after an independent critic found that the first
+# decision point carried no recorded inversion at all; the escapes they close are the ones it measured.
+#
+#   mutation                                            observed
+#   --------------------------------------------------- -----------------------------------------------
+#   positive control: 0.71.0 vs 0.72.0, valid ref/repo   PASS, exit 0 - all three surfaces evaluated
+#   genuinely different engines: 0.58.0 vs 0.72.0  (R1)  DIFFERS review, FAIL, exit 1
+#   non-answer: --ref S.I.R.#999999                (R1)  REFUSED review + delivery-route, FAIL, exit 1
+#   non-answer: --repo NoSuchRepoAtAll             (R1)  REFUSED who, FAIL, exit 1
+#   contract mutant: done and widen --paths removed      REMOVED naming both, exit 1
+#   contract unreadable: { this is not json              REFUSED, not graded compatible, exit 1
+#   mislabelled engine in a version directory            aborts naming what actually answered, exit 2
+#   removed flag: --write-probe                    (R1)  unknown argument, exit 2
+#
+# The DIFFERS row is the one that matters after the R1 repair: the new exit-code guard must not swallow
+# a real engine difference into a refusal. It does not - 0.58.0 and 0.72.0 both evaluate, so the byte
+# comparison still fires and still reds.
+
 # USAGE
 #   scripts/compare-coord-engine-versions.sh --old 0.71.0 --new 0.73.1 --ref "S.I.R.#250" --pr 257 \
-#       [--repo "S.I.R."] [--write-probe]
+#       [--repo "S.I.R."]
 #
 # EXIT: 0 all compared surfaces identical; 1 a reproducible difference; 2 a setup/confound failure.
 
@@ -54,7 +91,7 @@ set -uo pipefail
 
 die() { echo "compare-engines: $*" >&2; exit 2; }
 
-OLD="" NEW="" REF="" PR="" REPO="S.I.R." WRITE_PROBE=0
+OLD="" NEW="" REF="" PR="" REPO="S.I.R."
 while [ $# -gt 0 ]; do
   case "$1" in
     --old) OLD="${2:-}"; shift 2 ;;
@@ -62,13 +99,12 @@ while [ $# -gt 0 ]; do
     --ref) REF="${2:-}"; shift 2 ;;
     --pr) PR="${2:-}"; shift 2 ;;
     --repo) REPO="${2:-}"; shift 2 ;;
-    --write-probe) WRITE_PROBE=1; shift ;;
     *) die "unknown argument: $1" ;;
   esac
 done
 
 [ -n "$OLD" ] && [ -n "$NEW" ] && [ -n "$REF" ] && [ -n "$PR" ] \
-  || die "usage: --old VER --new VER --ref REF --pr N [--repo NAME] [--write-probe]"
+  || die "usage: --old VER --new VER --ref REF --pr N [--repo NAME]"
 
 repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || die "not inside a git checkout"
 cd "$repo_root" || die "cannot enter $repo_root"
@@ -127,6 +163,24 @@ echo "compare-engines: $OLD vs $NEW on $REF / PR #$PR in $REPO"
 failures=0
 
 # Confound 1: capture back to back, and re-measure any difference once before believing it.
+#
+# CONFOUND 4, AND IT IS THE ONE THIS FUNCTION GOT WRONG. Equal bytes and equal exit codes prove the two
+# engines said the same thing; they do NOT prove either engine EVALUATED the surface. An earlier version
+# required only that the captures match each other, so two identical REFUSALS graded as agreement and the
+# run still printed its headline PASS at exit 0. Measured escapes: `--ref 'S.I.R.#999999'` produced
+# "identical review (exit 1)" and "identical delivery-route (exit 1)" and PASSed; `--repo 'NoSuchRepoAtAll'`
+# produced "identical who (exit 1)" and PASSed. A mistyped ref, a wrong repo, an expired token, or a
+# fail-closed protocol state therefore yielded a confident adoption clearance in which not one of the
+# three decisive surfaces had been evaluated.
+#
+# `compare_command_surface` below already applies the right rule — "an unreadable contract is not evidence
+# that the surface is compatible" — and this function did not. It does now: a non-zero exit on EITHER side
+# is refused, never graded. `.github#266`: "I could not evaluate this" is never "I evaluated it and it
+# passed".
+#
+# Note that `review` returns exit 4 for a fail-closed no-verdict, which is a real protocol state and a
+# perfectly ordinary thing to encounter. It is still a non-evaluation, so it is refused rather than
+# reported as agreement — re-run when the protocol state permits the surface to be read.
 compare_surface() {
   local name=$1; shift
   local a b attempt=1
@@ -134,9 +188,16 @@ compare_surface() {
     a="$work/$name.$OLD.$attempt"; b="$work/$name.$NEW.$attempt"
     capture "$NEW_BIN" "$b" "$@"
     capture "$OLD_BIN" "$a" "$@"
-    if diff -q "$a" "$b" >/dev/null 2>&1 \
-       && [ "$(cat "$a.exit")" = "$(cat "$b.exit")" ]; then
-      echo "  identical  $name (exit $(cat "$a.exit"))"
+    local ea eb
+    ea=$(cat "$a.exit"); eb=$(cat "$b.exit")
+    if [ "$ea" != 0 ] || [ "$eb" != 0 ]; then
+      echo "  REFUSED    $name — $OLD exited $ea and $NEW exited $eb; a surface that did not evaluate" >&2
+      echo "             is not evidence that the engines agree about it." >&2
+      failures=$((failures + 1))
+      return 1
+    fi
+    if diff -q "$a" "$b" >/dev/null 2>&1; then
+      echo "  identical  $name (exit $ea)"
       return 0
     fi
     if [ "$attempt" -eq 1 ]; then
@@ -249,14 +310,6 @@ PY
 }
 
 compare_command_surface
-
-# The decisive assertion: an OLD-engine lane must read what a NEW-engine lane wrote to the
-# append-only review ledger, and project the identical wait receipt.
-if [ "$WRITE_PROBE" -eq 1 ]; then
-  echo "compare-engines: write-probe — $NEW writes a review-wait entry, both engines then read it"
-  echo "  NOTE: this appends a durable entry to PR #$PR and you must cancel it yourself if unused."
-  compare_surface review-after-write review "$REF" --pr "$PR" --json
-fi
 
 if [ "$failures" -eq 0 ]; then
   echo "compare-engines: PASS — every compared surface is byte-identical across $OLD and $NEW."
