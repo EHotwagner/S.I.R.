@@ -170,16 +170,18 @@
     "representative100": {
       "maximumDomNodes": 5000,
       "maximumEffects": 128,
-      "maximumInputToPaintMilliseconds": 100,
       "targetAnimationFrameMilliseconds": 16.67,
-      "maximumAnimationFrameIntervalMilliseconds": 33.34
+      "maximumInputToPaintMilliseconds": 100,
+      "minimumClassifiableAnimationFrameIntervalMilliseconds": 12.5,
+      "maximumAnimationFrameIntervalMilliseconds": 25
     },
     "stress200": {
       "maximumDomNodes": 9000,
       "maximumEffects": 256,
-      "maximumInputToPaintMilliseconds": 150,
       "targetAnimationFrameMilliseconds": 16.67,
-      "maximumAnimationFrameIntervalMilliseconds": 33.34
+      "maximumInputToPaintMilliseconds": 150,
+      "minimumClassifiableAnimationFrameIntervalMilliseconds": 12.5,
+      "maximumAnimationFrameIntervalMilliseconds": 25
     }
   }
 }

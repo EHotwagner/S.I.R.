@@ -28,8 +28,8 @@ growth behind component-local rendering estimates.
 
 | Production workload | Estimated SVG nodes | Active effects | Release projection p95 | Browser callback/main-thread inspection | Input-to-paint p80 | Frame cadence p80 |
 |---|---:|---:|---:|---:|---:|---:|
-| Representative 100-unit replay | ≤ 5,000 | ≤ 128 | < 4 ms | < 16.67 ms | < 100 ms | < 33.34 ms |
-| Stress 200-unit replay | ≤ 9,000 | ≤ 256 | < 8 ms | < 16.67 ms | < 150 ms | < 33.34 ms |
+| Representative 100-unit replay | ≤ 5,000 | ≤ 128 | < 4 ms | < 16.67 ms | < 100 ms | ≥ 12.5 ms, < 25 ms |
+| Stress 200-unit replay | ≤ 9,000 | ≤ 256 | < 8 ms | < 16.67 ms | < 150 ms | ≥ 12.5 ms, < 25 ms |
 
 **No cell in this table is declared here**, apart from `Release projection p95`.
 Every other column is a projection of the single declaration in
@@ -59,10 +59,25 @@ assertion is correct as written and was deliberately left deriving.
 on the production route. `Frame cadence p80` is the p80 of the deltas between
 successive `requestAnimationFrame` timestamps -- the interval **between** frames,
 which is a different quantity from the callback duration the column beside it
-declares. A rAF interval on a vsync-locked clock is an integer multiple of the
-display's frame period and is bounded below by one such period, so "no frame was
-dropped" is exactly "at most one vsync elapsed": strictly less than two frame
-periods. That ceiling is derived from the frame period, not authored separately.
+declares.
+
+A rAF interval on a vsync-locked clock is an integer multiple of the display's
+frame period, so "was a frame dropped?" is "how many vsyncs elapsed?", and the
+budget declares how many may: one. The boundary between one elapsed vsync and two
+is their **midpoint**, not two periods -- a boundary sitting on a candidate value
+answers whichever way the last digit falls, while the midpoint is maximally far
+from both and so survives the display's true period differing a little from
+nominal. The frame period is derived from a declared refresh rate of 60 Hz, and
+the two published cadence bounds are derived from that period. Neither is
+authored separately.
+
+The floor is part of the budget, not a formality. Nearest-vsync classification is
+correct only while the true frame period is at least half the ceiling and below
+it -- refresh in (40, 80] Hz for the declared 60. Outside that window a healthy
+interval and a dropped one can both land inside the band, so a measurement below
+the floor is **refused as unclassifiable** rather than passed. A budget that
+cannot tell those two apart must say so; reporting the faster-looking number as a
+pass would be inventing a verdict.
 
 Before S.I.R.#318 neither of those two figures had a row here, and the cadence
 comparison read `measured <= targetAnimationFrameMilliseconds +
@@ -73,9 +88,18 @@ measurement since 2026-08-20 sits inside that slack -- above the frame ceiling
 published in the column beside it, and reported green because of the addition.
 The tolerance entered with the rest of the budget block as a bare literal carrying
 no derivation, comment or cited source, so nothing was preserved by keeping it; it
-was removed rather than re-homed, and the cadence now has the declared budget it
-always needed. No figure in this paragraph is written out, deliberately: a number
-in the prose beside a projected table is a second statement of it.
+was removed rather than re-homed.
+
+Its first replacement was wrong too, and in an instructive way: it took the
+published callback ceiling -- which is one frame period **rounded up** to the two
+decimals this table prints -- and doubled it. A budget may be rounded for
+publication; a **unit** may not. Doubling a rounded-up period put the boundary
+*above* a real one-dropped-frame interval at 60.000 Hz, so the gate that exists to
+catch a dropped frame admitted one, at the nominal refresh rate and at every
+refresh above it. The period is now derived from the declared refresh rate rather
+than from the published ceiling, and the boundary is the midpoint rather than the
+double. No figure in this paragraph is written out, deliberately: a number in the
+prose beside a projected table is a second statement of it.
 
 A **dropped frame** is a frame whose duration exceeds that same ceiling, and
 `frameHealth.droppedFrames` counts exactly those. This is the one threshold, not

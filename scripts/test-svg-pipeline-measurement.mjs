@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
-import { documentedFrameCeilingCell, documentedTacticalBudgetRows, tacticalBudgetSurfaces, tacticalBudgetTableDocumentation, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
+import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 // validateDefinitions COMPOSES the budget: workload policy from the fixture file, ceiling from the
@@ -600,7 +600,10 @@ const stressWorkload = tacticalWorkloadBudgetList[tacticalWorkloadBudgetList.len
 // Every numeric field of a declared budget object is a budget unless it is a declared workload
 // IDENTITY. The two are told apart by name, and a field that is neither is a failure rather than a
 // silent omission, so a budget added under an unrecognised name cannot join the unchecked set.
-const workloadIdentityFields = ["units"];
+// `units` names WHICH workload a row is; `displayRefreshHertz` names the clock the cadence budget is
+// derived against. Neither is a budget a run can breach, and both are published as identities rather
+// than as ceilings.
+const workloadIdentityFields = ["units", "displayRefreshHertz"];
 const budgetFieldName = (key) => /^maximum|Milliseconds$|Ceiling$/.test(key);
 const declaredBudgetObjects = [...tacticalWorkloadBudgetList, tacticalFrameCadenceBudget];
 const budgetOwner = (declared) => declared.key ?? "tacticalFrameCadenceBudget";
@@ -621,6 +624,7 @@ const unsweepableTacticalQuantities = new Map([
   [`${representativeWorkload.key}.maximumDomNodes`, "also a readiness timeout in the review generator, a trace-fixture duration in this suite, and an unrelated overlay-layer node bound in the browser spec"],
   [`${representativeWorkload.key}.maximumInputToPaintMilliseconds`, "also a Playwright wait, a percentile computation, a declared workload's unit count, and a percentage assertion string"],
   ["tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame", "a small integer COUNT of vsyncs rather than a millisecond figure; it is the commonest literal in any source and sweeping it by value would red on every increment"],
+  ["tacticalFrameCadenceBudget.intervalCeilingMilliseconds", "measured, not assumed: this value occurs twelve times across the swept consumers for reasons that are not budgets -- five inter-input waits in the review generator, S.I.R.#299's deliberately named superseded dropped-frame threshold and four prose references to it, a comment in the measurement library, and a damage figure in a browser assertion string"],
 ]);
 for (const id of unsweepableTacticalQuantities.keys())
   assert.ok(declaredBudgetEntries.some((entry) => entry.id === id), `${id} is recorded as an unsweepable budget quantity but is no longer declared; the exemption is stale`);
@@ -632,24 +636,38 @@ assert.ok(unsweepableTacticalQuantities.size < declaredBudgetEntries.length, "ev
 
 // AND EVERY DECLARED BUDGET MUST BE PUBLISHED SOMEWHERE. This item exists because CI enforced two
 // figures no document stated; the mirror of that defect is a budget declared in code and projected
-// into nothing, which is how the first version of this guard let a budget added to a workload row
-// pass silently -- it reached neither the published table nor the published manifest, and no rule
-// noticed. A declared budget that appears in no published surface is undeclared to every reader who
-// is not reading this module.
-const publishedNumbers = new Set([
-  ...documentedTacticalBudgetRows().flatMap((row) => Object.values(row)
-    .flatMap((cell) => [...String(cell).matchAll(/[\d,]*\d(?:\.\d+)?/g)].map((match) => Number(match[0].replaceAll(",", ""))))),
-  ...Object.values(tacticalReviewManifestBudgets).flatMap((row) => Object.values(row)),
-]);
-// One quantity is legitimately unpublished, and only because what it DERIVES is published.
+// into nothing.
+//
+// THIS GUARD ASKS ABOUT THE QUANTITY, NEVER ABOUT ITS VALUE, and the first version did the opposite.
+// It tested `publishedNumbers.has(entry.value)` while its message claimed the surface "states it" --
+// so an undeclared budget whose value happened to equal any published one -- an effect ceiling, the
+// frame ceiling, an input-to-paint bound -- was reported as published by a surface that had never
+// heard of it. Most of the published numbers opened that hole. It is the "do these
+// agree?" defect one level up, inside the guard written to stop it, and a value-keyed membership test
+// cannot be repaired by a better message. Both published surfaces are now generated from one
+// projection list in the declaration, and each entry names the quantity ids it projects.
 const derivationInputQuantities = new Map([
-  ["tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame", "a derivation input for intervalCeilingMilliseconds, which IS published, and the published table's prose states the rule it expresses"],
+  ["tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame", "a derivation input for both cadence bounds, which ARE published, and the published table's prose states the rule it expresses"],
+  ["tacticalFrameCadenceBudget.framePeriodMilliseconds", "a derivation input for both cadence bounds, itself derived from the declared refresh rate the table's prose names"],
 ]);
 for (const id of derivationInputQuantities.keys())
   assert.ok(declaredBudgetEntries.some((entry) => entry.id === id), `${id} is recorded as an unpublished derivation input but is no longer declared; the exemption is stale`);
+for (const id of tacticalProjectedQuantities)
+  assert.ok(!derivationInputQuantities.has(id), `${id} is recorded as an unpublished derivation input and is also projected into a published surface; the exemption is stale`);
 for (const entry of declaredBudgetEntries)
-  assert.ok(publishedNumbers.has(entry.value) || derivationInputQuantities.has(entry.id),
-    `the declaration carries ${entry.id} = ${entry.value}, and no published surface -- neither the ${tacticalBudgetTableDocumentation.path} table nor the review manifest -- states it. A budget declared in code and published nowhere is undeclared to every reader who is not reading the module, which is the defect S.I.R.#318 repaired from the other direction.`);
+  assert.ok(tacticalProjectedQuantities.includes(entry.id) || derivationInputQuantities.has(entry.id),
+    `the declaration carries ${entry.id}, and no published surface projects it -- neither the ${tacticalBudgetTableDocumentation.path} table nor the review manifest names that quantity. A budget declared in code and published nowhere is undeclared to every reader who is not reading the module, which is the defect S.I.R.#318 repaired from the other direction. (This is checked by QUANTITY: a published number that happens to equal it is not publication.)`);
+
+// THE RETIRED FIGURES MUST STILL BE NAMED BY SOMETHING. A repair proves it discriminates by naming
+// the alternative it now excludes; a declared superseded figure that no suite names any more is a
+// claim nothing checks, and the fixture that was supposed to exclude it has quietly stopped.
+const sweptConsumerText = budgetConsumers.map((consumer) => readFileSync(new URL(consumer, import.meta.url), "utf8")).join("\n");
+for (const superseded of supersededTacticalFigures) {
+  assert.ok(new RegExp(`\\b${superseded.identifier}\\b`).test(sweptConsumerText),
+    `the declaration records ${superseded.identifier} (${superseded.value}, retired by ${superseded.retiredBy}) as a superseded figure, and no suite names it any more. Either a discriminating fixture stopped excluding it, or the record is stale.`);
+  assert.ok(new RegExp(`(?:const|let)\\s+${superseded.identifier}\\s*=\\s*${String(superseded.value).replace(".", "\\.")}\\b`).test(sweptConsumerText),
+    `${superseded.identifier} is named, but not bound to the superseded value ${superseded.value} the declaration records for it. A fixture excluding a different number than the one that was retired excludes nothing.`);
+}
 
 const restatesValue = (text) => sweptTacticalValues.filter((value) => new RegExp(`(?<![\\d.\\w])${String(value).replace(".", "\\.")}(?![\\d.\\w])`).test(text));
 // The rules are self-tested against planted text before being trusted against the tree: a rule that
@@ -753,7 +771,7 @@ assert.match(`${tacticalInputToPaintBudgetReason(stress, stress.maximumInputToPa
   "the input-to-paint ceiling is exclusive, as the published `< N ms` cell says");
 assert.equal(tacticalFrameCadenceBudgetReason(stress, tacticalFrameBudget.callbackMillisecondsCeiling), null);
 assert.match(`${tacticalFrameCadenceBudgetReason(stress, tacticalFrameCadenceBudget.intervalCeilingMilliseconds)}`, /frame cadence budget exceeded/,
-  "an interval that has reached two frame periods has dropped a vsync and must be refused");
+  "the cadence ceiling is exclusive: an interval that has REACHED it is refused. This is a boundary check, not the dropped-frame check -- feeding a predicate its own declared boundary observes inclusivity and nothing else, and mistaking one for the other is what made the previous dropped-frame gate decorative. The real dropped-frame fixture is derived from observed periods below.");
 // a non-answer must never be reported as a confident answer
 for (const unmeasured of [undefined, null, Number.NaN, "17"]) {
   assert.throws(() => tacticalInputToPaintBudgetReason(stress, unmeasured), /was not measured/,
@@ -784,11 +802,75 @@ for (const measured of retainedIntervals) {
   assert.equal(tacticalFrameCadenceBudgetReason(stress, measured), null,
     "under the declared cadence budget the same measurement conforms to a ceiling it does not breach, which is the whole repair: the gate no longer reports green about a number the measurement exceeded");
 }
-assert.ok(tacticalFrameCadenceBudget.intervalCeilingMilliseconds > tacticalFrameBudget.callbackMillisecondsCeiling + supersededToleranceMilliseconds,
-  "the declared cadence ceiling must sit above the superseded composite, or the two are indistinguishable on these measurements");
-assert.match(`${tacticalFrameCadenceBudgetReason(stress, tacticalFrameBudget.callbackMillisecondsCeiling * (tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame + 1))}`, /frame cadence budget exceeded/,
-  "and a dropped vsync -- the failure this budget exists to catch -- must still red");
-console.log(`JUSTIFIED tactical-cadence-discriminates: every retained production interval (${retainedIntervals.join(", ")} ms) breaches the declared ${tacticalFrameBudget.callbackMillisecondsCeiling} ms frame ceiling and conformed to the superseded ceiling+${supersededToleranceMilliseconds} composite, so the removed tolerance was the only reason CI reported green; the declared cadence budget of ${tacticalFrameCadenceBudget.intervalCeilingMilliseconds} ms judges the same measurement without claiming anything false, and still reds on a dropped vsync`);
+
+// 5b. THE DROPPED-FRAME FIXTURE IS DERIVED FROM OBSERVED PERIODS, NOT FROM THE CEILING.
+//
+// The gate that stood here fed the cadence predicate `callbackMillisecondsCeiling * (n + 1)` and was
+// named "a dropped vsync -- the failure this budget exists to catch -- must still red". With the
+// ceiling then defined as `(n + 1) * callbackMillisecondsCeiling`, that input was DEFINITIONALLY the
+// ceiling: the fixture was the subject restated, it red for every n, and it could not have observed
+// whether the boundary was in the right place. It was not -- the boundary sat above a real
+// one-dropped-frame interval at the nominal refresh, and this fixture reported green about it.
+//
+// A dropped-frame interval is `(n + 1) x the display's FRAME PERIOD`. The periods below are ones this
+// repository has actually measured, not values chosen to make the assertion pass: the nominal period
+// derived from the declared refresh, and the two un-coarsened periods captured at ee6a2df (16.602 and
+// 16.642 ms, `git show ee6a2df:docs/assets/tactical-visual-system-review/telemetry.json`), which are
+// finer-grained than the 0.1 ms grid the current pinned Chromium reports and therefore probe the
+// boundary hardest.
+const supersededCadenceCeilingMilliseconds = 33.34;
+const observedFramePeriodsMilliseconds = [
+  tacticalFrameCadenceBudget.framePeriodMilliseconds,
+  16.602,
+  16.642,
+  ...retainedIntervals,
+];
+const droppedFrameIntervals = observedFramePeriodsMilliseconds
+  .map((period) => (tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame + 1) * period);
+// THE FIXTURE MUST NOT BE THE CEILING RESTATED. This is the assertion whose absence made the previous
+// one decorative, and it is checked rather than commented.
+for (const [index, interval] of droppedFrameIntervals.entries())
+  assert.notEqual(interval, tacticalFrameCadenceBudget.intervalCeilingMilliseconds,
+    `the dropped-frame fixture derived from period ${observedFramePeriodsMilliseconds[index]} ms is exactly the declared ceiling, so it would red whatever the ceiling were and observes nothing about where the boundary sits`);
+assert.ok(new Set(observedFramePeriodsMilliseconds).size >= 3,
+  "the observed-period fixture must span more than one capture regime, or it probes a single coarsening grid");
+
+for (const [index, interval] of droppedFrameIntervals.entries()) {
+  const period = observedFramePeriodsMilliseconds[index];
+  assert.equal(tacticalFrameCadenceBudgetReason(stress, period), null,
+    `a healthy interval of one observed frame period (${period} ms) must conform, or the budget refuses the runs it exists to accept`);
+  assert.match(`${tacticalFrameCadenceBudgetReason(stress, interval)}`, /frame cadence budget exceeded/,
+    `a one-dropped-frame interval of ${interval} ms, derived from the observed period ${period} ms, must be refused. This is a scene rendering at half the declared refresh and dropping every other frame; it is the exact failure this budget exists to catch.`);
+}
+
+// AND THE SUPERSEDED CEILING WOULD HAVE ADMITTED THEM. Without this the repair could be firing for a
+// reason unrelated to the correction, and this gate would measure nothing.
+const admittedBySupersededCeiling = droppedFrameIntervals.filter((interval) => interval < supersededCadenceCeilingMilliseconds);
+assert.ok(admittedBySupersededCeiling.length > 0,
+  `the superseded ${supersededCadenceCeilingMilliseconds} ms ceiling must ADMIT at least one of these real dropped-frame intervals -- if it refused them all, it was never blind and this repair corrected nothing`);
+assert.ok(admittedBySupersededCeiling.some((interval) => interval > tacticalFrameCadenceBudget.framePeriodMilliseconds * (tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame + 1) - 0.0001),
+  "and the nominal-refresh dropped-frame interval must be among the ones it admitted, because a gate blind at the refresh its own declaration names is the finding this round repaired");
+
+// THE ROUNDING RELATIONSHIP IS DECLARED AND CHECKED, because it is what made the superseded ceiling
+// wrong. The published callback ceiling is the frame period rounded UP for publication; a budget may
+// be rounded, a UNIT may not, and doubling the rounded one is what put the boundary in the wrong place.
+assert.ok(tacticalFrameBudget.callbackMillisecondsCeiling >= tacticalFrameCadenceBudget.framePeriodMilliseconds,
+  "the published callback ceiling must be at least the true frame period; it is that period rounded up for publication");
+assert.ok(tacticalFrameBudget.callbackMillisecondsCeiling - tacticalFrameCadenceBudget.framePeriodMilliseconds < 0.01,
+  "and it must be the SAME period rounded, not a different number: if these drift apart the table publishes a ceiling the cadence budget is not derived from");
+assert.ok(tacticalFrameCadenceBudget.intervalCeilingMilliseconds < (tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame + 1) * tacticalFrameCadenceBudget.framePeriodMilliseconds,
+  "the cadence ceiling must sit strictly BELOW a real dropped-frame interval at the declared refresh, or the gate admits the failure it exists to catch");
+assert.ok(tacticalFrameCadenceBudget.intervalCeilingMilliseconds > tacticalFrameCadenceBudget.framePeriodMilliseconds,
+  "and strictly above a healthy one, or it refuses every conforming run");
+
+// THE FLOOR REFUSES RATHER THAN DECIDING. A measurement below it cannot be one vsync at any refresh
+// this rule classifies, and a confident pass there would be an invention (#266).
+assert.match(`${tacticalFrameCadenceBudgetReason(stress, tacticalFrameCadenceBudget.minimumClassifiableIntervalMilliseconds / 2)}`, /unclassifiable/,
+  "an interval below the declared floor must be refused as unclassifiable, not passed as an excellent cadence");
+assert.equal(tacticalFrameCadenceBudgetReason(stress, tacticalFrameCadenceBudget.minimumClassifiableIntervalMilliseconds), null,
+  "the floor is inclusive, as the published cell says");
+
+console.log(`JUSTIFIED tactical-cadence-discriminates: the retained production intervals (${retainedIntervals.join(", ")} ms) breach the declared ${tacticalFrameBudget.callbackMillisecondsCeiling} ms frame ceiling and conformed to the superseded ceiling+${supersededToleranceMilliseconds} composite, so the removed tolerance was the only reason CI reported green; and ${droppedFrameIntervals.length} one-dropped-frame intervals DERIVED FROM OBSERVED PERIODS (${droppedFrameIntervals.map((interval) => interval.toFixed(3)).join(", ")} ms) are each refused by the ${tacticalFrameCadenceBudget.intervalCeilingMilliseconds} ms ceiling, none of them equal to it, while the superseded ${supersededCadenceCeilingMilliseconds} ms ceiling admitted ${admittedBySupersededCeiling.length} of them including the one at the declared refresh`);
 
 // The JUnit report and the PASS line are written HERE, after every assertion above, and nowhere earlier.
 // They used to be written mid-file: under a mutation the suite exited 1 having ALREADY published a green
