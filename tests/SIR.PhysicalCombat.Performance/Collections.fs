@@ -29,9 +29,11 @@
 ///   in src/SIR.Simulation cannot move a ratio; it can only break the BUILD, which prepare-native
 ///   already covers wherever SIR.slnx is compiled.
 ///   (Stated this way after review: an earlier revision said "the only external call in any measured
-///   loop is Edges.edgeBetween", which is false in both halves -- edgeBetween is in fixture SETUP at
-///   :151 and :169, and the measured loops do call List.exists, Map.containsKey, Set.ofArray and
-///   package Edge/Cell equality and hashing. The conclusion holds independently and more strongly.) Selecting on it would re-measure, on every domain PR, a number that could
+///   loop is Edges.edgeBetween", which is false in both halves -- both edgeBetween sites are fixture
+///   SETUP, not measured loops, and the measured loops do call List.exists, Map.containsKey,
+///   Set.ofArray and package Edge/Cell equality and hashing. The conclusion holds independently and
+///   more strongly. No line numbers are cited on purpose: the commit that added this note moved the
+///   very lines an earlier revision of it pinned.) Selecting on it would re-measure, on every domain PR, a number that could
 ///   not have changed. Recorded here because a row whose whole subject is "a regression gate nothing
 ///   runs is indistinguishable from a gate that passes" cannot leave its own non-selection unstated.
 ///

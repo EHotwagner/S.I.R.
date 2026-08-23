@@ -867,37 +867,66 @@ for (const [classification, paths] of Object.entries(sixRoutes)) {
 // a fourth spelling every time. So no text rule is asserted here at all: the step is RUN, with a
 // stub standing in for the join, and what it actually passes is compared to `subjectOrder`. If the
 // emitted set is the subject set, no text rule is needed; if it is not, no text rule would save us.
-const joinReceives = (receiptSubjects) => {
+// EVERY `run:` block in the job is executed and EVERY join invocation observed. There is no
+// "find the join step" any more, because that selection was itself the defect: round 2 located the
+// step by `body.indexOf("      - name: Join required gate receipts")`, an unguarded FIRST match, and
+// a decoy step carrying that same name with the correct list, placed ahead of a real step with
+// `collection-strategies` dropped, left the suite GREEN while the join that writes pr-verdict.json
+// received 16 of 17 subjects (crake-f392, mutant L4, executed under `bash -e -o pipefail`).
+//
+// The family kept moving UP a level rather than being answered: `match()` without /g, then a comment
+// stripper, then first-match `exec` on the loop, then an unanchored substring, then first-match
+// `indexOf` on the step NAME. Asking "which block is the real join?" is what keeps regenerating it.
+// So the question is not asked. Every block runs; every set the join is handed must be the subject
+// set. A decoy is then harmless by construction -- if it passes the right set it is invisible, and
+// if it passes the wrong one it is caught, whichever block happens to be "real".
+//
+// THE TEXT RULES THAT REMAIN, NAMED HONESTLY -- an earlier revision of this comment claimed "no text
+// rule is asserted at all", which was false while a locator existed. Two remain, and neither decides
+// a verdict:
+//   1. `jobBody("pr-verdict")` -- the shared workflow parser picks the job by name.
+//   2. the `run: |` block extraction below.
+// Both are LOCATORS, not predicates. Each is guarded by REFUSING rather than deciding: if no block is
+// extracted, or no block reaches the join, the assertions below fail closed with "refusing rather
+// than deciding" instead of passing. What a block CONTAINS is never inspected -- it is executed.
+const joinRunBlocks = (() => {
   const body = jobBody("pr-verdict");
-  const marker = "      - name: Join required gate receipts";
-  const at = body.indexOf(marker);
-  assert.notEqual(at, -1, "could not find pr-verdict's join step -- refusing rather than deciding");
-  const rest = body.slice(at);
-  const stepEnd = rest.indexOf("\n      - ", marker.length);
-  const step = stepEnd < 0 ? rest : rest.slice(0, stepEnd);
-  const run = /^        run: \|\n((?:          .*\n|\n)+)/mu.exec(step);
-  assert.ok(run, "could not read the join step's `run:` block -- refusing rather than deciding");
-  const script = run[1].split("\n").map((l) => (l.startsWith("          ") ? l.slice(10) : l)).join("\n");
+  const blocks = [...body.matchAll(/^        run: \|\n((?:          .*\n|\n)+)/gmu)]
+    .map((m) => m[1].split("\n").map((l) => (l.startsWith("          ") ? l.slice(10) : l)).join("\n"));
+  assert.ok(blocks.length > 0, "no `run:` block could be extracted from pr-verdict -- refusing rather than deciding");
+  return blocks;
+})();
 
+// Runs every extracted block with a receipt present for each of `receiptSubjects` and a stub in place
+// of the join, and returns EVERY argument set any block handed the join. Production shell flags:
+// Actions runs `shell: bash` as `bash -e -o pipefail`.
+const joinReceipts = (receiptSubjects) => {
   const dir = mkdtempSync(join(tmpdir(), "sir-join-"));
   try {
     mkdirSync(join(dir, "scripts"), { recursive: true });
     mkdirSync(join(dir, "artifacts/ci/results"), { recursive: true });
-    // `browser` deliberately absent from selectedGates so the browser-merge branch is not taken:
-    // this probe is about which receipts reach the join, not about shard merging.
+    // `browser` absent from selectedGates so the shard-merge branch is not taken: this probe's
+    // subject is the ENUMERATION handed to the join, not shard merging.
     writeFileSync(join(dir, "artifacts/ci/route.json"), JSON.stringify({ selectedGates: ["evidence"] }));
     writeFileSync(join(dir, "artifacts/ci/started-ms"), "0");
     for (const s of receiptSubjects) writeFileSync(join(dir, `artifacts/ci/results/${s}.json`), "{}");
-    // The stub IS the join. It reports what it was handed; nothing else in this check reads the shell.
+    // The stub IS the join. It reports what it was handed; no block's text is ever inspected.
     writeFileSync(join(dir, "scripts/ci-route.mjs"),
       'const a=process.argv.slice(2);const out=[];'
       + 'for(let i=0;i<a.length;i+=1){if(a[i]==="--result"){out.push(String(a[i+1]).split("=")[0]);}}'
       + 'console.log("JOIN RECEIVES: "+out.join(" "));\n');
-    writeFileSync(join(dir, "step.sh"), script);
-    const r = spawnSync("bash", ["step.sh"], { cwd: dir, encoding: "utf8" });
-    const line = (r.stdout || "").split("\n").find((l) => l.startsWith("JOIN RECEIVES:"));
-    assert.ok(line, `the join step did not reach the join. stdout:\n${r.stdout}\nstderr:\n${r.stderr}`);
-    return line.slice("JOIN RECEIVES:".length).trim().split(/\s+/u).filter(Boolean);
+    const seen = [];
+    joinRunBlocks.forEach((script, index) => {
+      writeFileSync(join(dir, `step-${index}.sh`), script);
+      const r = spawnSync("bash", ["-e", "-o", "pipefail", `step-${index}.sh`], { cwd: dir, encoding: "utf8", timeout: 60_000 });
+      for (const line of (r.stdout || "").split("\n")) {
+        if (line.startsWith("JOIN RECEIVES:")) {
+          seen.push({ block: index, gates: line.slice("JOIN RECEIVES:".length).trim().split(/\s+/u).filter(Boolean) });
+        }
+      }
+    });
+    assert.ok(seen.length > 0, "no `run:` block in pr-verdict reached the join -- refusing rather than deciding");
+    return seen;
   } finally { rmSync(dir, { recursive: true, force: true }); }
 };
 
@@ -906,30 +935,40 @@ const joinReceives = (receiptSubjects) => {
 {
   // Deliberately narrow: this establishes only that the probe can SEE an absence. Asserting the
   // full set here as well would duplicate assertion (1) below and fire FIRST, so a real omission
-  // would red with "self-test" in the message instead of naming the discarded subject.
-  const seen = joinReceives(subjectOrder.filter((s) => s !== "evidence"));
-  assert.ok(!seen.includes("evidence"), "join-probe self-test: a withheld receipt must not reach the join");
-  assert.ok(seen.length > 0, "join-probe self-test: the probe observed no arguments at all, so it can prove nothing");
+  // would red with "self-test" in the message instead of naming the discarded subject -- caught by
+  // the wrong assertion, which is not evidence about the assertion under test.
+  const withheldSeen = joinReceipts(subjectOrder.filter((s) => s !== "evidence"));
+  assert.ok(withheldSeen.every(({ gates }) => !gates.includes("evidence")),
+    "join-probe self-test: a withheld receipt must not reach the join");
+  assert.ok(withheldSeen.some(({ gates }) => gates.length > 0),
+    "join-probe self-test: the probe observed no arguments at all, so it can prove nothing");
 }
 
 // (1) EVERY SUBJECT REACHES THE JOIN. A name absent from the loop is a gate whose verdict is
 //     discarded, and this is the direction that has actually shipped a defect.
-assert.deepEqual(
-  [...joinReceives(subjectOrder)].sort(),
-  [...subjectOrder].sort(),
-  "pr-verdict's join does not receive every subject.\n"
-    + "  Executed the committed join step with a receipt present for every subject and observed what it\n"
-    + "  passed as `--result`. A subject missing here has its gate's verdict DISCARDED: the gate runs,\n"
-    + "  passes, uploads its receipt, and the join is never handed it.",
-);
+for (const { block, gates } of joinReceipts(subjectOrder)) {
+  assert.deepEqual(
+    [...gates].sort(),
+    [...subjectOrder].sort(),
+    `pr-verdict's join does not receive every subject (run: block #${block}).\n`
+      + "  Executed EVERY `run:` block in pr-verdict with a receipt present for every subject and observed\n"
+      + "  what each passed as `--result`. EVERY join invocation must receive the subject set -- so a decoy\n"
+      + "  block cannot mask a real one, whichever the workflow considers real. A subject missing here has\n"
+      + "  its gate's verdict DISCARDED: the gate runs, passes, uploads its receipt, and the join is never\n"
+      + "  handed it.",
+  );
+}
 
 // (2) AND IT RECEIVES NOTHING ELSE. A receipt on disk that is not a subject must not reach the join
 //     -- which also shows the step enumerates a declared list rather than globbing the directory.
 {
   const canary = "zz-not-a-subject";
-  const seen = joinReceives([...subjectOrder, canary]);
-  assert.ok(!seen.includes(canary), `pr-verdict's join received \`${canary}\`, a receipt that is no subject`);
-  assert.deepEqual([...seen].sort(), [...subjectOrder].sort(), "pr-verdict's join received something other than the subject set");
+  for (const { block, gates } of joinReceipts([...subjectOrder, canary])) {
+    assert.ok(!gates.includes(canary),
+      `pr-verdict's join received \`${canary}\`, a receipt that is no subject (run: block #${block})`);
+    assert.deepEqual([...gates].sort(), [...subjectOrder].sort(),
+      `pr-verdict's join received something other than the subject set (run: block #${block})`);
+  }
 }
 
 // --- S.I.R.#309: every classification's job graph must be SATISFIABLE -----------------------
