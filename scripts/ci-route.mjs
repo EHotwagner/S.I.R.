@@ -23,7 +23,7 @@ export const feedbackAcceptanceTargetMilliseconds = feedbackBudgetMilliseconds -
 export const feedbackPipelineOverheadMilliseconds = 30_000;
 export const feedbackWaveBudgetMilliseconds = 180_000;
 export const feedbackHeadroomBasisPoints = 2_000;
-export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence"];
+export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence", "collection-strategies"];
 export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web", "prepare-docs"];
 export const helperOrder = ["spatial-mutations", "cancellation-mutations", "browser-general-helper", "browser-delivery"];
 export const subjectOrder = ["integrity", ...producerOrder, ...helperOrder, ...gateOrder];
@@ -37,6 +37,31 @@ export const gateParts = {
   "browser-delivery": ["web", "native"],
   documentation: ["web", "docs"],
   evidence: [],
+  // S.I.R.#263. `["native"]` puts this gate in WAVE 2 (subjectWave reads exactly this), and the
+  // wave is the whole point of the placement. As an `integrity` subject it sat in wave 1 inside the
+  // job that also runs `evidence` -- and because run-ci-gate.sh anchors every receipt's `total` at
+  // the JOB's first step, `evidence.total` contained it, `evidence` was the wave-1 maximum, and its
+  // 23.0s landed directly on the feedback critical path (`feedback-headroom-eroded` 332580 > 312000,
+  // run 32654620076). Here it is its own job, parallel with a wave-2 maximum that has been
+  // far above this gate's own cost in every sampled run, so it contributes nothing to that maximum.
+  //
+  // That is DAG parallelism, not concealment: this subject emits its own joined
+  // sir.ci-gate-result/v1 receipt with its own timings, and `pr-verdict` requires it like any other.
+  //
+  // NO FIGURE FOR THE WAVE MAXIMUM IS QUOTED HERE, ON PURPOSE. Earlier revisions cited a range and a
+  // counterfactual; both went stale within hours and disagreed with each other and with the runs,
+  // because that quantity is S.I.R.#326's subject and is not stable. What this file needs to state
+  // is the RELATION -- this gate is the maximum of neither wave -- and the join checks that against
+  // live receipts rather than against a constant restated here.
+  //
+  // ROUTING BOUNDARY, stated because it is a decision and not a gap: a `domain` route changes
+  // src/SIR.Simulation -- this harness's only ProjectReference, so genuinely a compile input -- and
+  // does NOT select this gate. That is intended: every occurrence of SpatialQuery, Simulation or
+  // TacticalSceneProjection in Collections.fs is a comment or a string literal, and its only opens
+  // are System, System.Diagnostics, System.Collections.Generic and FS.GG.Game.Core -- so a change
+  // there cannot move a ratio; it can only break the build, which prepare-native already covers.
+  // The reasoning lives at the top of Collections.fs alongside what the gate does and does not guard.
+  "collection-strategies": ["native"],
 };
 // S.I.R.#304. THE one derivation of "which producers does this route need". Both sides of the
 // pipeline read it: `joinRoute` builds its expected set from it, and `route --github-output`
@@ -89,6 +114,10 @@ export const expectedBuildInvocations = {
   "browser-delivery": [],
   documentation: [],
   evidence: [],
+  // S.I.R.#263. `dotnet restore` and `dotnet run --no-build` are not traced (see
+  // scripts/dotnet-invocation-trace.sh: restore has no arm, and a `run` carrying `--no-build`
+  // falls through to a passthrough exec). The one traced invocation is the harness build.
+  "collection-strategies": ["build:tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj"],
 };
 
 const classifications = {

@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { tmpdir } from "node:os";
+import { spawnSync } from "node:child_process";
 import { canonicalArtifactBindings, expectedBuildInvocations, expectedProducersFor, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, feedbackAcceptanceTargetMilliseconds, feedbackHeadroomMilliseconds, feedbackBudgetFor, feedbackWaveCount, feedbackPipelineOverheadMilliseconds, feedbackWaveBudgetMilliseconds, feedbackHeadroomBasisPoints, subjectWave, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
 import { browserShardCapacityFor } from "./browser-shard-capacity.mjs";
 import { mergeBrowserShardCases, parseBrowserShardJUnit } from "./browser-junit.mjs";
@@ -302,14 +304,16 @@ assert.ok(unknownScenarioOwner.failures.some(({ code, invocation }) =>
   code === "unknown-build-invocation" && invocation === "fable:tests/SIR.Client.Tests/UnknownRuntime.fsproj"));
 assert.deepEqual(contracts.timingPhases, ["queue", "setup", "restore", "build", "transport", "test", "total"]);
 assert.deepEqual(contracts.schemas, { route: routeSchema, artifactManifest: "sir.ci-artifact-manifest/v2", gateResult: gateSchema, timing: timingSchema, join: joinSchema });
-for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-mutations:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-docs:", "domain-conformance:", "cross-runtime:", "browser:", "browser-general-helper:", "browser-delivery:", "documentation:", "pr-verdict:", "cost-observer:", "protected-preflight:", "full-qualification:", "protected-verdict:", "integrity-sweep:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
+for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-mutations:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-docs:", "domain-conformance:", "cross-runtime:", "browser:", "browser-general-helper:", "browser-delivery:", "documentation:", "collection-strategies:", "pr-verdict:", "cost-observer:", "protected-preflight:", "full-qualification:", "protected-verdict:", "integrity-sweep:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
 for (const removedJob of ["browser-general-helper-2", "browser-general-helper-3"]) assert.doesNotMatch(workflow, new RegExp(`^  ${removedJob}:$`, "mu"));
 assert.match(workflow, /if: always\(\)/u);
 assert.match(workflow, /if: always\(\) && github\.event_name == 'pull_request'/u);
 assert.match(workflow, /schedule:/u);
 assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/u);
 assert.match(workflow, /hashFiles\('\*\*\/packages\.lock\.json', 'Directory\.Packages\.props', '\.config\/dotnet-tools\.json'\)/u);
-assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 19);
+// S.I.R.#263 added the `collection-strategies` job, so 19 became 20. An absolute count, updated
+// deliberately: it is what goes red if a job is added or removed without a look.
+assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 20);
 for (const part of ["native", "fable", "web", "docs"]) assert.match(workflow, new RegExp(`qualify-pr\\.sh prepare-part ${part}`, "u"));
 assert.doesNotMatch(workflow, /qualify-pr\.sh prepare-part server/u);
 // S.I.R.#304. This line used to read `/classification != 'evidence-only'/` -- it PINNED the
@@ -406,7 +410,12 @@ assert.match(jobBody("browser"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/brow
 assert.match(jobBody("browser-general-helper"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-3\.junit\.xml[\s\S]*SIR_JUNIT_OUTPUT_2: artifacts\/ci\/results\/browser-general-4\.junit\.xml/u);
 assert.match(jobBody("pr-verdict"), /test-browser-global-merge\.mjs[\s\S]*browser-general-1\.junit\.xml[\s\S]*browser-general-2\.junit\.xml[\s\S]*browser-general-3\.junit\.xml[\s\S]*browser-general-4\.junit\.xml/u);
 assert.match(jobBody("pr-verdict"), /browser_merge_status=\$\?[\s\S]*rm -f artifacts\/ci\/results\/browser-general-helper\.json/u);
-assert.match(workflow, /for gate in integrity prepare-native prepare-fable prepare-web prepare-docs spatial-mutations cancellation-mutations browser-general-helper browser-delivery rules spatial cancellation cross-runtime browser documentation evidence/u);
+// S.I.R.#263/F3. The literal restatement of pr-verdict's subject loop that stood here is DELETED.
+// It was the #304 duplicate this change exists to remove -- a second declaration of `subjectOrder`
+// maintained by hand -- and it had already gone stale: it omitted `collection-strategies` and passed
+// anyway, because a substring match against a longer list is a prefix match. It also fired BEFORE the
+// derived check below, masking that check's refusal message on every unreadable-input case. The
+// equality asserted further down reads the loop out of this same workflow and needs no literal twin.
 assert.match(workflow, /\.\/scripts\/qualify-production\.sh --protected/u);
 const fullQualification = readFileSync(new URL("./qualify-production.sh", import.meta.url), "utf8");
 assert.ok(fullQualification.indexOf("dotnet restore SIR.slnx --locked-mode") < fullQualification.indexOf("test-conformance.sh"));
@@ -554,7 +563,9 @@ assert.match(fullQualification, /if \[\[ -n \$\{SIR_PROTECTED_PREFLIGHT_RECEIPT:
 assert.match(fullQualification, /src\/SIR\.Replay\.Web\/SIR\.Replay\.Web\.fsproj="\$protected_main_fable_builds"/u);
 assert.match(fullQualification, /src\/SIR\.Client\.Web\/SIR\.RulesExplorer\.Web\.fsproj="\$protected_main_fable_builds"/u);
 for (const subject of ["rules", "spatial", "cancellation", "cross-runtime", "historical-compatibility", "governance", "production-browser", "documentation", "performance", "sdd-verify"]) assert.match(fullQualification, new RegExp(`"${subject}"`, "u"));
-assert.equal(gateOrder.length, 7);
+// S.I.R.#263 added `collection-strategies`, so 7 became 8. Absolute by design: this is the line
+// that goes red when a gate is added or removed without a deliberate look at the pins below it.
+assert.equal(gateOrder.length, 8);
 
 
 // ---------------------------------------------------------------------------------------
@@ -572,6 +583,10 @@ const emittingJob = {
   "browser-delivery": "browser-delivery", "cross-runtime": "cross-runtime",
   browser: "browser", "browser-general-helper": "browser-general-helper",
   documentation: "documentation",
+  // S.I.R.#263. Its own job, which is the whole placement decision: as an `integrity` subject it
+  // would have emitted from the job that also emits `evidence`, and that job's receipt `total` is
+  // anchored at the JOB's first step, so its cost would have been inside the wave-1 maximum.
+  "collection-strategies": "collection-strategies",
 };
 for (const subject of subjectOrder) {
   const needsLine = /^\s*needs: (.+)$/mu.exec(jobBody(emittingJob[subject]))?.[1] ?? "";
@@ -610,6 +625,13 @@ const measuredTotals = {
   "prepare-native": 104_000, "prepare-fable": 98_000, "prepare-web": 120_000, "prepare-docs": 102_000,
   rules: 120_000, spatial: 120_000, cancellation: 120_000, "browser-delivery": 120_000,
   "cross-runtime": 70_000, browser: 89_000, "browser-general-helper": 78_000, documentation: 49_000,
+  // S.I.R.#263. NOT from run 32607930272, which predates this gate -- stated rather than smuggled
+  // in among numbers that do come from it. 23_010ms is this gate's own measured marginal cost on
+  // run 32654620076 (restore+build 15_530 + measurement 7_480), where it still ran as an
+  // `integrity` subject; the wave-2 job wrapper differs, so treat it as the right MAGNITUDE rather
+  // than a reading of the wave-2 job. That is all this fixture needs it to be: the two wave maxima
+  // asserted below are unchanged by its presence, which is the placement claim itself.
+  "collection-strategies": 23_010,
 };
 const measuredReceipt = (gate, override) => {
   const total = override ?? measuredTotals[gate];
@@ -822,6 +844,229 @@ for (const [classification, paths] of Object.entries(sixRoutes)) {
   assert.deepEqual([...ran].sort(), [...expected].sort(),
     `${classification}: ci.yml runs [${ran}] but pr-verdict expects [${expected}] -- these must be one declaration`);
 }
+// --- S.I.R.#263: the set the JOIN ACTUALLY RECEIVES is `subjectOrder` -------------------------
+//
+// `pr-verdict` builds its `--result` arguments from a hand-written `for gate in ...; do` loop in
+// ci.yml, and nothing joined that loop to `subjectOrder`. A subject missing from it is never handed
+// to the join, so its gate RUNS, PASSES, uploads its receipt, and its verdict is silently discarded
+// -- measured on run 32656572583, where `collection-strategies` passed in 51s and `pr-verdict`
+// reported `missing-gate-result` for it.
+//
+// THIS IS CHECKED BY EXECUTION, NOT BY READING THE SHELL, and the reason is a measured history.
+// Every textual answer to this question has been defeated by a new spelling within one round:
+//
+//   S.I.R.#327 C2     `match()` without /g -- first occurrence only
+//   S.I.R.#327 F2/r3  string literals defeating a comment stripper
+//   S.I.R.#263 F3     `exec` first-match, no cardinality
+//   S.I.R.#263 G1     unanchored substring + non-greedy body: a `#` comment, a NESTED
+//                     `for gate in`, and an accumulator named `legacy_args` each satisfied the
+//                     text while the join received a hand-enumerated set WITHOUT
+//                     `collection-strategies` -- all three exit 0 against the committed suite
+//
+// Cardinality, anchoring and substring probes are three text rules stacked, and the family produces
+// a fourth spelling every time. So no text rule is asserted here at all: the step is RUN, with a
+// stub standing in for the join, and what it actually passes is compared to `subjectOrder`. If the
+// emitted set is the subject set, no text rule is needed; if it is not, no text rule would save us.
+// EVERY `run:` block in the job is executed and EVERY join invocation observed. There is no
+// "find the join step" any more, because that selection was itself the defect: round 2 located the
+// step by `body.indexOf("      - name: Join required gate receipts")`, an unguarded FIRST match, and
+// a decoy step carrying that same name with the correct list, placed ahead of a real step with
+// `collection-strategies` dropped, left the suite GREEN while the join that writes pr-verdict.json
+// received 16 of 17 subjects (crake-f392, mutant L4, executed under `bash -e -o pipefail`).
+//
+// The family kept moving UP a level rather than being answered: `match()` without /g, then a comment
+// stripper, then first-match `exec` on the loop, then an unanchored substring, then first-match
+// `indexOf` on the step NAME. Asking "which block is the real join?" is what keeps regenerating it.
+// So the question is not asked. Every block runs; every set the join is handed must be the subject
+// set. A decoy is then harmless by construction -- if it passes the right set it is invisible, and
+// if it passes the wrong one it is caught, whichever block happens to be "real".
+//
+// THE TEXT RULES THAT REMAIN, NAMED HONESTLY -- an earlier revision of this comment claimed "no text
+// rule is asserted at all", which was false while a locator existed. Two remain, and neither decides
+// a verdict:
+//   1. `jobBody("pr-verdict")` -- the shared workflow parser picks the job by name.
+//   2. the `run: |` block extraction below.
+// Both are LOCATORS, not predicates. Each is guarded by REFUSING rather than deciding: if no block is
+// extracted, or no block reaches the join, the assertions below fail closed with "refusing rather
+// than deciding" instead of passing. What a block CONTAINS is never inspected -- it is executed.
+const joinRunBlocks = (() => {
+  // `jobBody` returns "" for a job it cannot find, so this locator is weaker than "refuses when the
+  // job is absent" would suggest. It is not load-bearing: a renamed `pr-verdict` reds one check
+  // earlier, at the pre-existing `/^  pr-verdict:$/mu` assertion above, and an empty body extracts
+  // no blocks and refuses below. Said plainly rather than left implied.
+  const body = jobBody("pr-verdict");
+  const blocks = [...body.matchAll(/^        run: \|\n((?:          .*\n|\n)+)/gmu)]
+    .map((m) => m[1].split("\n").map((l) => (l.startsWith("          ") ? l.slice(10) : l)).join("\n"));
+  assert.ok(blocks.length > 0, "no `run:` block could be extracted from pr-verdict -- refusing rather than deciding");
+  return blocks;
+})();
+
+// Runs every extracted block with a receipt present for each of `receiptSubjects` and a stub in place
+// of the join, and returns EVERY argument set any block handed the join. Production shell flags:
+// Actions runs `shell: bash` as `bash -e -o pipefail`.
+
+// THE FIXTURE IS A ROUTE THAT ACTUALLY SELECTS THIS GATE, DERIVED -- NOT PINNED.
+//
+// An earlier revision pinned `{selectedGates: ["evidence"]}`, and that was the defect that exhausted
+// this row's first review chain. `collection-strategies` is selected by exactly ONE classification,
+// `cross-cutting`, and `cross-cutting` ALWAYS ALSO SELECTS `browser` -- so on every route where this
+// gate really runs, the join takes its `selectedGates.includes("browser")` branch, and the pinned
+// fixture executed that branch ZERO times. The fixture was a route on which the gate under test is
+// not selected at all. One line apart: a route-conditional filter dropping this subject on browser
+// routes was GREEN under the pinned fixture and RED the moment the fixture included `browser`.
+//
+// So the fixture is derived from the router and then CHECKED against the thing it must exercise.
+const joinFixtureRoute = (() => {
+  const candidate = routePaths([".github/workflows/ci.yml"], { commit: "a".repeat(40), tree: "b".repeat(40) });
+  assert.ok(
+    candidate.selectedGates.includes("collection-strategies"),
+    "join-probe fixture must be a route that SELECTS the gate under test, or it exercises nothing",
+  );
+  // Not decoration: this is the co-occurrence the pinned fixture missed. If a future classification
+  // selects `collection-strategies` without `browser`, this stops being the branch the join takes and
+  // the fixture must be revisited deliberately rather than silently drifting.
+  assert.ok(
+    candidate.selectedGates.includes("browser"),
+    "join-probe fixture must also select `browser`: that is the branch the join takes on every route"
+      + " where `collection-strategies` runs, and executing the other branch tests nothing about it",
+  );
+  return candidate.selectedGates;
+})();
+
+// Runs every extracted block with a receipt present for each of `receiptSubjects` and a stub in place
+// of the join, and returns EVERY argument set any block handed the join, each with the `--output` it
+// was told to write. Production shell flags: Actions runs `shell: bash` as `bash -e -o pipefail`.
+//
+// STATED LIMIT: the browser branch is exercised with the shard merge SUCCEEDING. On a merge failure
+// the committed step deliberately `rm -f`s the helper receipt, so the join then legitimately receives
+// one subject fewer -- a different subject from the enumeration this probe is about.
+const joinReceipts = (receiptSubjects) => {
+  const dir = mkdtempSync(join(tmpdir(), "sir-join-"));
+  try {
+    mkdirSync(join(dir, "scripts"), { recursive: true });
+    mkdirSync(join(dir, "artifacts/ci/results"), { recursive: true });
+    writeFileSync(join(dir, "artifacts/ci/route.json"), JSON.stringify({ selectedGates: joinFixtureRoute }));
+    writeFileSync(join(dir, "artifacts/ci/started-ms"), "0");
+    for (const s of receiptSubjects) writeFileSync(join(dir, `artifacts/ci/results/${s}.json`), "{}");
+    for (const shard of ["browser-general", "browser-general-1", "browser-general-2", "browser-general-3", "browser-general-4"]) {
+      writeFileSync(join(dir, `artifacts/ci/results/${shard}.junit.xml`), "<testsuites/>\n");
+    }
+    writeFileSync(join(dir, "scripts/test-browser-global-merge.mjs"), "process.exit(0);\n");
+    // The job's OTHER `run:` blocks are given what they need too, so that a non-zero exit means
+    // something real rather than a missing fixture. Without this the baseline has blocks failing for
+    // sandbox reasons, and "a block failed" cannot then be used as a signal -- which is what let a
+    // join moved into an unexecutable helper pass as merely unobserved.
+    mkdirSync(join(dir, "artifacts/ci/gates/gate-integrity"), { recursive: true });
+    writeFileSync(join(dir, "artifacts/ci/gates/gate-integrity/integrity.json"), "{}");
+    writeFileSync(join(dir, "artifacts/ci/gates/gate-integrity/collected-integrity.json"),
+      `${JSON.stringify({ job: "integrity", produced: ["integrity.json"] })}\n`);
+    // The stub IS the join. It reports what it was handed and where it was told to write it; no
+    // block's text is ever inspected.
+    writeFileSync(join(dir, "scripts/ci-route.mjs"),
+      'const a=process.argv.slice(2);const out=[];let dest="";'
+      + 'for(let i=0;i<a.length;i+=1){if(a[i]==="--result"){out.push(String(a[i+1]).split("=")[0]);}'
+      + 'if(a[i]==="--output"){dest=String(a[i+1]);}}'
+      + 'console.log("JOIN RECEIVES: "+out.join(" ")+" :: OUTPUT: "+dest);\n');
+    const seen = [];
+    const exits = [];
+    joinRunBlocks.forEach((script, index) => {
+      writeFileSync(join(dir, `step-${index}.sh`), script);
+      const r = spawnSync("bash", ["-e", "-o", "pipefail", `step-${index}.sh`], {
+        cwd: dir,
+        encoding: "utf8",
+        timeout: 60_000,
+        env: { ...process.env, SIR_ROUTE_CONTRACT_DRIFT: "false", SIR_ROUTE_CONTRACT_MISSING: "", SIR_ROUTE_CONTRACT_UNEXPECTED: "" },
+      });
+      exits.push({ block: index, status: r.status, stderr: (r.stderr || "").split("\n")[0] });
+      for (const line of (r.stdout || "").split("\n")) {
+        if (!line.startsWith("JOIN RECEIVES:")) continue;
+        const [gatesPart, outputPart] = line.slice("JOIN RECEIVES:".length).split(":: OUTPUT:");
+        seen.push({
+          block: index,
+          gates: gatesPart.trim().split(/\s+/u).filter(Boolean),
+          output: (outputPart ?? "").trim(),
+        });
+      }
+    });
+    // EVERY BLOCK MUST SUCCEED, or this probe has an UNOBSERVED PATH and must refuse. A block that
+    // fails before reaching the join cannot be ruled out as the one that would have written the
+    // verdict -- measured: moving the real join into a helper script this sandbox cannot execute, and
+    // adding a decoy block claiming the same `--output` with the correct set, passed while the real
+    // join handed 16. Every block is now given what it needs, so a non-zero exit means something real.
+    const failed = exits.filter(({ status }) => status !== 0);
+    assert.deepEqual(
+      failed.map(({ block }) => block), [],
+      "a `run:` block in pr-verdict failed before this probe could observe it"
+        + ` (${failed.map(({ block, status, stderr }) => `#${block} exit ${status}: ${stderr}`).join("; ")}).`
+        + " An unobserved block cannot be ruled out as the one that writes the verdict -- refusing rather than deciding.",
+    );
+    assert.ok(seen.length > 0, "no `run:` block in pr-verdict reached the join -- refusing rather than deciding");
+    // `seen.length > 0` proves SOME block reached the join, not that the block writing the PR VERDICT
+    // did. Measured: moving the real join into a helper script with 16 subjects, while a second block
+    // hands the stub the correct 17, left an earlier revision green. The verdict writer is identified
+    // by the `--output` it was HANDED -- argv the stub observed, not text anyone read.
+    const verdictWriters = seen.filter(({ output }) => output === "artifacts/ci/pr-verdict.json");
+    assert.ok(
+      verdictWriters.length > 0,
+      "no `run:` block handed the join `--output artifacts/ci/pr-verdict.json`, so the block that writes the"
+        + " PR verdict was never observed -- refusing rather than deciding",
+    );
+    // EXACTLY ONE, and this is cardinality on OBSERVED ARGV rather than on text -- the distinction that
+    // matters, because argv is what the join was handed and text is what someone wrote. It closes the
+    // remaining shape of the helper-script escape: move the real join into a helper this probe cannot
+    // execute and the writer goes unobserved (refused above); add a decoy that claims the same
+    // `--output` to satisfy that, and there are now two claimants and this fires.
+    assert.equal(
+      verdictWriters.length, 1,
+      `${verdictWriters.length} \`run:\` blocks handed the join \`--output artifacts/ci/pr-verdict.json\``
+        + " (blocks " + verdictWriters.map(({ block }) => block).join(", ") + ")."
+        + " Exactly one may write the PR verdict, or which set decides the verdict is ambiguous.",
+    );
+    return seen;
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+};
+
+// SELF-TEST FIRST: the probe must be able to SEE a missing subject, or the assertion below is
+// decoration. Withhold one receipt and it must be absent from what the join receives.
+{
+  // Deliberately narrow: this establishes only that the probe can SEE an absence. Asserting the
+  // full set here as well would duplicate assertion (1) below and fire FIRST, so a real omission
+  // would red with "self-test" in the message instead of naming the discarded subject -- caught by
+  // the wrong assertion, which is not evidence about the assertion under test.
+  const withheldSeen = joinReceipts(subjectOrder.filter((s) => s !== "evidence"));
+  assert.ok(withheldSeen.every(({ gates }) => !gates.includes("evidence")),
+    "join-probe self-test: a withheld receipt must not reach the join");
+  assert.ok(withheldSeen.some(({ gates }) => gates.length > 0),
+    "join-probe self-test: the probe observed no arguments at all, so it can prove nothing");
+}
+
+// (1) EVERY SUBJECT REACHES THE JOIN. A name absent from the loop is a gate whose verdict is
+//     discarded, and this is the direction that has actually shipped a defect.
+for (const { block, gates } of joinReceipts(subjectOrder)) {
+  assert.deepEqual(
+    [...gates].sort(),
+    [...subjectOrder].sort(),
+    `pr-verdict's join does not receive every subject (run: block #${block}).\n`
+      + "  Executed EVERY `run:` block in pr-verdict with a receipt present for every subject and observed\n"
+      + "  what each passed as `--result`. EVERY join invocation must receive the subject set -- so a decoy\n"
+      + "  block cannot mask a real one, whichever the workflow considers real. A subject missing here has\n"
+      + "  its gate's verdict DISCARDED: the gate runs, passes, uploads its receipt, and the join is never\n"
+      + "  handed it.",
+  );
+}
+
+// (2) AND IT RECEIVES NOTHING ELSE. A receipt on disk that is not a subject must not reach the join
+//     -- which also shows the step enumerates a declared list rather than globbing the directory.
+{
+  const canary = "zz-not-a-subject";
+  for (const { block, gates } of joinReceipts([...subjectOrder, canary])) {
+    assert.ok(!gates.includes(canary),
+      `pr-verdict's join received \`${canary}\`, a receipt that is no subject (run: block #${block})`);
+    assert.deepEqual([...gates].sort(), [...subjectOrder].sort(),
+      `pr-verdict's join received something other than the subject set (run: block #${block})`);
+  }
+}
+
 // --- S.I.R.#309: every classification's job graph must be SATISFIABLE -----------------------
 // S.I.R.#304 made producer SELECTION one declaration. It did not, and could not, decide whether
 // the workflow's `needs:` GRAPH can be satisfied once that selection is correct -- and it is a
