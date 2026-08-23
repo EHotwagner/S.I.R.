@@ -126,6 +126,14 @@ case "$mode" in
     fi
     if integrity_runs sdd-byte-stability; then ./scripts/test-item-184-sdd-byte-stability.sh; fi
     if integrity_runs feedback-audit; then ./scripts/test-feedback-audit-binding-exceptions.sh; fi
+    # S.I.R.#265. Holds docs/coordination-engine-contracts.md to the coordination engine it
+    # documents. It is pure — it loads FS.GG.Coord.Core.dll and runs `facts`, performs no board IO,
+    # and needs no prepared part — so it dispatches directly here rather than as a `gate` subject.
+    # An earlier attempt (S.I.R.#255, reverted at c3b10be) routed it through `run-ci-gate.sh` as a
+    # gate subject, where `ci-route.mjs` refuses an unknown subject and the route exited 1 on a
+    # correct document and 1 on a falsified one alike. Here the subject is planned and gated exactly
+    # like the five above it, so the sweep covers it for free and per-PR cost stays path-conditional.
+    if integrity_runs review-contract; then ./scripts/test-review-contract-coherence.sh; fi
     ;;
   prepare-part)
     part=${1:?qualify-pr prepare-part requires native|fable|web|server|docs}
