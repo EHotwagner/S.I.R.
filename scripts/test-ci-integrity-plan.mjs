@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
 import { costBoundedSubjects, planFor, subjectOrder, sweepEnvironmentVariable, sweepRequested } from "./ci-integrity-plan.mjs";
 import { routePaths } from "./ci-route.mjs";
 
@@ -288,7 +290,23 @@ const integrityBody = integrityCase.slice(0, caseEnd);
 // comment, and would then report a dispatch where none exists. Both committed layouts are
 // admitted — the one-liner (`; then <cmd>; fi`) and the multi-line block (`; then` at end of
 // line) — because the anchor is the guard, and which side of it the body sits on is style.
-const dispatched = [...integrityBody.matchAll(/^ +if integrity_runs ([a-z0-9-]+); then(?: .*)?$/gmu)].map(([, id]) => id);
+//
+// The guard's full TEXT is captured too, not only its id — the assertions further down execute it,
+// and a scan that kept only the id could not have seen what round 1's F1 was about.
+const guards = [];
+{
+  const lines = integrityBody.split("\n");
+  for (let index = 0; index < lines.length; index += 1) {
+    const opener = /^(?<indent> +)if integrity_runs (?<id>[a-z0-9-]+); then(?<tail>.*)$/u.exec(lines[index]);
+    if (!opener) continue;
+    const { indent, id, tail } = opener.groups;
+    if (/\bfi\s*$/u.test(tail)) { guards.push({ id, block: lines[index] }); continue; }
+    const close = lines.findIndex((line, at) => at > index && line === `${indent}fi`);
+    assert.notEqual(close, -1, `the guard for ${id} has no closing \`fi\` at its own indent; refusing rather than probing a truncated block`);
+    guards.push({ id, block: lines.slice(index, close + 1).join("\n") });
+  }
+}
+const dispatched = guards.map(({ id }) => id);
 assert.ok(dispatched.length > 0, "found no `if integrity_runs …; then` guard at all — the scan below would pass vacuously");
 assert.equal(
   new Set(dispatched).size,
@@ -311,6 +329,142 @@ assert.deepEqual(
   assert.equal(disagree(["a", "b"], ["a", "b"]).length, 0, "plan/dispatch self-test: agreement must read as agreement");
   assert.deepEqual(disagree(["a", "b"], ["a"]), ["b"], "plan/dispatch self-test: a planned-but-undispatched subject must be detectable");
   assert.deepEqual(disagree(["a"], ["a", "b"]), ["b"], "plan/dispatch self-test: a dispatched-but-unplanned guard must be detectable");
+}
+
+// ---------------------------------------------------------------------------
+// S.I.R.#265 round 1, F1 — a guard that RUNS is not a guard whose VERDICT COUNTS.
+//
+// Everything above pins that a call site exists and carries the right id. It pins nothing about
+// what happens to that call's exit status, and those are different properties. Measured through
+// the production route by smew-2162: changing one dispatch to `… coherence.sh || true` — one line
+// added, one removed — left this suite green, left every other gate green, and made
+// `run-ci-gate.sh integrity` exit 0 with a `pass` receipt, while its own 482-line log still
+// contained `FAILED  doc:scalar:wait-window-max-hours`. The gate ran. It caught the falsification.
+// It printed it. The run was green. `then :; fi` and pointing the guard at another subject's
+// script survived identically.
+//
+// That is this row's own defect one layer in. #265 exists because a coherence gate was wired so
+// that nothing ran it, making it indistinguishable from a gate that passes; a guard whose verdict
+// is discardable is indistinguishable in precisely the same way, and costs 106s to be so.
+//
+// SO THE PROPERTY IS ASSERTED BEHAVIOURALLY, NOT TEXTUALLY. A blocklist was considered and
+// rejected: `|| true` is one spelling of a class that also holds `|| :`, `; true`, `&& true`,
+// `set +e`, a trailing `&`, and a subshell, and pinning the spellings someone has thought of is
+// the shape of check this whole row exists to delete. Each committed guard is instead EXECUTED in
+// a sandbox where every command it invokes fails, and required to fail. That measures the property
+// itself, so the spellings nobody has thought of are covered too.
+// ---------------------------------------------------------------------------
+
+// Runs one guard block with `integrity_runs` forced true and EVERY command it names replaced by a
+// stub that records its own argv and exits 1. Returns the guard's status and what it invoked.
+//
+// `mkdtempSync` rather than a fixed path, deliberately: a probe that writes stubs to a shared
+// filename is a differential another process can silently overwrite, which is the failure this
+// very item is about. Each call gets a directory no other process names.
+const probeGuard = (block) => {
+  const root = mkdtempSync(join(tmpdir(), "sir-integrity-guard-probe-"));
+  const log = join(root, "invocations.log");
+  const shim = join(root, ".shim");
+  mkdirSync(shim, { recursive: true });
+  const stub = (path) => {
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, `#!/usr/bin/env bash\nprintf '%s %s\\n' "$0" "$*" >> ${JSON.stringify(log)}\nexit 1\n`);
+    chmodSync(path, 0o755);
+  };
+  // Every in-tree script the guard names, created at the path the guard names it by.
+  for (const [, relative] of block.matchAll(/(?:^|[\s(])(?:\.\/)?((?:\.github\/)?scripts\/[A-Za-z0-9._-]+)/gu)) stub(join(root, relative));
+  // Every PATH command it starts a line with (`node …`, `dotnet …`). Shell KEYWORDS and BUILTINS
+  // are excluded — and `true`/`:` would be harmless anyway, since bash resolves a builtin before
+  // PATH and never consults a stub named for one. That is load-bearing: a stubbed `true` that
+  // exited 1 would make `|| true` fail and the mutant this whole block exists to catch would pass.
+  const shellWords = new Set(["if", "fi", "then", "else", "elif", "do", "done", "true", "false", "set", "echo", "printf", "return", "exit", "local"]);
+  for (const [, name] of block.matchAll(/^\s*([a-z][a-z0-9-]*)\s/gmu)) if (!shellWords.has(name)) stub(join(shim, name));
+  // THE PROBE OWNS ITS ENVIRONMENT, and this is measured rather than tidy. `--noprofile --norc`
+  // does NOT stop a non-interactive bash from sourcing `$BASH_ENV`, and in this workspace
+  // `BASH_ENV=scripts/agent-env.sh`, which PREPENDS `$HOME/.dotnet` to PATH. Passing the shim in
+  // `env` alone therefore lost the race: the real `dotnet` ran, no stub was recorded, and the
+  // guard exited non-zero for a reason that had nothing to do with the guard. Assertion 2 below
+  // refused that as proof, which is the only reason it was noticed. So the file is removed from
+  // the child AND the shim is prepended INSIDE the script, after anything BASH_ENV would have done.
+  const env = { ...process.env, PATH: `${shim}:${process.env.PATH}` };
+  delete env.BASH_ENV;
+  delete env.ENV;
+  const probe = spawnSync("bash", ["--noprofile", "--norc", "-c",
+    `export PATH=${JSON.stringify(shim)}:"$PATH"\nset -euo pipefail\nintegrity_runs() { return 0; }\n${block}\n`], {
+    cwd: root,
+    env,
+  });
+  const invoked = existsSync(log) ? readFileSync(log, "utf8") : "";
+  rmSync(root, { recursive: true, force: true });
+  return { status: probe.status, invoked };
+};
+
+// Self-test FIRST. A probe that cannot tell a neutered guard from a live one would report every
+// committed guard sound, which is the same silence being repaired. The `|| true` row is round 1's
+// finding stated as an executable expectation: it is the exact mutant that must red.
+//
+// EVERY ROW BELOW IS A MEASUREMENT, NOT AN EXPECTATION. Two spellings that read like escapes are
+// not escapes here, and asserting them would have been asserting something false: under
+// `set -euo pipefail` a failing command aborts the block at once, so `cmd; true` never reaches its
+// `true` and `set +e; cmd` still ends on `cmd`'s own status. They are kept as rows precisely
+// because they mark where the class stops — a later reader tempted to "also block `; true`" can
+// see that it was run rather than reasoned about. `cmd &` needs its own line: `then cmd & fi` is a
+// bash syntax error (status 2), which would have been a probe erroring rather than detecting.
+const probeSubjectCommand = "./scripts/probe-subject-thing.sh";
+for (const [label, body, mustFail] of [
+  ["a failing command fails the guard", probeSubjectCommand, true],
+  ["`|| true` is detected", `${probeSubjectCommand} || true`, false],
+  ["`|| :` is detected", `${probeSubjectCommand} || :`, false],
+  ["`|| <cmd>` is detected", `${probeSubjectCommand} || echo skipped`, false],
+  ["an empty body is detected", ":", false],
+  ["a swallowing `if` wrapper is detected", `if ${probeSubjectCommand}; then :; fi`, false],
+  ["a subshell does not hide the status", `( ${probeSubjectCommand} )`, true],
+  ["`; true` does NOT neuter under set -e — measured, and the block still fails", `${probeSubjectCommand}; true`, true],
+  ["`set +e` before the last command does NOT neuter it — measured", `set +e; ${probeSubjectCommand}`, true],
+]) {
+  const { status } = probeGuard(`    if integrity_runs probe-subject; then ${body}; fi`);
+  assert.equal(
+    Number.isInteger(status) && status !== 0,
+    mustFail,
+    `guard-probe self-test: ${label} — the probe does not behave as measured, so the assertions below would not mean what they say`,
+  );
+}
+// Backgrounding, which genuinely does discard the status, on its own line because the one-liner
+// form does not parse.
+assert.equal(
+  probeGuard(`    if integrity_runs probe-subject; then\n      ${probeSubjectCommand} &\n    fi`).status,
+  0,
+  "guard-probe self-test: a backgrounded subject discards its status and must be detectable",
+);
+
+for (const { id, block } of guards) {
+  const { status, invoked } = probeGuard(block);
+  // 1. The subject's exit status is load-bearing.
+  assert.ok(
+    Number.isInteger(status) && status !== 0,
+    `qualify-pr.sh discards the \`${id}\` subject's exit status: with every command it invokes failing, the guard still succeeded (status ${status}).`
+      + " A subject whose failure does not fail the integrity gate is indistinguishable from one that passed —"
+      + " the run goes green with the failure printed in its own log. Remove whatever swallows the status (`|| true`, `; true`, a trailing `&`, a subshell).",
+  );
+  // 2. It actually invoked something, so (1) is not satisfied by `command not found`. An empty log
+  //    means the sandbox stubbed nothing the guard runs, and the non-zero status above then says
+  //    nothing about the guard.
+  assert.ok(
+    invoked.trim().length > 0,
+    `the \`${id}\` guard invoked none of the stubs, so its non-zero status is unexplained; refusing rather than counting it as proof`,
+  );
+  // 3. What it invoked names the subject it is guarding. Every committed dispatch satisfies this by
+  //    construction — `review-contract` runs `test-review-contract-coherence.sh`, `governance` runs
+  //    `verify-fable-game-governance.sh`, `dependency-surface` runs `dotnet fsgg-sdd
+  //    dependency-surface`, and so on — so it is derived from the shell rather than from a second
+  //    list here. It is what catches a guard pointed at ANOTHER subject's script, which (1) and (2)
+  //    cannot see: that mutant fails and invokes something, it just runs the wrong thing. A future
+  //    subject whose command does not name it fails here and must be renamed or deliberately noted.
+  assert.ok(
+    invoked.includes(id),
+    `the \`${id}\` guard runs a command that does not name \`${id}\`:\n${invoked.trim()}\n`
+      + "  A guard pointed at another subject's script still fails when that script fails, so nothing else here can see it.",
+  );
 }
 
 // ---------------------------------------------------------------------------
