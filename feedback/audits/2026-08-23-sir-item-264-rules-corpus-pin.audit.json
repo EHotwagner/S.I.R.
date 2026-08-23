@@ -1,0 +1,248 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-23-sir-item-264-rules-corpus-pin.md",
+  "reportSha256": "1cc24d478ce2e806bd2532f751ec9fa1c1023104967c01d3df609f4d197b1bfe",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "\u00a74.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git log --oneline -S require_durable_source_commit -- scripts/verify-rules-corpus.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git merge-base --is-ancestor 902ac733 origin/main",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/verify-rules-corpus.sh",
+          "result": "verified",
+          "sha256": "24887667b0ff037ff2639d03d1a538d99052da356c80b64f50df1fa5c6428359"
+        },
+        {
+          "locator": "file:work/239-durable-rules-identity/spec.md",
+          "result": "verified",
+          "sha256": "2585aa4de12d508fbeed1fb3b9040035e7c6a9bd94e94b816648bbd3c068a9a1"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic ran both commands: the -S search returns 91e650b, d1f6ea7, d76b477 with d76b477 oldest, and the ancestry pair gives cat-file exit 0 with merge-base --is-ancestor exit 1.",
+        "The critic executed the four pre-existing reachability inversions in a standalone probe and observed exit 0, so 'all four still pass' is verified by execution rather than inspection.",
+        "The critic's first pass corrected two errors now fixed in the report and in scripts/verify-rules-corpus.sh itself: the window is two days rather than four, and d76b477 shipped three of the four inversions with d1f6ea7 adding the fourth. The corrected wording has not been independently re-verified.",
+        "The report's claim that no pull request changed a pinned source is bounded to origin/main only and does not exclude an abandoned branch; this is stated in the finding."
+      ]
+    },
+    {
+      "id": "\u00a74.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#264",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git cat-file -e 902ac733^{commit}",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git merge-base --is-ancestor 902ac733 origin/main",
+          "result": "verified"
+        },
+        {
+          "locator": "file:work/181-physical-combat-slice/plan.md",
+          "result": "verified",
+          "sha256": "3e2703a453090d3404cf276095a1d6fc057011384c2090249d6d606fc8e44e3f"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic independently confirmed the sub-claim the report only asserted: git show d76b477^:tests/fixtures/rules-corpus/v2/implementation-sources.json yields sourceCommit 902ac73331877a13be8fbe0b7a91a26f81e85895, a non-ancestor feature-branch head.",
+        "The duration was corrected from four days to two after the critic's first pass; the corrected wording has not been re-verified."
+      ]
+    },
+    {
+      "id": "\u00a74.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:docs/adr-0001-executable-rules-corpus.md",
+          "result": "verified",
+          "sha256": "6312a183b165b59567c75ae0b8148eb693ae3385e86f86f27b8115fa48b62bdd"
+        },
+        {
+          "locator": "file:work/239-durable-rules-identity/spec.md",
+          "result": "verified",
+          "sha256": "2585aa4de12d508fbeed1fb3b9040035e7c6a9bd94e94b816648bbd3c068a9a1"
+        },
+        {
+          "locator": "command:grep -rl implementation-sources .claude/skills/ .github/ work/",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git show 11cfc87adbe410b561e4ecb8592c9b09241edcea:tests/fixtures/rules-corpus/v2/implementation-sources.json",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic first graded this finding incomplete: its original evidence line cited docs/executable-rules-corpus-architecture.md and tests/fixtures/rules-corpus/v2/implementation-sources.json as proof that no document states a membership criterion, while at the reviewed commit both state one because this cycle added it. Both were marked contradictory.",
+        "The line was rebuilt to cite only artifacts this cycle did not touch, plus the pre-change fixture at 11cfc87 and a repository-wide grep. The critic checked both: at 11cfc87 neither changed file stated a criterion, and the grep's only hits are work/239-durable-rules-identity/plan.md and evidence.yml, neither of which states one.",
+        "The observation is scoped to the pre-change tree; at this report's commit the architecture doc and the fixture do state a criterion, which is the fix this cycle delivered and is stated in Observed."
+      ]
+    },
+    {
+      "id": "\u00a74.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/verify-rules-corpus.sh",
+          "result": "verified",
+          "sha256": "24887667b0ff037ff2639d03d1a538d99052da356c80b64f50df1fa5c6428359"
+        },
+        {
+          "locator": "file:src/SIR.Simulation/CombatRules.fs",
+          "result": "verified",
+          "sha256": "15094cb80752f007bf07674a867998e29b6455040078df546744fa3753b51c6a"
+        },
+        {
+          "locator": "file:scripts/generate-rules-corpus.sh",
+          "result": "verified",
+          "sha256": "dace8146100694a30aba2945edf81112aba17346e5ee0fa5db611320d9008d89"
+        },
+        {
+          "locator": "file:tests/fixtures/rules-corpus/v2/implementation-sources.json",
+          "result": "verified",
+          "sha256": "f1fe6b6cb78831a1b79371d5bfbc995eafa4be4656ed1c86998383ee4e67731c"
+        },
+        {
+          "locator": "file:feedback/2026-08-15-SIR-186-6.md",
+          "result": "verified",
+          "sha256": "a0d6d381203a4a473c4c25c429e1f5aa59c36cc47fc5157ed7d234f160bf68dc"
+        },
+        {
+          "locator": "command:find src -name '*.fsi'",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic found the original Disposition false: it claimed the capability gap was closed by scripts/rebind-rules-corpus-sources.sh, but that script writes only source-correspondence.json and explicitly refuses to add or remove a path from implementation-sources.json, which together with the sealed digest still has no writer. The Disposition now records the gap as narrowed rather than closed.",
+        "generate-rules-corpus.sh is negative evidence: the critic confirmed it contains no reference to implementation-sources.json.",
+        "The .fsi asymmetry now carries its own locator; the critic ran it independently and found 16 .fsi files under src, including Rules.fsi and CombatRules.fsi, neither of which is pinned."
+      ]
+    },
+    {
+      "id": "\u00a74.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:scripts/fsgg-coord review wait S.I.R.#264 event.json --pr 276",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#255",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic did not execute the review wait command because it writes to GitHub. It corroborated the central claim from readable artifacts instead: the claim marker on issue #264 is comment id 5383131140 and all three accepted review-wait receipts on PR #276 carry claimGeneration 5383131140.",
+        "The critic decompiled FS.GG.Coord.Core.dll 0.71.0 and confirmed claimGeneration appears only as a WaitReceipt field, a project parameter, and serialization plumbing, with nothing deriving it.",
+        "The title was softened from 'nothing says so' after the critic found the sibling concept documented on OpKey.compose, reachable only by decompiling.",
+        "The unrecoverable renewed= numeral was removed from the report: the critic re-read the claim marker three times in one session and the value rotated each time, so no reader could ever confirm it. The claim's substance is corroborated from all three review-wait receipts and is unaffected."
+      ]
+    },
+    {
+      "id": "\u00a74.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:scripts/fsgg-coord review S.I.R.#264 --pr 276",
+          "result": "verified"
+        },
+        {
+          "locator": "command:scripts/fsgg-coord review wait S.I.R.#264 enter-round-1.json --pr 276",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Neither command was executed by the critic because both write to GitHub. Both were corroborated from the durable ledger on PR #276, which carries exactly three review-wait comments in the claimed order: 5383246998 enter at initial-review:1, 5383248792 cancel, 5383248885 enter at initial-review:0.",
+        "The exact refusal string is CLI stderr and is not preserved in any readable artifact; the state transition it describes is fully corroborated."
+      ]
+    },
+    {
+      "id": "\u00a74.7",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/2026-08-12-sir-item-194-executable-rules-corpus.md",
+          "result": "verified",
+          "sha256": "2aaddb6298122fad6f024cbdb33ceea0a302e3afab9202200ce6a2459507ac0e"
+        },
+        {
+          "locator": "file:feedback/2026-08-15-SIR-186-6.md",
+          "result": "verified",
+          "sha256": "a0d6d381203a4a473c4c25c429e1f5aa59c36cc47fc5157ed7d234f160bf68dc"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic confirmed the quoted passage appears verbatim in section 4.6 of the 2026-08-12 report, under Observed, and that the report does not stretch its meaning. The corroborating 'correctly rejected' phrase was confirmed in the 2026-08-15 report."
+      ]
+    },
+    {
+      "id": "\u00a74.8",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsi with `#r` on ~/.nuget/packages/fs.gg.coord.cli/0.71.0/tools/net10.0/any/FS.GG.Coord.Core.dll, calling ReviewWait.generationToken head kind round, then ReviewWait.validate transition, then ReviewWait.encode transition",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#255",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The critic reconstructed the session from the locator description alone, ran it against 0.71.0, and the encoded document came back byte-identical to the accepted board comment 5383248885 including the posting marker, independently confirming the claim that only the marker needed stripping.",
+        "ReviewWait.validate returned 'claimGeneration is required' verbatim, and generationToken(head, kind, round) matches the decompiled signature.",
+        "The clause that hand-written documents were not attempted is an assertion about the author's own process and remains unfalsifiable from artifacts."
+      ]
+    },
+    {
+      "id": "\u00a74.9",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#264",
+          "result": "verified"
+        },
+        {
+          "locator": "command:gh api repos/EHotwagner/S.I.R./issues/276/comments --jq '.[] | select(.id==5383452179) | .body'",
+          "result": "verified"
+        },
+        {
+          "locator": "command:gh run view 32607930272 --repo EHotwagner/S.I.R. --json attempt --jq .attempt",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git show --stat bf2b93afed5291a664baec0c36d60cb335660abf",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "An earlier version of this finding was judged by the actionability critic to convert one critic-caught defect into a general insight authored by the person who caused it, and to recruit an uncitable relayed remark to inflate the instance count. The causal 'mastered class' framing was supplied by the host, adopted without peer-level scrutiny, and has been removed.",
+        "The host's own reported instance - inferring a sound diff from sixteen green gate receipts - is deliberately NOT counted: it appears nowhere on issue #264 or PR #276 and has no artifact, so a reader cannot check it.",
+        "Instance (1) carries no claim that a class had been mastered when the mutation was chosen; nothing had been characterised at that point, and ordinary insufficient adversariality explains it.",
+        "The hand-edit bypass used to validate the M1 repair is self-reported: the guard's design is checkable in the committed script, but no artifact records that particular run."
+      ]
+    }
+  ]
+}

@@ -649,6 +649,119 @@ Line numbers are navigational hints, not identity. Builds validate symbol and
 path references. Historical pages never use an unpinned `main` link as their
 only implementation reference.
 
+### Implementation source pin
+
+The implementation identity that `ImplementationDigest` covers is declared by two
+artifacts under `tests/fixtures/rules-corpus/v2/`, because the pin has two duties
+that one commit cannot discharge together.
+
+`implementation-sources.json` is the **immutable half**. It declares
+`sourceCommit`, the package and algorithm fingerprints, and the `sources` list.
+Its membership rule is *implementation identity*: **a path belongs to `sources`
+if and only if its text at `sourceCommit` was hashed into the sealed
+implementation digest** carried by `src/SIR.Simulation/CombatRules.fs`. The list
+is therefore a historical provenance record describing one immutable commit, not
+an assertion about the current working tree, and it is correct that it does not
+change when the tree changes.
+
+Two consequences of that rule are worth stating, because both have been
+mistaken for accidents:
+
+- **Most listed paths host no rule symbol, and that is intended.** The digest
+  fingerprints the runtime-artifact set behind registered algorithms, and
+  `SemanticDigest` *may conservatively change when a runtime artifact changes
+  without changing observable behavior* while it *must never remain unchanged
+  when registered executable behavior changes*. Over-inclusion is sanctioned;
+  under-inclusion is prohibited. Evaluator and codec surfaces such as
+  `CanonicalEncoding.fs`, `CanonicalHash.fs` and `FixedPoint.fs` are listed for
+  exactly this reason — omitting them was once filed as a defect and fixed by
+  inclusion.
+- **The set is closed under refactoring.** When code moves out of a listed file
+  into a new one, the new file joins the list in the same change, so extraction
+  cannot quietly move implementation out from under the digest.
+
+`source-correspondence.json` is the **mutable half**. It records, per declared
+source, the SHA-256 of that file's text after the normalization
+`scripts/verify-rules-corpus.sh` applies, and the verifier requires the current
+tree to still match it — byte-exactly, for every declared source. Correspondence
+covers the identity set **exactly**: a missing row and an undeclared row are both
+refusals, so a source cannot be unfrozen by deleting its entry.
+
+Because that baseline is rebindable, it cannot be the last line of defence. Every
+check described so far compares **declarations**: regenerated manifest, coverage
+and representative application, sealed digests, recorded per-path text digests. A
+change to an algorithm **body** moves none of them — `ImplementationDigest` is a
+sealed literal, `SemanticDigest` derives from it together with the *declarative*
+rule payload, and the representative application does not exercise every
+registered symbol. Byte identity against `sourceCommit` used to be the only
+detector of that class, and making it rebindable retires it.
+
+The verifier therefore **executes** the corpus as well as describing it: it runs
+the conformance fixtures over the registered rules, so registered executable
+behaviour that no longer matches the corpus fails the gate even when its
+correspondence has been rebound in the same commit. `scripts/rebind-rules-corpus-sources.sh`
+runs the same route before recording anything, so the tool refuses to bless such a
+change at authoring time; the gate is what makes a hand-edited correspondence file
+fail too. That execution is itself guarded against going vacuous: the verifier
+injects a combat divergence and requires the resulting diagnostic, not merely a
+non-zero exit — the injection arm aborts either way, so an exit-code-only check
+would pass even with its subject broken.
+
+This check is deliberately **not** limited to rule-hosting paths. Only
+`CombatRules.fs` binds a rule symbol, but `FixedPoint.fs`, `CanonicalEncoding.fs`,
+`Rules.fs` and `CombatModel.fs` are all pinned and none is rule-hosting — and a
+damage-arithmetic change in any of them moves rule behaviour while remaining
+rebindable. Restricting the guard to rule-hosting sources would close one instance
+and leave the class open.
+
+### `sourceCommit` semantics and the rebind procedure
+
+`sourceCommit` names the commit that published rule **source links** resolve
+against. Because a fresh network clone must be able to reach it, it must be an
+ancestor of the canonical default branch, and the verifier refuses a malformed,
+absent, checkout-local, or non-ancestor value.
+
+That durability requirement is the reason correspondence is a separate artifact.
+Rebinding an identity subject means recording text that is **not yet** on the
+default branch — a pull request's own content never is — so a baseline stored as
+a commit id can only ever name a commit that already exists after the merge it
+gates. Binding both duties to `sourceCommit` made the second unsatisfiable: no
+pull request changing a declared source could pass, in either direction, because
+the comparison is byte identity rather than a size or shape constraint.
+
+To change a declared implementation source:
+
+1. Make the source change.
+2. Run `scripts/rebind-rules-corpus-sources.sh` to see which identity subjects
+   moved, then `--write` to record their new digests, **in the same commit**.
+   The tool rebinds only paths whose normalized text actually differs and refuses
+   to add or remove a path. Before recording anything it builds **every project
+   that actually compiles a rebound path** — resolved by reading `Compile Include`
+   entries and comparing resolved paths, not by naming convention — plus the
+   corpus test project, and then executes the corpus fixtures; it refuses if any
+   of those builds fails, if the fixtures refuse, or if **no project compiles a
+   declared path at all**.
+
+   Resolution is by build graph because convention is not sufficient. Two earlier
+   versions of this guard named a project instead of checking it: the first built
+   one fixed project, compiling 9 of the 19 declared paths; the second resolved
+   `src/<Project>/<Project>.fsproj`, which is correct for `App.fs` but wrong for
+   three others — `RulesExplorer.fs` is compiled by `SIR.RulesExplorer.Web.fsproj`,
+   and `Lab.fs` and `EngineCatalog.fs` by `src/SIR.Replay.Core/SIR.Replay.Core.fsproj`
+   through a `../SIR.Client/` include, a different directory entirely. Both
+   resolved to a project that exists and builds while leaving the changed file
+   uncompiled.
+3. Review the `source-correspondence.json` diff. It names exactly the identity
+   subjects that moved, and that diff is the record of the decision.
+
+`sourceCommit`, the sealed implementation digest, and the generated corpus
+fixtures are **not** touched by a correspondence rebind. The sealed digest is
+derived only from blobs at `sourceCommit`, so the working tree contributes
+nothing to it and package identity does not move. Advancing `sourceCommit`
+itself is a separate, deliberate identity rebind that re-seals the digest and
+regenerates the manifest, coverage, and representative-application fixtures
+together.
+
 ## Documentation and web-client projections
 
 ### Rule explorer
