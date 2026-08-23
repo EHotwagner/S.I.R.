@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { digest, stableJson, validateDefinitions } from "./lib/svg-pipeline-measurement.mjs";
+import { digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, percentile, stableJson, validateDefinitions } from "./lib/svg-pipeline-measurement.mjs";
 
 const summaryPath = resolve(process.argv[2] || "artifacts/svg-pipeline/summary.json");
 const root = resolve(new URL("..", import.meta.url).pathname);
@@ -9,7 +9,18 @@ const definitions = validateDefinitions(JSON.parse(readFileSync(resolve(root, "s
 const summary = JSON.parse(readFileSync(summaryPath));
 const manifest = JSON.parse(readFileSync(resolve(work, "raw-trace-manifest.json")));
 const expectedRunCount = definitions.fixtures.length * definitions.journeys.length;
-if (summary?.schema !== "sir.svg-pipeline-measurement/1" || summary.result !== "pass" || summary.runs?.length !== expectedRunCount) throw new Error("production summary is not the complete passing matrix");
+if (summary?.schema !== "sir.svg-pipeline-measurement/1" || summary.runs?.length !== expectedRunCount) throw new Error("production summary is not the complete matrix");
+
+// Re-derive the verdict here rather than trusting summary.result. The defect this finalizer sat beside
+// was a consumer gating on a field the producer wrote as a constant, so the consumer now recomputes the
+// verdict from the measured values and the declared budget, and refuses BOTH a genuine breach and any
+// disagreement with what the artifact claims about itself.
+const rederivedRuns = summary.runs.map((run) => ({ ...run, frameBudget: evaluateRunFrameVerdict(run.frameHealth, run.journey, definitions.frameBudget) }));
+const rederived = evaluateArtifactVerdict(rederivedRuns);
+if (rederived.result !== "pass") throw new Error(`production summary breaches the declared frame budget and is refused: ${rederived.reason}`);
+const disagreeing = rederivedRuns.filter((run, index) => summary.runs[index].frameBudget?.result !== undefined && run.frameBudget.result !== summary.runs[index].frameBudget.result);
+if (disagreeing.length) throw new Error(`production summary run verdicts disagree with the budget re-derived from their own measurements: ${disagreeing.map((run) => `${run.fixture}/${run.journey} claims ${summary.runs.find((c) => c.fixture === run.fixture && c.journey === run.journey)?.frameBudget?.result} but measures ${run.frameBudget.result}`).slice(0, 5).join("; ")}`);
+if (summary.result !== "pass") throw new Error(`production summary is not a passing matrix: it declares result "${summary.result}"`);
 if (summary.rawTraceManifest?.sha256 !== digest(manifest)) throw new Error("production summary does not bind the retained raw-trace manifest");
 const fixtureIds = definitions.fixtures.map((fixture) => fixture.id);
 if (stableJson(summary.selection?.fixtures) !== stableJson(fixtureIds) || stableJson(summary.selection?.journeys) !== stableJson(definitions.journeys)) throw new Error("production summary selection is incomplete or reordered");
@@ -34,7 +45,6 @@ const authority = {
 };
 writeFileSync(resolve(work, "production-chromium-authority.json"), stableJson(authority));
 
-const percentile = (values, proportion) => values.length ? values[Math.min(values.length - 1, Math.ceil(values.length * proportion) - 1)] : null;
 const latencies = summary.runs.filter((run) => run.inputLatency?.available).map((run) => run.inputLatency.milliseconds).sort((a, b) => a - b);
 const stageUnavailable = Object.fromEntries(Object.entries(summary.runs[0].stages).filter(([, value]) => !value.available).map(([name, value]) => [name, value.reason]));
 const pairRows = (ids, journey) => ids.map((id) => summary.runs.find((run) => run.fixture === id && run.journey === journey));
