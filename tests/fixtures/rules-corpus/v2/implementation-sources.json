@@ -3,6 +3,8 @@
   "sourceCommit": "eb0b2c29a80f0bf3b400ce4415bf8587b4645083",
   "packageSha256": "2722ec4828960167da8e77c2699b0d0a679cd4791207d2bf6f3b644a2bab66f7",
   "algorithmFingerprint": "FS.GG.Game.Core@0.13.0:Los.lineOfSightBy:Supercover",
+  "membershipRule": "implementation-identity: a path belongs to `sources` if and only if its text AT `sourceCommit` was hashed into the sealed implementation digest in src/SIR.Simulation/CombatRules.fs. This list is a historical provenance record of one immutable commit, not an assertion about the current working tree, so it does not change when the tree changes. Most listed paths host no rule symbol, which is intended: the digest fingerprints the runtime-artifact set behind registered algorithms, and over-inclusion is sanctioned while under-inclusion is prohibited. The set is also closed under refactoring - when code moves out of a listed file into a new one, the new file joins the list in the same change.",
+  "workingTreeCorrespondence": "tests/fixtures/rules-corpus/v2/source-correspondence.json records the per-path digest the CURRENT tree must still match, and is rebound by scripts/rebind-rules-corpus-sources.sh in the same commit as a reviewed source change. Changing THIS file is a deliberate identity rebind that re-seals the implementation digest and regenerates the corpus fixtures; see docs/executable-rules-corpus-architecture.md.",
   "sources": [
     "src/SIR.Client.Web/App.fs",
     "src/SIR.Client.Web/LiveSessionView.fs",

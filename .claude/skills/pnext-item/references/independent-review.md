@@ -39,6 +39,90 @@ Receipt fields: `schema`, `observedAt`, `sourceSha`, `complete`, `consolidationA
 
 <!-- END GENERATED: fsgg-protocol:ledger-policy -->
 
+## The engine's review ledger is what `landable` reads
+
+**The markers in the generated table above are not sufficient to land a PR, and following them alone
+will strand it.** They remain the human-readable review evidence, and the host still verifies them —
+but `scripts/fsgg-coord landable` reads a different artifact: the structured
+`fsgg.coord.review-decision/v2` ledger, written through `fsgg-coord review record` and gated behind a
+durable wait entry written through `fsgg-coord review wait`. A PR carrying a perfect marker chain and
+no ledger is refused with:
+
+```
+PR #N carries no valid host review-acceptance marker (`fsgg:review-decision/v2`) —
+the review chain is absent, incomplete, or malformed.
+```
+
+That refusal names the schema but not the command that produces it, which is why this gap cost
+`S.I.R.#255` three stalled PRs before anyone found the real contract.
+
+**Both artifacts are required. Neither replaces the other.** The markers carry the review's reasoning
+for a human reader; the ledger carries the machine-checkable chain `landable` gates on. Post the marker
+as this contract already describes, and additionally drive the ledger:
+
+```sh
+# 1. the claim holder opens the durable wait, before the critic starts
+scripts/fsgg-coord review wait   <ref> enter.json    --pr <n>
+# 2. the critic records its verdict          (kind: initial, round: 0)
+scripts/fsgg-coord review record <ref> critic.json   --pr <n>
+# 3. the claim holder completes the wait     (evidenceRef: the critic record's comment URL)
+scripts/fsgg-coord review wait   <ref> complete.json --pr <n>
+# 4. the host accepts                        (kind: acceptance, verdict: accepted)
+scripts/fsgg-coord review record <ref> accept.json   --pr <n>
+```
+
+**You do not author a digest, a `revision`, a `previousDigest`, a `claimGeneration`, or a `baseSha`.**
+`review record` overwrites all five from live state before sealing. Your draft must contain the keys —
+the parser refuses a document that omits a required one — but the values are discarded, so a
+placeholder is correct and no invented value can reach the append-only ledger. If you find yourself
+about to guess a sealed field, stop: you are on the wrong path, not missing a secret.
+
+Two rules that no field name suggests, and that cost a round each when missed:
+
+- **The acceptance record carries the CRITIC's identity in `critic`, not the host's.** Every record in
+  one review generation must bind the same critic. A host writing its own worker id is refused with
+  `every record in one review generation must bind the same critic`, which does not point at the
+  host's own draft.
+- **The `complete` wait event's `evidenceRef` must equal the acceptance record's `precedingReview`,
+  exactly.** Use the critic record's comment URL for both.
+
+`reviewGeneration` is derivable, never guessed: it is the literal string `<headSha>:<kind>:<round>`
+(`ReviewWait.generationToken`, a public static). `claimGeneration` is the live claim marker's GitHub
+comment id — the `markerId` that `take --json` already returned to you.
+
+**`scripts/fsgg-coord review <ref> --pr <n>` is the authoritative next-action oracle.** It needs your
+live claim, and it returns one typed state and one next action bound to a freshness token a changed
+head invalidates. Prefer it over inferring the protocol from prose, including this page.
+
+The complete contract — every required and optional draft key, both vocabularies, every ledger
+invariant an author hits while composing a first record — a selected subset, not the complete set of
+roughly forty, and the page says so — the wait-window expiry trap, and how to settle a question this
+prose does not answer — is [`docs/coordination-engine-contracts.md`](../../../../docs/coordination-engine-contracts.md),
+which `scripts/test-review-contract-coherence.sh` holds to the engine — it parses that document's
+own tables and key lists and compares them against the pinned engine, so falsifying a documented claim
+reds the gate.
+
+**Read that page's `What actually separates a sound check from a vacuous one` before adding a claim
+to it.** Four review rounds each added a documented claim, gave it a check that called the engine, and
+produced a check that could not fail — because a claim stated as a *sentence* affords no expectation
+but its own presence, and a presence expectation is a constant by the time it is compared. The gate
+now refuses that shape structurally: every vocabulary row states what the engine refuses as well as
+what it accepts, rules with two outcomes are stated as outcomes and probed, every derived check must
+be reddened by a **named** mutation, and a mutant that reddens no check is reported as `NO DETECTION`
+rather than counted as one. A new claim without an inversion fails the gate instead of passing
+quietly. If you add a row, the gate derives its widening inversion for you; if you add a claim of some
+other shape, you must supply the mutation that reds it.
+
+**Run it directly: `bash scripts/test-review-contract-coherence.sh`. That is the only route that
+works today, and nothing runs it for you.** It is not wired into CI, and it is deliberately not
+half-wired: an earlier revision of this change added a `review-contract` case to
+`scripts/run-ci-gate.sh` and said the gate was "dispatchable", but that route could never report a
+pass — `ci-route.mjs` refuses an unknown subject, so it exited 1 on a correct document and 1 on a
+falsified one alike, unable to distinguish them. Wiring it properly needs `ci-route.mjs`,
+`qualify-pr.sh`, `test-ci-route.mjs` and `.github/workflows/ci.yml` to change together, which is
+`S.I.R.#265`. Until that lands, run it by hand whenever you change the contract.
+
+
 Every item gets one independent critique cycle before merge. The implementer and critic are different
 agents. The critic receives the issue, acceptance criteria, declared `Paths:`, exact PR head SHA,
 complete diff, and test evidence; it does not receive the implementer's conclusions. The critic may
@@ -315,8 +399,29 @@ reviews each repaired head in a reply beginning with
 confirmation SHA, the 1-based `round` number, the preceding review or confirmation URL, and every
 remaining material finding. There is exactly one initial marker and at most three ordered confirmation
 markers. Each confirmation must advance the round by one and review the exact head produced by that
-repair; duplicate round numbers, skipped rounds, competing markers, a changed critic, or a fourth
-automated repair fail closed. When no repair is required, an initial `pass` whose reviewed SHA equals the
+repair; duplicate round numbers, skipped rounds, competing markers, or a fourth
+automated repair fail closed.
+
+**A changed critic does NOT fail closed, and this contract said it did for four review rounds.**
+Measured against the pinned engine, `validateReviewLedger` refuses a differently-bound critic only
+*within a settled generation*: a `confirmation` by a **different** critic is **accepted after a
+`changes-required` verdict**, and refused after a `pass` with `every record in one review generation
+must bind the same critic`. That exception is what makes the fresh-successor handoff legal at all —
+`scripts/fsgg-coord review <ref> --pr <n>` returns `dispatchSuccessor` on a repaired head precisely so
+a successor can take over, and observed chains have run four different critics across their rounds and
+recorded cleanly. A contract **stricter than the mechanism** is the dangerous direction: it is
+silently obeyed, it produces a state the engine will not accept, and it charges the reader who
+followed it most carefully — the refusal arrives at acceptance, after a full critic cycle, in a round
+that can no longer close. The four measured outcomes are the `successor-critic` rows of the
+`Rules with two outcomes` table in
+[`docs/coordination-engine-contracts.md`](../../../../docs/coordination-engine-contracts.md); each is
+probed against the validator on every run of `scripts/test-review-contract-coherence.sh`.
+
+**That gate does not read this file, so this paragraph is not itself bound** — it is prose in a tree
+the gate never opens, exactly like the sentence it replaces. The document's table is the checked
+authority; this is a pointer to it. If you change either, check it against the other, and put any new
+rule in the table where something can probe it rather than in a sentence where nothing can. Claiming
+otherwise here would be the same over-claim this whole item exists to end, one file to the left. When no repair is required, an initial `pass` whose reviewed SHA equals the
 candidate head is itself the confirmation; no repair round or second marker is required. Allow at most
 three repair-and-confirmation rounds. Every round addresses material findings only; do not iterate on
 minor observations. Before routing any repair, the host validates the current chain and permits it only

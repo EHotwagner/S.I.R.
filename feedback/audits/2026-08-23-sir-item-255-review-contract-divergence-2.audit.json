@@ -1,0 +1,300 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-23-sir-item-255-review-contract-divergence-2.md",
+  "reportSha256": "3199777a48ca25171905cbc468e135c0e6fd475937f0709cb3c0c84770f2472b",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show cb38462:scripts/test-review-contract-coherence.sh | grep -c 'mutate_and_expect_red \"'",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
+        }
+      ],
+      "confidenceLimits": [
+        "the locator supports the mutation count only; the 18-of-21 attribution split was reproduced by the critic through direct execution but is not itself carried by a locator",
+        "whether earlier rounds' authors relied on the mis-scored evidence is declared not-measured in §1"
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show cb38462:scripts/test-review-contract-coherence.sh | grep -nE 'in doc\\)|in inv\\)|cell.Contains tok|<headSha>:<kind>:<round>'",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
+        }
+      ],
+      "confidenceLimits": [
+        "the four presence-shaped sites are exact and reproduced at cb38462; the historical instance TOTAL is deliberately not asserted"
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "file:docs/coordination-engine-contracts.md",
+          "result": "verified",
+          "sha256": "cc4774e898cd0ae2008e35f47d4394b1a1691d8f14c3619a53e197d6de459dd9"
+        }
+      ],
+      "confidenceLimits": [
+        "'parsed with .NET date parsing rather than an ISO-8601 grammar' is an inference from the accepted set, not decompilation",
+        "the note that 0.73.1's coherent-set release is still Draft is cross-repo and claim-only"
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show cb38462:.claude/skills/pnext-item/references/independent-review.md | sed -n '388,392p'",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git show cb38462:.claude/skills/work-board/references/host-loop.md | sed -n '71,75p'",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "the dispatchSuccessor oracle behaviour is a board-host report, marked unverified in the finding",
+        "the critic returned this finding `incomplete` for want of a reproducible locator for its Expected: quote, which does not exist at the frontmatter commit; the two `git show cb38462:` companions were added afterwards against the criterion the critic itself specified, and were verified by the implementer rather than by the critic"
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "the '11 uncovered checks' figure is an unrecoverable intermediate-build artifact, labelled in the finding as history rather than evidence"
+      ]
+    },
+    {
+      "id": "§4.6",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head origin/main",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#258",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "a second transplanted fact (a 15->17 ledger-growth claim) was retracted before commit: the ledger holds 57 exceptions at HEAD, 1d8c93d and 8972d37 alike, so the count varies with diff overlap and not with ledger growth; only the empty-diff identity was transplanted to #258"
+      ]
+    },
+    {
+      "id": "§4.7",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show cb38462:scripts/test-review-contract-coherence.sh | grep -n 'sorted(json.loads'",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "the S.I.R.#232 CLI-help limb is a board-host report, marked unverified in the finding"
+      ]
+    },
+    {
+      "id": "§4.8",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
+        }
+      ],
+      "confidenceLimits": [
+        "'three checks parsed with re.search or [0]' understates the idiom's spread: six sites carry it; the understatement does not affect the disposition",
+        "this finding's Disposition sentence claimed every cell parse was total; that was false when sealed and is corrected in place — see §4.9, which is the defect it concealed"
+      ]
+    },
+    {
+      "id": "§4.9",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
+        }
+      ],
+      "confidenceLimits": [
+        "written after the actionability critic's final pass and therefore not covered by it; the finding is instead evidenced by execution — round 1's critic `merlin-2693` independently constructed X1-X4 from the head document and measured three surviving at exit 0, and the implementer reproduced all four before repairing",
+        "the repaired gate was re-run against both critics' exact escapes (X1-X4 and W1-W7), all red by name, per independent-review step 7",
+        "round 2's totalisation was itself phrasing-specific and was defeated by rephrasing; see §4.10"
+      ]
+    },
+    {
+      "id": "§4.10",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "file:docs/coordination-engine-contracts.md",
+          "result": "verified",
+          "sha256": "cc4774e898cd0ae2008e35f47d4394b1a1691d8f14c3619a53e197d6de459dd9"
+        }
+      ],
+      "confidenceLimits": [
+        "written after the actionability critic's final pass and therefore not covered by it; evidenced instead by execution — round 2's critic `avocet-dac3` independently constructed Y1-Y3 and measured all three surviving at exit 0, and the implementer reproduced them before repairing",
+        "re-run per independent-review step 7 against every round's escapes AND against four phrasings no round supplied (Roman numeral, spelled-out caps, bare digit in a new clause, and a claim carrying no numeral at all); all red via doc:scalar-region-purity, W1-W7 unregressed",
+        "the transcription of governed regions is a deliberate rigidity: a purely cosmetic reword of a governed region now reds. That cost is stated in the finding rather than hidden, and is the price of the region carrying no free prose"
+      ]
+    },
+    {
+      "id": "§4.11",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh --inner <mutant>",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
+        },
+        {
+          "locator": "file:docs/coordination-engine-contracts.md",
+          "result": "verified",
+          "sha256": "cc4774e898cd0ae2008e35f47d4394b1a1691d8f14c3619a53e197d6de459dd9"
+        }
+      ],
+      "confidenceLimits": [
+        "BEFORE measured first, on the unrepaired head f61e23af: P1/P3/P4/P5/P6/P7 each reproduced at exit 0, 86 mutations, zero FAILED, on BOTH the direct production route and the --inner re-entry route. The repair's before-state is measured rather than asserted",
+        "AFTER, both routes: P5, P6, P7 red on doc:scalar-region-purity by name, each naming BOTH the id-uniqueness rule ('governed by 2 regions') and the transcription equality ('region 2 of 2'), so neither rule depends on the other having run; not a parse abort",
+        "P1, P3 and P4 STILL SURVIVE and are reported as surviving. F6 was closed by weakening the printed claim to the marked-region property, not by widening the check. The passing footer now prints the boundary explicitly, so the run no longer asserts what it does not check",
+        "unregressed and re-executed at the repaired head per step 7: round 3's Y1, Y2, N1, N6 and the purely cosmetic reword C1 all still red via doc:scalar-region-purity; F4 remains deleted (no WIDENING_REFUSED_AT_PARSE symbol, no widen-attempt direction); NO_NARROWING still holds exactly two entries",
+        "mutation count rose 86 -> 87 because the duplicate-id widening was added to STEP 3's own catalogue; it carries no digit, no listed number word and no shape token, so the token rules cannot see it and only the new totality reds it",
+        "the partition alternative was considered and rejected in writing: it requires freezing the document or marking every passage exempt, and unproven exemptions are this report's own §4.9"
+      ]
+    },
+    {
+      "id": "§4.12",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:scripts/fsgg-coord review 255 --pr 285 --json (captured immediately before and immediately after the force claim)",
+          "result": "verified"
+        },
+        {
+          "locator": "command:scripts/fsgg-coord adopt 255 --text",
+          "result": "verified"
+        },
+        {
+          "locator": "https://github.com/EHotwagner/S.I.R./pull/285#issuecomment-5383644645",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "the oracle pair is a measurement, not a reconstruction: both snapshots were captured by the same command minutes apart, and the after-state was re-read a second time and was identical, so it is stable rather than transient",
+        "the cause is attributed to claimGeneration by elimination — the only board delta between the two reads was the claim marker (5384265669 deleted, 5384652804 created) — and is consistent with the engine's own documented binding of claimGeneration to the claim marker's GitHub comment id; the engine internals were NOT decompiled by this worker",
+        "not repairable in this repository: the oracle is engine-owned. Filed by the host as FS-GG/.github#2860",
+        "recorded here rather than only in the issue because it is the same defect class as this item's subject, and it occurred to this item during its own repair"
+      ]
+    },
+    {
+      "id": "§4.13",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh --inner <mutant>",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "60fd3174934ce112d85fc13b6249cd46635f002574627b98056fa0a1733a3929"
+        },
+        {
+          "locator": "file:docs/coordination-engine-contracts.md",
+          "result": "verified",
+          "sha256": "cc4774e898cd0ae2008e35f47d4394b1a1691d8f14c3619a53e197d6de459dd9"
+        }
+      ],
+      "confidenceLimits": [
+        "BEFORE measured first on the unrepaired round-4 head: Q1 (label ',' carrying P6 verbatim) and Q5 (label ',,') each reproduced at exit 0, 87 mutations, zero FAILED, on BOTH the direct production route and the --inner re-entry route",
+        "AFTER, both routes: Q1 and Q5 red on doc:scalar-region-purity naming the unreadable marker and printing its label; Q4, R1 and R2 unregressed and still red for their own reasons (R2 via doc:scalar-coverage)",
+        "Q4 now reds via the unreadability predicate rather than via the digit token rule, because the fail-closed refusal precedes any interpretation of the region's contents. The document is refused either way; the reason is deliberately the earlier and stronger one, since reporting on the contents of a region whose ids resolved to nothing would be deciding about input the gate could not parse",
+        "ABLATION, the step-7 proof: removing ONLY the unreadability predicate returns Q1 and Q5 to exit 0 on --inner, so the predicate is what catches them and not some other rule. The same ablation also reds the CLEAN run with NO DETECTION, because the unreadable-marker widening added to STEP 3 then reddens no check — the gate enforces its own coverage of this case",
+        "the repair refuses UNREADABILITY, not the literals ',' and ',,'; no separator shape is enumerated, which would have been the enumeration trap one level down",
+        "unregressed at this head and re-executed rather than assumed: P5-P7 still red, P1/P3/P4 still survive as the disclosed boundary, Y1/Y2/N1/N6/C1 still red, F4 still deleted (one comment-only occurrence), NO_NARROWING still exactly two entries",
+        "four copies of the retired document-wide claim existed in comments, not one; all four now state the marked-region scope, and zero copies of the retired wording remain. None was printed, so none was a step-8 finding"
+      ]
+    }
+  ]
+}

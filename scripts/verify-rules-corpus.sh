@@ -15,7 +15,37 @@ search_quiet() {
 }
 
 source_manifest="$repo_root/tests/fixtures/rules-corpus/v2/implementation-sources.json"
+correspondence_manifest="$repo_root/tests/fixtures/rules-corpus/v2/source-correspondence.json"
 source_commit=$(jq -r '.sourceCommit' "$source_manifest")
+
+# The rules source pin has two duties that a single commit cannot discharge together:
+#
+#   P1 source-link durability. `sourceCommit` is the commit published rule source links resolve
+#      against, so a fresh network clone must be able to reach it. That REQUIRES it to be an
+#      ancestor of the canonical default branch -- see require_durable_source_commit below.
+#   P2 identity correspondence. The implementation sources must still hold the text the corpus
+#      identity was sealed over. Rebinding that baseline REQUIRES naming text that is not yet on
+#      the default branch, because a pull request's own content never is.
+#
+# P1 demands ancestry; P2 forbids it. Binding both to `sourceCommit` made P2 unsatisfiable: no
+# pull request changing a pinned source could pass, because advancing the pin needs a commit that
+# only exists after the merge the pin gates (S.I.R.#264). The duties are therefore split across two
+# artifacts. `implementation-sources.json` keeps P1 and the sealed identity digest and does not
+# change on rebind; `source-correspondence.json` carries P2 and is rebound in the same pull request
+# that changes a source, via scripts/rebind-rules-corpus-sources.sh.
+#
+# Enforcement is NOT narrowed by this split: correspondence is still required for every one of the
+# declared implementation sources, byte-exactly, after the same normalization as before.
+declared_source_schema=$(jq -r '.schema' "$source_manifest")
+test "$declared_source_schema" = "sir-rules-implementation-sources-v1" || {
+  echo "unsupported implementation source manifest schema: $declared_source_schema" >&2
+  exit 1
+}
+declared_correspondence_schema=$(jq -r '.schema' "$correspondence_manifest")
+test "$declared_correspondence_schema" = "sir-rules-source-correspondence-v1" || {
+  echo "unsupported source correspondence schema: $declared_correspondence_schema" >&2
+  exit 1
+}
 
 require_durable_source_commit() {
   local git_repo=$1
@@ -155,59 +185,314 @@ normalize_implementation_source() {
   fi
 }
 
-source_matches_pin() {
+normalized_source_digest() {
   local artifact_path=$1
-  local current_path=$2
-  local pinned_path
-  local current_normalized
-  local pinned_normalized
-  pinned_path=$(mktemp /tmp/sir-rules-pinned-source.XXXXXX)
-  current_normalized=$(mktemp /tmp/sir-rules-current-normalized.XXXXXX)
-  pinned_normalized=$(mktemp /tmp/sir-rules-pinned-normalized.XXXXXX)
-  git -C "$repo_root" show "$source_commit:$artifact_path" > "$pinned_path"
-  normalize_implementation_source "$artifact_path" "$current_path" > "$current_normalized"
-  normalize_implementation_source "$artifact_path" "$pinned_path" > "$pinned_normalized"
-  cmp -s "$current_normalized" "$pinned_normalized"
-  local result=$?
-  rm -f "$pinned_path" "$current_normalized" "$pinned_normalized"
-  return "$result"
+  local input_path=$2
+  normalize_implementation_source "$artifact_path" "$input_path" | sha256sum | cut -d' ' -f1
 }
 
+source_matches_correspondence() {
+  local artifact_path=$1
+  local current_path=$2
+  local correspondence_json=${3:-$correspondence_manifest}
+  local expected
+  local actual
+  expected=$(jq -r --arg path "$artifact_path" '.paths[$path] // empty' "$correspondence_json")
+  test -n "$expected" || return 1
+  actual=$(normalized_source_digest "$artifact_path" "$current_path")
+  test "$actual" = "$expected"
+}
+
+# The recorded baseline must name EXACTLY the declared implementation identity set. Without this,
+# the cheapest way to unfreeze a source would be to delete its row -- the gate would then check
+# eighteen files and report success, which is the vacuity failure this mechanism must not have.
+check_correspondence_coverage() {
+  local sources_json=$1
+  local correspondence_json=$2
+  local identity
+  local recorded
+  local malformed
+  identity=$(jq -r '.sources[]' "$sources_json" | sort -u)
+  recorded=$(jq -r '.paths | keys[]' "$correspondence_json" | sort -u)
+  if test -z "$recorded"; then
+    echo "recorded source correspondence is empty: every implementation source would go unchecked" >&2
+    return 1
+  fi
+  if test "$identity" != "$recorded"; then
+    echo "recorded source correspondence does not cover the implementation identity set exactly" >&2
+    comm -23 <(printf '%s\n' "$identity") <(printf '%s\n' "$recorded") | sed 's/^/  declared implementation source with no recorded correspondence: /' >&2
+    comm -13 <(printf '%s\n' "$identity") <(printf '%s\n' "$recorded") | sed 's/^/  recorded correspondence for a path that is not a declared implementation source: /' >&2
+    return 1
+  fi
+  # Digest well-formedness is the ONLY arm here whose empty result means "pass"; for the two arms
+  # above an empty result still reaches a `return 1`, so they already fail closed. That asymmetry is
+  # why this arm -- and only this arm -- has to prove it actually evaluated its input.
+  #
+  # Two distinct failures are guarded, because fixing either alone leaves the other live:
+  #
+  #   1. `test/1` RAISES on any non-string (number, null, boolean, array, object) rather than
+  #      returning false. Typing the predicate keeps `test/1` unreachable for a non-string, so a
+  #      non-string is CLASSIFIED as malformed instead of aborting the filter.
+  #   2. This function is only ever called on the LEFT of `||`, which suspends `set -e` for its whole
+  #      body. So ANY jq failure -- the raise above, unreadable JSON, a jq crash -- would otherwise
+  #      leave `malformed` empty and fall through to a confident `return 0` on input that was never
+  #      evaluated. Checking jq's exit status makes an unevaluated input a refusal, which is what
+  #      keeps this closed against a failure mode not enumerated above.
+  local malformed_status=0
+  malformed=$(jq -r '
+    .paths
+    | to_entries[]
+    | select(if (.value | type) == "string"
+             then (.value | test("^[0-9a-f]{64}$") | not)
+             else true
+             end)
+    | "\(.key)\t\(.value | type)"' "$correspondence_json") || malformed_status=$?
+  if test "$malformed_status" -ne 0; then
+    echo "recorded source correspondence could not be evaluated for digest well-formedness" >&2
+    echo "  jq exited $malformed_status over: $correspondence_json" >&2
+    echo "  refusing rather than reporting a pass on input this check did not evaluate" >&2
+    return 1
+  fi
+  if test -n "$malformed"; then
+    echo "recorded source correspondence carries malformed digests:" >&2
+    printf '%s\n' "$malformed" | sed 's/^/  /' >&2
+    return 1
+  fi
+}
+
+enforce_source_correspondence() {
+  local sources_json=$1
+  local correspondence_json=$2
+  local tree_root=$3
+  local artifact_path
+  while IFS= read -r artifact_path; do
+    test -f "$tree_root/$artifact_path" || {
+      echo "declared implementation source is missing from the tree: $artifact_path" >&2
+      return 1
+    }
+    source_matches_correspondence "$artifact_path" "$tree_root/$artifact_path" "$correspondence_json" || {
+      echo "current implementation source differs from package pin: $artifact_path" >&2
+      return 1
+    }
+  done <<< "$(jq -r '.sources[]' "$sources_json")"
+}
+
+# The sealed identity digest is derived ONLY from blobs at $source_commit. The working tree
+# contributes nothing to it, which is why rebinding correspondence leaves the seal, the manifest
+# identity, and the generated corpus fixtures byte-identical.
 while IFS= read -r artifact_path; do
   actual_artifact_sha=$(git -C "$repo_root" show "$source_commit:$artifact_path" | sha256sum | cut -d' ' -f1)
   printf '%s\t%s\n' "$artifact_path" "$actual_artifact_sha" >> "$source_digest_input"
-  source_matches_pin "$artifact_path" "$repo_root/$artifact_path" || {
-    echo "current implementation source differs from package pin: $artifact_path" >&2
-    rm -f "$source_digest_input"
-    exit 1
-  }
 done <<< "$(jq -r '.sources[]' "$source_manifest")"
 
-app_mutant=$(mktemp /tmp/sir-rules-app-mutant.XXXXXX)
-combat_mutant=$(mktemp /tmp/sir-rules-combat-mutant.XXXXXX)
-combat_metadata_mutant=$(mktemp /tmp/sir-rules-combat-metadata-mutant.XXXXXX)
-cp "$repo_root/src/SIR.Client.Web/App.fs" "$app_mutant"
-printf '\n// implementation identity subject mutation\n' >> "$app_mutant"
-if source_matches_pin "src/SIR.Client.Web/App.fs" "$app_mutant"; then
-  echo "App.fs implementation source mutation unexpectedly passed" >&2
-  rm -f "$app_mutant" "$combat_mutant" "$combat_metadata_mutant" "$source_digest_input"
-  exit 1
-fi
-sed '0,/module CombatRules =/s//module CombatRules = \/\/ implementation identity subject mutation/' \
-  "$repo_root/src/SIR.Simulation/CombatRules.fs" > "$combat_mutant"
-if source_matches_pin "src/SIR.Simulation/CombatRules.fs" "$combat_mutant"; then
-  echo "CombatRules.fs non-metadata source mutation unexpectedly passed" >&2
-  rm -f "$app_mutant" "$combat_mutant" "$combat_metadata_mutant" "$source_digest_input"
-  exit 1
-fi
-sed -E 's/(Commit = ")[0-9a-f]{40}(" })/\10000000000000000000000000000000000000000\2/' \
-  "$repo_root/src/SIR.Simulation/CombatRules.fs" > "$combat_metadata_mutant"
-source_matches_pin "src/SIR.Simulation/CombatRules.fs" "$combat_metadata_mutant" || {
-  echo "CombatRules.fs metadata-only source rebind was not normalized" >&2
-  rm -f "$app_mutant" "$combat_mutant" "$combat_metadata_mutant" "$source_digest_input"
+check_correspondence_coverage "$source_manifest" "$correspondence_manifest" || { rm -f "$source_digest_input"; exit 1; }
+enforce_source_correspondence "$source_manifest" "$correspondence_manifest" "$repo_root" || { rm -f "$source_digest_input"; exit 1; }
+
+# ---------------------------------------------------------------------------------------------
+# Source-correspondence inversions (S.I.R.#264).
+#
+# These drive the production enforcement path -- enforce_source_correspondence and
+# check_correspondence_coverage, the same functions the gate calls above -- against synthetic trees
+# and synthetic correspondence documents, so a change that makes the real gate vacuous fails here
+# rather than passing quietly.
+#
+# Five prove refusals fire. The sixth proves a LEGAL input still exists, which is the class the
+# durability hardening lacked: work item #239 shipped four inversions for its new refusals across
+# d76b477 and d1f6ea7, all four still pass, and every one proves a bad input is refused. None
+# demonstrates that the operation the new precondition constrains -- rebinding the pin so a changed
+# source can pass -- has any legal execution at all. That gap is what made this gate unsatisfiable
+# from d76b477 (2026-08-20) until it was first exercised.
+# ---------------------------------------------------------------------------------------------
+pin_probe_dir=$(mktemp -d /tmp/sir-rules-pin-probe.XXXXXX)
+pin_probe_log=$(mktemp /tmp/sir-rules-pin-probe-log.XXXXXX)
+
+pin_probe_fail() {
+  echo "$1" >&2
+  rm -rf "$pin_probe_dir"
+  rm -f "$pin_probe_log" "$source_digest_input"
   exit 1
 }
-rm -f "$app_mutant" "$combat_mutant" "$combat_metadata_mutant"
+
+pin_probe_tree() {
+  local tree_root=$1
+  local artifact_path
+  while IFS= read -r artifact_path; do
+    mkdir -p "$tree_root/$(dirname "$artifact_path")"
+    cp "$repo_root/$artifact_path" "$tree_root/$artifact_path"
+  done <<< "$(jq -r '.sources[]' "$source_manifest")"
+}
+
+# 1. A changed non-rule-hosting identity subject is refused. This is the property an independent
+#    critic required on item #194 after proving that hashing pinned objects alone let a changed
+#    App.fs pass; narrowing enforcement would reopen it.
+app_probe_tree="$pin_probe_dir/app-mutant"
+mkdir -p "$app_probe_tree"
+pin_probe_tree "$app_probe_tree"
+printf '\n// implementation identity subject mutation\n' >> "$app_probe_tree/src/SIR.Client.Web/App.fs"
+if enforce_source_correspondence "$source_manifest" "$correspondence_manifest" "$app_probe_tree" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "App.fs implementation source mutation unexpectedly passed"
+fi
+search_quiet 'current implementation source differs from package pin: src/SIR.Client.Web/App.fs' "$pin_probe_log" || {
+  pin_probe_fail "App.fs implementation source mutation failed without the actionable pin diagnostic"
+}
+
+# 2. A non-metadata change to the rule-hosting source is refused.
+combat_probe_tree="$pin_probe_dir/combat-mutant"
+mkdir -p "$combat_probe_tree"
+pin_probe_tree "$combat_probe_tree"
+sed '0,/module CombatRules =/s//module CombatRules = \/\/ implementation identity subject mutation/' \
+  "$repo_root/src/SIR.Simulation/CombatRules.fs" > "$combat_probe_tree/src/SIR.Simulation/CombatRules.fs"
+if enforce_source_correspondence "$source_manifest" "$correspondence_manifest" "$combat_probe_tree" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "CombatRules.fs non-metadata source mutation unexpectedly passed"
+fi
+search_quiet 'current implementation source differs from package pin: src/SIR.Simulation/CombatRules.fs' "$pin_probe_log" || {
+  pin_probe_fail "CombatRules.fs non-metadata source mutation failed without the actionable pin diagnostic"
+}
+
+# 3. A metadata-only identity rebind is still normalized away, so re-sealing the corpus does not
+#    read as a source change.
+metadata_probe_tree="$pin_probe_dir/combat-metadata"
+mkdir -p "$metadata_probe_tree"
+pin_probe_tree "$metadata_probe_tree"
+sed -E 's/(Commit = ")[0-9a-f]{40}(" })/\10000000000000000000000000000000000000000\2/' \
+  "$repo_root/src/SIR.Simulation/CombatRules.fs" > "$metadata_probe_tree/src/SIR.Simulation/CombatRules.fs"
+enforce_source_correspondence "$source_manifest" "$correspondence_manifest" "$metadata_probe_tree" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "CombatRules.fs metadata-only source rebind was not normalized"
+}
+
+# 4. Coverage guard: a source cannot be unfrozen by deleting its recorded row, and a path that is
+#    not a declared implementation source cannot be smuggled in.
+dropped_correspondence="$pin_probe_dir/dropped-correspondence.json"
+jq 'del(.paths["src/SIR.Client.Web/App.fs"])' "$correspondence_manifest" > "$dropped_correspondence"
+if check_correspondence_coverage "$source_manifest" "$dropped_correspondence" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "dropping a recorded source correspondence unexpectedly passed"
+fi
+search_quiet 'declared implementation source with no recorded correspondence: src/SIR.Client.Web/App.fs' "$pin_probe_log" || {
+  pin_probe_fail "dropped source correspondence failed without the actionable coverage diagnostic"
+}
+
+extra_correspondence="$pin_probe_dir/extra-correspondence.json"
+jq '.paths["src/SIR.Domain/RuleTypes.fs"] = "0000000000000000000000000000000000000000000000000000000000000000"' \
+  "$correspondence_manifest" > "$extra_correspondence"
+if check_correspondence_coverage "$source_manifest" "$extra_correspondence" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "undeclared source correspondence entry unexpectedly passed"
+fi
+search_quiet 'recorded correspondence for a path that is not a declared implementation source: src/SIR.Domain/RuleTypes.fs' "$pin_probe_log" || {
+  pin_probe_fail "undeclared source correspondence entry failed without the actionable coverage diagnostic"
+}
+
+# 5. An emptied baseline and a malformed digest are both refused.
+emptied_correspondence="$pin_probe_dir/emptied-correspondence.json"
+jq '.paths = {}' "$correspondence_manifest" > "$emptied_correspondence"
+if check_correspondence_coverage "$source_manifest" "$emptied_correspondence" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "emptied source correspondence unexpectedly passed"
+fi
+search_quiet 'recorded source correspondence is empty' "$pin_probe_log" || {
+  pin_probe_fail "emptied source correspondence failed without the actionable vacuity diagnostic"
+}
+
+# A malformed digest is refused for EVERY JSON type a digest can be, not merely for a string that
+# does not look like a digest. `test/1` raises on any non-string, and this function is called on the
+# left of `||`, so before S.I.R.#264's repair phase a non-string digest aborted the filter and the
+# arm returned 0 -- a confident pass on input it had not evaluated. Only the string case below was
+# ever exercised, which is why that survived four rounds of review.
+#
+# The six cases enumerated here are the COMPLETE set of JSON value types, so this inversion cannot
+# be defeated by "a further value" the way an enumeration of observed literals could be.
+malformed_correspondence="$pin_probe_dir/malformed-correspondence.json"
+while IFS='|' read -r probe_label probe_value probe_type; do
+  test -n "$probe_label" || continue
+  jq --argjson injected "$probe_value" \
+     '.paths["src/SIR.Domain/Rules.fs"] = $injected' \
+     "$correspondence_manifest" > "$malformed_correspondence"
+
+  # Guard the probe itself: assert the fixture really carries the type under test, so a probe that
+  # silently stopped injecting could not pass by testing nothing.
+  actual_type=$(jq -r '.paths["src/SIR.Domain/Rules.fs"] | type' "$malformed_correspondence")
+  test "$actual_type" = "$probe_type" || {
+    pin_probe_fail "malformed-digest probe '$probe_label' injected $actual_type, expected $probe_type"
+  }
+
+  if check_correspondence_coverage "$source_manifest" "$malformed_correspondence" >"$pin_probe_log" 2>&1; then
+    pin_probe_fail "malformed source correspondence digest ($probe_label) unexpectedly passed"
+  fi
+  search_quiet 'recorded source correspondence carries malformed digests' "$pin_probe_log" || {
+    pin_probe_fail "malformed source correspondence digest ($probe_label) failed without the actionable format diagnostic"
+  }
+  search_quiet "src/SIR.Domain/Rules.fs.*$probe_type" "$pin_probe_log" || {
+    pin_probe_fail "malformed source correspondence digest ($probe_label) did not name the offending path and its type"
+  }
+done <<'MALFORMED_DIGEST_DOMAIN'
+non-digest string|"not-a-sha256"|string
+number|12345|number
+null|null|null
+boolean|true|boolean
+array|["deadbeef"]|array
+object|{"a":1}|object
+MALFORMED_DIGEST_DOMAIN
+
+# Unparseable correspondence is refused -- and this probe records WHICH check refuses it, because
+# "the property is provided, but by a different check than the one named for it" is precisely the
+# defect S.I.R.#264's repair phase exists to remove. Naming the wrong arm here would reproduce it.
+#
+# The refusal comes from the EMPTINESS arm above, not from the evaluability guard: `.paths | keys[]`
+# fails first on unparseable input, leaving `recorded` empty. Every file-level jq failure is caught
+# there before the digest arm is ever reached. The evaluability guard is therefore defence in depth
+# against a FUTURE edit reintroducing a raising filter -- unreachable through this function's own
+# interface today, and deliberately not claimed as the arm under test here.
+unreadable_correspondence="$pin_probe_dir/unreadable-correspondence.json"
+printf '{"paths": {"src/SIR.Domain/Rules.fs": ' > "$unreadable_correspondence"
+if check_correspondence_coverage "$source_manifest" "$unreadable_correspondence" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "unreadable source correspondence unexpectedly passed"
+fi
+search_quiet 'recorded source correspondence is empty' "$pin_probe_log" || {
+  pin_probe_fail "unreadable source correspondence failed, but not through the emptiness arm this probe names"
+}
+
+# 6. A LEGITIMATE rebind succeeds. A genuinely changed implementation source, with its
+#    correspondence rebound in the same commit, must pass -- otherwise no pull request touching a
+#    pinned file could ever satisfy this gate, which is the defect S.I.R.#264 was filed for.
+rebind_probe_tree="$pin_probe_dir/legitimate-rebind"
+mkdir -p "$rebind_probe_tree"
+pin_probe_tree "$rebind_probe_tree"
+printf '\n// reviewed change to an implementation identity subject\n' >> "$rebind_probe_tree/src/SIR.Simulation/Simulation.fs"
+if source_matches_correspondence "src/SIR.Simulation/Simulation.fs" "$rebind_probe_tree/src/SIR.Simulation/Simulation.fs" "$correspondence_manifest"; then
+  pin_probe_fail "legitimate rebind probe did not actually change the implementation source"
+fi
+rebound_correspondence="$pin_probe_dir/rebound-correspondence.json"
+jq --arg path "src/SIR.Simulation/Simulation.fs" \
+   --arg digest "$(normalized_source_digest "src/SIR.Simulation/Simulation.fs" "$rebind_probe_tree/src/SIR.Simulation/Simulation.fs")" \
+   '.paths[$path] = $digest' "$correspondence_manifest" > "$rebound_correspondence"
+check_correspondence_coverage "$source_manifest" "$rebound_correspondence" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "a rebound source correspondence was refused by the coverage guard"
+}
+enforce_source_correspondence "$source_manifest" "$rebound_correspondence" "$rebind_probe_tree" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "a legitimate rebound implementation source change was refused: no pull request could satisfy this gate"
+}
+
+# 7. The rebind writer cannot widen the frozen set. The declared identity set is owned by
+#    implementation-sources.json, and the writer must refuse a path outside it rather than adding
+#    one -- otherwise the tool that maintains the baseline could also redefine what it covers.
+if "$repo_root/scripts/rebind-rules-corpus-sources.sh" --write src/SIR.Domain/RuleTypes.fs >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "rebind writer accepted a path outside the declared implementation identity set"
+fi
+search_quiet 'not a declared implementation source: src/SIR.Domain/RuleTypes.fs' "$pin_probe_log" || {
+  pin_probe_fail "rebind writer refused an undeclared path without the actionable ownership diagnostic"
+}
+
+# 8. The writer's normalization agrees with this verifier's. The writer necessarily carries its own
+#    copy of normalize_implementation_source; if the two ever diverge it would record digests this
+#    gate cannot reproduce, and every rebind would land broken. On a tree this gate considers
+#    current, the writer must therefore find nothing to rebind.
+"$repo_root/scripts/rebind-rules-corpus-sources.sh" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "rebind writer failed on a tree this gate considers current"
+}
+search_quiet 'already current: nothing to rebind' "$pin_probe_log" || {
+  pin_probe_fail "rebind writer reports drift on a tree this gate considers current: the writer and verifier normalizations have diverged"
+}
+
+rm -rf "$pin_probe_dir"
+rm -f "$pin_probe_log"
 printf 'package\t%s\nalgorithm\t%s\n' "$(jq -r '.packageSha256' "$source_manifest")" "$(jq -r '.algorithmFingerprint' "$source_manifest")" >> "$source_digest_input"
 actual_sources_digest=$(sha256sum "$source_digest_input" | cut -d' ' -f1)
 identity_mutant=$(mktemp /tmp/sir-rules-source-digest-mutant.XXXXXX)
@@ -235,6 +520,59 @@ if test -n "$copied_semantics"; then
   echo "copied JavaScript/TypeScript combat semantics detected" >&2
   exit 1
 fi
+
+# ---------------------------------------------------------------------------------------------
+# Execute the corpus (S.I.R.#264 round 1).
+#
+# A rebindable correspondence baseline CANNOT be the only thing standing between a changed
+# implementation source and a green gate. Everything above this line is a comparison of
+# DECLARATIONS: regenerated manifest/coverage/representative-application, sealed digests, recorded
+# per-path text digests. A change to an algorithm BODY moves none of them -- `implementationDigest`
+# is a sealed literal, `semanticDigest` derives from it plus the DECLARATIVE rule payload, and the
+# representative application does not exercise every registered symbol. Byte identity against the
+# pin used to be the only detector of that class, and making it rebindable retires it.
+#
+# So execute the rules rather than only re-describing them. An independent critic demonstrated the
+# gap on this pull request: mutating CombatRules.resolveCoverImpact -- the symbol manifest.json
+# binds to COMBAT-COVER-003 and COMBAT-COVER-DESTRUCTION-001 -- and rebinding its correspondence in
+# the same tree left every declared artifact byte-identical and this gate green, while the corpus
+# fixtures refused. This step is what makes the rebind path safe, and it is deliberately NOT
+# restricted to rule-hosting paths: FixedPoint.fs, CanonicalEncoding.fs, Rules.fs and CombatModel.fs
+# are all pinned, none is rule-hosting, and a damage-arithmetic change in any of them moves rule
+# behaviour while remaining rebindable.
+conformance_log=$(mktemp /tmp/sir-rules-conformance.XXXXXX)
+if ! dotnet run --project "$project" -c Release --no-build >"$conformance_log" 2>&1; then
+  echo "registered executable behaviour does not satisfy the rules corpus fixtures" >&2
+  echo "  a rebound source correspondence cannot make this pass: the corpus is executed, not described" >&2
+  grep -iE 'exception|failwith|did not' "$conformance_log" | head -5 >&2
+  rm -f "$conformance_log"
+  exit 1
+fi
+rm -f "$conformance_log"
+
+# And prove that execution is not vacuous: a divergence injected into the combat route -- the same
+# class as the critic's mutation, without needing a rebuild -- must be refused.
+#
+# The exit code alone CANNOT establish that. `--inject-combat-divergence` computes its offset with
+# Array.findIndex, which THROWS when the two evaluations agree, and then failwiths regardless -- so
+# the process aborts whether or not a divergence was found, and an exit-code-only check passes even
+# when its subject is broken. That is the vacuity this whole gate exists to refuse, and the first
+# version of this guard had it (S.I.R.#264 review round 1). Assert the diagnostic, exactly as the
+# adjacent rules-corpus mutation below does: if CombatFixtures.evaluate stops diverging, findIndex
+# throws before printing and this line is absent.
+combat_divergence_log=$(mktemp /tmp/sir-rules-combat-divergence.XXXXXX)
+if dotnet run --project "$project" -c Release --no-build -- --inject-combat-divergence >"$combat_divergence_log" 2>&1; then
+  echo "combat divergence mutation unexpectedly passed the corpus conformance route" >&2
+  rm -f "$combat_divergence_log"
+  exit 1
+fi
+search_quiet 'first divergence: fixture=physical-combat' "$combat_divergence_log" || {
+  echo "combat divergence mutation failed without the actionable divergence diagnostic" >&2
+  echo "  the injected mutation did not actually diverge, so this guard proved nothing" >&2
+  rm -f "$combat_divergence_log"
+  exit 1
+}
+rm -f "$combat_divergence_log"
 
 mutation_log=$(mktemp /tmp/sir-rules-mutation.XXXXXX)
 trap 'rm -f "$mutation_log"' EXIT
