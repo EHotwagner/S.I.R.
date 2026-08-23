@@ -545,6 +545,12 @@ const retiredBudgetKeys = [retiredBudgetKey];
 // which here is a definition (`key:` / `key =`) or a member read (`.key`).
 const definesKey = (text, key) => new RegExp(`${key}\\s*[:=](?!=)`).test(text);
 const readsKey = (text, key) => new RegExp(`\\.\\s*${key}\\b|\\[["'\`]${key}["'\`]\\]`).test(text);
+// The retired key must not come back INTO THE DECLARATION either. Without this the two sets overlap,
+// Rule A reports it twice, and the red that follows is a self-test complaining about a duplicate
+// rather than a gate naming the real cause -- a red for the wrong reason is not a red that was
+// earned.
+assert.deepEqual(declaredBudgetKeys.filter((key) => retiredBudgetKeys.includes(key)), [],
+  `the declaration re-declares ${retiredBudgetKeys.join(", ")}, which S.I.R.#318 removed: it named a millisecond no document declared and was added to the ceiling at the call site.`);
 const restatesKey = (text) => [
   ...declaredBudgetKeys.filter((key) => new RegExp(`${key}\\s*[:=]\\s*-?\\d`).test(text)),
   ...retiredBudgetKeys.filter((key) => definesKey(text, key) || readsKey(text, key)),
@@ -677,8 +683,10 @@ const representative = representativeWorkload;
 const stress = stressWorkload;
 assert.equal(tacticalStructuralBudgetReason(representative, { domNodes: representative.maximumDomNodes, effects: representative.maximumEffects }), null,
   "the structural ceilings are inclusive: a scene exactly at them conforms");
-assert.match(`${tacticalStructuralBudgetReason(representative, { domNodes: representative.maximumDomNodes + 1, effects: representative.maximumEffects })}`, /SVG node budget exceeded/);
-assert.match(`${tacticalStructuralBudgetReason(representative, { domNodes: representative.maximumDomNodes, effects: representative.maximumEffects + 1 })}`, /active-effect budget exceeded/);
+assert.match(`${tacticalStructuralBudgetReason(representative, { domNodes: representative.maximumDomNodes + 1, effects: representative.maximumEffects })}`, /SVG node budget exceeded/,
+  "a scene one node past the declared cap must be refused; if this passes, the node ceiling admits more than the published table says");
+assert.match(`${tacticalStructuralBudgetReason(representative, { domNodes: representative.maximumDomNodes, effects: representative.maximumEffects + 1 })}`, /active-effect budget exceeded/,
+  "a scene one effect past the declared ceiling must be refused; if this passes, the effect ceiling admits more than the published table and the runtime cap say");
 assert.equal(tacticalInputToPaintBudgetReason(stress, stress.maximumInputToPaintMilliseconds - 1), null);
 assert.match(`${tacticalInputToPaintBudgetReason(stress, stress.maximumInputToPaintMilliseconds)}`, /input-to-paint budget exceeded/,
   "the input-to-paint ceiling is exclusive, as the published `< N ms` cell says");
