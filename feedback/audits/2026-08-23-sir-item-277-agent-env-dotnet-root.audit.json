@@ -1,0 +1,328 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-23-sir-item-277-agent-env-dotnet-root.md",
+  "reportSha256": "da58747faf42927fb2972b5b62e7850fb2bffc67f893428bc23f1cf8ab4ccdf0",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/agent-env.sh",
+          "result": "verified",
+          "sha256": "6e50b314ca923cd5c589d8caf6a567441137e6348f4f8f8b7f2630b5bace7afe"
+        },
+        {
+          "locator": "file:scripts/test-agent-env.sh",
+          "result": "verified",
+          "sha256": "929cdb2bc4cceda1bcb12e8bd549e0fa52bcd7f6304f4ed10173c0234d40d8db"
+        },
+        {
+          "locator": "command:git worktree add --detach ../sir-277-base f69f1e6cdc203121bd908a3a1bd025545e0aff56 && sed -i -e '\\|export DOTNET_ROOT=\"$candidate\"|d' ../sir-277-base/scripts/agent-env.sh && ( cd ../sir-277-base && ./scripts/test-agent-env.sh ) && git worktree remove --force ../sir-277-base",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#277",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The independent critic verified scripts/test-agent-env.sh at revision f591a22f…; acting on that critic's own contradiction the file was then corrected, so the bytes recorded here (929cdb2b…) were re-verified by the AUTHOR at commit 4ec2925, not by the critic. The suite was re-run green and the inversion inventory re-derived at those bytes. Recorded rather than extending a critic's verification across a change it never saw."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/agent-env.sh",
+          "result": "verified",
+          "sha256": "6e50b314ca923cd5c589d8caf6a567441137e6348f4f8f8b7f2630b5bace7afe"
+        },
+        {
+          "locator": "command:SYS=<the system root named in §1>",
+          "result": "verified"
+        },
+        {
+          "locator": "for R in \"$SYS\" \"$HOME/.dotnet\"",
+          "result": "verified"
+        },
+        {
+          "locator": "do env -i HOME=\"$HOME\" PATH=\"$PATH\" COREHOST_TRACE=1 DOTNET_ROOT=\"$R\" \"$HOME/.dotnet/tools/fsgg-sdd\" --version 2>&1 | grep 'Chose FX version'",
+          "result": "verified"
+        },
+        {
+          "locator": "done",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.3",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-agent-env.sh",
+          "result": "verified",
+          "sha256": "929cdb2bc4cceda1bcb12e8bd549e0fa52bcd7f6304f4ed10173c0234d40d8db"
+        },
+        {
+          "locator": "command:./scripts/test-agent-env.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The independent critic verified scripts/test-agent-env.sh at revision f591a22f…; acting on that critic's own contradiction the file was then corrected, so the bytes recorded here (929cdb2b…) were re-verified by the AUTHOR at commit 4ec2925, not by the critic. The suite was re-run green and the inversion inventory re-derived at those bytes. Recorded rather than extending a critic's verification across a change it never saw."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/fsgg-coord",
+          "result": "verified",
+          "sha256": "afbc5bab5e9fdcd5caa71ef664be7759bdc09124d00f0ab017cff6b46c3425a0"
+        },
+        {
+          "locator": "file:.config/dotnet-tools.json",
+          "result": "verified",
+          "sha256": "eba0d44fad3d39d521cdf8de8428bdd1911ed8d899a626ec832a62d4bf3fb4ab"
+        },
+        {
+          "locator": "command:git ls-tree --name-only HEAD src/",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/agent-env.sh",
+          "result": "verified",
+          "sha256": "6e50b314ca923cd5c589d8caf6a567441137e6348f4f8f8b7f2630b5bace7afe"
+        },
+        {
+          "locator": "file:scripts/test-agent-env.sh",
+          "result": "verified",
+          "sha256": "929cdb2bc4cceda1bcb12e8bd549e0fa52bcd7f6304f4ed10173c0234d40d8db"
+        },
+        {
+          "locator": "command:git ls-tree --name-only HEAD src/",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git grep -InE \"(^|[^-a-zA-Z0-9_./])(fable|fsdocs|fantomas|paket|fake|fsgg-sdd)([^-a-zA-Z0-9_.]|$)\" -- '*.sh' 'build.sh' '*.mjs'",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The independent critic verified scripts/test-agent-env.sh at revision f591a22f…; acting on that critic's own contradiction the file was then corrected, so the bytes recorded here (929cdb2b…) were re-verified by the AUTHOR at commit 4ec2925, not by the critic. The suite was re-run green and the inversion inventory re-derived at those bytes. Recorded rather than extending a critic's verification across a change it never saw."
+      ]
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head origin/main",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/test-feedback-audit-binding-exceptions.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2856",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.7",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-agent-env.sh",
+          "result": "verified",
+          "sha256": "929cdb2bc4cceda1bcb12e8bd549e0fa52bcd7f6304f4ed10173c0234d40d8db"
+        },
+        {
+          "locator": "command:./scripts/test-agent-env.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The independent critic verified scripts/test-agent-env.sh at revision f591a22f…; acting on that critic's own contradiction the file was then corrected, so the bytes recorded here (929cdb2b…) were re-verified by the AUTHOR at commit 4ec2925, not by the critic. The suite was re-run green and the inversion inventory re-derived at those bytes. Recorded rather than extending a critic's verification across a change it never saw."
+      ]
+    },
+    {
+      "id": "§4.8",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-agent-env.sh",
+          "result": "verified",
+          "sha256": "929cdb2bc4cceda1bcb12e8bd549e0fa52bcd7f6304f4ed10173c0234d40d8db"
+        },
+        {
+          "locator": "command:./scripts/test-agent-env.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The independent critic verified scripts/test-agent-env.sh at revision f591a22f…; acting on that critic's own contradiction the file was then corrected, so the bytes recorded here (929cdb2b…) were re-verified by the AUTHOR at commit 4ec2925, not by the critic. The suite was re-run green and the inversion inventory re-derived at those bytes. Recorded rather than extending a critic's verification across a change it never saw."
+      ]
+    },
+    {
+      "id": "§4.9",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-agent-env.sh",
+          "result": "verified",
+          "sha256": "929cdb2bc4cceda1bcb12e8bd549e0fa52bcd7f6304f4ed10173c0234d40d8db"
+        },
+        {
+          "locator": "command:git worktree add --detach ../sir-277-base f69f1e6cdc203121bd908a3a1bd025545e0aff56 && sed -i -e '\\|export DOTNET_ROOT=\"$candidate\"|d' ../sir-277-base/scripts/agent-env.sh && ( cd ../sir-277-base && ./scripts/test-agent-env.sh ) && git worktree remove --force ../sir-277-base",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The independent critic verified scripts/test-agent-env.sh at revision f591a22f…; acting on that critic's own contradiction the file was then corrected, so the bytes recorded here (929cdb2b…) were re-verified by the AUTHOR at commit 4ec2925, not by the critic. The suite was re-run green and the inversion inventory re-derived at those bytes. Recorded rather than extending a critic's verification across a change it never saw."
+      ]
+    },
+    {
+      "id": "§4.10",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head HEAD",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2856",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.11",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-feedback-audit-binding-exceptions.sh",
+          "result": "verified",
+          "sha256": "0b936c04c271bcdf2a86ae73ae086d038ba53d78d6838439f44162ab9294d5f4"
+        },
+        {
+          "locator": "command:./scripts/test-feedback-audit-binding-exceptions.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2856",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.12",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-agent-env.sh",
+          "result": "verified",
+          "sha256": "929cdb2bc4cceda1bcb12e8bd549e0fa52bcd7f6304f4ed10173c0234d40d8db"
+        },
+        {
+          "locator": "command:./scripts/test-agent-env.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The independent critic verified scripts/test-agent-env.sh at revision f591a22f…; acting on that critic's own contradiction the file was then corrected, so the bytes recorded here (929cdb2b…) were re-verified by the AUTHOR at commit 4ec2925, not by the critic. The suite was re-run green and the inversion inventory re-derived at those bytes. Recorded rather than extending a critic's verification across a change it never saw."
+      ]
+    },
+    {
+      "id": "§4.13",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-agent-env.sh",
+          "result": "verified",
+          "sha256": "929cdb2bc4cceda1bcb12e8bd549e0fa52bcd7f6304f4ed10173c0234d40d8db"
+        },
+        {
+          "locator": "command:./scripts/test-agent-env.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The independent critic verified scripts/test-agent-env.sh at revision f591a22f…; acting on that critic's own contradiction the file was then corrected, so the bytes recorded here (929cdb2b…) were re-verified by the AUTHOR at commit 4ec2925, not by the critic. The suite was re-run green and the inversion inventory re-derived at those bytes. Recorded rather than extending a critic's verification across a change it never saw."
+      ]
+    },
+    {
+      "id": "§4.14",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-agent-env.sh",
+          "result": "verified",
+          "sha256": "929cdb2bc4cceda1bcb12e8bd549e0fa52bcd7f6304f4ed10173c0234d40d8db"
+        },
+        {
+          "locator": "command:./scripts/test-agent-env.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The independent critic verified scripts/test-agent-env.sh at revision f591a22f…; acting on that critic's own contradiction the file was then corrected, so the bytes recorded here (929cdb2b…) were re-verified by the AUTHOR at commit 4ec2925, not by the critic. The suite was re-run green and the inversion inventory re-derived at those bytes. Recorded rather than extending a critic's verification across a change it never saw."
+      ]
+    },
+    {
+      "id": "§4.15",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#298",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git show d849243:scripts/test-agent-env.sh > tae-at-d849243.tmp && dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- digest tae-at-d849243.tmp && rm tae-at-d849243.tmp",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git cat-file -t 748495da",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The independent critic verified scripts/test-agent-env.sh at revision f591a22f…; acting on that critic's own contradiction the file was then corrected, so the bytes recorded here (929cdb2b…) were re-verified by the AUTHOR at commit 4ec2925, not by the critic. The suite was re-run green and the inversion inventory re-derived at those bytes. Recorded rather than extending a critic's verification across a change it never saw."
+      ]
+    }
+  ]
+}
