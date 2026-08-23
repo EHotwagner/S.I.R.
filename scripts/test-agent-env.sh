@@ -31,9 +31,68 @@ BASH_ENV_VALUE='$(git rev-parse --show-toplevel 2>/dev/null)/scripts/agent-env.s
 # after BASH_ENV has run. This is the behaviour the `dotnet` function exists to absorb.
 CLOBBER='export PATH='"$FRESH_PATH"';'
 
+# THIS SUITE MUTATES THE REAL TRACKED FILE, SO IT MUST NOT OVERLAP WITH ITSELF (S.I.R.#277).
+# Section H moves `$SHIM` — `scripts/agent-env.sh` in the working tree, not a copy — out of the way
+# to prove the wired case goes red without it. Anything else reading that file during the window
+# sees it missing. A concurrent run of this suite therefore reports `rc=1` in
+# "the apphost loads its runtime from the SAME install the resolved muxer lives in" for a reason
+# that has nothing to do with DOTNET_ROOT, and the two conditions are INDISTINGUISHABLE in the
+# output: a real inversion and a collision are both one WRONG at rc=1 in that check. That was
+# observed, not theorised — an independent reviewer's concurrent run produced exactly that false
+# red while this file was being edited. A signal that cannot separate two conditions is the very
+# defect this suite exists to prevent, so the suite refuses rather than emitting one.
+#
+# The lock lives in the git dir, which is untracked and per-worktree, and it is taken by `mkdir`
+# because that is atomic on every filesystem this runs on and needs no `flock`. A dead holder's
+# lock is reclaimed by PID check so a crashed run cannot wedge the suite forever.
+#
+# REFUSAL EXITS 99, NOT 1. This script's contract is "exit code is the number of unexpected
+# outcomes", so exiting 1 would be indistinguishable from one failed check — which is the same
+# category of defect all over again, one frame up.
+GITDIR="$(command git -C "$ROOT" rev-parse --absolute-git-dir 2>/dev/null)" || GITDIR=""
+[ -n "$GITDIR" ] || GITDIR="$ROOT"
+LOCKDIR="$GITDIR/fsgg-agent-env-suite.lock"
+# `acquired` is tracked explicitly. Testing "does the directory exist?" after a failed `mkdir`
+# reports the HOLDER's lock as if it were ours and never refuses — the first version of this guard
+# did exactly that and passed its own concurrency test, which is the same could-not-fail defect
+# this suite exists to catch. Only the process whose `mkdir` won may proceed.
+acquired=0
+if mkdir "$LOCKDIR" 2>/dev/null; then
+  acquired=1
+elif [ -f "$LOCKDIR/pid" ] && ! kill -0 "$(cat "$LOCKDIR/pid" 2>/dev/null)" 2>/dev/null; then
+  # The holder is gone; reclaim so a crashed run cannot wedge the suite forever.
+  rm -rf "$LOCKDIR"
+  if mkdir "$LOCKDIR" 2>/dev/null; then acquired=1; fi
+fi
+if [ "$acquired" -ne 1 ]; then
+  echo "REFUSED: another $0 run holds $LOCKDIR."
+  echo "  Section H moves the real tracked scripts/agent-env.sh; a concurrent run cannot produce a"
+  echo "  trustworthy result in EITHER direction, so this refuses instead of guessing (S.I.R.#277)."
+  exit 99
+fi
+printf '%s' "$$" > "$LOCKDIR/pid"
+if [ ! -f "$SHIM" ]; then
+  echo "REFUSED: $SHIM is missing before the suite started."
+  echo "  An earlier interrupted run may have left it moved aside. Restore it with"
+  echo "  'git checkout -- scripts/agent-env.sh' before re-running (S.I.R.#277)."
+  rm -rf "$LOCKDIR"
+  exit 99
+fi
+
 FAILURES=0
 TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
+BAK="$TMP/agent-env.sh.bak"
+# RESTORE THE SHIM BEFORE DELETING THE DIRECTORY THE BACKUP LIVES IN. The previous trap was
+# `rm -rf "$TMP"` alone, so a run interrupted inside section H removed the working tree's copy of
+# `scripts/agent-env.sh` and its only backup in the same command.
+cleanup() {
+  if [ -f "$BAK" ] && [ ! -f "$SHIM" ]; then
+    mv "$BAK" "$SHIM"
+  fi
+  rm -rf "$TMP"
+  rm -rf "$LOCKDIR"
+}
+trap cleanup EXIT INT TERM
 
 fresh() { # fresh <HOME> <PATH> <DOTNET_ROOT> <BASH_ENV> <script>
   env -i HOME="$1" USER="${USER:-runner}" TERM=dumb \
@@ -154,9 +213,9 @@ run pass "every repo shell entry point is bash, which is what lets step 0 reach 
     'test "$(head -1 build.sh)" = "#!/usr/bin/env bash" && for f in scripts/*.sh; do [ "$f" = scripts/agent-env.sh ] && continue; test "$(head -1 "$f")" = "#!/usr/bin/env bash" || exit 1; done'
 
 section "H. MUTATION — delete the mechanism and the wired case must go red again"
-mv "$SHIM" "$TMP/agent-env.sh.bak"
+mv "$SHIM" "$BAK"
 run fail "wired, but the shim is deleted: dotnet --version" "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" 'dotnet --version'
-mv "$TMP/agent-env.sh.bak" "$SHIM"
+mv "$BAK" "$SHIM"
 run pass "shim restored: dotnet --version"                  "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" 'dotnet --version >/dev/null'
 
 section "I. DOTNET_ROOT — the exported root is what an APPHOST consults (S.I.R.#277)"
