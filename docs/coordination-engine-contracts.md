@@ -176,6 +176,38 @@ Exactly five keys. There is no `item`, no `kind`, and no `claimGeneration` on a 
 }
 ```
 
+### Who posts the `complete` event — undocumented, and it costs a decision every time
+
+**Nothing in the packed skills says which party completes a review-wait generation.** Not
+`independent-review.md`, which gives the command; not `host-loop.md`, which mentions the `complete`
+event only to say `precedingReview` must equal its `evidenceRef`. The step exists, the command is
+documented, and the actor is not.
+
+Measured on one night's reviews, four critics split evenly and each decided unprompted:
+
+| critic | PR | posted the completion? | stated reason |
+|---|---|---|---|
+| `curlew-cac2` | 257 | yes | — |
+| `wren-617a` | 276 | yes | — |
+| `finch-352f` | 259 | no | "the documented command order assigns that step to the claim holder" |
+| `tern-af70` | 285 | no | "`claimGeneration` is the worker's, not mine" |
+
+**The engine does not decide it either.** A wait entry carries the *worker's* `claimGeneration`, but
+the validator does not bind the writer's identity to it: on PR 259 the board host posted a completion
+for a generation whose claim holder's session had ended, and it was accepted; on PR 285 the claim
+holder posted its own, and that was accepted too. Both readings produce a working write. Nothing
+distinguishes them but prose, and the prose does not exist.
+
+**The convention this page adopts, and the reason:** *the party whose `claimGeneration` the receipt
+carries closes it* — normally the implementing worker. It can verify the live state in the same breath
+as writing, which a host cannot do for an item it does not hold. **This is a convention, not a rule the
+engine enforces**, and it is stated here so the next four agents do not each decide it again.
+
+**This claim is LITERAL-ONLY and the gate claims no inversion over it.** It has no machine form: both
+actors are accepted, so there is no refusal to probe and nothing for
+`scripts/test-review-contract-coherence.sh` to compare. Labelling it Derived because it concerns the
+engine would be precisely the over-claim the honesty section below exists to prevent.
+
 ### What the gate enforces
 
 - `claimGeneration` on the entry must equal the **current** claim marker's comment id, or
@@ -269,7 +301,7 @@ claim that cannot state its extension does not belong in this table at all.
 | `verdict` | `pass`, `changes-required`, `accepted` | `rejected`, `fail`, `Pass` |
 | `kind` | `initial`, `confirmation`, `escalation`, `repair-phase`, `acceptance` | `repair`, `host-acceptance`, `Initial` |
 | `routeApplicability` | `meaningful`, `not-meaningful` | `none`, `n/a`, `unknown` |
-| `timestamp` | `2026-08-23T00:00:00Z`, `2026-08-23T00:00:00+00:00`, `2026-08-23 00:00:00`, `2026-08-23`, `August 23, 2026` | `1787434100552`, `banana`, `now`, `23/08/2026`, `2026-13-45T99:99:99Z` |
+| `timestamp` | `2026-08-23T00:00:00Z`, `2026-08-23T00:00:00+00:00`, `2026-08-23 00:00:00`, `2026-08-23`, `August 23, 2026`, `Sun, 23 Aug 2026 00:00:00 GMT` | `1787434100552`, `banana`, `now`, `23/08/2026`, `2026-13-45T99:99:99Z` |
 
 An empty string is refused for every one of these keys, and the gate probes that separately rather
 than asking each row to spell it.
@@ -277,8 +309,9 @@ than asking each row to spell it.
 > **`timestamp` does not mean what its refusal message says, and this page said the wrong thing for
 > four review rounds.** The validator's message is `timestamp must be an ISO-8601 instant`, and this
 > table used to read *"any ISO-8601 instant"* on the strength of it. **Measured against the pinned
-> engine, `2026-08-23 00:00:00`, `2026-08-23` and `August 23, 2026` are all ACCEPTED** — none of which
-> is an ISO-8601 instant. The field is parsed with .NET date parsing, not an ISO-8601 grammar, so the
+> engine, `2026-08-23 00:00:00`, `2026-08-23`, `August 23, 2026` and the RFC-1123 form
+> `Sun, 23 Aug 2026 00:00:00 GMT` are all ACCEPTED** — none of which is an ISO-8601 instant, and the
+> last is a different standard entirely. The field is parsed with .NET date parsing, not an ISO-8601 grammar, so the
 > accepted set is far wider than the refusal claims. Write an ISO-8601 instant anyway: the wide set is
 > an implementation fact, not a licence, and the narrow one is what every other record carries. The
 > engine-side defect — a refusal message that names a grammar the code does not enforce — is the same

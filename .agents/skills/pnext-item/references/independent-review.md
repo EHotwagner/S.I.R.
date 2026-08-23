@@ -415,8 +415,13 @@ followed it most carefully — the refusal arrives at acceptance, after a full c
 that can no longer close. The four measured outcomes are the `successor-critic` rows of the
 `Rules with two outcomes` table in
 [`docs/coordination-engine-contracts.md`](../../../../docs/coordination-engine-contracts.md); each is
-probed against the validator, so this paragraph cannot drift back out of agreement without
-`scripts/test-review-contract-coherence.sh` reddening. When no repair is required, an initial `pass` whose reviewed SHA equals the
+probed against the validator on every run of `scripts/test-review-contract-coherence.sh`.
+
+**That gate does not read this file, so this paragraph is not itself bound** — it is prose in a tree
+the gate never opens, exactly like the sentence it replaces. The document's table is the checked
+authority; this is a pointer to it. If you change either, check it against the other, and put any new
+rule in the table where something can probe it rather than in a sentence where nothing can. Claiming
+otherwise here would be the same over-claim this whole item exists to end, one file to the left. When no repair is required, an initial `pass` whose reviewed SHA equals the
 candidate head is itself the confirmation; no repair round or second marker is required. Allow at most
 three repair-and-confirmation rounds. Every round addresses material findings only; do not iterate on
 minor observations. Before routing any repair, the host validates the current chain and permits it only

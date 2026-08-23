@@ -116,6 +116,38 @@ doc = open(sys.argv[1], encoding="utf-8").read()
 out, problems = {}, []
 ticked = lambda s: re.findall(r"`([^`]+)`", s)
 
+# EVERY PARSE BELOW IS TOTAL OVER ITS CELL. NONE TAKES THE FIRST MATCH.
+#
+# Repair-phase round 1, finding F1. The previous revision closed the SCORING defect (a parse abort no
+# longer counts as a detection) but left six checks unable to detect a WIDENING, because their
+# expectation was parsed with `re.search(...)` or `[0]` -- the first literal, the rest discarded.
+# A widening ADDS a permitted-but-wrong alternative, so under a first-match parse the expectation is
+# UNCHANGED and the comparison it feeds stays green on a falsified page. The gate then printed, in one
+# run, `ok doc:overwrite-description:revision` and `reds doc:overwrite-description:revision` -- the
+# coverage machinery certifying a check as inverted while that check was green on a falsified page.
+#
+# A first-match parse cannot represent a widening. That is a property of the parse, not of the
+# mutation catalogue, so no number of added mutations would have fixed it. The rule is therefore:
+# a cell's expectation is the WHOLE cell -- a set of literals, or an exact string -- and never a
+# prefix of it.
+def all_of(pattern, text, what, flags=0):
+    """Every match, as a list. Never `search`; never `[0]` on a longer list."""
+    got = re.findall(pattern, text, flags)
+    if not got:
+        problems.append("%s: no match" % what)
+    return got
+
+def sole(pattern, text, what, flags=0):
+    """Exactly one match, or the value is ambiguous and the document is refused."""
+    got = all_of(pattern, text, what, flags)
+    if len(got) == 1:
+        return got[0]
+    if got:
+        problems.append("%s: expected exactly one, found %d (%s) -- a claim stated twice, or stated "
+                        "with an alternative, is not one expectation"
+                        % (what, len(got), ", ".join(map(str, got))))
+    return None
+
 def section(header, stop=("\n## ", "\n### ")):
     i = doc.find(header)
     if i < 0:
@@ -166,6 +198,9 @@ for row in re.finditer(r"^\|\s*`([a-z-]+)`\s*\|\s*`([a-z-]+)`\s*\|\s*`(accepted|
                        section("### Rules with two outcomes"), re.M):
     if row.group(2) in outcomes:
         problems.append("the outcome table names case `%s` twice" % row.group(2))
+    # The `rule` column used to be parsed here and read by nothing -- parsed-but-discarded, the
+    # identical defect this file repairs for the authorization table, reintroduced one table over in
+    # the table this gate added. It is now bound to each probe's declared rule.
     outcomes[row.group(2)] = {"rule": row.group(1), "outcome": row.group(3)}
 out["outcomeRules"] = outcomes
 if not outcomes:
@@ -213,9 +248,30 @@ else: problems.append("could not parse the meaningful route-evidence cardinality
 if n and n.group(1) in words: out["notMeaningfulEvidenceCount"] = words[n.group(1)]
 else: problems.append("could not parse the not-meaningful route-evidence cardinality")
 
-m = re.search(r"must be at most (\d+) hours", doc)
-if m: out["waitWindowMaxHours"] = int(m.group(1))
-else: problems.append("could not parse the review-wait window ceiling")
+# The cardinality bullet's extension is every count it names. Widening it -- "exactly four ... or
+# five for a repair-phase review" -- adds a member the engine refuses, so the added one reds instead
+# of parsing to an unchanged four.
+_card = re.search(r"- `routeApplicability.*?(?=\n\n|\n- |\n> )", inv, re.S)
+out["evidenceCountsNamed"] = sorted({words[w] for w in
+                                    re.findall(r"\*\*exactly (\w+)\*\*", _card.group(0) if _card else "")
+                                    if w in words})
+# Deliberately NOT a parse failure when the count is wrong. A parse abort reds the run without
+# reddening any check, and STEP 3 then reports NO DETECTION rather than attributing the escape --
+# so the judgement belongs to the check, which can name what it compared. Only an empty parse is
+# refused here, because an empty expectation is the vacuous case this gate exists to prevent.
+if not out["evidenceCountsNamed"]:
+    problems.append("the route-evidence bullet names no cardinality at all")
+
+# The extension of this claim is the SET of hour values the page says are permitted. Widening it --
+# "at most 24 hours, or at most 72 hours for a repair-phase wait" -- adds a member, and every member is
+# probed against the validator, so the added one reds.
+# The pattern is `at most (\d+) hours` and NOT `must be at most …`: the widening that survived the
+# first repair read "must be at most 24 hours, or at most 72 hours for a repair-phase wait", whose
+# second clause the narrower pattern did not match. A claim's extension is every place the page states
+# it, however the sentence is arranged -- so the pattern matches the claim, not one phrasing of it.
+# Repeated statements of the SAME ceiling collapse (it is a set); an added alternative does not.
+out["waitWindowHours"] = sorted({int(h) for h in all_of(r"at most (\d+) hours", doc,
+                                                       "the review-wait window ceiling")})
 
 m2 = re.search(r'must be `"round": (\d+)`, the second `(\d+)`', inv)
 if m2: out["confirmationRounds"] = [int(m2.group(1)), int(m2.group(2))]
@@ -230,26 +286,28 @@ else: problems.append("could not parse the initial-record round claim")
 # already right: transposing the fields produced a parse failure rather than a comparison, and the
 # check it fed had therefore never once fired. That is the same defect as a presence test -- an
 # expectation that cannot take a wrong value cannot detect one.
-m = re.search(r"```\n(<[A-Za-z]+>(?::<[A-Za-z]+>)+)\n```", section("## The two generation fields"))
-out["generationTokenShape"] = m.group(1) if m else None
-if not m: problems.append("could not parse the reviewGeneration token shape")
+out["generationTokenShape"] = sole(r"```\n(<[A-Za-z]+>(?::<[A-Za-z]+>)+)\n```",
+                                  section("## The two generation fields"),
+                                  "the reviewGeneration token shape")
 
 rows = {}
-for row in re.finditer(r"^\|\s*`([a-z-]+)`\s*\|\s*`(\w+)`\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$",
+for row in re.finditer(r"^\|\s*`([a-z-]+)`\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$",
                        section("### Which wait entry authorizes which record"), re.M):
-    rows[row.group(1)] = {"waitState": row.group(2),
-                         "receiptKind": (ticked(row.group(3)) or [row.group(3).strip()])[0],
+    # ALL literals in each cell, not the first. `(ticked(...) or [...])[0]` discarded every
+    # alternative, so widening the receipt-kind cell to "`repair-confirmation` or `initial-review`"
+    # parsed to an unchanged expectation and the row stayed green.
+    rows[row.group(1)] = {"waitState": ticked(row.group(2)) or [row.group(2).strip()],
+                         "receiptKind": ticked(row.group(3)) or [row.group(3).strip()],
                          "token": ticked(row.group(4))}
 out["authorization"] = rows
 if "initial" not in rows: problems.append("authorization table has no `initial` row")
 
 subj = section("### `subject` is NOT the item ref")
-m = re.search(r"`(EHotwagner/S\.I\.R\.#255/pr/\d+)`", subj)
-out["recordSubjectExample"] = m.group(1) if m else None
-m2 = re.search(r"\|\s*`review wait`\s*\|\s*`item`\s*\|[^|]*\|\s*`([^`]+)`", subj)
-out["waitItemExample"] = m2.group(1) if m2 else None
-if not out["recordSubjectExample"] or not out["waitItemExample"]:
-    problems.append("could not parse the subject/item table")
+out["recordSubjectExamples"] = all_of(r"`(EHotwagner/S\.I\.R\.#255/pr/\d+)`", subj,
+                                     "the record subject example")
+out["waitItemExamples"] = all_of(r"\|\s*`review wait`\s*\|\s*`item`\s*\|[^|]*\|\s*(.+?)\s*\|\s*$",
+                                subj, "the wait item example", re.M)
+out["waitItemExamples"] = ticked(" ".join(out["waitItemExamples"]))
 
 if problems:
     print("the document could not be parsed into expectations — a failure, not an empty result:", file=sys.stderr)
@@ -435,40 +493,44 @@ let exceptionsOn (kind: ReviewKind) (exs: string list) =
 // What a case MEANS is irreducibly authored -- something must build the situation in F#. What it does
 // NOT do any more is drift silently: the case set is compared to the document's in both directions,
 // and the outcome each case asserts comes from the validator rather than from this file.
-let outcomeProbes : (string * (unit -> bool)) list =
-  [ "same-critic-after-changes-required",
+// Each probe declares the RULE it belongs to. The document's `rule` column used to be parsed and read
+// by nothing, so renaming a row's rule left the table self-contradictory and the gate green.
+let outcomeProbes : (string * string * (unit -> bool)) list =
+  [ "successor-critic", "same-critic-after-changes-required",
       fun () -> confirmationBy baseRec.Critic ReviewVerdict.ChangesRequired
-    "different-critic-after-changes-required",
+    "successor-critic", "different-critic-after-changes-required",
       fun () -> confirmationBy "a-successor-critic" ReviewVerdict.ChangesRequired
-    "same-critic-after-pass",
+    "successor-critic", "same-critic-after-pass",
       fun () -> confirmationBy baseRec.Critic ReviewVerdict.Pass
-    "different-critic-after-pass",
+    "successor-critic", "different-critic-after-pass",
       fun () -> confirmationBy "a-successor-critic" ReviewVerdict.Pass
-    "nonempty-on-initial",
+    "accepted-exceptions", "nonempty-on-initial",
       fun () -> exceptionsOn ReviewKind.Initial [ "waived-x" ]
-    "empty-on-acceptance",
+    "accepted-exceptions", "empty-on-acceptance",
       fun () -> exceptionsOn ReviewKind.Acceptance []
-    "nonempty-on-acceptance",
+    "accepted-exceptions", "nonempty-on-acceptance",
       fun () -> exceptionsOn ReviewKind.Acceptance [ "waived-x" ] ]
 
 let outcomeRules = expected.GetProperty "outcomeRules"
 let documentedCases =
   outcomeRules.EnumerateObject() |> Seq.map (fun p -> p.Name) |> Seq.sort |> List.ofSeq
-let probedCases = outcomeProbes |> List.map fst |> List.sort
+let probedCases = outcomeProbes |> List.map (fun (_, c, _) -> c) |> List.sort
 check "doc:outcome-coverage" (documentedCases = probedCases)
   (sprintf "the document names cases [%s]; this gate probes [%s] -- a documented case with no probe is unchecked, and a probe with no row means the row was deleted"
      (j documentedCases) (j probedCases))
 
-for case, probe in outcomeProbes do
+for rule, case, probe in outcomeProbes do
   let mutable row = Unchecked.defaultof<JsonElement>
   if not (outcomeRules.TryGetProperty(case, &row)) then
     failures <- failures + 1
     printfn "  FAILED  doc:outcome:%s\n            the document has no row for this case" case
   else
     let documented = row.GetProperty("outcome").GetString()
+    let documentedRule = row.GetProperty("rule").GetString()
     let observed = if probe () then "accepted" else "refused"
-    check (sprintf "doc:outcome:%s" case) (documented = observed)
-      (sprintf "the document says the validator %s this case; it %s it" documented observed)
+    check (sprintf "doc:outcome:%s" case) (documented = observed && documentedRule = rule)
+      (sprintf "the document files this case under rule %s and says the validator %s it; the gate probes it under %s and the validator %s it"
+         documentedRule documented rule observed)
 
 check "doc:wait-enter-keys"
   (sortedEq (strs "waitEnterKeys") (keysOf (ReviewWait.encode (ReviewWait.Transition.Enter receipt))))
@@ -519,8 +581,19 @@ let evidenceOf app n =
   accepts [ seal { baseRec with RouteApplicability = app
                                 RouteEvidence = List.init n (fun i -> sprintf "e%d" i) } ]
 let cardinalityHolds app d = evidenceOf app d && not (evidenceOf app (d - 1)) && not (evidenceOf app (d + 1))
-check "doc:meaningful-evidence-cardinality" (cardinalityHolds "meaningful" (num "meaningfulEvidenceCount"))
-  (sprintf "document says exactly %d entries; the engine disagrees" (num "meaningfulEvidenceCount"))
+// The bullet's extension is EVERY cardinality it names, and it must name exactly the two the engine
+// enforces. Parsing that set and not reading it would be the parsed-but-discarded defect again, so it
+// is a conjunct here: widening the bullet with a third permitted count reds this check.
+let namedCounts =
+  expected.GetProperty("evidenceCountsNamed").EnumerateArray()
+  |> Seq.map (fun e -> e.GetInt32()) |> List.ofSeq |> List.sort
+let expectedCounts = List.sort [ num "meaningfulEvidenceCount"; num "notMeaningfulEvidenceCount" ]
+check "doc:meaningful-evidence-cardinality"
+  (cardinalityHolds "meaningful" (num "meaningfulEvidenceCount") && namedCounts = expectedCounts)
+  (sprintf "document says exactly %d entries and its bullet names cardinalities [%s]; the engine enforces [%s]"
+     (num "meaningfulEvidenceCount")
+     (namedCounts |> List.map string |> String.concat ",")
+     (expectedCounts |> List.map string |> String.concat ","))
 check "doc:not-meaningful-evidence-cardinality"
   (cardinalityHolds "not-meaningful" (num "notMeaningfulEvidenceCount"))
   (sprintf "document says exactly %d entries; the engine disagrees" (num "notMeaningfulEvidenceCount"))
@@ -556,12 +629,17 @@ for kindName, waitKind, round in
       "acceptance", None, 0 ] do
   let mutable row = Unchecked.defaultof<JsonElement>
   if auth.TryGetProperty(kindName, &row) then
-    let documentedState = row.GetProperty("waitState").GetString()
-    let stateOk = documentedState = cliWaitState kindName
+    // EVERY cell is a SET now. Each of these three columns previously parsed to its FIRST literal,
+    // so widening any of them -- "`repair-confirmation` or `initial-review`", a second token beside
+    // the right one -- parsed to an unchanged expectation and left the row green on a falsified page.
+    let cellOf (n: string) =
+      row.GetProperty(n).EnumerateArray() |> Seq.map (fun e -> e.GetString()) |> List.ofSeq
+    let documentedStates = cellOf "waitState"
+    let stateOk = documentedStates = [ cliWaitState kindName ]
     // The receipt-kind column was captured by the row regex and then thrown away, so it belonged to no
     // honesty category and nothing checked it: falsifying it left the document self-contradictory and
     // the gate green. It IS derivable -- the wire names come from the encoder -- so it is Derived.
-    let documentedReceiptKind = row.GetProperty("receiptKind").GetString()
+    let documentedReceiptKinds = cellOf "receiptKind"
     let engineReceiptKind =
       match waitKind with
       | None -> "—"
@@ -569,41 +647,57 @@ for kindName, waitKind, round in
           let enc = ReviewWait.encode (ReviewWait.Transition.Enter { receipt with Kind = wk })
           use d = JsonDocument.Parse(enc.Substring(enc.IndexOf '{'))
           d.RootElement.GetProperty("kind").GetString()
-    let receiptKindOk = documentedReceiptKind = engineReceiptKind
+    let receiptKindOk = documentedReceiptKinds = [ engineReceiptKind ]
     let tokenOk, detail =
       match waitKind with
       | None ->
           // No token is expected on this row; the document must not claim one.
-          let toks = row.GetProperty("token").EnumerateArray() |> Seq.map (fun e -> e.GetString()) |> List.ofSeq
-          (List.isEmpty toks), "the acceptance row must carry no generation token"
+          (List.isEmpty (cellOf "token")), "the acceptance row must carry no generation token"
       | Some wk ->
-          let toks = row.GetProperty("token").EnumerateArray() |> Seq.map (fun e -> e.GetString()) |> List.ofSeq
-          let documented = match toks with t :: _ -> t | [] -> "<none>"
-          let rendered = documented.Replace("<headSha>", "HEAD").Replace("<round>", string round)
+          // EXACTLY ONE token, and it must render to the engine's. `match toks with t :: _ -> t`
+          // took the first and discarded the rest, so adding a second alternative beside the correct
+          // one -- the widening -- left this green.
+          let toks = cellOf "token"
           let engineToken = ReviewWait.generationToken "HEAD" wk round
-          (rendered = engineToken), (sprintf "document renders %s; engine's token is %s" rendered engineToken)
+          let rendered =
+            toks |> List.map (fun d -> d.Replace("<headSha>", "HEAD").Replace("<round>", string round))
+          (rendered = [ engineToken ]),
+          (sprintf "document renders [%s]; the engine's token is exactly %s" (j rendered) engineToken)
     check (sprintf "doc:authorization:%s" kindName) (stateOk && tokenOk && receiptKindOk)
-      (sprintf "wait state documented %s, CLI requires %s; receipt kind documented %s, engine emits %s; %s"
-         documentedState (cliWaitState kindName) documentedReceiptKind engineReceiptKind detail)
+      (sprintf "wait state documented [%s], CLI requires exactly %s; receipt kind documented [%s], engine emits exactly %s; %s"
+         (j documentedStates) (cliWaitState kindName) (j documentedReceiptKinds) engineReceiptKind detail)
   else
     failures <- failures + 1
     printfn "  FAILED  doc:authorization:%s\n            the document has no row for this record kind" kindName
 
-check "doc:record-subject-form" (str "recordSubjectExample" = subject)
-  (sprintf "document's record subject is %s; the CLI derives %s" (str "recordSubjectExample") subject)
-check "doc:wait-item-form" (str "waitItemExample" = itemRef.Canonical)
-  (sprintf "document's wait item is %s; the canonical ref is %s" (str "waitItemExample") itemRef.Canonical)
+// SETS, not first matches. A second example added beside the right one used to parse to the right one.
+check "doc:record-subject-form" (strs "recordSubjectExamples" = [ subject ])
+  (sprintf "document's record subject example(s) [%s]; the CLI derives exactly %s"
+     (j (strs "recordSubjectExamples")) subject)
+check "doc:wait-item-form" (strs "waitItemExamples" = [ itemRef.Canonical ])
+  (sprintf "document's wait item example(s) [%s]; the canonical ref is exactly %s"
+     (j (strs "waitItemExamples")) itemRef.Canonical)
 // TRANSCRIBED, NOT DERIVED -- and an earlier revision filed it under Derived while comparing it to a
 // string literal three lines above, which is the same mistake in the same file twice. Which fields
 // `review record` overwrites, and what it substitutes, is CLI behaviour behind a live transport;
 // FS.GG.Coord.Core cannot report it. The transcription below is from the decompiled
 // `recordReview$cont@2412-3` and is labelled as a transcription.
+// TRANSCRIBED, and now compared EXACTLY rather than by substring.
+//
+// This was `text.Contains needle` -- five of the thirty `doc:` checks were a literal substring test
+// against a needle hard-coded here, sitting in the Derived bucket under a banner reading "no
+// expectation is presence-shaped". `cell.Contains tok` under a new name, and the defect that let
+// widening the `revision` row with ", or the draft's own revision when the draft supplies a non-null
+// one" leave the whole gate at exit 0 while coverage certified the check as inverted.
+//
+// The full cell is transcribed from the decompiled CLI and compared for equality, so ANY edit to the
+// description -- narrowing, widening, or rewording -- moves the comparison.
 let cliOverwrites =
-  [ "revision", "existing.Length + 1"
-    "previousDigest", "the preceding record"
-    "claimGeneration", "acceptance records only"
-    "baseSha", "acceptance records only"
-    "digest", "reviewDigest" ]
+  [ "revision", "`existing.Length + 1` — the count of records already on the PR"
+    "previousDigest", "the preceding record's digest"
+    "claimGeneration", "the live winning claim marker's comment id (acceptance records only)"
+    "baseSha", "the PR's live base tip SHA (acceptance records only)"
+    "digest", "`StructuredDecision.reviewDigest(record)`, computed over the rebuilt record" ]
 check "doc:overwritten-fields"
   (sortedEq (strs "overwrittenFields") (cliOverwrites |> List.map fst))
   (sprintf "document's overwrite table lists [%s]; the CLI overwrites [%s]"
@@ -612,12 +706,12 @@ check "doc:overwritten-fields"
 // and `(acceptance records only)` could become `(initial records only)` undetected. Each row's
 // description must still contain the substitution it names.
 let overwriteRows = expected.GetProperty "overwriteDescriptions"
-for field, needle in cliOverwrites do
+for field, transcribed in cliOverwrites do
   let mutable desc = Unchecked.defaultof<JsonElement>
   if overwriteRows.TryGetProperty(field, &desc) then
     let text = desc.GetString()
-    check (sprintf "doc:overwrite-description:%s" field) (text.Contains needle)
-      (sprintf "the %s row no longer says %s: %s" field needle text)
+    check (sprintf "doc:overwrite-description:%s" field) (text = transcribed)
+      (sprintf "the %s row reads %s; the transcribed CLI behaviour is %s" field text transcribed)
   else
     failures <- failures + 1
     printfn "  FAILED  doc:overwrite-description:%s\n            no row for this field" field
@@ -628,10 +722,18 @@ let validWindow (hours: float) =
   let r : ReviewWait.WaitReceipt =
     { receipt with EnteredAt = entered; ExpiresAt = entered.AddHours hours }
   match ReviewWait.validate (ReviewWait.Transition.Enter r) with Ok _ -> true | Error _ -> false
-let ceiling = float (num "waitWindowMaxHours")
-check "doc:wait-window-ceiling"
-  (validWindow ceiling && not (validWindow (ceiling + 1.0)))
-  (sprintf "document says the window is capped at %g hours; the validator disagrees" ceiling)
+// EVERY documented hour value is probed, and there must be exactly one. Widening this claim to
+// "at most 24 hours, or at most 72 hours for a repair-phase wait" adds a member to the parsed set;
+// the added member is not a valid window, so it reds here instead of parsing to an unchanged 24.
+let documentedHours =
+  expected.GetProperty("waitWindowHours").EnumerateArray() |> Seq.map (fun e -> e.GetInt32()) |> List.ofSeq
+let ceilingOk =
+  match documentedHours with
+  | [ h ] -> let c = float h in validWindow c && not (validWindow (c + 1.0))
+  | _ -> false
+check "doc:wait-window-ceiling" ceilingOk
+  (sprintf "the page states the ceiling as [%s]; exactly one value is expected and it must be the largest the validator accepts"
+     (documentedHours |> List.map string |> String.concat ", "))
 // ENGINE-SCOPED, and it was misnamed `doc:` until the coverage requirement asked what inverted it.
 // Nothing does: the predicate takes no term from the document, so no mutation of the document can
 // red it. A `doc:` name on a check with no document input is its own small over-claim -- it reports
@@ -761,20 +863,51 @@ NOT_A_VALUE = "not-a-value"
 
 manifest, problems = [], []
 
-def emit(check_id, name, mutated):
-    slug = re.sub(r"[^a-z0-9]+", "-", ("%s %s" % (check_id, name)).lower()).strip("-")[:100]
+# DIRECTION IS PART OF THE EVIDENCE, not an afterthought.
+#
+# Repair-phase round 1, finding F1. The previous revision required every `doc:*` check to be reddened
+# by SOME attributed mutation and said nothing about which KIND. Auto-derived widenings existed for
+# three families; 22 of 30 checks were covered by hand-written replacements alone -- the narrowing
+# direction, which is the one three ordinary rounds had already caught. Coverage therefore certified
+# "inverted" on the strength of the safe direction and stayed silent on the dangerous one, and six
+# widenings survived in rows a critic had already verified.
+#
+# Coverage-by-any-mutation is the presence-carrying defect one level up: it establishes that *a*
+# mutation reds, not that the *dangerous* mutation does. So every mutation declares its direction,
+# every `doc:*` check must carry BOTH, and a check for which no widening can be constructed must say
+# so explicitly with a reason -- never silently.
+NARROW, WIDEN = "narrow", "widen"
+
+def emit(check_id, direction, name, mutated):
+    slug = re.sub(r"[^a-z0-9]+", "-", ("%s %s %s" % (check_id, direction, name)).lower()).strip("-")[:100]
     path = os.path.join(outdir, slug + ".md")
     pathlib.Path(path).write_text(mutated, encoding="utf-8")
-    manifest.append((check_id, name, path))
+    manifest.append((check_id, direction, name, path))
 
 exact = []
-def edit(check_id, name, old, new):
+def edit(check_id, direction, name, old, new):
     """An exact (old -> new) edit. A missing anchor is a fixture failure, never a detection."""
     exact.append(check_id)
     if old not in text:
         problems.append("%s (%s): mutation anchor not present: %r" % (check_id, name, old[:70]))
         return
-    emit(check_id, name, text.replace(old, new, 1))
+    emit(check_id, direction, name, text.replace(old, new, 1))
+
+def widen_cell(check_id, header, row_key, col, addition, name):
+    """Append a permitted-but-wrong alternative to one table cell, keeping every other word of the row.
+    This is the shape that survived three ordinary rounds and the first repair-phase attempt."""
+    body, at = section(header)
+    m = re.search(r"^\|\s*`%s`\s*\|(.+)$" % re.escape(row_key), body, re.M)
+    if not m:
+        problems.append("%s: no row `%s` in %s to widen" % (check_id, row_key, header))
+        return
+    cells = [c for c in m.group(1).split("|")]
+    if len(cells) <= col:
+        problems.append("%s: row `%s` has %d cells, wanted column %d" % (check_id, row_key, len(cells), col))
+        return
+    cells[col] = cells[col].rstrip() + addition
+    s, e = at + m.start(), at + m.end()
+    emit(check_id, WIDEN, name, text[:s] + "| `%s` |" % row_key + "|".join(cells) + text[e:])
 
 def section(header, stop=("\n## ", "\n### ")):
     i = text.find(header)
@@ -812,16 +945,16 @@ for m in rows:
     # widening this row would write. Leaving it in both columns is a self-contradiction the parser
     # refuses, and a mutant that cannot be parsed reddens the run without reaching its check.
     ref_without_first = re.sub(r"^`[^`]+`,\s*", "", ref)
-    emit("doc:vocabulary:%s" % key, "row %s WIDENED with the refused value %s" % (key, refused[0]),
+    emit("doc:vocabulary:%s" % key, WIDEN, "row %s WIDENED with the refused value %s" % (key, refused[0]),
          text[:s] + "| `%s` | %s, `%s` | %s |" % (key, acc, refused[0], ref_without_first) + text[e:])
     # NARROWING. Substitution, not deletion, so a single-literal row still parses -- a row mutated
     # into an unparseable state would red the run without ever reaching its check.
-    emit("doc:vocabulary:%s" % key, "row %s narrowed by substituting %s" % (key, NOT_A_VALUE),
+    emit("doc:vocabulary:%s" % key, NARROW, "row %s narrowed by substituting %s" % (key, NOT_A_VALUE),
          text[:s] + "| `%s` | %s | %s |" % (key, acc.replace("`%s`" % accepted[0], "`%s`" % NOT_A_VALUE, 1), ref) + text[e:])
 if rows:
     m = rows[-1]
     s, e = vocab_at + m.start(), vocab_at + m.end()
-    emit("doc:vocabulary-coverage", "the %s row is deleted outright" % m.group(1),
+    emit("doc:vocabulary-coverage", NARROW, "the %s row is deleted outright" % m.group(1),
          text[:s].rstrip("\n") + "\n" + text[e:].lstrip("\n"))
 
 # --- DERIVED: the draft-key lists widen with each other's members ---------------------------------
@@ -830,10 +963,10 @@ opt = re.search(r"\*\*Optional\*\*.*?:\s*\n\n(.+?)\n\n", text, re.S)
 if req and opt:
     required_keys, optional_keys = ticked(req.group(1)), ticked(opt.group(1))
     if required_keys and optional_keys:
-        emit("doc:required-draft-keys",
+        emit("doc:required-draft-keys", WIDEN,
              "required list WIDENED with the optional key %s" % optional_keys[0],
              text[:req.end(1)] + ", `%s`" % optional_keys[0] + text[req.end(1):])
-        emit("doc:optional-draft-keys",
+        emit("doc:optional-draft-keys", WIDEN,
              "optional list WIDENED with the required key %s" % required_keys[0],
              text[:opt.end(1)] + ", `%s`" % required_keys[0] + text[opt.end(1):])
     else:
@@ -853,74 +986,155 @@ for m in oc_rows:
     s, e = oc_at + m.start(), oc_at + m.end()
     # Flipping `refused` to `accepted` is the widening direction for a rule: it claims the validator
     # permits something it does not. That is the shape the two prose versions of these rules survived.
-    emit("doc:outcome:%s" % case,
+    emit("doc:outcome:%s" % case, WIDEN if flipped == "accepted" else NARROW,
          "outcome for %s %s to %s" % (case, "WIDENED" if flipped == "accepted" else "narrowed", flipped),
          text[:s] + "| `%s` | `%s` | `%s` |" % (rule, case, flipped) + text[e:])
 if oc_rows:
     m = oc_rows[-1]
     s, e = oc_at + m.start(), oc_at + m.end()
-    emit("doc:outcome-coverage", "the %s row is deleted outright" % m.group(2),
+    emit("doc:outcome-coverage", NARROW, "the %s row is deleted outright" % m.group(2),
          text[:s].rstrip("\n") + "\n" + text[e:].lstrip("\n"))
 
 # --- EXACT: claims with no derivable mutation form ------------------------------------------------
-edit("doc:required-draft-keys", "D1 required key list silently drops digest",
+edit("doc:optional-draft-keys", NARROW, "the optional key list silently drops succession",
+     "`diffAuditRequired`, `diffAuditReceipts`, `succession`",
+     "`diffAuditRequired`, `diffAuditReceipts`")
+edit("doc:required-draft-keys", NARROW, "D1 required key list silently drops digest",
      "`kind`, `round`, `timestamp`, `digest`", "`kind`, `round`, `timestamp`")
-edit("doc:overwritten-fields", "D4 overwrite table loses a field",
+edit("doc:overwritten-fields", NARROW, "D4 overwrite table loses a field",
      "| `previousDigest` |", "| `previousDigestXX` |")
-edit("doc:wait-enter-keys", "D5 the enter example drops a required key",
+edit("doc:wait-enter-keys", NARROW, "D5 the enter example drops a required key",
      '  "kind": "initial-review",\n', "")
-edit("doc:wait-enter-value-types", "S17 claimGeneration becomes the number claim --json emits",
+edit("doc:wait-enter-value-types", NARROW, "S17 claimGeneration becomes the number claim --json emits",
      '"claimGeneration": "5382700300"', '"claimGeneration": 5382700300')
-edit("doc:authorization:initial", "D7 authorization table gives initial the wrong token",
+edit("doc:authorization:initial", NARROW, "D7 authorization table gives initial the wrong token",
      "| `initial` | `Waiting` | `initial-review` | `<headSha>:initial-review:0` |",
      "| `initial` | `Waiting` | `repair-confirmation` | `<headSha>:repair-confirmation:0` |")
-edit("doc:authorization:initial", "S10 the authorization receipt-kind column is falsified",
+edit("doc:authorization:initial", NARROW, "S10 the authorization receipt-kind column is falsified",
      "| `initial` | `Waiting` | `initial-review` |", "| `initial` | `Waiting` | `repair-confirmation` |")
-edit("doc:authorization:acceptance", "S4 the acceptance row wait state is falsified",
+edit("doc:authorization:acceptance", NARROW, "S4 the acceptance row wait state is falsified",
      "| `acceptance` | `Completed` |", "| `acceptance` | `Waiting` |")
-edit("doc:authorization:confirmation", "S5 an ordinary row wait state is falsified",
+edit("doc:authorization:confirmation", NARROW, "S5 an ordinary row wait state is falsified",
      "| `confirmation` | `Waiting` |", "| `confirmation` | `Completed` |")
 # S1 ALTERS the subject rather than deleting it. The deleting form reddened the run through STEP 1's
 # parser while `doc:record-subject-form` never fired -- inversion evidence for a check that had never
 # been executed, which is the exact shape this step now refuses to accept.
-edit("doc:record-subject-form", "S1 the record subject names the wrong PR",
+edit("doc:record-subject-form", NARROW, "S1 the record subject names the wrong PR",
      "EHotwagner/S.I.R.#255/pr/259` |", "EHotwagner/S.I.R.#255/pr/999` |")
-edit("doc:confirmation-round-contiguity", "S13 the confirmation contiguity numbers are falsified",
+edit("doc:confirmation-round-contiguity", NARROW, "S13 the confirmation contiguity numbers are falsified",
      'must be `"round": 1`, the second `2`', 'must be `"round": 0`, the second `5`')
-edit("doc:overwrite-description:revision", "S8 the revision substitution loses its off-by-one",
+edit("doc:overwrite-description:revision", NARROW, "S8 the revision substitution loses its off-by-one",
      "`existing.Length + 1` — the count of records", "`existing.Length` — the count of records")
-edit("doc:overwrite-description:claimGeneration", "S9 an overwrite row is rescoped to the wrong record kind",
+edit("doc:overwrite-description:claimGeneration", NARROW, "S9 an overwrite row is rescoped to the wrong record kind",
      "the live winning claim marker's comment id (acceptance records only)",
      "the live winning claim marker's comment id (initial records only)")
-edit("doc:wait-window-ceiling", "S3 the wait-window ceiling is overstated",
+edit("doc:wait-window-ceiling", NARROW, "S3 the wait-window ceiling is overstated",
      "must be at most 24 hours", "must be at most 48 hours")
-edit("doc:meaningful-evidence-cardinality", "S2 route-evidence cardinality weakened",
+edit("doc:meaningful-evidence-cardinality", NARROW, "S2 route-evidence cardinality weakened",
      "requires **exactly four** `routeEvidence` entries", "requires **exactly five** `routeEvidence` entries")
 
-edit("doc:wait-terminal-keys", "S18 the terminal example drops a required key",
+edit("doc:wait-terminal-keys", NARROW, "S18 the terminal example drops a required key",
      '  "at": "2026-08-22T22:10:00.0000000+00:00",\n', "")
-edit("doc:initial-round", "S19 the initial record's round is falsified",
+edit("doc:initial-round", NARROW, "S19 the initial record's round is falsified",
      'an `initial` record must carry `"round": 0`', 'an `initial` record must carry `"round": 1`')
-edit("doc:not-meaningful-evidence-cardinality", "S20 not-meaningful cardinality weakened",
+edit("doc:not-meaningful-evidence-cardinality", NARROW, "S20 not-meaningful cardinality weakened",
      '`"not-meaningful"` requires **exactly one**', '`"not-meaningful"` requires **exactly two**')
-edit("doc:generation-token-shape", "S21 the generation token's field order is transposed",
+edit("doc:generation-token-shape", NARROW, "S21 the generation token's field order is transposed",
      "<headSha>:<kind>:<round>", "<kind>:<headSha>:<round>")
-edit("doc:authorization:escalation", "S22 the escalation row wait state is falsified",
+edit("doc:authorization:escalation", NARROW, "S22 the escalation row wait state is falsified",
      "| `escalation` | `Waiting` |", "| `escalation` | `Completed` |")
-edit("doc:authorization:repair-phase", "S23 the repair-phase row wait state is falsified",
+edit("doc:authorization:repair-phase", NARROW, "S23 the repair-phase row wait state is falsified",
      "| `repair-phase` | `Waiting` |", "| `repair-phase` | `Completed` |")
-edit("doc:wait-item-form", "S24 the wait item example names the wrong item",
+edit("doc:wait-item-form", NARROW, "S24 the wait item example names the wrong item",
      "| `review wait` | `item` | the canonical item ref | `EHotwagner/S.I.R.#255` |",
      "| `review wait` | `item` | the canonical item ref | `EHotwagner/S.I.R.#254` |")
-edit("doc:overwrite-description:previousDigest", "S25 the previousDigest substitution points the wrong way",
+edit("doc:overwrite-description:previousDigest", NARROW, "S25 the previousDigest substitution points the wrong way",
      "| `previousDigest` | the preceding record's digest |",
      "| `previousDigest` | the following record's digest |")
-edit("doc:overwrite-description:baseSha", "S26 the baseSha row is rescoped to the wrong record kind",
+edit("doc:overwrite-description:baseSha", NARROW, "S26 the baseSha row is rescoped to the wrong record kind",
      "the PR's live base tip SHA (acceptance records only)",
      "the PR's live base tip SHA (initial records only)")
-edit("doc:overwrite-description:digest", "S27 the digest substitution names the wrong function",
+edit("doc:overwrite-description:digest", NARROW, "S27 the digest substitution names the wrong function",
      "`StructuredDecision.reviewDigest(record)`, computed over the rebuilt record",
      "`StructuredDecision.recordDigest(record)`, computed over the rebuilt record")
+
+# --- WIDENING SITES: keep every word of the row, add a permitted-but-wrong alternative -------------
+for k in ("initial", "confirmation", "escalation", "repair-phase"):
+    widen_cell("doc:authorization:%s" % k, "### Which wait entry authorizes which record", k, 1,
+               " or `initial-review`", "authorization %s receipt-kind WIDENED" % k)
+widen_cell("doc:authorization:acceptance", "### Which wait entry authorizes which record",
+           "acceptance", 0, " or `Waiting`", "authorization acceptance wait-state WIDENED")
+widen_cell("doc:authorization:escalation", "### Which wait entry authorizes which record",
+           "escalation", 2, ", or `<headSha>:escalation:<round>`", "authorization escalation token WIDENED")
+for f in ("revision", "previousDigest", "claimGeneration", "baseSha", "digest"):
+    widen_cell("doc:overwrite-description:%s" % f, "## The one thing to read first", f, 0,
+               ", or the draft's own value when it supplies a non-null one",
+               "overwrite description %s WIDENED with an alternative" % f)
+widen_cell("doc:record-subject-form", "### `subject` is NOT the item ref", "review record", 2,
+           " or `EHotwagner/S.I.R.#255/pr/285`", "record subject example WIDENED with a second ref")
+widen_cell("doc:wait-item-form", "### `subject` is NOT the item ref", "review wait", 2,
+           " or `EHotwagner/S.I.R.#254`", "wait item example WIDENED with a second ref")
+edit("doc:wait-window-ceiling", WIDEN, "the wait-window ceiling WIDENED with a second maximum",
+     "must be at most 24 hours", "must be at most 24 hours, or at most 72 hours for a repair-phase wait")
+edit("doc:meaningful-evidence-cardinality", WIDEN, "route-evidence cardinality WIDENED with a third count",
+     '`"not-meaningful"` requires **exactly one**.',
+     '`"not-meaningful"` requires **exactly one**, or **exactly five** for a repair-phase review.')
+edit("doc:overwritten-fields", WIDEN, "the overwrite table WIDENED with a field the CLI does not overwrite",
+     "| `digest` | `StructuredDecision.reviewDigest(record)`, computed over the rebuilt record |",
+     "| `digest` | `StructuredDecision.reviewDigest(record)`, computed over the rebuilt record |\n"
+     "| `critic` | the critic id, substituted from the wait receipt |")
+edit("doc:wait-enter-keys", WIDEN, "the enter example WIDENED with a key the encoder does not emit",
+     '  "evidenceRef": "https://github.com/EHotwagner/S.I.R./pull/257"\n',
+     '  "evidenceRef": "https://github.com/EHotwagner/S.I.R./pull/257",\n  "criticHint": "optional"\n')
+edit("doc:wait-terminal-keys", WIDEN, "the terminal example WIDENED with a key the encoder does not emit",
+     '  "evidenceRef": "https://github.com/EHotwagner/S.I.R./pull/257#issuecomment-…"\n',
+     '  "evidenceRef": "https://github.com/EHotwagner/S.I.R./pull/257#issuecomment-…",\n  "note": "optional"\n')
+edit("doc:vocabulary-coverage", WIDEN, "the vocabulary table WIDENED with a row nothing probes",
+     "| `timestamp` |", "| `critic` | `a-critic-id` | `not-a-critic-id` |\n| `timestamp` |")
+edit("doc:outcome-coverage", WIDEN, "the outcome table WIDENED with a case nothing probes",
+     "| `accepted-exceptions` | `nonempty-on-initial` | `accepted` |",
+     "| `accepted-exceptions` | `nonempty-on-initial` | `accepted` |\n"
+     "| `accepted-exceptions` | `nonempty-on-escalation` | `accepted` |")
+
+# --- Checks for which NO widening can be constructed, each with its reason. -------------------------
+# This registry is the honest half of the direction requirement: `NOT_MEASURED`, never a pass. A check
+# that appears in neither the widening manifest nor here fails the run, so a claim added later cannot
+# quietly inherit narrowing-only evidence the way 22 checks did.
+# Symmetric to NO_WIDENING, and required for the same reason: a check with no narrowing must say so
+# rather than appear covered. Both registries are printed on every pass, so "which direction has this
+# check actually been shown to catch?" is answerable by reading the run rather than the source.
+NO_NARROWING = {
+  "doc:outcome:different-critic-after-pass":
+    "the cell states a refusal; narrowing it would mean claiming something MORE is refused, which for "
+    "a two-valued outcome cell is the widening of the opposite row and is covered there",
+  "doc:outcome:nonempty-on-acceptance": "as above",
+}
+
+NO_WIDENING = {
+  "doc:not-meaningful-evidence-cardinality":
+    "the bullet's named-cardinality set is consumed by doc:meaningful-evidence-cardinality, which "
+    "carries the widening; this check probes only the not-meaningful count against the validator and "
+    "has no cell of its own to widen",
+  "doc:outcome:same-critic-after-changes-required":
+    "the cell already states the permissive outcome; the dangerous direction (refused -> accepted) "
+    "exists only on the refusal rows, which do carry widenings",
+  "doc:outcome:different-critic-after-changes-required": "as above",
+  "doc:outcome:same-critic-after-pass": "as above",
+  "doc:outcome:nonempty-on-initial": "as above",
+  "doc:outcome:empty-on-acceptance": "as above",
+  "doc:initial-round":
+    "the claim is a single integer in one sentence; an added alternative is not a permitted-but-wrong "
+    "member of a set but a second sentence, which the parser refuses rather than mis-parses",
+  "doc:generation-token-shape":
+    "the shape is a single fenced token; a second fenced shape makes the section ambiguous and is "
+    "refused at parse time, so the escape fails closed but cannot be attributed to this check",
+  "doc:wait-enter-value-types":
+    "a type is a single value per key; widening would mean a key holding two types at once, which "
+    "JSON cannot express in the example",
+  "doc:confirmation-round-contiguity":
+    "the claim is an ordered pair of integers in one sentence; as with doc:initial-round an added "
+    "alternative is refused at parse time rather than mis-parsed",
+}
 
 if problems:
     print("the mutation catalogue could not be built — a FIXTURE failure, not a detection:", file=sys.stderr)
@@ -929,10 +1143,15 @@ if problems:
     sys.exit(1)
 
 with open(os.path.join(outdir, "manifest.tsv"), "w", encoding="utf-8") as fh:
-    for check_id, name, path in manifest:
-        fh.write("%s\t%s\t%s\n" % (check_id, name, path))
-print("  %d mutations (%d derived from the document, %d exact)"
-      % (len(manifest), len(manifest) - len(exact), len(exact)))
+    for check_id, direction, name, path in manifest:
+        fh.write("%s\t%s\t%s\t%s\n" % (check_id, direction, name, path))
+for fname, registry in (("no-widening.tsv", NO_WIDENING), ("no-narrowing.tsv", NO_NARROWING)):
+    with open(os.path.join(outdir, fname), "w", encoding="utf-8") as fh:
+        for check_id, reason in sorted(registry.items()):
+            fh.write("%s\t%s\n" % (check_id, reason))
+print("  %d mutations (%d derived from the document, %d exact) — %d widening, %d narrowing"
+      % (len(manifest), len(manifest) - len(exact), len(exact),
+         sum(1 for m in manifest if m[1] == WIDEN), sum(1 for m in manifest if m[1] == NARROW)))
 PY
 
 # The mutants are independent, so run them concurrently. Parallelism is bounded rather than `nproc`:
@@ -944,36 +1163,59 @@ find "$mutants" -name '*.md' -print0 | xargs -0 -P "$jobs" -I{} bash -c '
 ' "$repo_root/scripts/test-review-contract-coherence.sh" {}
 
 status=0
-covered="$tmp/covered.txt"; : > "$covered"
-while IFS=$'\t' read -r check_id name path; do
+narrowed="$tmp/narrowed.txt"; : > "$narrowed"
+widened="$tmp/widened.txt"; : > "$widened"
+while IFS=$'\t' read -r check_id direction name path; do
   reddened=$(cat "$path.failed" 2>/dev/null || true)
   if [[ -z "$reddened" ]]; then
-    printf '  NO DETECTION  %-58s  the run reddened no check at all — a parse abort is not a detection\n' "$name" >&2
+    printf '  NO DETECTION  %-6s %-52s  the run reddened no check at all — a parse abort is not a detection\n' \
+      "$direction" "$name" >&2
     status=1
   elif ! printf '%s\n' "$reddened" | grep -qxF "$check_id"; then
-    printf '  WRONG CHECK   %-58s  expected %s; reddened %s\n' \
-      "$name" "$check_id" "$(printf '%s' "$reddened" | tr '\n' ' ')" >&2
+    printf '  WRONG CHECK   %-6s %-52s  expected %s; reddened %s\n' \
+      "$direction" "$name" "$check_id" "$(printf '%s' "$reddened" | tr '\n' ' ')" >&2
     status=1
   else
-    printf '  reds %-42s  %s\n' "$check_id" "$name"
-    printf '%s\n' "$check_id" >> "$covered"
+    printf '  reds %-6s %-40s  %s\n' "$direction" "$check_id" "$name"
+    printf '%s\n' "$check_id" >> "$tmp/${direction}ed.txt"
   fi
 done < "$mutants/manifest.tsv"
 
 # COVERAGE. Every derived check the clean run emitted must have been reddened by something above.
 # This is the property whose absence produced four consecutive recurrences: a claim could be added to
 # the document, given a check, and never given an inversion, and nothing anywhere noticed.
-uncovered=()
+no_narrow=(); no_widen=()
 while read -r id; do
-  grep -qxF "$id" "$covered" || uncovered+=("$id")
+  grep -qxF "$id" "$narrowed" \
+    || grep -qP "^\\Q$id\\E\\t" "$mutants/no-narrowing.tsv" \
+    || no_narrow+=("$id")
+  grep -qxF "$id" "$widened" \
+    || grep -qP "^\Q$id\E\t" "$mutants/no-widening.tsv" \
+    || no_widen+=("$id")
 done < <(sed -n 's/^  ok      \(doc:.*\)$/\1/p' "$tmp/clean.txt")
-if (( ${#uncovered[@]} )); then
-  echo "  these DERIVED checks have no attributed inversion — each is consistent with 'nothing was" >&2
-  echo "  ever wrong' and with 'it cannot fire', and reading cannot separate those:" >&2
-  printf '      %s\n' "${uncovered[@]}" >&2
+if (( ${#no_narrow[@]} )); then
+  echo "  these DERIVED checks have no attributed NARROWING inversion:" >&2
+  printf '      %s\n' "${no_narrow[@]}" >&2
   status=1
-else
-  echo "  ok      every derived check named by the clean run is reddened by a named mutation"
+fi
+# DIRECTION IS THE POINT. A check covered only by a replacement has been shown to notice the class
+# three ordinary rounds already caught, and nothing about the class that survived all of them.
+if (( ${#no_widen[@]} )); then
+  echo "  these DERIVED checks have no attributed WIDENING inversion and no declared reason." >&2
+  echo "  A widening keeps the claim's text and adds a permitted-but-wrong alternative; it is the" >&2
+  echo "  class that survived three ordinary rounds and the first repair-phase attempt. Add one, or" >&2
+  echo "  declare in NO_WIDENING why none can be constructed:" >&2
+  printf '      %s\n' "${no_widen[@]}" >&2
+  status=1
+fi
+if (( ${#no_narrow[@]} == 0 && ${#no_widen[@]} == 0 )); then
+  echo "  ok      every derived check is reddened by a named NARROWING and a named WIDENING mutation,"
+  echo "          or carries a declared reason why no widening can be constructed:"
+  for reg in no-widening no-narrowing; do
+    while IFS=$'\t' read -r id reason; do
+      [[ -n "$id" ]] && printf '            %-52s no %s: %s\n' "$id" "${reg#no-}" "$reason"
+    done < "$mutants/$reg.tsv"
+  done
 fi
 
 [[ $status -eq 0 ]] || { echo "at least one documented claim is not bound to the engine." >&2; exit 1; }
@@ -1028,6 +1270,11 @@ echo "    against the pinned engine. No expectation is presence-shaped: every vo
 echo "    both columns of its extension, and the free-form branch does not exist."
 echo "  - every derived check is reddened by a NAMED mutation, and a mutant that reddens no check is"
 echo "    reported as NO DETECTION rather than counted as one. A parse abort is not evidence."
-echo "  - every vocabulary row, draft-key list and outcome cell is inverted by a mutation this gate"
-echo "    DERIVED from the document itself, in the widening direction as well as the narrowing one."
+echo "  - every derived check carries BOTH directions: a narrowing (replace or delete) and a WIDENING"
+echo "    (keep the claim's text, add a permitted-but-wrong alternative). A check that can have only"
+echo "    one is listed above with the reason, never silently counted as covered. Widening is the"
+echo "    class that survived three ordinary rounds and this phase's first attempt, so a check shown"
+echo "    to catch only replacements is not shown to work."
+echo "  - no cell parse takes a first match. Every expectation is the WHOLE cell — a set of literals"
+echo "    or an exact string — because a first-match parse cannot represent a widening at all."
 echo "  - every LITERAL-ONLY claim is present, and no inversion is claimed over them."
