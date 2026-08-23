@@ -5,21 +5,77 @@ repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 temporary=$(mktemp -d /tmp/sir-ci-route-mutations.XXXXXX)
 trap 'rm -rf -- "$temporary"' EXIT
 
+# The fixture must carry EVERY file the route contract loads. Until S.I.R.#280 it carried
+# seven, and `scripts/test-ci-route.mjs` imports `browser-shard-capacity.mjs` and
+# `browser-junit.mjs` and reads twenty sibling sources, so every case died on
+# ERR_MODULE_NOT_FOUND before its mutation was ever evaluated. `expect_red` is satisfied by a
+# nonzero exit, so an UNMUTATED tree satisfied it and the suite proved nothing. The
+# null-mutation control below is what makes this list self-policing: add a dependency to the
+# contract without adding it here and the control goes red and names itself.
+fixture_scripts=(
+  ci-route.mjs test-ci-route.mjs browser-shard-capacity.mjs browser-junit.mjs
+  qualify-pr.sh qualify-production.sh build-docs.sh run-ci-gate.sh
+  smoke-worker-roundtrip.mjs test-browser-global-merge.mjs test-browser-shards.mjs
+  test-conformance.sh test-spatial-subject-mutations.sh
+  test-worker-cancellation-subject-mutation.sh verify-spatial-query.sh
+)
+fixture_files=(
+  .github/workflows/ci.yml
+  package.json
+  tests/fixtures/ci-qualification/v1/contracts.json
+  src/SIR.Client.Web/LiveSession.fs
+  src/SIR.Simulation/SIR.Simulation.fsproj
+  tests/SIR.Browser.Tests/playwright.config.js
+  tests/SIR.Browser.Tests/production-delivery.spec.js
+  tests/SIR.Match.Tests/Program.fs
+)
+
+build_fixture() {
+  local dest=$1
+  rm -rf -- "$dest"
+  mkdir -p "$dest/scripts"
+  local script
+  for script in "${fixture_scripts[@]}"; do
+    cp "$repo_root/scripts/$script" "$dest/scripts/$script"
+  done
+  local file
+  for file in "${fixture_files[@]}"; do
+    mkdir -p "$dest/$(dirname "$file")"
+    cp "$repo_root/$file" "$dest/$file"
+  done
+}
+
+# The control: an unmutated fixture MUST pass. Without this, "the suite went red" and "the
+# fixture cannot start" are indistinguishable, which is exactly how the broken state survived.
+build_fixture "$temporary/control"
+if ! node "$temporary/control/scripts/test-ci-route.mjs" >"$temporary/control.log" 2>&1; then
+  echo "ci-route mutation harness: NULL-MUTATION CONTROL FAILED — the unmutated fixture does not pass," >&2
+  echo "so every expect_red below would be satisfied by the fixture being broken, not by its mutation." >&2
+  head -30 "$temporary/control.log" >&2
+  exit 1
+fi
+
 expect_red() {
   local name=$1
   local mutation=$2
-  rm -rf -- "$temporary/case"
-  mkdir -p "$temporary/case/scripts" "$temporary/case/.github/workflows" "$temporary/case/tests/fixtures/ci-qualification/v1"
-  cp "$repo_root/scripts/ci-route.mjs" "$temporary/case/scripts/ci-route.mjs"
-  cp "$repo_root/scripts/test-ci-route.mjs" "$temporary/case/scripts/test-ci-route.mjs"
-  cp "$repo_root/.github/workflows/ci.yml" "$temporary/case/.github/workflows/ci.yml"
-  cp "$repo_root/scripts/qualify-pr.sh" "$temporary/case/scripts/qualify-pr.sh"
-  cp "$repo_root/scripts/qualify-production.sh" "$temporary/case/scripts/qualify-production.sh"
-  cp "$repo_root/scripts/build-docs.sh" "$temporary/case/scripts/build-docs.sh"
-  cp "$repo_root/tests/fixtures/ci-qualification/v1/contracts.json" "$temporary/case/tests/fixtures/ci-qualification/v1/contracts.json"
+  build_fixture "$temporary/case"
+  cp "$temporary/case/$name" "$temporary/before"
   sed -i "$mutation" "$temporary/case/$name"
+  # A sed that matches nothing leaves the fixture identical to the control, which passes.
+  # Such a case asserts nothing at all, so it is a harness defect, not a silent success.
+  if cmp -s "$temporary/before" "$temporary/case/$name"; then
+    echo "ci-route mutation did not apply — the sed matched nothing: $name :: $mutation" >&2
+    exit 1
+  fi
   if node "$temporary/case/scripts/test-ci-route.mjs" >"$temporary/mutation.log" 2>&1; then
-    echo "ci-route mutation unexpectedly passed: $name" >&2
+    echo "ci-route mutation unexpectedly passed: $name :: $mutation" >&2
+    exit 1
+  fi
+  # Red is not enough: check WHICH branch fired. A mutation that trips a syntax error or a
+  # missing module has not exercised the guard it claims to exercise.
+  if ! grep -q "AssertionError" "$temporary/mutation.log"; then
+    echo "ci-route mutation failed for the WRONG reason (no AssertionError): $name :: $mutation" >&2
+    head -20 "$temporary/mutation.log" >&2
     exit 1
   fi
 }
@@ -37,7 +93,10 @@ expect_red .github/workflows/ci.yml 's#\./scripts/qualify-production.sh --protec
 expect_red scripts/qualify-pr.sh '/node_modules\/playwright-core/d;'
 expect_red .github/workflows/ci.yml '/^  browser:/,/^  browser-general-helper:/ s|uses: actions/download-artifact@[0-9a-f]* # v8.0.1|run: npm ci --ignore-scripts|;'
 expect_red .github/workflows/ci.yml '/gates+=(spatial)/d;'
-expect_red .github/workflows/ci.yml '/run_delivery=true/d;'
+# Was `/run_delivery=true/d`, which matched nothing: that variable was refactored out of ci.yml
+# and the string survived only inside this harness. Same intent, expressed against live code --
+# domain-conformance must still run the browser-delivery gate when the route selects browser.
+expect_red .github/workflows/ci.yml '/run-ci-gate.sh browser-delivery artifacts\/ci\/results\/browser-delivery.json/d;'
 expect_red .github/workflows/ci.yml '/run-ci-gate.sh cross-runtime artifacts\/ci\/results\/cross-runtime.json/d;'
 expect_red .github/workflows/ci.yml '/SIR_CI_PREFLIGHT_REUSED:/d;'
 expect_red scripts/qualify-pr.sh '/artifacts\/publish/d;'

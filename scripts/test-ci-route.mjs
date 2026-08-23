@@ -300,6 +300,16 @@ for (const browserJob of ["browser", "browser-general-helper", "browser-delivery
   assert.match(jobBody(browserJob), /prepared-part-native/u);
   assert.doesNotMatch(jobBody(browserJob), /prepared-part-(?:fable|server|docs)/u);
 }
+// The documentation gate and its producer key off the route's `documentation` OUTPUT, never the
+// classification. A `browser` or `cross-cutting` route that requires production-review freshness
+// sets that output without being classified `documentation` (RP-010), so gating the jobs on the
+// classification would silently drop the documentation gate for exactly those routes.
+for (const documentationJob of ["documentation", "prepare-docs"]) {
+  assert.match(jobBody(documentationJob), /if: needs\.route\.outputs\.documentation == 'true'/u);
+  assert.doesNotMatch(jobBody(documentationJob), /classification == 'documentation'/u);
+}
+assert.ok(route(["src/SIR.Client/UnifiedTacticalWorkspace.fs"]).selectedGates.includes("documentation"));
+assert.notEqual(route(["src/SIR.Client/UnifiedTacticalWorkspace.fs"]).classification, "documentation");
 assert.match(jobBody("documentation"), /prepared-part-docs/u);
 assert.match(jobBody("documentation"), /prepared-part-web/u);
 assert.doesNotMatch(jobBody("documentation"), /prepared-part-native/u);
@@ -318,6 +328,11 @@ assert.match(gateRunner, /cancellation\) preflight_parts=\(native web\)/u);
 assert.match(gateRunner, /browser\|browser-general-helper\|browser-delivery\) preflight_parts=\(web native\)/u);
 assert.match(gateRunner, /documentation\) preflight_parts=\(web docs\)/u);
 assert.match(gateRunner, /SIR_CI_PREFLIGHT_REUSED/u);
+// The consumer honouring the flag is only half the contract. domain-conformance extracts the
+// prepared parts ONCE and then runs several gates concurrently in that same job, so it must also
+// SET the flag; without it each of those gates re-extracts the same artifacts.
+assert.match(jobBody("domain-conformance"), /extract-parts native fable web/u);
+assert.match(jobBody("domain-conformance"), /SIR_CI_PREFLIGHT_REUSED: "true"/u);
 assert.match(gateRunner, /ci-gate-artifact-bindings\.sh" "\$repo_root" "\$\{preflight_parts\[@\]\}"/u);
 assert.match(workflow, /pr-verdict:\n[\s\S]*?needs: \[[^\]]*prepare-docs[^\]]*spatial-mutations[^\]]*cancellation-mutations[^\]]*browser-general-helper[^\]]*browser-delivery[^\]]*domain-conformance[^\]]*cross-runtime[^\]]*\]/u);
 assert.match(jobBody("browser"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-1\.junit\.xml[\s\S]*SIR_JUNIT_OUTPUT_2: artifacts\/ci\/results\/browser-general-2\.junit\.xml/u);
@@ -377,6 +392,12 @@ for (const project of [
   "src/SIR.Client/SIR.Client.fsproj",
 ]) assert.match(producerRestoreBlock, new RegExp(`dotnet restore ${project.replaceAll(".", "\\.")} --locked-mode`, "u"));
 assert.equal(producerRestoreBlock.match(/dotnet restore SIR\.slnx --locked-mode/gu)?.length, 1);
+// The published server payload is the composition root: the native producer publishes into it,
+// the client is copied into its wwwroot, and BOTH the compose and verify steps must read that
+// same client/publish pair. Losing the publish root leaves the composition checking an empty tree.
+assert.match(focusedQualification, /dotnet publish src\/SIR\.Server\/SIR\.Server\.fsproj -c Release -o artifacts\/publish/u);
+assert.match(focusedQualification, /cp -a artifacts\/client\/\. artifacts\/publish\/wwwroot\//u);
+assert.equal(focusedQualification.match(/--client artifacts\/client --publish artifacts\/publish/gu)?.length, 2);
 assert.match(focusedQualification, /trap write_part_timing EXIT/u);
 assert.match(focusedQualification, /verify-staged[\s\S]*cp -a "\$stage\/\$output_path" "\$target"/u);
 assert.match(focusedQualification, /run_browser_shard_pair[\s\S]*SIR_BROWSER_SHARD_INDEX="\$first_index"[\s\S]*SIR_BROWSER_SHARD_INDEX="\$second_index"[\s\S]*wait "\$first_pid"[\s\S]*wait "\$second_pid"/u);
