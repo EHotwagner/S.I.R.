@@ -301,19 +301,34 @@ enforce_source_correspondence() {
 # move, and the rebind writer reported "already current: nothing to rebind". Real implementation
 # left the covered set in one green commit, silently.
 #
-# The subject this arm asserts over is the COMPILE CLOSURE, not the text of any file: the set of
-# files compiled by the projects that compile a declared implementation source. Extraction grows
-# that closure while the identity set -- frozen at `sourceCommit`, and provably unable to grow in
-# the change that creates a file (see require_declared_sources_at_source_commit) -- stays put. The
-# baseline is the same closure AT `sourceCommit`, which needs no new recorded state: `sourceCommit`
-# is already required to be durably reachable.
+# The subject this arm asserts over is the RULES IMPLEMENTATION CLOSURE, not the text of any file:
+# every project that compiles a declared implementation source, PLUS every project reachable from
+# one of those through `ProjectReference`, transitively -- and the compile items of all of them.
+# Extraction grows that closure while the identity set -- frozen at `sourceCommit`, and provably
+# unable to grow in the change that creates a file (see require_declared_sources_at_source_commit)
+# -- stays put. The baseline is the same closure AT `sourceCommit`, which needs no new recorded
+# state: `sourceCommit` is already required to be durably reachable.
 #
-# THE LIMIT, STATED RATHER THAN IMPLIED, because an overclaimed limit is how a real gap becomes
-# invisible: this arm detects implementation entering the closure as a NEW compile item. It does
-# NOT detect code moved into a compile item that already existed at `sourceCommit` and is not a
-# declared source -- that file was outside the seal before the move as well, so the move does not
-# NARROW coverage relative to the baseline. Nothing here claims to be a behaviour gate; behaviour
-# is gated by manifest regeneration and by executing the corpus.
+# ROUND 0 OF THIS ITEM COMPUTED THAT CLOSURE OVER ONE HOP AND SAID IT WAS COMPLETE. It collected
+# only the projects that list a declared source directly -- 9 of 25 at the time -- so the other 16
+# were free ground. Its critic extracted `saturate` into a NEW project referenced from
+# `SIR.Domain.fsproj`, and all four steps of the production `rules` gate passed BYTE-IDENTICALLY to
+# a clean tree. The transitive walk in closure_projects is the repair, and the argument that the
+# dependency direction is COMPLETE (rather than merely wider) is recorded there.
+#
+# THE LIMITS, STATED RATHER THAN IMPLIED, because an overclaimed limit is how a real gap becomes
+# invisible -- and because the previous version of this very comment overclaimed one:
+#
+#   * It detects implementation entering the closure as a NEW compile item. It does NOT detect code
+#     moved into a compile item that was ALREADY IN THE BASELINE CLOSURE at `sourceCommit` -- that
+#     file was outside the seal before the move as well, so the move does not NARROW coverage
+#     relative to the baseline.
+#   * It classifies FILES, not behaviour. A refactor that moves an implementation AND its call site
+#     out of a declared source is not caught here, because the moved code is no longer statically
+#     reachable from the declared source. It is still visible: changing the declared source's text
+#     forces a correspondence rebind, and that diff is the backstop.
+#   * Nothing here claims to be a behaviour gate; behaviour is gated by manifest regeneration and by
+#     executing the corpus.
 #
 # The escape hatch is a DECLARATION, and that is the whole point: a compile item that is knowingly
 # outside the sealed identity set is recorded in `.outsideIdentity`, so the loss is a reviewable
@@ -324,21 +339,49 @@ enforce_source_correspondence() {
 # Compile items of one project, resolved repo-relative. An `Include` carrying an MSBuild property
 # expression is emitted VERBATIM rather than resolved or dropped: this function cannot evaluate it,
 # and a caller must be able to tell "I could not evaluate this" from a path (#266).
-project_compile_items() {
+# Resolved `Include` paths of one MSBuild element kind in one project, repo-relative.
+#
+# The element is matched as an ELEMENT and `Include` as an ATTRIBUTE, not by the substring
+# `<Tag Include="`. Attribute order is not significant in XML, so `<ProjectReference
+# Condition="..." Include="..." />` is the same element as `<ProjectReference Include="..."
+# Condition="..." />`; a substring matcher sees only one of them, and the one it misses is a free
+# hiding place for exactly the extraction this arm exists to detect.
+#
+# An `Include` carrying an MSBuild property expression is emitted VERBATIM rather than resolved or
+# dropped: this function cannot evaluate it, and a caller must be able to tell "I could not evaluate
+# this" from a path (#266).
+#
+# Exit status distinguishes the two ways a project yields nothing, because the callers' policies
+# differ: 0 with no output means "read it, found none"; 2 means "the project does not exist at this
+# revision" (normal for a NEW project when reading the baseline, a refusal at HEAD); 1 means the
+# read itself failed and nothing may be concluded.
+project_elements() {
   local tree_root=$1
   local project=$2
-  local rev=${3:-}
+  local tag=$3
+  local rev=${4:-}
   local project_dir
   local content
   project_dir=$(dirname "$project")
   if test -n "$rev"; then
-    content=$(git -C "$repo_root" show "$rev:$project" 2>/dev/null) || return 0
+    git -C "$repo_root" cat-file -e "$rev:$project" 2>/dev/null || return 2
+    content=$(git -C "$repo_root" show "$rev:$project" 2>/dev/null) || return 1
   else
+    test -f "$tree_root/$project" || return 2
     content=$(command cat "$tree_root/$project") || return 1
   fi
-  printf '%s\n' "$content" \
-    | grep -o 'Compile Include="[^"]*"' \
-    | sed 's/^Compile Include="//; s/"$//' \
+  # `set -o pipefail` is in force, and grep exits 1 on NO MATCH -- an ordinary answer here, since
+  # most projects declare no ProjectReference at all. Each stage is therefore captured and its
+  # no-match arm separated from a real failure, rather than letting "found none" surface as "the
+  # read failed". The read failures that matter were already decided above, before this pipeline.
+  local elements
+  local attributes
+  elements=$(printf '%s\n' "$content" | tr '\n' ' ' | grep -oE "<$tag[[:space:]][^>]*>") || elements=""
+  test -n "$elements" || return 0
+  attributes=$(printf '%s\n' "$elements" | grep -oE 'Include[[:space:]]*=[[:space:]]*"[^"]*"') || attributes=""
+  test -n "$attributes" || return 0
+  printf '%s\n' "$attributes" \
+    | sed -E 's/^Include[[:space:]]*=[[:space:]]*"//; s/"$//' \
     | tr '\\' '/' \
     | while IFS= read -r include; do
         test -n "$include" || continue
@@ -347,6 +390,139 @@ project_compile_items() {
           *) realpath -m --relative-to="$tree_root" "$tree_root/$project_dir/$include" 2>/dev/null || printf '%s\n' "$project_dir/$include" ;;
         esac
       done
+}
+
+project_compile_items() {
+  project_elements "$1" "$2" Compile "${3:-}"
+}
+
+# Every .fsproj at one revision, repo-relative.
+#
+# "No projects here" is an ANSWER, not a failure, and it must reach the caller as empty output at
+# exit 0 -- otherwise the vacuity guard downstream never speaks and an empty tree is refused with no
+# diagnostic at all. `set -o pipefail` makes that easy to get wrong: `find` on a tree with no `src`
+# and `grep` with no match both exit non-zero on the ordinary answer.
+project_inventory() {
+  local tree_root=$1
+  local rev=${2:-}
+  local listed
+  if test -n "$rev"; then
+    listed=$(git -C "$repo_root" ls-tree -r --name-only "$rev" -- src tests 2>/dev/null) || listed=""
+  else
+    listed=$(cd "$tree_root" && find src tests -name '*.fsproj' 2>/dev/null) || listed=""
+  fi
+  test -n "$listed" || return 0
+  printf '%s\n' "$listed" | sed 's#^\./##' | grep -E '\.fsproj$' | sort || true
+}
+
+# The rules implementation closure at one revision: the projects that COMPILE a declared source,
+# plus everything they reach transitively through `ProjectReference`.
+#
+# WHY THE DEPENDENCY DIRECTION IS THE COMPLETE ONE, and not merely a bigger guess than one hop:
+# extraction moves code that a declared source still CALLS. A declared source can only call code its
+# own project can reach, and .NET forbids reference cycles -- so a project that REFERENCES the
+# declared source's project can never be an extraction target, because the declared source could not
+# call back into it. That leaves exactly two destinations: the same project (a new Compile item,
+# which one hop already saw) and a project in its transitive `ProjectReference` closure (which one
+# hop did NOT see).
+#
+# S.I.R.#290's round-0 critic demonstrated the second against this item's own round-0 candidate:
+# `saturate` extracted into a NEW project `src/SIR.Domain.Arith`, referenced from
+# `SIR.Domain.fsproj`, passed all four steps of the production `rules` gate byte-identically to a
+# clean tree. At that head the one-hop set was 9 projects of 25 -- 16 invisible. The transitive
+# closure is 12, so the walk is bounded by the reference graph rather than sweeping the repository:
+# `SIR.Tools` and the test projects are correctly not in it.
+#
+# Emits the project list on stdout; diagnostics go to stderr. A non-zero return means nothing may
+# be concluded from the output -- it is never "the closure is empty".
+closure_projects() {
+  local tree_root=$1
+  local rev=$2
+  local declared_list=$3
+  local project items status include target
+  local frontier=()
+  local seen=""
+
+  while IFS= read -r project; do
+    test -n "$project" || continue
+    status=0
+    items=$(project_elements "$tree_root" "$project" Compile "$rev") || status=$?
+    if test "$status" -eq 1; then
+      echo "project file could not be read at ${rev:-the working tree}: $project" >&2
+      return 1
+    fi
+    test "$status" -eq 0 || continue
+    if printf '%s\n' "$items" | grep -Fxq -f "$declared_list" 2>/dev/null; then
+      frontier+=("$project")
+      seen+="$project"$'\n'
+    fi
+  done <<< "$(project_inventory "$tree_root" "$rev")"
+
+  # Transitive `ProjectReference` walk. `seen` terminates it, so a reference cycle -- which MSBuild
+  # rejects but a malformed tree can still contain -- cannot spin here.
+  while test ${#frontier[@]} -gt 0; do
+    project="${frontier[0]}"
+    frontier=("${frontier[@]:1}")
+    status=0
+    items=$(project_elements "$tree_root" "$project" ProjectReference "$rev") || status=$?
+    if test "$status" -eq 1; then
+      echo "project references could not be read at ${rev:-the working tree}: $project" >&2
+      return 1
+    fi
+    test "$status" -eq 0 || continue
+    while IFS= read -r include; do
+      test -n "$include" || continue
+      case "$include" in
+        *'$('*)
+          # An unevaluable reference is a refusal, never a skip: whatever it names would be invisible
+          # to this arm, which is a hiding place for the extraction it exists to detect.
+          echo "project reference carries an MSBuild expression this check cannot resolve: $include" >&2
+          echo "  declared by: $project" >&2
+          echo "  refusing rather than walking past a reference whose target cannot be identified" >&2
+          return 1
+          ;;
+      esac
+      target="$include"
+      # A reference that resolves OUTSIDE the repository is not something this arm can reason about:
+      # its baseline is `git show <sourceCommit>:<path>`, which has no meaning for a path above the
+      # root. Refuse rather than walk it, for the same reason an MSBuild expression is refused.
+      case "$target" in
+        ../*|/*)
+          echo "project reference resolves outside the repository: $target" >&2
+          echo "  declared by: $project" >&2
+          echo "  this arm's baseline is the sealed commit's tree, which cannot describe such a path" >&2
+          return 1
+          ;;
+      esac
+      printf '%s' "$seen" | grep -Fxq -- "$target" && continue
+      status=0
+      project_elements "$tree_root" "$target" Compile "$rev" >/dev/null || status=$?
+      if test "$status" -eq 1; then
+        echo "referenced project could not be read at ${rev:-the working tree}: $target" >&2
+        return 1
+      fi
+      if test "$status" -eq 2; then
+        # Absent at the BASELINE is ordinary (the project did not exist yet). Absent at HEAD means a
+        # reference nothing can resolve, and "I could not evaluate this" is not "there is nothing
+        # there" (#266).
+        if test -z "$rev"; then
+          echo "project reference names a project that is not in the tree: $target" >&2
+          echo "  declared by: $project" >&2
+          return 1
+        fi
+        continue
+      fi
+      seen+="$target"$'\n'
+      frontier+=("$target")
+    done <<< "$items"
+  done
+
+  # An EMPTY closure is an answer, and it must reach the caller as empty output at exit 0. Emitting
+  # it through `grep -v` would exit 1 on no match and, under `pipefail`, turn "the closure is empty"
+  # into "the walk failed" -- refusing with no diagnostic and pre-empting the vacuity guard that
+  # exists to say so. Measured: that is exactly what the first cut of this repair did.
+  test -n "$seen" || return 0
+  printf '%s' "$seen" | sort -u | sed '/^$/d'
 }
 
 check_identity_closure_containment() {
@@ -407,22 +583,29 @@ check_identity_closure_containment() {
     return 1
   fi
 
-  # Projects that compile at least one declared implementation source. Resolved by READING the
-  # Compile items, never by naming a project by convention -- the same defect the rebind writer
-  # records having made twice (S.I.R.#264 rounds 1 and 2).
-  local owning=()
+  # The closure is resolved by READING Compile items and then WALKING ProjectReference, never by
+  # naming a project by convention -- the same defect the rebind writer records having made twice
+  # (S.I.R.#264 rounds 1 and 2) -- and never by stopping at the projects that compile a declared
+  # source directly, which is the defect this item's own round-0 candidate shipped with.
+  #
+  # Each revision's closure is computed INDEPENDENTLY, at that revision. Using the current owning
+  # set to read baseline content would silently assume the reference graph never changed, and the
+  # graph changing is precisely the move under test.
+  local declared_list
   local project
-  local items
+  local owning=()
+  local current_projects
+  local baseline_projects
+  declared_list=$(mktemp /tmp/sir-rules-declared.XXXXXX)
+  printf '%s\n' "$declared" > "$declared_list"
+  current_projects=$(closure_projects "$tree_root" "" "$declared_list") || { rm -f "$declared_list"; return 1; }
+  baseline_projects=$(closure_projects "$tree_root" "$commit" "$declared_list") || { rm -f "$declared_list"; return 1; }
+  rm -f "$declared_list"
+
   while IFS= read -r project; do
     test -n "$project" || continue
-    items=$(project_compile_items "$tree_root" "$project") || {
-      echo "project file could not be read: $project" >&2
-      return 1
-    }
-    if printf '%s\n' "$items" | grep -Fxq -f <(printf '%s\n' "$declared") 2>/dev/null; then
-      owning+=("$project")
-    fi
-  done <<< "$(cd "$tree_root" && find src tests -name '*.fsproj' 2>/dev/null | sort)"
+    owning+=("$project")
+  done <<< "$current_projects"
 
   # Vacuity: if no project compiles a declared source there is no closure to contain, and a pass
   # here would mean "checked nothing" rather than "found nothing".
@@ -433,10 +616,18 @@ check_identity_closure_containment() {
 
   local current_items=""
   local baseline_items=""
+  local status
   for project in "${owning[@]}"; do
-    current_items+=$(project_compile_items "$tree_root" "$project")$'\n'
-    baseline_items+=$(project_compile_items "$tree_root" "$project" "$commit")$'\n'
+    status=0
+    current_items+=$(project_compile_items "$tree_root" "$project")$'\n' || status=$?
+    test "$status" -ne 1 || { echo "project file could not be read: $project" >&2; return 1; }
   done
+  while IFS= read -r project; do
+    test -n "$project" || continue
+    status=0
+    baseline_items+=$(project_compile_items "$tree_root" "$project" "$commit")$'\n' || status=$?
+    test "$status" -ne 1 || { echo "project file could not be read at $commit: $project" >&2; return 1; }
+  done <<< "$baseline_projects"
   current_items=$(printf '%s' "$current_items" | grep -v '^$' | sort -u)
   baseline_items=$(printf '%s' "$baseline_items" | grep -v '^$' | sort -u)
 
@@ -456,8 +647,10 @@ check_identity_closure_containment() {
   if test -n "$uncontained"; then
     echo "implementation entered the rules compile closure without joining correspondence coverage:" >&2
     printf '%s\n' "$uncontained" | sed 's/^/  /' >&2
-    echo "  these files are compiled by a project that compiles a declared implementation source," >&2
-    echo "  were not in that closure at the sealed commit $commit, and are not declared sources." >&2
+    echo "  these files are compiled by a project in the rules implementation closure -- a project" >&2
+    echo "  that compiles a declared implementation source, or one reachable from such a project" >&2
+    echo "  through ProjectReference -- were not in that closure at the sealed commit $commit," >&2
+    echo "  and are not declared sources." >&2
     echo "  Code extracted out of a declared source into one of them leaves correspondence coverage." >&2
     echo "  The identity set is FROZEN at sourceCommit and cannot grow in the change that creates a" >&2
     echo "  file, so adding them to .sources is not the remedy and will be refused. Either keep the" >&2
@@ -935,6 +1128,204 @@ search_quiet 'has no blob at the sealed source commit' "$pin_probe_log" || {
 }
 search_quiet 'the identity set is frozen at sourceCommit and cannot grow' "$pin_probe_log" || {
   pin_probe_fail "the unsealed-source diagnostic did not name the frozen-set remedy"
+}
+
+# ---------------------------------------------------------------------------------------------
+# Identity-closure GRAPH inversions (S.I.R.#290 round 1).
+#
+# Round 0 computed the closure over ONE HOP -- the projects that directly list a declared source as
+# a Compile item -- and its critic escaped it by extracting into a NEW PROJECT referenced from such
+# a project. Nine projects of twenty-five were visible; the other sixteen were free ground.
+#
+# Every case below therefore exercises the WALK, not the nine. Each refusal case is paired with a
+# control that must go green, and each pair differs by exactly one construct, so a fixture that reds
+# for the wrong reason is not read as a passing demonstration.
+graph_probe_tree() {
+  local tree_root=$1
+  local project
+  while IFS= read -r project; do
+    test -n "$project" || continue
+    mkdir -p "$tree_root/$(dirname "$project")"
+    cp "$repo_root/$project" "$tree_root/$project"
+  done <<< "$(cd "$repo_root" && find src tests -name '*.fsproj' | sort)"
+}
+
+graph_add_project() {  # tree, dir, compile-item, [extra-xml]
+  mkdir -p "$1/$2"
+  cat > "$1/$2/$(basename "$2").fsproj" <<GRAPHPROJ
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="$3" />
+  </ItemGroup>
+  ${4:-}
+</Project>
+GRAPHPROJ
+}
+
+graph_reference_from() {  # project-file, reference-xml
+  python3 - "$1" "$2" <<'GRAPHREF'
+import sys
+path, xml = sys.argv[1], sys.argv[2]
+s = open(path).read()
+assert '<Project' in s, path
+s = s.replace('</Project>', '  <ItemGroup>\n    %s\n  </ItemGroup>\n</Project>' % xml, 1)
+open(path, 'w').write(s)
+GRAPHREF
+}
+
+graph_control="$pin_probe_dir/graph-control"
+mkdir -p "$graph_control"
+graph_probe_tree "$graph_control"
+
+# 19. CONTROL. The unmodified project set must pass, so every red below is attributable.
+check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_control" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "identity-closure graph control tree was refused: the probe pairs are not controlled experiments"
+}
+
+# 20. ONE HOP OUT -- the exact escape the round-0 candidate shipped with. A NEW project, referenced
+#     from a project that compiles a declared source, is in the closure and its compile item is not.
+graph_onehop="$pin_probe_dir/graph-onehop"
+mkdir -p "$graph_onehop"
+graph_probe_tree "$graph_onehop"
+graph_add_project "$graph_onehop" "src/SIR.Probe.Arith" "ProbeArith.fs"
+graph_reference_from "$graph_onehop/src/SIR.Domain/SIR.Domain.fsproj" '<ProjectReference Include="../SIR.Probe.Arith/SIR.Probe.Arith.fsproj" />'
+if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_onehop" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "extraction into a new project one ProjectReference hop out unexpectedly passed"
+fi
+search_quiet 'src/SIR.Probe.Arith/ProbeArith.fs' "$pin_probe_log" || {
+  pin_probe_fail "one-hop closure escape failed without naming the offending path"
+}
+
+# 21. TRANSITIVE -- two hops out. This is the case a one-LEVEL fix would still miss, so it is what
+#     separates "walks the graph" from "looks one further than before".
+graph_transitive="$pin_probe_dir/graph-transitive"
+mkdir -p "$graph_transitive"
+graph_probe_tree "$graph_transitive"
+graph_add_project "$graph_transitive" "src/SIR.Probe.Mid" "ProbeMid.fs" \
+  '<ItemGroup><ProjectReference Include="../SIR.Probe.Deep/SIR.Probe.Deep.fsproj" /></ItemGroup>'
+graph_add_project "$graph_transitive" "src/SIR.Probe.Deep" "ProbeDeep.fs"
+graph_reference_from "$graph_transitive/src/SIR.Domain/SIR.Domain.fsproj" '<ProjectReference Include="../SIR.Probe.Mid/SIR.Probe.Mid.fsproj" />'
+if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_transitive" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "extraction two ProjectReference hops out unexpectedly passed"
+fi
+search_quiet 'src/SIR.Probe.Deep/ProbeDeep.fs' "$pin_probe_log" || {
+  pin_probe_fail "the transitive closure escape did not reach the SECOND hop: the walk is not transitive"
+}
+
+# 22. A LEGAL input exists at graph distance too: declaring the two-hop path passes, so the walk
+#     refuses an undeclared escape rather than refusing every reference graph that grows.
+graph_ack="$pin_probe_dir/graph-acknowledged.json"
+jq '.outsideIdentity += ["src/SIR.Probe.Mid/ProbeMid.fs", "src/SIR.Probe.Deep/ProbeDeep.fs"]' \
+  "$correspondence_manifest" > "$graph_ack"
+check_identity_closure_containment "$source_manifest" "$graph_ack" "$source_commit" "$graph_transitive" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "an explicitly acknowledged out-of-identity compile item two hops out was refused"
+}
+
+# 23. ATTRIBUTE ORDER. `Include` is an attribute, and XML does not order attributes. A substring
+#     matcher for `<ProjectReference Include="` sees the first spelling below and not the second,
+#     which would make attribute order a hiding place for the escape in probe 20.
+graph_attrorder="$pin_probe_dir/graph-attrorder"
+mkdir -p "$graph_attrorder"
+graph_probe_tree "$graph_attrorder"
+graph_add_project "$graph_attrorder" "src/SIR.Probe.Attr" "ProbeAttr.fs"
+graph_reference_from "$graph_attrorder/src/SIR.Domain/SIR.Domain.fsproj" '<ProjectReference Condition="'"'"'$(Unset)'"'"' == '"'"''"'"'" Include="../SIR.Probe.Attr/SIR.Probe.Attr.fsproj" />'
+if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_attrorder" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "a ProjectReference with Include after another attribute was not walked: attribute order is a hiding place"
+fi
+search_quiet 'src/SIR.Probe.Attr/ProbeAttr.fs' "$pin_probe_log" || {
+  pin_probe_fail "attribute-ordered ProjectReference escape did not name the offending path"
+}
+
+# 24. An UNEVALUABLE reference is refused, not walked past. Whatever an MSBuild expression names is
+#     invisible to this arm, and "I could not evaluate this" is never "there is nothing there".
+graph_expr="$pin_probe_dir/graph-expression"
+mkdir -p "$graph_expr"
+graph_probe_tree "$graph_expr"
+graph_reference_from "$graph_expr/src/SIR.Domain/SIR.Domain.fsproj" '<ProjectReference Include="$(SomeUnresolvedProject)" />'
+if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_expr" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "a ProjectReference carrying an MSBuild expression unexpectedly passed"
+fi
+search_quiet 'carries an MSBuild expression this check cannot resolve' "$pin_probe_log" || {
+  pin_probe_fail "an unevaluable ProjectReference failed without the actionable resolution diagnostic"
+}
+
+# 25. A reference naming a project that is NOT THERE is refused at HEAD. A missing target silently
+#     skipped is the same hiding place by another route.
+graph_missing="$pin_probe_dir/graph-missing"
+mkdir -p "$graph_missing"
+graph_probe_tree "$graph_missing"
+graph_reference_from "$graph_missing/src/SIR.Domain/SIR.Domain.fsproj" '<ProjectReference Include="../SIR.Probe.Absent/SIR.Probe.Absent.fsproj" />'
+if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_missing" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "a ProjectReference naming an absent project unexpectedly passed"
+fi
+search_quiet 'names a project that is not in the tree' "$pin_probe_log" || {
+  pin_probe_fail "an absent ProjectReference target failed without the actionable diagnostic"
+}
+
+# 26. A reference resolving OUTSIDE the repository is refused. This arm's baseline is the sealed
+#     commit's tree, which cannot describe such a path, so walking it would compare against nothing.
+graph_outside="$pin_probe_dir/graph-outside"
+mkdir -p "$graph_outside"
+graph_probe_tree "$graph_outside"
+# Three levels, not two: from src/SIR.Domain, `../..` lands back ON the root, and `realpath -m`
+# normalizes it to an in-repo-looking path. Only the third `..` actually leaves. Measured, because
+# the first cut of this probe used two and was demonstrating the wrong thing entirely.
+graph_reference_from "$graph_outside/src/SIR.Domain/SIR.Domain.fsproj" '<ProjectReference Include="../../../Elsewhere/Elsewhere.fsproj" />'
+if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_outside" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "a ProjectReference resolving outside the repository unexpectedly passed"
+fi
+search_quiet 'resolves outside the repository' "$pin_probe_log" || {
+  pin_probe_fail "an out-of-repository ProjectReference failed without the actionable diagnostic"
+}
+
+# 27. A reference CYCLE terminates. MSBuild rejects cycles, but this arm reads files rather than
+#     building, so a malformed tree must not spin it. The `seen` set is what bounds the walk, and a
+#     probe that hangs is indistinguishable from a gate that hangs.
+graph_cycle="$pin_probe_dir/graph-cycle"
+mkdir -p "$graph_cycle"
+graph_probe_tree "$graph_cycle"
+graph_add_project "$graph_cycle" "src/SIR.Probe.A" "ProbeA.fs" \
+  '<ItemGroup><ProjectReference Include="../SIR.Probe.B/SIR.Probe.B.fsproj" /></ItemGroup>'
+graph_add_project "$graph_cycle" "src/SIR.Probe.B" "ProbeB.fs" \
+  '<ItemGroup><ProjectReference Include="../SIR.Probe.A/SIR.Probe.A.fsproj" /></ItemGroup>'
+graph_reference_from "$graph_cycle/src/SIR.Domain/SIR.Domain.fsproj" '<ProjectReference Include="../SIR.Probe.A/SIR.Probe.A.fsproj" />'
+graph_cycle_status=0
+timeout 120 bash -c 'true' >/dev/null 2>&1 || pin_probe_fail "the cycle probe needs a working timeout(1)"
+if timeout 120 bash -c "
+  set -euo pipefail
+  repo_root='$repo_root'
+  arm_invocations=\$(mktemp)
+  $(declare -f project_elements project_compile_items project_inventory closure_projects check_identity_closure_containment)
+  check_identity_closure_containment '$source_manifest' '$correspondence_manifest' '$source_commit' '$graph_cycle'
+" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "a reference cycle unexpectedly passed the identity-closure arm"
+else
+  graph_cycle_status=$?
+fi
+test "$graph_cycle_status" -ne 124 || {
+  pin_probe_fail "the identity-closure walk did not terminate on a reference cycle: it spun until timeout"
+}
+search_quiet 'src/SIR.Probe.A/ProbeA.fs' "$pin_probe_log" || {
+  pin_probe_fail "the cycle probe terminated but did not report the closure members it found"
+}
+
+# 28. The walk is proved over the GRAPH, not over the nine projects that compile a declared source
+#     directly. A repair verified only against those nine leaves the same sixteen invisible, which
+#     is how the round-0 defect passed four green gates.
+graph_direct_count=0
+graph_closure_count=0
+graph_declared_list=$(mktemp /tmp/sir-rules-graph-declared.XXXXXX)
+jq -r '.sources[]' "$source_manifest" | sort -u > "$graph_declared_list"
+while IFS= read -r probe_project; do
+  test -n "$probe_project" || continue
+  if project_compile_items "$repo_root" "$probe_project" 2>/dev/null | grep -Fxq -f "$graph_declared_list" 2>/dev/null; then
+    graph_direct_count=$((graph_direct_count + 1))
+  fi
+done <<< "$(project_inventory "$repo_root" "")"
+graph_closure_count=$(closure_projects "$repo_root" "" "$graph_declared_list" | grep -c .)
+rm -f "$graph_declared_list"
+test "$graph_closure_count" -gt "$graph_direct_count" || {
+  pin_probe_fail "the closure walk reaches no further than the directly-compiling projects ($graph_direct_count): ProjectReference is not being followed"
 }
 
 # 18. WIRING. Both S.I.R.#290 arms must have run against the REAL tree and the REAL manifests

@@ -697,21 +697,48 @@ mistaken for accidents:
   new one is **not** covered by correspondence until `sourceCommit` is next
   advanced, which is a deliberate rebind of the immutable half.
 
-- **That loss of coverage is detected, not absorbed.** The verifier compares the
-  *compile closure* of the projects that compile a declared source against the
-  same closure at `sourceCommit`. A compile item that entered the closure after the
-  seal, and is neither a declared source nor recorded in
-  `source-correspondence.json` `.outsideIdentity`, is refused. So an extraction is
-  either kept inside a listed file, or **declared** — a reviewable line in the
-  diff rather than nothing at all.
+- **That loss of coverage is detected, not absorbed.** The verifier computes the
+  *rules implementation closure* — every project that compiles a declared source,
+  plus every project reachable from one of those through `ProjectReference`,
+  transitively — and compares its compile items against the same closure at
+  `sourceCommit`. An item that entered the closure after the seal, and is neither a
+  declared source nor recorded in `source-correspondence.json` `.outsideIdentity`,
+  is refused. So an extraction is either kept inside a listed file, or **declared**
+  — a reviewable line in the diff rather than nothing at all.
 
-  The limit is stated rather than implied, because an overclaimed limit is how a
-  real gap becomes invisible: this detects implementation entering the closure as
-  a **new compile item**. It does not detect code moved into a compile item that
-  already existed at `sourceCommit` and is not a declared source — that file was
-  outside the seal before the move as well, so the move narrows nothing relative to
-  the baseline. Neither arm is a behaviour gate; behaviour is gated by manifest
-  regeneration and by executing the corpus.
+  **Why the dependency direction is the complete one**, and not merely a wider
+  guess: extraction moves code the declared source still *calls*. A declared source
+  can only call code its own project can reach, and .NET forbids reference cycles,
+  so a project that *references* the declared source's project can never be an
+  extraction target — the declared source could not call back into it. That leaves
+  exactly two destinations: the same project, and its transitive `ProjectReference`
+  closure. Both are covered.
+
+  This is stated precisely because the first version of this check was **not**
+  complete and said it was. It walked one hop — only the projects that list a
+  declared source directly — which at the time was 9 projects of 25. S.I.R.#290's
+  round-0 critic extracted `saturate` into a **new project** referenced from
+  `SIR.Domain`, and all four steps of the production `rules` gate passed
+  byte-identically to a clean tree. The transitive walk is the repair.
+
+  **The limits, stated rather than implied**, because an overclaimed limit is how a
+  real gap becomes invisible:
+
+  - It does not detect code moved into a compile item that was **already in the
+    baseline closure** at `sourceCommit`. That file was outside the seal before the
+    move as well, so the move narrows nothing relative to the baseline.
+  - It classifies **files**, not behaviour. A refactor that moves an implementation
+    *and* its call site out of a declared source is not caught by this arm, because
+    the moved code is no longer statically reachable from the declared source. It is
+    still visible: changing the declared source's text forces a correspondence
+    rebind, and that diff is the backstop.
+  - Neither arm is a behaviour gate. Behaviour is gated by manifest regeneration and
+    by executing the corpus.
+
+  An `Include` the check cannot evaluate is never walked past. An MSBuild property
+  expression, a reference to a project that is not in the tree, and a reference
+  resolving outside the repository are each **refused**, because whatever they name
+  would otherwise be invisible to exactly the check they sit inside.
 
 `source-correspondence.json` is the **mutable half**. It records, per declared
 source, the SHA-256 of that file's text after the normalization
