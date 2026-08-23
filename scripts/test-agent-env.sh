@@ -95,12 +95,22 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 fresh() { # fresh <HOME> <PATH> <DOTNET_ROOT> <BASH_ENV> <script>
-  env -i HOME="$1" USER="${USER:-runner}" TERM=dumb \
-      PATH="$2" DOTNET_ROOT="$3" BASH_ENV="$4" \
-      DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 \
-      FSGG_COORD_OWNER_TYPE=user FSGG_COORD_OWNER=EHotwagner FSGG_COORD_PROJECT="S.I.R." \
-      GH_TOKEN="${GH_TOKEN:-}" GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
-      bash --noprofile --norc -c "cd '$ROOT' && $5" 2>&1
+  # THE `cd` MUST HAPPEN BEFORE bash STARTS, NOT INSIDE IT (S.I.R.#277). BASH_ENV's value is
+  # `$(git rev-parse --show-toplevel)/scripts/agent-env.sh` — the exact form both host config files
+  # set — and bash performs that command substitution AT SHELL STARTUP, before it runs `-c`. With
+  # the old `bash -c "cd '$ROOT' && …"` the substitution therefore resolved against the CALLER's
+  # cwd, not $ROOT. Whenever the two differ — which is exactly what the documented
+  # `scripts/test-agent-env.sh [repo-root]` argument is for — every wired check silently sourced
+  # the CALLER's shim and reported on an artifact that was never under test. Measured: with $ROOT's
+  # shim moved aside, section H's "wired, but the shim is deleted" still resolved the pinned
+  # version, because the caller's intact shim had been sourced instead.
+  ( cd "$ROOT" 2>/dev/null || exit 127
+    env -i HOME="$1" USER="${USER:-runner}" TERM=dumb \
+        PATH="$2" DOTNET_ROOT="$3" BASH_ENV="$4" \
+        DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 \
+        FSGG_COORD_OWNER_TYPE=user FSGG_COORD_OWNER=EHotwagner FSGG_COORD_PROJECT="S.I.R." \
+        GH_TOKEN="${GH_TOKEN:-}" GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
+        bash --noprofile --norc -c "$5" ) 2>&1
 }
 
 run() { # run <expect pass|fail> <label> <HOME> <PATH> <DOTNET_ROOT> <BASH_ENV> <script>
