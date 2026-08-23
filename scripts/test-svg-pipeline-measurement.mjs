@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
-import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
+import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalOverlayLayerBudget, tacticalOverlayLayerBudgetReason, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 // validateDefinitions COMPOSES the budget: workload policy from the fixture file, ceiling from the
@@ -542,9 +542,11 @@ console.log(`JUSTIFIED tactical-budget-runtime-effect-cap: the declared stress-r
 // Rule B CANNOT carry every declared value, and that limit is declared here rather than left for a
 // reader to discover. The representative row's node cap and its input-to-paint ceiling each occur in
 // these consumers for reasons that have nothing to do with a budget -- a readiness timeout in the
-// review generator, a trace fixture duration in this suite, an unrelated overlay-layer
-// node bound, a Playwright wait, a percentile computation, a percentage assertion string -- so
-// sweeping them by value would red on correct code. They are covered by Rule A only, and a keyless
+// review generator, a trace fixture duration in this suite, a Playwright wait, a percentile
+// computation, a percentage assertion string -- so
+// sweeping them by value would red on correct code. (This list named "an unrelated overlay-layer
+// node bound" until S.I.R.#327 declared that bound as its own quantity and moved its comparison into
+// the declaration, so no call site states it any more.) They are covered by Rule A only, and a keyless
 // restatement of either ALONE would therefore escape both rules. A restatement of the node cap or of
 // the effect ceiling as a two-tier PAIR cannot escape, because the stress row's node cap and both
 // effect ceilings are swept -- and a single-tier copy of either quantity is not a statement of the
@@ -553,7 +555,20 @@ const tacticalConsumersByName = ["./generate-tactical-visual-review.mjs", "./tes
 for (const consumer of tacticalConsumersByName)
   assert.ok(budgetConsumers.includes(consumer), `${consumer} must be reached by the DERIVED consumer sweep`);
 
-const declaredBudgetKeys = [...new Set(Object.values(tacticalReviewManifestBudgets).flatMap((row) => Object.keys(row)))];
+// A BUDGET FIELD IS RECOGNISED BY NAME, and this test is shared by the key rule here and the value
+// sweep below so the two cannot come to disagree about what counts as a budget.
+const budgetFieldName = (key) => /^maximum|Milliseconds$|Ceiling$/.test(key);
+// THE PUBLISHED MANIFEST KEYS, PLUS EVERY BUDGET FIELD THE DECLARATION CARRIES (S.I.R.#327).
+//
+// This was the manifest keys alone, which reaches a quantity only if it is projected into the review
+// manifest -- so a budget published in the TABLE only sat outside Rule A entirely and a consumer could
+// re-declare it under its own name with nothing firing. The overlay bound is exactly that shape.
+const declaredBudgetKeys = [...new Set([
+  ...Object.values(tacticalReviewManifestBudgets).flatMap((row) => Object.keys(row)),
+  ...tacticalDeclaredBudgetObjects.flatMap((declared) => Object.entries(declared)
+    .filter(([key, value]) => typeof value === "number" && budgetFieldName(key))
+    .map(([key]) => key)),
+])];
 assert.ok(declaredBudgetKeys.length >= 4, `the declared budget key set is ${declaredBudgetKeys.length}; it is not reaching the declaration and Rule A would pass vacuously`);
 // The key S.I.R.#318 REMOVED. It named a millisecond nothing declared and was added to the ceiling at
 // the call site; a consumer that reintroduces it under any value has reintroduced the defect.
@@ -604,9 +619,22 @@ const stressWorkload = tacticalWorkloadBudgetList[tacticalWorkloadBudgetList.len
 // derived against. Neither is a budget a run can breach, and both are published as identities rather
 // than as ceilings.
 const workloadIdentityFields = ["units", "displayRefreshHertz"];
-const budgetFieldName = (key) => /^maximum|Milliseconds$|Ceiling$/.test(key);
-const declaredBudgetObjects = [...tacticalWorkloadBudgetList, tacticalFrameCadenceBudget];
-const budgetOwner = (declared) => declared.key ?? "tacticalFrameCadenceBudget";
+// TAKEN FROM THE DECLARATION, NOT REBUILT HERE (S.I.R.#327). This was a hand-maintained list of
+// budget OBJECTS inside the gate that exists to stop hand-maintained copies -- the same disease one
+// level up that the comment above already names about budget FIELDS. A third declared object reached
+// none of the rules below until somebody remembered to add it, and nothing red while it did not.
+const declaredBudgetObjects = tacticalDeclaredBudgetObjects;
+assert.ok(declaredBudgetObjects.length > 2,
+  `the declaration exports ${declaredBudgetObjects.length} budget object(s); this sweep is not reaching the declaration`);
+// EVERY DECLARED OBJECT NAMES ITSELF, AND AN UNNAMED ONE IS REFUSED RATHER THAN GUESSED. The previous
+// `declared.key ?? "tacticalFrameCadenceBudget"` was correct only while there were exactly two kinds
+// of declared object; a third arriving without a key would have had all of its quantities silently
+// attributed to the cadence budget -- including in the exemption maps below, which are keyed by
+// quantity id precisely so an exemption cannot be inherited by an unrelated quantity.
+for (const declared of declaredBudgetObjects)
+  assert.equal(typeof declared.key, "string",
+    `a declared budget object carries no key, so its quantities cannot be named: ${JSON.stringify(Object.keys(declared))}`);
+const budgetOwner = (declared) => declared.key;
 for (const declared of declaredBudgetObjects)
   for (const [key, value] of Object.entries(declared)) {
     if (typeof value !== "number") continue;
@@ -621,7 +649,19 @@ const declaredBudgetEntries = declaredBudgetObjects.flatMap((declared) => Object
 // inherit an exemption written for an unrelated one that happens to share its number -- and a value
 // two quantities share is precisely the situation this whole item exists to make safe.
 const unsweepableTacticalQuantities = new Map([
-  [`${representativeWorkload.key}.maximumDomNodes`, "also a readiness timeout in the review generator, a trace-fixture duration in this suite, and an unrelated overlay-layer node bound in the browser spec"],
+  // S.I.R.#327 removed the third occurrence this reason used to name -- "an unrelated overlay-layer
+  // node bound in the browser spec" -- by declaring that bound as its own quantity and moving its
+  // comparison into the declaration. The exemption still stands on the two remaining occurrences;
+  // the clause naming the third is gone rather than left to overclaim.
+  [`${representativeWorkload.key}.maximumDomNodes`, "also a readiness timeout in the review generator and a trace-fixture duration in this suite"],
+  // THE SAME VALUE AS THE LINE ABOVE, AND A DIFFERENT QUANTITY. Exemptions are keyed by quantity for
+  // exactly this case: each has to say why for itself rather than inherit the other's reason.
+  //
+  // What holds this one is NOT a rule about how a consumer may write a comparison -- four review
+  // rounds of S.I.R.#327 established that such a rule can always be written around. It is that the
+  // comparison is not written at a call site at all: tacticalOverlayLayerBudgetReason applies the
+  // bound, and the browser consumer calls it. There is no literal at the call site to sweep for.
+  ["tacticalOverlayLayerBudget.maximumOverlayDomNodes", "shares its value with the representative row's scene node cap, which is unsweepable for occurrences unrelated to either budget: a readiness timeout in the review generator and a trace-fixture duration in this suite"],
   [`${representativeWorkload.key}.maximumInputToPaintMilliseconds`, "also a Playwright wait, a percentile computation, a declared workload's unit count, and a percentage assertion string"],
   ["tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame", "a small integer COUNT of vsyncs rather than a millisecond figure; it is the commonest literal in any source and sweeping it by value would red on every increment"],
   ["tacticalFrameCadenceBudget.intervalCeilingMilliseconds", "measured, not assumed: this value occurs twelve times across the swept consumers for reasons that are not budgets -- five inter-input waits in the review generator, S.I.R.#299's deliberately named superseded dropped-frame threshold and four prose references to it, a comment in the measurement library, and a damage figure in a browser assertion string"],
@@ -782,6 +822,74 @@ assert.throws(() => tacticalWorkloadBudgetFor(stress.units + 1), /no declared ta
   "a workload the table does not declare must be refused, not bucketed into whichever row is nearest");
 assert.throws(() => tacticalWorkloadBudgetAtScale("many"), /unreadable scale is refused/);
 console.log("JUSTIFIED tactical-budget-enforcement: every threshold scripts/test-tactical-visual-review.mjs applies reds one unit past its declared boundary, greens at it, and refuses an unmeasured or undeclared input rather than deciding about it");
+
+// 5. THE OVERLAY-LAYER VERDICT IS A FUNCTION, SO IT IS INVERTED EXHAUSTIVELY RATHER THAN POLICED.
+//
+// S.I.R.#327's first four review rounds tried to protect this quantity with rules about how the
+// browser spec was allowed to WRITE its comparison. Six escapes were found across those rounds, one
+// per way of writing it: a different equality matcher, an unrequired cross-check, a bound outside the
+// protected set, a first-match regex, a deleted invariant, and a string literal defeating a comment
+// stripper. Each repair closed one spelling and opened another, because the space of ways to write a
+// comparison has no end and a text scanner can never make a completeness claim about it.
+//
+// So the comparison stopped being written at the call site. `tacticalOverlayLayerBudgetReason` is a
+// pure function of two measured numbers, the browser consumer calls it, and its behaviour is
+// enumerable: two refusals for unmeasured inputs, one telemetry outcome, one budget outcome, one
+// conforming outcome. THAT is a completeness argument, and it is the one the earlier design could not
+// make. Every branch below is reached, and the boundaries are taken FROM the declaration -- a literal
+// here would be a second statement of the number.
+const overlayCeiling = tacticalOverlayLayerBudget.maximumOverlayDomNodes;
+const overlayVerdict = (countedNodes, reportedEstimate) => tacticalOverlayLayerBudgetReason({ countedNodes, reportedEstimate });
+
+// conforming, and EXACTLY AT the declared ceiling -- a gate that only ever reds is as useless as one
+// that only ever greens, and the boundary is where real runs sit.
+assert.equal(overlayVerdict(overlayCeiling, overlayCeiling), null,
+  "a counted total exactly at the declared overlay ceiling conforms; the bound is a maximum, not an exclusive one");
+assert.equal(overlayVerdict(0, 0), null, "an empty overlay layer conforms");
+// one past it reds, and names the DECLARED number rather than agreeing with some other one
+assert.match(`${overlayVerdict(overlayCeiling + 1, overlayCeiling + 1)}`, /overlay-layer node budget exceeded/,
+  "one element past the declared overlay ceiling must be refused");
+assert.match(`${overlayVerdict(overlayCeiling + 1, overlayCeiling + 1)}`, new RegExp(`declared ceiling of ${overlayCeiling}\\b`),
+  "the refusal must name the declared ceiling, so a reader can tell which number was applied");
+// the telemetry cross-check fires in BOTH directions, and is reported as a telemetry fault rather
+// than as a budget breach -- two different causes must not arrive under one name
+for (const [counted, reported] of [[13, 12], [12, 13]])
+  assert.match(`${overlayVerdict(counted, reported)}`, /telemetry disagrees with the live DOM/,
+    `a reported estimate of ${reported} against ${counted} counted element(s) must be refused as a telemetry fault`);
+assert.doesNotMatch(`${overlayVerdict(13, 12)}`, /budget exceeded/,
+  "a telemetry disagreement is not a budget breach and must not be reported as one");
+// AND THE CROSS-CHECK IS CHECKED FIRST. A wrong report must never be the thing a budget verdict was
+// computed from, so a case that is BOTH wrong and over the ceiling reports the telemetry fault.
+assert.match(`${overlayVerdict(overlayCeiling + 1, overlayCeiling + 2)}`, /telemetry disagrees with the live DOM/,
+  "when the report is wrong AND the count breaches, the telemetry fault is the honest verdict; deriving a budget answer from a report known to be wrong is the defect this ordering prevents");
+// an unmeasured input is REFUSED, not passed (#266) -- both arguments, every unreadable shape
+for (const unmeasured of [undefined, null, Number.NaN, "12", {}])
+  for (const [counted, reported] of [[unmeasured, overlayCeiling], [overlayCeiling, unmeasured]])
+    assert.throws(() => overlayVerdict(counted, reported), /was not measured/,
+      `an overlay measurement of ${JSON.stringify(unmeasured)} must be refused rather than compared`);
+assert.throws(() => tacticalOverlayLayerBudgetReason(undefined), /was not measured/,
+  "a missing measurement object is refused rather than treated as a conforming scene");
+console.log(`JUSTIFIED tactical-overlay-budget-verdict: every branch of the overlay-layer verdict is exercised -- conforming at the declared ceiling of ${overlayCeiling}, refused one element past it, the telemetry cross-check refused in both directions and reported as its own cause, the cross-check applied BEFORE the bound, and 10 unmeasured input shapes refused rather than compared`);
+
+// AND THE BROWSER CONSUMER MUST OBTAIN ITS VERDICT FROM THAT FUNCTION.
+//
+// This is the one claim about the consumer's TEXT that this design still makes, and it is deliberately
+// a small one: the spec imports the verdict from the declaration and calls it. It is not a claim that
+// no other assertion could be added beside it -- that is the bound on this check, stated rather than
+// implied, and it is the residue this design does not remove.
+const overlaySpec = readFileSync(new URL("../tests/SIR.Browser.Tests/visible-workflows.spec.js", import.meta.url), "utf8");
+assert.match(overlaySpec, /import\s*\{[^}]*\btacticalOverlayLayerBudgetReason\b[^}]*\}\s*from\s*["'][^"']*performance-budget\.mjs["']/,
+  "the browser spec must import the overlay verdict from the single declaration");
+assert.match(overlaySpec, /\btacticalOverlayLayerBudgetReason\s*\(/,
+  "the browser spec must CALL the overlay verdict; importing it and asserting something else is not deriving from the declaration");
+// and it must carry no copy of the declared value. Scoped to ONE file in which that number provably
+// occurs for no other reason, so this is a restatement check rather than a rule about how to write a
+// comparison -- the S.I.R.#299 shape, which has held.
+assert.doesNotMatch(overlaySpec, new RegExp(`(?<![\\d.\\w])${overlayCeiling}(?![\\d.\\w])`),
+  `the browser spec restates the declared overlay ceiling ${overlayCeiling} as a literal. It imports the verdict; a number written there is a second statement of the bound.`);
+assert.ok(readFileSync(new URL("../src/SIR.Client.Web/App.fs", import.meta.url), "utf8").includes(tacticalOverlayLayerBudget.surfacedAs),
+  `${tacticalOverlayLayerBudget.surfacedAs} must still be emitted, or the verdict's telemetry cross-check reads an attribute nothing publishes`);
+console.log(`JUSTIFIED tactical-overlay-budget-derivation: the browser spec imports and calls the declared verdict, carries no copy of ${overlayCeiling}, and ${tacticalOverlayLayerBudget.surfacedAs} is still emitted by the product for the cross-check to read`);
 
 // 5. THE REMOVED TOLERANCE WAS ADMITTING A REAL BREACH, MEASURED ON THE RETAINED ARTIFACT.
 // This is the discriminating case, and it is taken from the production telemetry this repo actually

@@ -26,10 +26,10 @@ as reviewable metadata. `TacticalSceneProjection` computes those costs beside
 the presentation projection so Editor, Plan, Simulate, and Review cannot hide
 growth behind component-local rendering estimates.
 
-| Production workload | Estimated SVG nodes | Active effects | Release projection p95 | Browser callback/main-thread inspection | Input-to-paint p80 | Frame cadence p80 |
-|---|---:|---:|---:|---:|---:|---:|
-| Representative 100-unit replay | ≤ 5,000 | ≤ 128 | < 4 ms | < 16.67 ms | < 100 ms | ≥ 12.5 ms, < 25 ms |
-| Stress 200-unit replay | ≤ 9,000 | ≤ 256 | < 8 ms | < 16.67 ms | < 150 ms | ≥ 12.5 ms, < 25 ms |
+| Production workload | Estimated SVG nodes | Overlay-layer SVG nodes | Active effects | Release projection p95 | Browser callback/main-thread inspection | Input-to-paint p80 | Frame cadence p80 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Representative 100-unit replay | ≤ 5,000 | ≤ 5,000 | ≤ 128 | < 4 ms | < 16.67 ms | < 100 ms | ≥ 12.5 ms, < 25 ms |
+| Stress 200-unit replay | ≤ 9,000 | ≤ 5,000 | ≤ 256 | < 8 ms | < 16.67 ms | < 150 ms | ≥ 12.5 ms, < 25 ms |
 
 **No cell in this table is declared here**, apart from `Release projection p95`.
 Every other column is a projection of the single declaration in
@@ -40,10 +40,37 @@ so the prose and the code cannot drift into two numbers. Change the module; this
 table follows, and the gate proves it did.
 
 The `Browser callback/main-thread inspection` column projects `tacticalFrameBudget`
-(S.I.R.#299). The remaining three project `tacticalWorkloadBudgets` and
+(S.I.R.#299). `Estimated SVG nodes`, `Active effects`, `Input-to-paint p80` and
+`Frame cadence p80` project `tacticalWorkloadBudgets` and
 `tacticalFrameCadenceBudget` (S.I.R.#318), which before that item were restated by
 hand in the review generator and the browser spec -- and, for the last two columns,
 were not written down anywhere at all while CI enforced them.
+`Overlay-layer SVG nodes` projects `tacticalOverlayLayerBudget` (S.I.R.#327), which
+before that item was a bare literal in the browser spec and appeared in no budget
+document at all.
+
+`Overlay-layer SVG nodes` bounds ONE layer of the scene --
+`#persistent-tactical-overlay-layer`, published by the production SVG as
+`data-overlay-node-estimate` -- and not the whole-scene estimate that
+`Estimated SVG nodes` bounds. **The two are separate quantities that currently share
+a value.** Both are 5,000 today and neither is derived from the other: they are
+declared apart so that changing one does not silently move the other, and so a
+reader can tell a shared number from a shared meaning. Toggling overlays moves the
+overlay estimate while the whole-scene estimate holds constant, which is the
+measurement that settles it. The bound is workload-independent -- the assertion that
+enforces it runs at the product's default scale and nothing in the product tiers
+overlay cost by unit count -- so the one declared cell is projected into every row,
+exactly as the frame-ceiling column is. No stress-row figure is published because
+none has ever been measured, and inventing one would be the defect this table exists
+to remove.
+
+The overlay bound is applied to a **counted** element total, not to the published
+estimate: the attribute is the product's own report of that cost, and a budget bound
+to a self-report enforces the report rather than the cost. The browser spec obtains
+its verdict by calling `tacticalOverlayLayerBudgetReason`, which cross-checks the
+report against an independent count before applying the bound. The comparison is
+therefore something the spec calls rather than something it writes, so no literal and
+no hand-written comparison exists at that call site to drift.
 
 `Active effects` for the stress row is not a budget that happens to equal the
 runtime cap: it **is** the runtime cap. `TacticalSceneProjection.MaximumEffectInstances`
