@@ -236,9 +236,13 @@ const carriesValue = (value, target, seen = new Set()) => {
 for (const consumer of ["./generate-tactical-visual-review.mjs", "../tests/SIR.Browser.Tests/visible-workflows.spec.js"]) {
   assert.ok(budgetConsumers.includes(consumer), `${consumer} must be reached by the consumer sweep`);
   const text = readFileSync(new URL(consumer, import.meta.url), "utf8");
-  const importMatch = text.match(/import\s*\{([^}]*)\}\s*from\s*["'][^"']*performance-budget\.mjs["']/);
-  assert.ok(importMatch, `${consumer} must import the single declaration`);
-  const importedBindings = importMatch[1].split(",").map((binding) => binding.trim().split(/\s+as\s+/)[0]).filter(Boolean);
+  // EVERY import of the declaration, not just the first. `text.match` without /g returns one
+  // occurrence, so a consumer importing the declaration in two statements had the second one's
+  // bindings invisible here -- the same missing-/g shape S.I.R.#327 review round 3 found in the
+  // no-restatement subject rule. Audited and repaired with it rather than left as the next instance.
+  const importMatches = [...text.matchAll(/import\s*\{([^}]*)\}\s*from\s*["'][^"']*performance-budget\.mjs["']/g)];
+  assert.ok(importMatches.length > 0, `${consumer} must import the single declaration`);
+  const importedBindings = [...new Set(importMatches.flatMap(([, names]) => names.split(",").map((binding) => binding.trim().split(/\s+as\s+/)[0]).filter(Boolean)))];
   assert.ok(importedBindings.length > 0, `${consumer} imports the declaration module but binds nothing from it`);
   for (const binding of importedBindings)
     assert.ok(binding in declarationModule, `${consumer} imports ${binding} from the declaration, which exports no such binding`);
@@ -668,10 +672,16 @@ const unsweepableTacticalQuantities = new Map([
   // good as that claim, so the claim is stated exactly. Rule C refuses any numeric literal on the
   // lines carrying the measurement read from data-overlay-node-estimate, on any identifier asserted
   // EQUAL to it by a declared equality matcher, and -- the part that makes this exemption safe --
-  // it requires the identifier the budget is actually bound to be one of those. Without that last
-  // requirement the sentence was FALSE while reading as true: the bound had been moved onto a
-  // counted identifier that this rule protected only by coincidence, and a literal-identical plant
-  // on it went green with no second net anywhere (S.I.R.#327 review round 2).
+  // it requires the identifier the budget is actually bound to be one of those, attributed from the
+  // STATEMENT and from CODE.
+  //
+  // Every clause of that sentence is here because the sentence was false without it, twice. Round 2:
+  // the bound had been moved onto a counted identifier this rule protected only by coincidence.
+  // Round 3: the requirement existed but read the first `expect(` on the LINE, so a comment naming a
+  // protected identifier satisfied it while the real subject went uninspected. Both times a
+  // literal-identical plant went green with no second net anywhere, and both times this comment
+  // still read as true. A justification for an exemption is load-bearing prose: it is the reason
+  // Rule B is allowed not to look, so it is stated as precisely as the code it is vouching for.
   ["tacticalOverlayLayerBudget.maximumOverlayDomNodes", "shares its value with the representative row's scene node cap, which is unsweepable for occurrences unrelated to either budget: a readiness timeout in the review generator and a trace-fixture duration in this suite"],
   [`${representativeWorkload.key}.maximumInputToPaintMilliseconds`, "also a Playwright wait, a percentile computation, a declared workload's unit count, and a percentage assertion string"],
   ["tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame", "a small integer COUNT of vsyncs rather than a millisecond figure; it is the commonest literal in any source and sweeping it by value would red on every increment"],
@@ -799,16 +809,28 @@ assert.deepEqual(unclassifiedMatchers, [],
   `${unclassifiedMatchers.join(", ")} relate(s) two identifiers in a swept consumer and the declaration classifies it as neither proving equality nor not proving it. Rule C cannot know whether it transfers a literal ban, so this is refused rather than assumed harmless. Classify it in tacticalExactEqualityMatchers or tacticalNonEqualityMatchers.`);
 console.log(`JUSTIFIED tactical-budget-equality-classification: ${identifierPairMatchers.length} matcher(s) used to relate two identifiers across the swept consumers are each classified by the declaration, ${equalityMatchers.length} of them declared to prove exact equality; an unclassified matcher is refused rather than assumed not to transfer the ban`);
 
+// CODE, NOT TEXT. Comments are blanked to spaces (offsets and line structure preserved) so that a
+// comment mentioning an identifier cannot be read as a use of it. The stripper is naive about string
+// literals, and that limit is CHECKED at each use rather than described -- see the quoted-"//" guard
+// below, which refuses rather than letting a swallowed line hide a comparison.
+const codeOnly = (text) => text
+  .replace(/\/\*[\s\S]*?\*\//g, (comment) => comment.replace(/[^\n]/g, " "))
+  .replace(/\/\/[^\n]*/g, (comment) => comment.replace(/[^\n]/g, " "));
+
 let surfaceBoundedIdentifiers = 0;
 for (const surface of tacticalBudgetSurfaces) {
   let readingConsumers = 0;
   for (const consumer of tacticalConsumersByName) {
     const text = readFileSync(new URL(consumer, import.meta.url), "utf8");
-    const binding = text.match(new RegExp(`(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)[^\\n]*getAttribute\\(\\s*["'\`]${surface.attribute}["'\`]`));
-    if (!binding) continue;
+    // EVERY binding of this attribute, not just the first. `text.match` without /g returns one
+    // occurrence, so a consumer that read the same attribute twice had its second binding -- and
+    // everything asserted about it -- invisible to this rule (S.I.R.#327 review round 3, the same
+    // missing-/g shape as the subject attribution below).
+    const bindings = [...new Set([...text.matchAll(new RegExp(`(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)[^\\n]*getAttribute\\(\\s*["'\`]${surface.attribute}["'\`]`, "g"))].map(([, name]) => name))];
+    if (!bindings.length) continue;
     readingConsumers += 1;
     surfaceBoundedIdentifiers += 1;
-    const [, identifier] = binding;
+    const identifier = bindings.join(", ");
     // AND IT MUST ACTUALLY BE USED. Refusing a literal on the lines that mention the identifier is no
     // protection at all if the identifier can simply be dropped: replacing
     // `toBeLessThanOrEqual(effectLimit)` with a literal removes the very name this rule keys off, and
@@ -829,26 +851,20 @@ for (const surface of tacticalBudgetSurfaces) {
     // walked straight through it. The matchers are declared in the declaration module and their
     // classification is proved COMPLETE against the tree just below, so a matcher this repository
     // starts using cannot silently join the unchecked set.
-    const mirrorPatterns = equalityMatchers.flatMap((matcher) => [
-      new RegExp(`expect\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)\\s*\\.\\s*${matcher}\\(\\s*${identifier}\\s*\\)`, "g"),
-      new RegExp(`expect\\(\\s*${identifier}\\s*\\)\\s*\\.\\s*${matcher}\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)`, "g"),
+    const mirrorPatterns = (base) => equalityMatchers.flatMap((matcher) => [
+      new RegExp(`expect\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)\\s*\\.\\s*${matcher}\\(\\s*${base}\\s*\\)`, "g"),
+      new RegExp(`expect\\(\\s*${base}\\s*\\)\\s*\\.\\s*${matcher}\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)`, "g"),
     ]);
     // A MIRROR MUST BE A DIFFERENT IDENTIFIER. `expect(x).toBe(x)` is exact equality, uses a
     // classified matcher, and proves NOTHING -- so counting it as a cross-check let a tautologised
     // assertion satisfy the requirement below while corroborating no measurement at all.
-    const mirrors = [...new Set(mirrorPatterns.flatMap((pattern) => [...text.matchAll(pattern)].map((match) => match[1])))]
-      .filter((mirror) => mirror !== identifier);
-    // A SELF-REPORTED SURFACE MUST BE CROSS-CHECKED, AND THAT IS DEMANDED RATHER THAN HOPED FOR.
-    // The budget for such a surface is gated on a counted measurement, and what makes the attribute
-    // trustworthy beside it is the equality assertion. An earlier version of this item LEANED on
-    // that assertion -- it moved the bound onto the attribute and cited the assertion as the
-    // licence -- while nothing here required the assertion to exist: deleting it left this suite
-    // green and the justification silently gone. A property a rule depends on is a property the
-    // rule has to require.
-    if (surface.selfReported)
-      assert.ok(mirrors.length > 0,
-        `${consumer} reads the self-reported ${surface.attribute} into ${identifier} and never asserts it equal to an independently measured identifier. That cross-check is what keeps the telemetry honest; without it the attribute is an unchecked self-report, and the budget beside it is gated on a number nothing corroborates.`);
-    const boundedIdentifiers = [identifier, ...mirrors];
+    //
+    // Read from CODE, so a commented-out equality assertion cannot supply a cross-check either.
+    const surfaceCode = codeOnly(text);
+    const mirrors = [...new Set(bindings.flatMap((base) =>
+      mirrorPatterns(base).flatMap((pattern) => [...surfaceCode.matchAll(pattern)].map(([, name]) => name))))]
+      .filter((mirror) => !bindings.includes(mirror));
+    const boundedIdentifiers = [...bindings, ...mirrors];
 
     // AND THE IDENTIFIER THE BUDGET IS ACTUALLY BOUND TO MUST BE ONE OF THE PROTECTED ONES.
     //
@@ -860,24 +876,46 @@ for (const surface of tacticalBudgetSurfaces) {
     // restatement on the shipped bound went green, with the key rule and the value rule both
     // exempt for this quantity and no second net anywhere.
     //
-    // So the link is now STRUCTURAL: every line where this consumer compares something against this
-    // surface's declared quantity must compare an identifier this rule protects. A line whose bound
-    // identifier cannot be read is REFUSED rather than skipped -- an unparseable comparison is not a
-    // conforming one (#266).
+    // So the link is now STRUCTURAL, and it is read from CODE and by STATEMENT (round 3).
+    //
+    // Round 2 wrote this as a LINE scan whose subject came from `line.match(...)` with no /g -- so
+    // the FIRST `expect(` on the line decided about the whole line. An earlier statement on that
+    // line, or merely a COMMENT naming a protected identifier, made the rule pass a line whose real
+    // subject it never looked at: the only difference between red and green was which identifier
+    // appeared first inside `expect(`. It reached the real thing -- a literal-identical 5000
+    // governing the overlay layer's DOM cost, hidden behind a comment, with Rules A and B both
+    // exempt for this quantity and no second net.
+    //
+    // A comparison's subject is a property of a STATEMENT, not of a line, and a comment is not code.
+    // So comments are blanked, statements are separated, and every statement reading the declared
+    // quantity must carry EXACTLY ONE legible `expect(<identifier>)`. Zero or several is REFUSED
+    // rather than resolved by position -- which also keeps `expect.poll(...)`, `expect(await ...)`,
+    // `expect(a.b)` and `expect (x)` failing closed by name rather than by luck.
     const quantityRead = new RegExp(`\\.\\s*${surface.quantity}\\b`);
-    const boundLines = text.split("\n").filter((line) => quantityRead.test(line) && /expect\s*\(/.test(line));
-    for (const line of boundLines) {
-      const boundMatch = line.match(/expect\(\s*([A-Za-z_$][\w$]*)\s*\)/);
-      assert.ok(boundMatch,
-        `${consumer} compares something against the declared ${surface.quantity} on a line this rule cannot read the subject of: ${line.trim()}. The bound identifier has to be legible for the ban to be known to cover it, so this is refused rather than assumed to conform.`);
-      assert.ok(boundedIdentifiers.includes(boundMatch[1]),
-        `${consumer} bounds ${boundMatch[1]} by the declared ${surface.quantity}, and ${boundMatch[1]} is not the measurement read from ${surface.attribute} (${identifier})${mirrors.length ? ` nor any identifier asserted EQUAL to it (${mirrors.join(", ")})` : " and no identifier is asserted equal to it"}. The budget's own subject would then be outside the literal ban that protects this surface, so a restatement on it -- including one equal to the declared value -- would not be refused.`);
+    // THE STRIPPER'S LIMIT, CHECKED RATHER THAN DESCRIBED. `codeOnly` does not know about string
+    // literals, so a quoted "//" would blank the rest of its line -- which could HIDE a comparison
+    // instead of revealing one, and that is the one direction this rule must never fail in.
+    for (const line of text.split("\n"))
+      if (quantityRead.test(line))
+        assert.doesNotMatch(line, /["'`][^"'`]*\/\//,
+          `${consumer} reads the declared ${surface.quantity} on a line that also carries a quoted "//". The comment stripper this rule reads through would blank the rest of that line and could hide the comparison, so this is refused rather than analysed with a tool that cannot see it.`);
+    const boundStatements = codeOnly(text).split(";").filter((statement) => quantityRead.test(statement));
+    for (const statement of boundStatements) {
+      const shown = statement.trim().replace(/\s+/g, " ");
+      const expectations = statement.match(/expect\s*[.(]/g) ?? [];
+      const subjects = [...statement.matchAll(/expect\(\s*([A-Za-z_$][\w$]*)\s*\)/g)].map(([, name]) => name);
+      assert.equal(expectations.length, 1,
+        `${consumer} reads the declared ${surface.quantity} in a statement carrying ${expectations.length} expectation(s): ${shown}. Which one the budget is bound to cannot be settled by position -- resolving it by position is exactly the defect this replaced -- so it is refused.`);
+      assert.equal(subjects.length, 1,
+        `${consumer} compares something against the declared ${surface.quantity} in a statement whose subject this rule cannot read: ${shown}. A subject that is not a bare identifier inside expect(...) -- expect.poll(...), expect(await ...), expect(a.b), expect (x) -- cannot be attributed, and an unattributable comparison is refused rather than assumed to conform (#266).`);
+      assert.ok(boundedIdentifiers.includes(subjects[0]),
+        `${consumer} bounds ${subjects[0]} by the declared ${surface.quantity}, and ${subjects[0]} is not the measurement read from ${surface.attribute} (${identifier})${mirrors.length ? ` nor any identifier asserted EQUAL to it (${mirrors.join(", ")})` : " and no identifier is asserted equal to it"}. The budget's own subject would then be outside the literal ban that protects this surface, so a restatement on it -- including one equal to the declared value -- would not be refused.`);
     }
     // A self-reported surface must actually HAVE that comparison: its budget is gated on a counted
     // measurement, so a consumer that reads the attribute and never bounds anything by the declared
     // quantity has no budget comparison for this rule to protect.
     if (surface.selfReported)
-      assert.ok(boundLines.length > 0,
+      assert.ok(boundStatements.length > 0,
         `${consumer} reads the self-reported ${surface.attribute} but bounds nothing by the declared ${surface.quantity}. The budget comparison this rule exists to protect is absent, and an absent comparison is a gap rather than a pass.`);
 
     const identifierLines = text.split("\n").filter((line) => boundedIdentifiers.some((name) => new RegExp(`\\b${name}\\b`).test(line)));
