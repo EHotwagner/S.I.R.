@@ -4,15 +4,14 @@
   "warmupCycles": 2,
   "stabilizationCycles": 5,
   "frameBudget": {
-    "callbackMillisecondsCeiling": 16.67,
     "evaluatedPercentiles": [0.95, 0.99],
     "exemptJourneys": ["idle"],
-    "source": "docs/performance-budget.md, production-workload table, \"Browser callback/main-thread inspection\" column. That column declares < 16.67 ms for BOTH the representative 100-unit replay row and the stress 200-unit replay row, so one ceiling governs every fixture here; no per-fixture ceiling is invented.",
-    "measures": "Chromium AnimationFrame animation_frame_timing_info.duration_ms, which is the same quantity that column describes: one animation-frame callback plus tactical DOM inspection on the production route.",
+    "source": "The ceiling is NOT declared here. It is derived from scripts/lib/performance-budget.mjs (tacticalFrameBudget), the single declaration, and composed into this block by validateDefinitions; this file declares only workload policy -- which percentiles are evaluated and which journeys are frame-exempt. validateDefinitions REFUSES a callbackMillisecondsCeiling key in this file, so the ceiling cannot be restated here even by accident. S.I.R.#299.",
+    "measures": "Chromium AnimationFrame animation_frame_timing_info.duration_ms: one animation-frame callback plus tactical DOM inspection on the production route. The declaration module states this too; this line is prose for a reader of the fixture file and is not read by any consumer.",
     "percentileConvention": "nearest-rank, values[ceil(n*p)-1], the convention already used by finalize-svg-pipeline-evidence.mjs",
     "exemptJourneyReason": "The idle journey performs no interaction and Chromium emits no AnimationFrame records for it (samples=0 in every observed run). A frame budget cannot be evaluated with no frames, so idle is declared exempt and reports `unevaluated` rather than a verdict it did not measure. A NON-exempt journey that reports zero frames is a FAILURE, not an exemption.",
     "notMeasuredHere": "The same table's \"Release projection p95\" column (< 4 ms representative, < 8 ms stress) is the F# TacticalSceneProjection budget. This browser harness does not measure it and derives no verdict from it.",
-    "notABudget": "frameHealth.droppedFrames is computed against a bare inline 25 ms threshold that no budget document declares. It is REPORTED as a diagnostic and is deliberately NOT gated on; see the issue filed for that discrepancy."
+    "droppedFrames": "RESOLVED by S.I.R.#299. frameHealth.droppedFrames was computed against a bare inline 25 ms threshold that no budget document declared and that contradicted this ceiling by 8.33 ms -- a 20 ms frame breached the budget and was not counted as dropped. It now derives from the same declared ceiling, because it is the same measured quantity over the same array of durations. It remains a reported diagnostic and is not separately gated on."
   },
   "journeys": ["idle", "playback", "pan", "zoom", "selection", "modality-transition", "dense-overlay"],
   "controlledAxes": {
