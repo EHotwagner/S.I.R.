@@ -12,7 +12,12 @@
 #   * add or remove a path -- the frozen set is owned by implementation-sources.json .sources, and
 #     scripts/verify-rules-corpus.sh independently refuses any divergence;
 #   * touch sourceCommit, the sealed implementation digest, or any generated corpus fixture --
-#     those belong to the immutable half of the pin and are not this tool's business.
+#     those belong to the immutable half of the pin and are not this tool's business;
+#   * add, remove or otherwise decide the `.outsideIdentity` register (S.I.R.#290). That register
+#     declares which compile items are knowingly OUTSIDE the sealed identity set, and acknowledging
+#     a loss of correspondence coverage is a reviewed judgement, not a mechanical rebind. This tool
+#     rewrites only `.paths`, and every other field -- schema, register, and its notes -- is carried
+#     through untouched, so an acknowledgement can only ever enter the file by someone editing it.
 #
 # Usage:
 #   scripts/rebind-rules-corpus-sources.sh              # report what would be rebound, write nothing

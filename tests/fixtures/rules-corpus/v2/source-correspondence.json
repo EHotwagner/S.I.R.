@@ -1,5 +1,14 @@
 {
-  "schema": "sir-rules-source-correspondence-v1",
+  "schema": "sir-rules-source-correspondence-v2",
+  "outsideIdentityRule": "Compile items of the rules implementation projects that are KNOWINGLY outside the sealed implementation identity set. This register is the COMPLEMENT of implementation-sources.json .sources: recording a path here never adds coverage, it declares a loss of it, so it cannot be used to widen the frozen set. scripts/verify-rules-corpus.sh refuses any compile item that entered the closure of those projects after sourceCommit and is neither a declared source nor listed here, so extraction out of a declared source into a new file is a refusal with an actionable diagnostic rather than a silent loss of correspondence coverage (S.I.R.#290). An entry naming a path that is no longer in the closure is stale and is also refused. The register must be present and must be an array of strings; absent or wrongly typed is a refusal, because an absent register cannot be told apart from a deliberate empty one.",
+  "outsideIdentity": [
+    "src/SIR.Simulation/$(SpatialQueryImplementation)",
+    "src/SIR.Simulation/$([System.IO.Path]::ChangeExtension('$(SpatialQueryImplementation)', '.fsi'))"
+  ],
+  "outsideIdentityNotes": {
+    "src/SIR.Simulation/$(SpatialQueryImplementation)": "MSBuild property expression, not a path this gate can resolve. A conditional swap-in (Condition=\"'$(SpatialQueryImplementation)' != ''\") that replaces SpatialQuery.fs for the spatial-query mutation route. Neither SpatialQuery.fs nor any substitute is a declared implementation source, so the swap-in is outside the sealed identity set on either branch of the condition. It is recorded rather than resolved because this gate cannot evaluate an MSBuild expression, and an unevaluable include must not be silently dropped.",
+    "src/SIR.Simulation/$([System.IO.Path]::ChangeExtension('$(SpatialQueryImplementation)', '.fsi'))": "The signature half of the same conditional swap-in, and outside the sealed identity set for the same reason."
+  },
   "purpose": "Working-tree correspondence baseline for the rules corpus implementation identity set. Each entry records the SHA-256 of one implementation source AFTER the normalization applied by scripts/verify-rules-corpus.sh, so that the gate can require the current text to still equal the text the corpus identity was sealed over WITHOUT requiring that text to live at a commit already on the default branch. This is the mutable half of the pin; tests/fixtures/rules-corpus/v2/implementation-sources.json is the immutable half.",
   "covers": "tests/fixtures/rules-corpus/v2/implementation-sources.json .sources, exactly - no more, no fewer",
   "normalization": "scripts/verify-rules-corpus.sh normalize_implementation_source; for src/SIR.Simulation/CombatRules.fs this strips the source-commit and implementation-digest literals so a metadata-only rebind does not read as a source change",

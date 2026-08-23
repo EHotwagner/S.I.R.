@@ -676,9 +676,42 @@ mistaken for accidents:
   `CanonicalEncoding.fs`, `CanonicalHash.fs` and `FixedPoint.fs` are listed for
   exactly this reason — omitting them was once filed as a defect and fixed by
   inclusion.
-- **The set is closed under refactoring.** When code moves out of a listed file
-  into a new one, the new file joins the list in the same change, so extraction
-  cannot quietly move implementation out from under the digest.
+- **The set is frozen at `sourceCommit`, and cannot grow in the change that
+  creates a file.** The two requirements binding `.sources` are jointly
+  unsatisfiable for a new path: the seal is computed from each listed path's blob
+  *at* `sourceCommit`, so a path a pull request creates has no blob to hash, and
+  `sourceCommit` must already be an ancestor of the canonical default branch, so
+  it cannot be advanced to the pull request's own head either. Adding a path is
+  refused with an actionable diagnostic naming both remedies; before S.I.R.#290 it
+  aborted the whole gate at exit 128 with a raw `git fatal:`.
+
+  This paragraph replaces an earlier claim that the set is *closed under
+  refactoring* — that when code moves out of a listed file into a new one, "the
+  new file joins the list in the same change". That was false in both directions
+  and is measured so on S.I.R.#290: doing literally what it said aborted the gate,
+  and the extraction it promised to prevent passed green. It also contradicted the
+  sentence above it, since a list that "does not change when the tree changes"
+  cannot gain a member when the tree gains a file.
+
+  **The consequence, stated plainly:** code extracted out of a listed file into a
+  new one is **not** covered by correspondence until `sourceCommit` is next
+  advanced, which is a deliberate rebind of the immutable half.
+
+- **That loss of coverage is detected, not absorbed.** The verifier compares the
+  *compile closure* of the projects that compile a declared source against the
+  same closure at `sourceCommit`. A compile item that entered the closure after the
+  seal, and is neither a declared source nor recorded in
+  `source-correspondence.json` `.outsideIdentity`, is refused. So an extraction is
+  either kept inside a listed file, or **declared** — a reviewable line in the
+  diff rather than nothing at all.
+
+  The limit is stated rather than implied, because an overclaimed limit is how a
+  real gap becomes invisible: this detects implementation entering the closure as
+  a **new compile item**. It does not detect code moved into a compile item that
+  already existed at `sourceCommit` and is not a declared source — that file was
+  outside the seal before the move as well, so the move narrows nothing relative to
+  the baseline. Neither arm is a behaviour gate; behaviour is gated by manifest
+  regeneration and by executing the corpus.
 
 `source-correspondence.json` is the **mutable half**. It records, per declared
 source, the SHA-256 of that file's text after the normalization
@@ -686,6 +719,15 @@ source, the SHA-256 of that file's text after the normalization
 tree to still match it — byte-exactly, for every declared source. Correspondence
 covers the identity set **exactly**: a missing row and an undeclared row are both
 refusals, so a source cannot be unfrozen by deleting its entry.
+
+It also carries `.outsideIdentity`, the **complement** of the identity set: the
+compile items of those projects that are knowingly outside the seal. Recording a
+path there never adds coverage — it declares the absence of it — so the register
+cannot be used to widen the frozen set the way adding a `.sources` entry would.
+The register must be present and must be an array of strings; absent or wrongly
+typed is a refusal, because an absent register cannot be told apart from a
+deliberate empty one. A stale entry, naming a path no longer in the closure, is
+refused too: it would go on excusing nothing while hiding the next real escape.
 
 Because that baseline is rebindable, it cannot be the last line of defence. Every
 check described so far compares **declarations**: regenerated manifest, coverage

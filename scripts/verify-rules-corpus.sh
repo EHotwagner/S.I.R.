@@ -42,7 +42,7 @@ test "$declared_source_schema" = "sir-rules-implementation-sources-v1" || {
   exit 1
 }
 declared_correspondence_schema=$(jq -r '.schema' "$correspondence_manifest")
-test "$declared_correspondence_schema" = "sir-rules-source-correspondence-v1" || {
+test "$declared_correspondence_schema" = "sir-rules-source-correspondence-v2" || {
   echo "unsupported source correspondence schema: $declared_correspondence_schema" >&2
   exit 1
 }
@@ -171,6 +171,14 @@ rm -rf "$reachability_mutant"
 rm -f "$reachability_log"
 
 source_digest_input=$(mktemp /tmp/sir-rules-source-digest.XXXXXX)
+# Invocation ledger for the two S.I.R.#290 arms. Probes drive those functions DIRECTLY, so a
+# probe suite alone stays green when the production CALL SITE is deleted -- the gate would then
+# demonstrate a refusal it no longer performs, which is FS.GG.Templates#379's defect exactly
+# ("deleting the step reds too" claimed by a guard that did not provide it). Each arm records the
+# tree root and correspondence document it was asked about, and the assertion after the probes
+# requires an invocation naming the REAL tree and the REAL manifests. No probe can satisfy it:
+# every probe passes a probe tree.
+arm_invocations=$(mktemp /tmp/sir-rules-arm-invocations.XXXXXX)
 normalize_implementation_source() {
   local artifact_path=$1
   local input_path=$2
@@ -277,6 +285,240 @@ enforce_source_correspondence() {
   done <<< "$(jq -r '.sources[]' "$sources_json")"
 }
 
+# ---------------------------------------------------------------------------------------------
+# Identity-closure containment (S.I.R.#290).
+#
+# `check_correspondence_coverage` proves the recorded baseline names EXACTLY the declared identity
+# set. That is a closed question about two documents, and it stays green no matter what happens in
+# the tree AROUND those nineteen files. So it cannot see the one move that costs coverage without
+# changing either document: extracting implementation OUT of a declared source into a file that is
+# not one.
+#
+# Measured before this arm existed, at 58041b8: `saturate` was moved out of the declared, pinned
+# src/SIR.Domain/FixedPoint.fs into a new src/SIR.Domain/FixedPointArithmetic.fs, the new file was
+# added to SIR.Domain.fsproj, and correspondence was rebound exactly as the documented procedure
+# says. `scripts/verify-rules-corpus.sh` exited 0 on BOTH routes, the generated fixtures did not
+# move, and the rebind writer reported "already current: nothing to rebind". Real implementation
+# left the covered set in one green commit, silently.
+#
+# The subject this arm asserts over is the COMPILE CLOSURE, not the text of any file: the set of
+# files compiled by the projects that compile a declared implementation source. Extraction grows
+# that closure while the identity set -- frozen at `sourceCommit`, and provably unable to grow in
+# the change that creates a file (see require_declared_sources_at_source_commit) -- stays put. The
+# baseline is the same closure AT `sourceCommit`, which needs no new recorded state: `sourceCommit`
+# is already required to be durably reachable.
+#
+# THE LIMIT, STATED RATHER THAN IMPLIED, because an overclaimed limit is how a real gap becomes
+# invisible: this arm detects implementation entering the closure as a NEW compile item. It does
+# NOT detect code moved into a compile item that already existed at `sourceCommit` and is not a
+# declared source -- that file was outside the seal before the move as well, so the move does not
+# NARROW coverage relative to the baseline. Nothing here claims to be a behaviour gate; behaviour
+# is gated by manifest regeneration and by executing the corpus.
+#
+# The escape hatch is a DECLARATION, and that is the whole point: a compile item that is knowingly
+# outside the sealed identity set is recorded in `.outsideIdentity`, so the loss is a reviewable
+# line in a pull request diff instead of nothing at all. Recording one never adds coverage -- the
+# register is the COMPLEMENT of the identity set, so it cannot be used to widen the frozen set the
+# way adding a `.sources` entry would.
+
+# Compile items of one project, resolved repo-relative. An `Include` carrying an MSBuild property
+# expression is emitted VERBATIM rather than resolved or dropped: this function cannot evaluate it,
+# and a caller must be able to tell "I could not evaluate this" from a path (#266).
+project_compile_items() {
+  local tree_root=$1
+  local project=$2
+  local rev=${3:-}
+  local project_dir
+  local content
+  project_dir=$(dirname "$project")
+  if test -n "$rev"; then
+    content=$(git -C "$repo_root" show "$rev:$project" 2>/dev/null) || return 0
+  else
+    content=$(command cat "$tree_root/$project") || return 1
+  fi
+  printf '%s\n' "$content" \
+    | grep -o 'Compile Include="[^"]*"' \
+    | sed 's/^Compile Include="//; s/"$//' \
+    | tr '\\' '/' \
+    | while IFS= read -r include; do
+        test -n "$include" || continue
+        case "$include" in
+          *'$('*) printf '%s\n' "$project_dir/$include" ;;
+          *) realpath -m --relative-to="$tree_root" "$tree_root/$project_dir/$include" 2>/dev/null || printf '%s\n' "$project_dir/$include" ;;
+        esac
+      done
+}
+
+check_identity_closure_containment() {
+  local sources_json=$1
+  local correspondence_json=$2
+  local commit=$3
+  local tree_root=${4:-$repo_root}
+  printf 'closure\t%s\t%s\t%s\n' "$tree_root" "$sources_json" "$correspondence_json" >> "$arm_invocations"
+  local declared
+  local acknowledged
+  local acknowledged_status=0
+  local register_shape
+  local register_shape_status=0
+
+  declared=$(jq -r '.sources[]' "$sources_json" | sort -u) || {
+    echo "declared implementation identity set could not be read: $sources_json" >&2
+    return 1
+  }
+  test -n "$declared" || {
+    echo "declared implementation identity set is empty: nothing to contain" >&2
+    return 1
+  }
+
+  # The register is read TYPE-FIRST, and its shape is decided over the complete set of six jq
+  # types rather than over the shapes that happened to be tried. `.outsideIdentity` must be an
+  # array whose every element is a string; anything else -- including absent (`null`) -- is a
+  # refusal, never a silently empty register. An absent register reading as "nothing acknowledged"
+  # would be indistinguishable from "acknowledged nothing", and only one of those is a decision.
+  register_shape=$(jq -r '.outsideIdentity | type' "$correspondence_json") || register_shape_status=$?
+  if test "$register_shape_status" -ne 0; then
+    echo "recorded correspondence could not be evaluated for an .outsideIdentity register" >&2
+    echo "  jq exited $register_shape_status over: $correspondence_json" >&2
+    echo "  refusing rather than reporting a pass on input this check did not evaluate" >&2
+    return 1
+  fi
+  if test "$register_shape" != array; then
+    echo "recorded correspondence .outsideIdentity must be an array, and is: $register_shape" >&2
+    echo "  an absent or wrongly typed register cannot be told apart from an empty one, and only" >&2
+    echo "  an empty one is a decision. Declare it explicitly, as [] when nothing is acknowledged." >&2
+    return 1
+  fi
+  local nonstring
+  local nonstring_status=0
+  nonstring=$(jq -r '.outsideIdentity | to_entries[] | select((.value | type) != "string") | "[\(.key)]\t\(.value | type)"' "$correspondence_json") || nonstring_status=$?
+  if test "$nonstring_status" -ne 0; then
+    echo "recorded correspondence .outsideIdentity could not be evaluated element-wise" >&2
+    echo "  jq exited $nonstring_status over: $correspondence_json" >&2
+    return 1
+  fi
+  if test -n "$nonstring"; then
+    echo "recorded correspondence .outsideIdentity carries non-string entries:" >&2
+    printf '%s\n' "$nonstring" | sed 's/^/  /' >&2
+    return 1
+  fi
+  acknowledged=$(jq -r '.outsideIdentity[]' "$correspondence_json" | sort -u) || acknowledged_status=$?
+  if test "$acknowledged_status" -ne 0; then
+    echo "recorded correspondence .outsideIdentity could not be read" >&2
+    return 1
+  fi
+
+  # Projects that compile at least one declared implementation source. Resolved by READING the
+  # Compile items, never by naming a project by convention -- the same defect the rebind writer
+  # records having made twice (S.I.R.#264 rounds 1 and 2).
+  local owning=()
+  local project
+  local items
+  while IFS= read -r project; do
+    test -n "$project" || continue
+    items=$(project_compile_items "$tree_root" "$project") || {
+      echo "project file could not be read: $project" >&2
+      return 1
+    }
+    if printf '%s\n' "$items" | grep -Fxq -f <(printf '%s\n' "$declared") 2>/dev/null; then
+      owning+=("$project")
+    fi
+  done <<< "$(cd "$tree_root" && find src tests -name '*.fsproj' 2>/dev/null | sort)"
+
+  # Vacuity: if no project compiles a declared source there is no closure to contain, and a pass
+  # here would mean "checked nothing" rather than "found nothing".
+  test ${#owning[@]} -gt 0 || {
+    echo "no project compiles any declared implementation source: the closure check would examine nothing" >&2
+    return 1
+  }
+
+  local current_items=""
+  local baseline_items=""
+  for project in "${owning[@]}"; do
+    current_items+=$(project_compile_items "$tree_root" "$project")$'\n'
+    baseline_items+=$(project_compile_items "$tree_root" "$project" "$commit")$'\n'
+  done
+  current_items=$(printf '%s' "$current_items" | grep -v '^$' | sort -u)
+  baseline_items=$(printf '%s' "$baseline_items" | grep -v '^$' | sort -u)
+
+  test -n "$baseline_items" || {
+    echo "the rules implementation compile closure at $commit is empty: no baseline to contain against" >&2
+    echo "  refusing rather than treating an unreadable baseline as 'nothing was there before'" >&2
+    return 1
+  }
+
+  # A current compile item is contained when it is a declared implementation source, OR it was
+  # already in the closure at the sealed commit, OR it is explicitly acknowledged as outside.
+  local uncontained
+  uncontained=$(comm -23 <(printf '%s\n' "$current_items") <(printf '%s\n' "$baseline_items") \
+    | grep -Fxv -f <(printf '%s\n' "$declared") \
+    | { test -n "$acknowledged" && grep -Fxv -f <(printf '%s\n' "$acknowledged") || command cat; } ) || true
+
+  if test -n "$uncontained"; then
+    echo "implementation entered the rules compile closure without joining correspondence coverage:" >&2
+    printf '%s\n' "$uncontained" | sed 's/^/  /' >&2
+    echo "  these files are compiled by a project that compiles a declared implementation source," >&2
+    echo "  were not in that closure at the sealed commit $commit, and are not declared sources." >&2
+    echo "  Code extracted out of a declared source into one of them leaves correspondence coverage." >&2
+    echo "  The identity set is FROZEN at sourceCommit and cannot grow in the change that creates a" >&2
+    echo "  file, so adding them to .sources is not the remedy and will be refused. Either keep the" >&2
+    echo "  implementation inside a declared source, or record each path in .outsideIdentity in" >&2
+    echo "  tests/fixtures/rules-corpus/v2/source-correspondence.json to declare -- reviewably, in the" >&2
+    echo "  diff -- that it is knowingly outside the sealed identity set." >&2
+    return 1
+  fi
+
+  # A register entry that names nothing in the closure is stale: it would go on silently excusing a
+  # path that no longer exists, so it is refused rather than tolerated.
+  local stale
+  stale=$(printf '%s\n' "$acknowledged" | grep -v '^$' | grep -Fxv -f <(printf '%s\n' "$current_items") || true)
+  if test -n "$stale"; then
+    echo "recorded correspondence .outsideIdentity names paths that are not in the rules compile closure:" >&2
+    printf '%s\n' "$stale" | sed 's/^/  /' >&2
+    echo "  a stale acknowledgement excuses nothing and hides the next one; remove it." >&2
+    return 1
+  fi
+}
+
+# Every declared source must have a blob AT $source_commit, and this is checked BEFORE the seal
+# loop reads one. Without it the loop's `git show` aborts the whole script with a raw
+#
+#   fatal: path '<p>' exists on disk, but not in '<sourceCommit>'
+#
+# at exit 128, naming neither the manifest that declared the path nor anything the author can act
+# on (S.I.R.#290). Two different mistakes land here and the diagnostic tells them apart, because
+# their remedies are opposite: a path ADDED to `.sources` (the identity set cannot grow -- see
+# `membershipRule`), and a declared path that no longer exists at `sourceCommit` (the seal's
+# historical record is broken, which is a rebind of the immutable half).
+#
+# `cat-file -e <commit>:<path>` is the existence question by itself; `git show` is not, because it
+# answers "does it exist?" and "what is in it?" with the same failure.
+require_declared_sources_at_source_commit() {
+  local sources_json=$1
+  local commit=$2
+  printf 'sealed-blob\t%s\t%s\n' "$sources_json" "$commit" >> "$arm_invocations"
+  local artifact_path
+  local absent=()
+  while IFS= read -r artifact_path; do
+    test -n "$artifact_path" || continue
+    git -C "$repo_root" cat-file -e "$commit:$artifact_path" 2>/dev/null || absent+=("$artifact_path")
+  done <<< "$(jq -r '.sources[]' "$sources_json")"
+  test ${#absent[@]} -eq 0 || {
+    echo "declared implementation source has no blob at the sealed source commit $commit:" >&2
+    printf '  %s\n' "${absent[@]}" >&2
+    echo "  the sealed implementation digest is computed from these blobs, so a path with none cannot be sealed." >&2
+    echo "  if you ADDED this path to .sources: the identity set is frozen at sourceCommit and cannot grow" >&2
+    echo "    in the change that creates the file -- sourceCommit must already be an ancestor of the canonical" >&2
+    echo "    default branch, so a path a pull request creates has no blob there. Remove it from .sources and" >&2
+    echo "    record it under .outsideIdentity in tests/fixtures/rules-corpus/v2/source-correspondence.json." >&2
+    echo "  if this path was DECLARED and has since moved or been deleted: the seal's historical record is" >&2
+    echo "    broken, and repairing it is a deliberate rebind of the immutable half of the pin." >&2
+    echo "  see docs/executable-rules-corpus-architecture.md and implementation-sources.json .membershipRule" >&2
+    return 1
+  }
+}
+
+require_declared_sources_at_source_commit "$source_manifest" "$source_commit" || { rm -f "$source_digest_input"; exit 1; }
+
 # The sealed identity digest is derived ONLY from blobs at $source_commit. The working tree
 # contributes nothing to it, which is why rebinding correspondence leaves the seal, the manifest
 # identity, and the generated corpus fixtures byte-identical.
@@ -287,6 +529,7 @@ done <<< "$(jq -r '.sources[]' "$source_manifest")"
 
 check_correspondence_coverage "$source_manifest" "$correspondence_manifest" || { rm -f "$source_digest_input"; exit 1; }
 enforce_source_correspondence "$source_manifest" "$correspondence_manifest" "$repo_root" || { rm -f "$source_digest_input"; exit 1; }
+check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" || { rm -f "$source_digest_input"; exit 1; }
 
 # ---------------------------------------------------------------------------------------------
 # Source-correspondence inversions (S.I.R.#264).
@@ -309,7 +552,7 @@ pin_probe_log=$(mktemp /tmp/sir-rules-pin-probe-log.XXXXXX)
 pin_probe_fail() {
   echo "$1" >&2
   rm -rf "$pin_probe_dir"
-  rm -f "$pin_probe_log" "$source_digest_input"
+  rm -f "$pin_probe_log" "$source_digest_input" "$arm_invocations"
   exit 1
 }
 
@@ -435,11 +678,23 @@ MALFORMED_DIGEST_DOMAIN
 # "the property is provided, but by a different check than the one named for it" is precisely the
 # defect S.I.R.#264's repair phase exists to remove. Naming the wrong arm here would reproduce it.
 #
-# The refusal comes from the EMPTINESS arm above, not from the evaluability guard: `.paths | keys[]`
-# fails first on unparseable input, leaving `recorded` empty. Every file-level jq failure is caught
-# there before the digest arm is ever reached. The evaluability guard is therefore defence in depth
-# against a FUTURE edit reintroducing a raising filter -- unreachable through this function's own
-# interface today, and deliberately not claimed as the arm under test here.
+# The refusal comes from the EMPTINESS arm above, not from the evaluability guard: for the input
+# BELOW -- a document truncated mid-value -- `.paths | keys[]` produces nothing, leaving `recorded`
+# empty.
+#
+# The sentence that used to stand here said more than that, and it was FALSE: "every file-level jq
+# failure is caught there before the digest arm is ever reached." It is not. Valid JSON followed by
+# unparseable TRAILING content is the counter-example, measured at 58041b8 on this very fixture:
+# `.paths | keys[]` STREAMS all nineteen keys and then exits 5, so `recorded` is non-empty and equals
+# the identity set, and BOTH arms above pass. The evaluability guard is what refuses it -- it is the
+# arm under test for that input, not defence in depth against a hypothetical future edit.
+#
+# That mistake was recorded as known-open on S.I.R.#264 and ruled correctable when this file was next
+# opened, on the ground that it is not MATERIAL: the production route never reaches this function with
+# such input, because the schema read at the top of this script (`jq -r '.schema'`, not on the left of
+# `||`) exits 5 under `set -e` first. That remains true and is re-measured at S.I.R.#290's base. The
+# claim is corrected rather than deleted because a comment that names the wrong arm is how "the
+# property is provided, but by a different check than the one named for it" survives review.
 unreadable_correspondence="$pin_probe_dir/unreadable-correspondence.json"
 printf '{"paths": {"src/SIR.Domain/Rules.fs": ' > "$unreadable_correspondence"
 if check_correspondence_coverage "$source_manifest" "$unreadable_correspondence" >"$pin_probe_log" 2>&1; then
@@ -491,8 +746,216 @@ search_quiet 'already current: nothing to rebind' "$pin_probe_log" || {
   pin_probe_fail "rebind writer reports drift on a tree this gate considers current: the writer and verifier normalizations have diverged"
 }
 
+# ---------------------------------------------------------------------------------------------
+# Identity-closure inversions (S.I.R.#290).
+#
+# Every case below drives check_identity_closure_containment -- the SAME function the gate calls in
+# production -- so a change that makes the real arm vacuous fails here rather than passing quietly.
+#
+# The fixture is a copy of the REAL project files at their real relative paths, not a synthetic
+# minimal project. That is deliberate: the real SIR.Simulation.fsproj carries two MSBuild property
+# expressions in `Compile Include`, and a fixture without them would be a simpler world than
+# production and would prove nothing about how the arm treats an include it cannot resolve
+# (FS.GG.Templates#379). Detached and attached cases differ in EXACTLY one line, so each pair is a
+# controlled experiment rather than two separately-authored worlds, and every refusal case is
+# paired with a control that must go green -- otherwise a fixture that reds for the wrong reason
+# would read as a passing demonstration.
+closure_probe_tree() {
+  local tree_root=$1
+  local project
+  while IFS= read -r project; do
+    test -n "$project" || continue
+    mkdir -p "$tree_root/$(dirname "$project")"
+    cp "$repo_root/$project" "$tree_root/$project"
+  done <<< "$(cd "$repo_root" && find src tests -name '*.fsproj' | sort)"
+}
+
+closure_attached="$pin_probe_dir/closure-attached"
+closure_detached="$pin_probe_dir/closure-detached"
+mkdir -p "$closure_attached" "$closure_detached"
+closure_probe_tree "$closure_attached"
+closure_probe_tree "$closure_detached"
+
+# The one-line difference: an extraction target joins the project that compiles declared sources.
+sed -i 's#<Compile Include="FixedPoint.fs" />#<Compile Include="ExtractedProbe.fs" />\n    <Compile Include="FixedPoint.fs" />#' \
+  "$closure_detached/src/SIR.Domain/SIR.Domain.fsproj"
+test "$(diff <(command cat "$closure_attached/src/SIR.Domain/SIR.Domain.fsproj") <(command cat "$closure_detached/src/SIR.Domain/SIR.Domain.fsproj") | grep -c '^>')" = 1 || {
+  pin_probe_fail "closure probe pair differs by other than exactly one line: it is not a controlled experiment"
+}
+
+# 9. CONTROL first. The attached tree is the production tree's project set, unmodified, and it must
+#    pass -- so a red in the detached case below is attributable to the one line that differs.
+check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$closure_attached" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "identity-closure control tree was refused: the probe pair is not a controlled experiment"
+}
+
+# 10. SUBJECT MUTATION. Extraction into a new compile item is refused and NAMED. This is the exact
+#     move measured passing green at 58041b8 before this arm existed.
+if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$closure_detached" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "implementation entering the rules compile closure unexpectedly passed"
+fi
+search_quiet 'implementation entered the rules compile closure without joining correspondence coverage' "$pin_probe_log" || {
+  pin_probe_fail "closure escape failed without the actionable containment diagnostic"
+}
+search_quiet 'src/SIR.Domain/ExtractedProbe.fs' "$pin_probe_log" || {
+  pin_probe_fail "closure escape diagnostic did not name the offending path"
+}
+
+# 11. A LEGAL input exists. An acknowledged path passes, so the arm is satisfiable and does not
+#     merely refuse everything new -- the class of evidence #264 records the durability hardening
+#     lacking, where four inversions all proved a refusal and none proved any legal execution.
+acknowledged_correspondence="$pin_probe_dir/acknowledged-correspondence.json"
+jq '.outsideIdentity += ["src/SIR.Domain/ExtractedProbe.fs"]' "$correspondence_manifest" > "$acknowledged_correspondence"
+check_identity_closure_containment "$source_manifest" "$acknowledged_correspondence" "$source_commit" "$closure_detached" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "an explicitly acknowledged out-of-identity compile item was refused: no extraction could ever be declared"
+}
+
+# 12. A STALE acknowledgement is refused. Without this the register would silently accumulate
+#     excuses for paths that no longer exist, and the next real escape would hide among them.
+stale_correspondence="$pin_probe_dir/stale-correspondence.json"
+jq '.outsideIdentity += ["src/SIR.Domain/NeverExisted.fs"]' "$correspondence_manifest" > "$stale_correspondence"
+if check_identity_closure_containment "$source_manifest" "$stale_correspondence" "$source_commit" "$closure_attached" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "a stale .outsideIdentity acknowledgement unexpectedly passed"
+fi
+search_quiet 'names paths that are not in the rules compile closure' "$pin_probe_log" || {
+  pin_probe_fail "stale acknowledgement failed without the actionable staleness diagnostic"
+}
+
+# 13. The register's TYPE domain, decided over the COMPLETE set of six jq types rather than over
+#     the shapes that happened to be tried. Exactly one type -- array -- is legal; the other five
+#     are refusals, and `null` covers the ABSENT field, which is the case that matters most: an
+#     absent register read as "nothing acknowledged" is indistinguishable from a deliberate empty
+#     one, and only one of those is a decision (#266).
+register_type_probe="$pin_probe_dir/register-type-probe.json"
+while IFS='|' read -r probe_label probe_filter probe_type; do
+  test -n "$probe_label" || continue
+  jq "$probe_filter" "$correspondence_manifest" > "$register_type_probe"
+  actual_type=$(jq -r '.outsideIdentity | type' "$register_type_probe")
+  test "$actual_type" = "$probe_type" || {
+    pin_probe_fail "register-type probe '$probe_label' produced $actual_type, expected $probe_type"
+  }
+  if check_identity_closure_containment "$source_manifest" "$register_type_probe" "$source_commit" "$closure_attached" >"$pin_probe_log" 2>&1; then
+    pin_probe_fail "an .outsideIdentity register of type $probe_type ($probe_label) unexpectedly passed"
+  fi
+  search_quiet 'must be an array, and is' "$pin_probe_log" || {
+    pin_probe_fail "register-type probe '$probe_label' failed without the actionable shape diagnostic"
+  }
+done <<'REGISTER_TYPE_DOMAIN'
+absent field|del(.outsideIdentity)|null
+explicit null|.outsideIdentity = null|null
+string|.outsideIdentity = "src/SIR.Domain/Whatever.fs"|string
+number|.outsideIdentity = 12345|number
+boolean|.outsideIdentity = true|boolean
+object|.outsideIdentity = {"src/SIR.Domain/Whatever.fs": true}|object
+REGISTER_TYPE_DOMAIN
+
+# The legal type is proved legal, so the domain above is a partition and not merely six refusals.
+jq '.outsideIdentity = .outsideIdentity' "$correspondence_manifest" > "$register_type_probe"
+test "$(jq -r '.outsideIdentity | type' "$register_type_probe")" = array || {
+  pin_probe_fail "register-type control did not produce an array"
+}
+check_identity_closure_containment "$source_manifest" "$register_type_probe" "$source_commit" "$closure_attached" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "an array-typed .outsideIdentity register was refused: the type domain refuses every type"
+}
+
+# 14. ELEMENT types, again over the complete set. A well-typed array whose ENTRIES are not strings
+#     must be refused rather than stringified into a path nothing can match.
+while IFS='|' read -r probe_label probe_value probe_type; do
+  test -n "$probe_label" || continue
+  jq --argjson injected "$probe_value" '.outsideIdentity += [$injected]' "$correspondence_manifest" > "$register_type_probe"
+  actual_type=$(jq -r '.outsideIdentity[-1] | type' "$register_type_probe")
+  test "$actual_type" = "$probe_type" || {
+    pin_probe_fail "register-element probe '$probe_label' injected $actual_type, expected $probe_type"
+  }
+  if check_identity_closure_containment "$source_manifest" "$register_type_probe" "$source_commit" "$closure_attached" >"$pin_probe_log" 2>&1; then
+    pin_probe_fail "an .outsideIdentity entry of type $probe_type ($probe_label) unexpectedly passed"
+  fi
+  search_quiet 'carries non-string entries' "$pin_probe_log" || {
+    pin_probe_fail "register-element probe '$probe_label' failed without the actionable element diagnostic"
+  }
+  search_quiet "$probe_type" "$pin_probe_log" || {
+    pin_probe_fail "register-element probe '$probe_label' did not name the offending entry's type"
+  }
+done <<'REGISTER_ELEMENT_DOMAIN'
+number|12345|number
+null|null|null
+boolean|true|boolean
+array|["nested"]|array
+object|{"a":1}|object
+REGISTER_ELEMENT_DOMAIN
+
+# 15. Unparseable correspondence is refused by THIS arm's own evaluability guard, and the probe
+#     records which arm refuses it. In production check_correspondence_coverage reaches such input
+#     first; this case proves the containment arm does not depend on that ordering, because a
+#     function that only fails closed when some earlier caller already did is not failing closed.
+unreadable_closure="$pin_probe_dir/unreadable-closure.json"
+printf '{"outsideIdentity": [' > "$unreadable_closure"
+if check_identity_closure_containment "$source_manifest" "$unreadable_closure" "$source_commit" "$closure_attached" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "unparseable correspondence unexpectedly passed the identity-closure arm"
+fi
+search_quiet 'could not be evaluated for an .outsideIdentity register' "$pin_probe_log" || {
+  pin_probe_fail "unparseable correspondence failed, but not through the evaluability guard this probe names"
+}
+
+# 16. Vacuity: a tree in which no project compiles a declared source must be REFUSED, not passed.
+#     A closure containing nothing trivially contains no escape, and reporting that as a pass is
+#     the "checked nothing" failure this whole mechanism exists to avoid.
+empty_closure_tree="$pin_probe_dir/closure-empty"
+mkdir -p "$empty_closure_tree"
+if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$empty_closure_tree" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "a tree with no rules implementation project unexpectedly passed the identity-closure arm"
+fi
+search_quiet 'no project compiles any declared implementation source' "$pin_probe_log" || {
+  pin_probe_fail "an empty closure failed without the actionable vacuity diagnostic"
+}
+
+# 17. A declared source with no blob at sourceCommit is refused with an ACTIONABLE diagnostic.
+#     Before S.I.R.#290 this aborted the whole script at exit 128 with a raw `git fatal:` naming
+#     neither the manifest nor a remedy. The control proves the guard passes the real manifest, so
+#     the refusal below is attributable to the added path rather than to the guard refusing always.
+#     The control uses a byte-identical COPY at a different path on purpose: calling it with the
+#     real manifest would write the very ledger line the wiring guard (18) looks for, so this probe
+#     would SUPPLY the property that guard is meant to observe from production, and deleting the
+#     production call site would stay green. That was measured -- mutation M2 survived until this
+#     copy was introduced -- and it is the "named by one test, provided by another" defect
+#     (.github#2223 / FS.GG.Governance#385) reproduced inside this very repair.
+real_sources_copy="$pin_probe_dir/real-sources-copy.json"
+cp "$source_manifest" "$real_sources_copy"
+cmp -s "$real_sources_copy" "$source_manifest" || pin_probe_fail "sealed-blob control copy is not byte-identical to the real manifest"
+require_declared_sources_at_source_commit "$real_sources_copy" "$source_commit" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "the sealed-blob guard refused the real implementation identity set"
+}
+absent_blob_manifest="$pin_probe_dir/absent-blob-sources.json"
+jq '.sources += ["src/SIR.Domain/NeverSealed.fs"]' "$source_manifest" > "$absent_blob_manifest"
+if require_declared_sources_at_source_commit "$absent_blob_manifest" "$source_commit" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "a declared source with no blob at the sealed commit unexpectedly passed"
+fi
+search_quiet 'has no blob at the sealed source commit' "$pin_probe_log" || {
+  pin_probe_fail "an unsealed declared source failed without the actionable diagnostic"
+}
+search_quiet 'the identity set is frozen at sourceCommit and cannot grow' "$pin_probe_log" || {
+  pin_probe_fail "the unsealed-source diagnostic did not name the frozen-set remedy"
+}
+
+# 18. WIRING. Both S.I.R.#290 arms must have run against the REAL tree and the REAL manifests
+#     during this invocation, not merely against probe fixtures. Deleting either production call
+#     site reds here, which is the property probes 9-17 cannot provide on their own because they
+#     drive the functions directly.
+grep -Fxq "$(printf 'closure\t%s\t%s\t%s' "$repo_root" "$source_manifest" "$correspondence_manifest")" "$arm_invocations" || {
+  echo "the identity-closure arm never ran against the real tree in this invocation" >&2
+  echo "  its production call site has been removed or re-pointed; the probes below it then" >&2
+  echo "  demonstrate a refusal this gate no longer performs" >&2
+  pin_probe_fail "identity-closure arm is not wired into the production path"
+}
+grep -Fxq "$(printf 'sealed-blob\t%s\t%s' "$source_manifest" "$source_commit")" "$arm_invocations" || {
+  echo "the sealed-blob guard never ran against the real implementation identity set" >&2
+  echo "  its production call site has been removed or re-pointed, so a declared source with no" >&2
+  echo "  blob at sourceCommit would again abort at exit 128 with a raw git fatal" >&2
+  pin_probe_fail "sealed-blob guard is not wired into the production path"
+}
+
 rm -rf "$pin_probe_dir"
-rm -f "$pin_probe_log"
+rm -f "$pin_probe_log" "$arm_invocations"
 printf 'package\t%s\nalgorithm\t%s\n' "$(jq -r '.packageSha256' "$source_manifest")" "$(jq -r '.algorithmFingerprint' "$source_manifest")" >> "$source_digest_input"
 actual_sources_digest=$(sha256sum "$source_digest_input" | cut -d' ' -f1)
 identity_mutant=$(mktemp /tmp/sir-rules-source-digest-mutant.XXXXXX)
