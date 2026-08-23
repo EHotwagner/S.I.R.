@@ -167,6 +167,10 @@ const requireDeclaredUnitCount = (unitCount) => {
 // therefore REFUSED as unclassifiable rather than passed: "I could not evaluate this" is never "I
 // evaluated it and it passed" (#266).
 export const tacticalFrameCadenceBudget = Object.freeze({
+  // Every declared budget object NAMES ITSELF, so a quantity id is read off the declaration rather
+  // than supplied by a fallback at the gate. See tacticalDeclaredBudgetObjects below.
+  key: "tacticalFrameCadenceBudget",
+
   displayRefreshHertz,
   framePeriodMilliseconds,
   maximumElapsedVsyncsPerFrame,
@@ -235,6 +239,68 @@ export const tacticalRuntimeEffectCap = Object.freeze({
   maximumEffectInstances: tacticalWorkloadBudgets.stress200.maximumEffects,
 });
 
+// THE OVERLAY-LAYER NODE BOUND, AND WHY IT IS ITS OWN QUANTITY (S.I.R.#327).
+//
+// `#persistent-tactical-overlay-layer` is ONE of the eight layers the scene paints
+// (terrain>edges>routes>units>effects>selection>tactical-overlays>annotations). The product publishes
+// that layer's cost separately as `data-overlay-node-estimate`, emitted at
+// src/SIR.Client.Web/App.fs from the overlay set's own `Cost.EstimatedSvgNodes`. The WHOLE-SCENE
+// estimate is a different attribute (`data-visual-node-estimate`) computed over a different subtree,
+// and `maximumDomNodes` bounds that one.
+//
+// THIS BOUND AND representative100.maximumDomNodes ARE BOTH 5000, AND THAT IS A COINCIDENCE OF
+// VALUE, NOT AN IDENTITY. Deriving one from the other would be the "do these agree?" defect this
+// module exists to remove, installed at the declaration instead of at a call site: they agree today,
+// they would silently move together tomorrow, and no reader could tell a shared value from a shared
+// meaning. The distinction was already on the record from the other direction -- the value sweep in
+// scripts/test-svg-pipeline-measurement.mjs has carried "an unrelated overlay-layer node bound in the
+// browser spec" as an exemption reason since S.I.R.#318 -- so these two quantities were known to be
+// distinct before either of them was declared.
+//
+// IT IS A SCALAR, DELIBERATELY. The overlay assertion runs at the product's default scale rather than
+// at either declared review workload, and nothing in the product tiers overlay cost by unit count.
+// Giving it a per-workload row would mean either inventing a stress-200 figure this repository has
+// never measured -- a threshold invented at the point of use, which is half of what S.I.R.#318
+// repaired -- or writing 5000 down twice, which the rule at the top of this file forbids even when
+// the copies agree. The precedent for a scalar published into every row of that table is
+// tacticalFrameBudget.callbackMillisecondsCeiling.
+//
+// PROVENANCE. The literal entered at 8cb6449 ("Add configurable tactical analysis overlays",
+// 2026-08-13) already bare: no derivation, no comment and no cited source, bounding the estimate
+// directly. 1194ce7 later the same day MOVED it onto the counted-node identifier when it added the
+// estimate-honesty check; the row that asked for this repair cites that commit. There is no
+// recoverable intent for the value 5000, and this module does not invent one for it. What changes
+// here is that the number is stated ONCE and published, not what it is.
+const maximumOverlayDomNodes = 5000;
+
+export const tacticalOverlayLayerBudget = Object.freeze({
+  key: "tacticalOverlayLayerBudget",
+
+  maximumOverlayDomNodes,
+
+  measures:
+    "element count of the live #persistent-tactical-overlay-layer subtree, which the product "
+    + "publishes as data-overlay-node-estimate. ONE layer of the tactical scene, not the whole-scene "
+    + "node estimate maximumDomNodes bounds, and not a compositor, paint, GPU or swapchain claim.",
+  source: "scripts/lib/performance-budget.mjs (tacticalOverlayLayerBudget) -- the single declaration.",
+  publishedAs:
+    "docs/performance-budget.md, \"Tactical visual-system budget\" table, \"Overlay-layer SVG nodes\" "
+    + "column. Workload-independent, so the same declared cell is projected into every row.",
+});
+
+// EVERY TOP-LEVEL DECLARED BUDGET OBJECT, NAMED HERE RATHER THAN LISTED IN THE GATE.
+//
+// The no-restatement sweep used to build this list itself, and reached a quantity only if somebody
+// remembered to add it -- a hand-maintained list of budget objects inside the gate that exists to
+// stop hand-maintained copies of budget numbers, which is the same disease one level up that
+// S.I.R.#299's critic already found in its consumer list and S.I.R.#318 found again in its budget
+// fields. A budget declared here is now swept because it is declared, not because it was remembered.
+export const tacticalDeclaredBudgetObjects = Object.freeze([
+  ...tacticalWorkloadBudgetList,
+  tacticalFrameCadenceBudget,
+  tacticalOverlayLayerBudget,
+]);
+
 // WHERE EACH BUDGETED QUANTITY IS SURFACED TO A BROWSER CONSUMER.
 //
 // A consumer that reads one of these attributes off the live DOM is holding the MEASUREMENT, and the
@@ -246,6 +312,7 @@ export const tacticalRuntimeEffectCap = Object.freeze({
 export const tacticalBudgetSurfaces = Object.freeze([
   Object.freeze({ quantity: "maximumDomNodes", attribute: "data-visual-node-estimate" }),
   Object.freeze({ quantity: "maximumEffects", attribute: "data-effect-limit" }),
+  Object.freeze({ quantity: "maximumOverlayDomNodes", attribute: "data-overlay-node-estimate" }),
 ]);
 
 // The manifest block `scripts/generate-tactical-visual-review.mjs` publishes, built HERE so that the
@@ -267,6 +334,19 @@ const tacticalBudgetProjections = Object.freeze([
     quantities: (workload) => [`${workload.key}.maximumDomNodes`],
     cell: (workload) => `≤ ${documentedThousands(workload.maximumDomNodes)}`,
     manifest: (workload) => ({ maximumDomNodes: workload.maximumDomNodes }),
+  }),
+  Object.freeze({
+    // WORKLOAD-INDEPENDENT, so the workload argument is deliberately ignored and the one declared
+    // cell is projected into every row -- the same shape the frame-ceiling column below uses.
+    //
+    // It projects into the published TABLE and not into the review manifest, because the tactical
+    // review does not measure the overlay layer: publishing a budget into an artifact that never
+    // reports it would be a number a reader could not check against anything. `quantities` still
+    // names it, so the "declared in code and published nowhere" guard is satisfied by the table.
+    column: "Overlay-layer SVG nodes",
+    quantities: () => ["tacticalOverlayLayerBudget.maximumOverlayDomNodes"],
+    cell: () => `≤ ${documentedThousands(tacticalOverlayLayerBudget.maximumOverlayDomNodes)}`,
+    manifest: () => ({}),
   }),
   Object.freeze({
     column: "Active effects",
