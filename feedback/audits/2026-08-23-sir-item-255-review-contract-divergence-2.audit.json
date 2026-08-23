@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-255-review-contract-divergence-2.md",
-  "reportSha256": "12582e4443ce203f9f35028fd33d1df1f2880e45c5970375040c4d6b178b19d5",
+  "reportSha256": "24d8974053d1a981b3e5376407a2f74835312f0a4eb833d2eba7dbc05bfbece1",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -17,7 +17,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "d5eaa8a9b0d574c7f4dc10d8102919770a2e1814ad19df42515424dcaf8bea79"
+          "sha256": "f7180f138364c8d61a8119e90eed59b664a84bc30c1d23b1295c7b3db072d26a"
         }
       ],
       "confidenceLimits": [
@@ -37,7 +37,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "d5eaa8a9b0d574c7f4dc10d8102919770a2e1814ad19df42515424dcaf8bea79"
+          "sha256": "f7180f138364c8d61a8119e90eed59b664a84bc30c1d23b1295c7b3db072d26a"
         }
       ],
       "confidenceLimits": [
@@ -56,7 +56,7 @@
         {
           "locator": "file:docs/coordination-engine-contracts.md",
           "result": "verified",
-          "sha256": "9dce25cc8161dced3104af078869bf2fd8500cf81b154c71d8755f69b2a3b183"
+          "sha256": "ce71581de6b99392057697a976c18f5e3c9555d8e664569779f6d08e6f8b49eb"
         }
       ],
       "confidenceLimits": [
@@ -95,7 +95,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "d5eaa8a9b0d574c7f4dc10d8102919770a2e1814ad19df42515424dcaf8bea79"
+          "sha256": "f7180f138364c8d61a8119e90eed59b664a84bc30c1d23b1295c7b3db072d26a"
         },
         {
           "locator": "command:bash scripts/test-review-contract-coherence.sh",
@@ -154,7 +154,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "d5eaa8a9b0d574c7f4dc10d8102919770a2e1814ad19df42515424dcaf8bea79"
+          "sha256": "f7180f138364c8d61a8119e90eed59b664a84bc30c1d23b1295c7b3db072d26a"
         }
       ],
       "confidenceLimits": [
@@ -174,12 +174,34 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "d5eaa8a9b0d574c7f4dc10d8102919770a2e1814ad19df42515424dcaf8bea79"
+          "sha256": "f7180f138364c8d61a8119e90eed59b664a84bc30c1d23b1295c7b3db072d26a"
         }
       ],
       "confidenceLimits": [
         "written after the actionability critic's final pass and therefore not covered by it; the finding is instead evidenced by execution \u2014 round 1's critic `merlin-2693` independently constructed X1-X4 from the head document and measured three surviving at exit 0, and the implementer reproduced all four before repairing",
-        "the repaired gate was re-run against both critics' exact escapes (X1-X4 and W1-W7), all red by name, per independent-review step 7"
+        "the repaired gate was re-run against both critics' exact escapes (X1-X4 and W1-W7), all red by name, per independent-review step 7",
+        "round 2's totalisation was itself phrasing-specific and was defeated by rephrasing; see \u00a74.10"
+      ]
+    },
+    {
+      "id": "\u00a74.10",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "file:docs/coordination-engine-contracts.md",
+          "result": "verified",
+          "sha256": "ce71581de6b99392057697a976c18f5e3c9555d8e664569779f6d08e6f8b49eb"
+        }
+      ],
+      "confidenceLimits": [
+        "written after the actionability critic's final pass and therefore not covered by it; evidenced instead by execution \u2014 round 2's critic `avocet-dac3` independently constructed Y1-Y3 and measured all three surviving at exit 0, and the implementer reproduced them before repairing",
+        "re-run per independent-review step 7 against every round's escapes AND against four phrasings no round supplied (Roman numeral, spelled-out caps, bare digit in a new clause, and a claim carrying no numeral at all); all red via doc:scalar-region-purity, W1-W7 unregressed",
+        "the transcription of governed regions is a deliberate rigidity: a purely cosmetic reword of a governed region now reds. That cost is stated in the finding rather than hidden, and is the price of the region carrying no free prose"
       ]
     }
   ]

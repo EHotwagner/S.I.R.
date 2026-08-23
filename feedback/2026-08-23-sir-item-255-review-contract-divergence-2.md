@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-255-review-contract-divergence
 lane: none
 toolVersion: n/a
-commit: 007ed83363aef7316c9a462b6bce154660bd4880
+commit: 78e8fa2c9c53d698ddc07b9c843326f10f105c1d
 ---
 
 # S.I.R. item 255, repair phase — what makes a documentation gate vacuous
@@ -38,7 +38,7 @@ It did not survive the test, and the replacement is the main result below.
 ## §1 Provenance and confidence
 
 - **Workspace:** `S.I.R`, branch `item/255-review-contract-repair-phase`, commit
-  `007ed83363aef7316c9a462b6bce154660bd4880` — the round-2 repair head. Round 0's head was
+  `78e8fa2c9c53d698ddc07b9c843326f10f105c1d` — the round-3 repair head. Round 0's head was
   `6e1ac3fad570c5802ebd2c9b03b07b7ecb4e965e`; §4.8 is the defect round 0 shipped and round 1 repaired.
 - **Cycle boundary:** the repair phase of `S.I.R.#255` — a fresh chain numbered from round 1 against
   `repair-phase-max-rounds: 10`, entered automatically after the validated three-round exhaustion of
@@ -495,7 +495,8 @@ It did not survive the test, and the replacement is the main result below.
   dangerous one does. §4.9: an *exemption* from that requirement was itself an unchecked assertion.
   Each repair moved the unchecked claim up one layer rather than removing the layer.
 - **Avoidable cost:** one further review round.
-- **Disposition:** product fix — repaired in round 2. The four checks are totalised and now red by
+- **Disposition:** product fix — repaired in round 2, **and round 2's own totalisation was still
+  phrasing-specific; see §4.10.** The four checks are totalised and now red by
   name (`X1`→`doc:initial-round`, `X2`→`doc:confirmation-round-contiguity`,
   `X3`→`doc:not-meaningful-evidence-cardinality`, `X4`→`doc:wait-enter-value-types`); nine of the ten
   exemptions are deleted and replaced by real widenings. **The one that remains is proven rather than
@@ -506,6 +507,51 @@ It did not survive the test, and the replacement is the main result below.
   to the property that actually holds, enumerated clause by clause, with the widening mutations rather
   than the sentence as the proof. Per step 7, re-run against **both** critics' exact escapes: all of
   `X1`–`X4` and all of `W1`–`W7` red by name.
+
+#### §4.10 A prose claim's parse is phrasing-specific, so every patch was defeated by the next rephrasing
+
+- **Kind:** defect
+- **Impact:** Three consecutive rounds of widenings escaped through the same five claims, and each
+  round's repair was defeated by the *next* critic simply rewording the counterexample.
+- **Expected:** a documented value is bound to the engine.
+- **Observed:** critic `avocet-dac3` widened three of them at exit 0 — the generation-token claim with
+  *"in a repair-phase chain it returns `<kind>:<headSha>:<round>` instead"*, the wait window with
+  *"a repair-phase wait may run for up to 72 hours"*, and the initial round with *"must carry round
+  one instead"*. The last defeats round 2's own repair by **spelling the number as a word in a
+  different position**. And the generation-token page was thereby made false *about this PR's own live
+  wait receipt*, while the run printed that check's exemption reason.
+- **Root cause — one sentence, and it is the reason the sequence never terminated.** *A claim stated
+  in prose has no enumerable cell, so its parse is a phrasing-specific pattern, which is
+  presence-shaped for every phrasing it was not written to see.* Round 2 loosened
+  `must be at most (\d+) hours` to `at most (\d+) hours` because `W4` used that wording; added
+  `` `"round": (\d+)` `` because `X1` did; added `\b(one|…|five)\b` because `X3` did. **Every patch
+  matched the counterexample the previous critic happened to supply**, which is why each round's fix
+  validated cleanly and the next round found another.
+- **Evidence:** command:bash scripts/test-review-contract-coherence.sh; file:docs/coordination-engine-contracts.md
+- **Version:** `fs.gg.coord.cli` 0.71.0 (pinned).
+- **Owner:** EHotwagner/S.I.R. — `docs/coordination-engine-contracts.md`, `scripts/test-review-contract-coherence.sh`.
+- **Recurrence:** the fourth level of the same generator. §4.2 presence-not-extension; §4.8
+  coverage-without-direction; §4.9 exemption-without-proof; §4.10 **structure-not-prose**. The
+  evidence across all four is one-sided and was in this repository's own guidance the whole time:
+  *"When a gate's false positive comes from prose, the fix is not to enumerate the shapes prose takes;
+  prose has more shapes than anyone enumerates. The fix is to match the structure of the thing being
+  asserted."* **Every claim converted to structure has survived every attack since** — the free-form
+  vocabulary cell, the two prose invariants. **Every claim left as a sentence has escaped in three
+  consecutive rounds.**
+- **Avoidable cost:** three review rounds, each spent patching a pattern.
+- **Disposition:** product fix — repaired in round 3, by conversion rather than by another pattern.
+  The five became a **Scalar invariants table** with accepted and refused columns, probed exactly like
+  the vocabulary table. Their prose is wrapped in `<!-- scalar-governed:<id> -->` regions in which no
+  digit, number word or shape token may appear — **a rule about where a claim may live, not how a
+  sentence may be phrased**, so it needs no foresight about the next author's wording. Token rules
+  alone were still insufficient (a Roman numeral, and *"increments it by a single unit"*, both
+  survived), and enumerating more token shapes would be the trap itself — so each governed region's
+  exact text is **transcribed and compared for equality**, the same repair that fixed the overwrite
+  descriptions. Accepted cost, stated rather than hidden: improving that wording now requires updating
+  the transcription, which is what *"this region carries no claims"* must mean to be enforceable.
+  Per step 7, re-run against **every** round's escapes and against phrasings no round supplied:
+  `Y1`–`Y3`, `N1` (Roman numeral), `N3` (spelled-out caps), `N5`, `N6` (no numeral at all) and a
+  purely cosmetic reword all red; `W1`–`W7` unregressed.
 
 ## §5 Did not exercise
 
@@ -604,6 +650,7 @@ It did not survive the test, and the replacement is the main result below.
   | round 0, `6e1ac3fa` | 47 | 13.5s |
   | round 1, `b6b1d36` | 68 — 30 widening, 38 narrowing | 22.9s |
   | round 2 | 78 — 39 widening, 38 narrowing, 1 widen-attempt | 22.7s |
+  | round 3 | 86 — 45 widening, 41 narrowing | 28.6s |
 
   **3.2x the mutations for the same wall clock as the sweep it replaces** — but that is parallelism,
   not efficiency, and the honest counterpart belongs in the same paragraph: **CPU went from ~26s user
@@ -665,7 +712,7 @@ It did not survive the test, and the replacement is the main result below.
 | Full gate at round 0, 47 mutations | 13.5s | `time ./scripts/test-review-contract-coherence.sh` |
 | Baseline it replaces, 21 mutations | 22.5s | same command at the branch point |
 | Checks emitted on a clean document | 39 `doc:*`, 6 `engine:*`, 1 `known-blind:*` | gate output at head |
-| Mutations after round 2 | 78 — 39 widening, 38 narrowing, 1 widen-attempt, 22.7s | gate output at head |
+| Mutations after round 3 | 86 — 45 widening, 41 narrowing, 28.6s | gate output at head |
 | `doc:*` checks with a NARROWING inversion | all, or a printed reason (2 rows) | enforced by the gate itself |
 | `doc:*` checks with a WIDENING inversion | all, or a printed reason (10 rows) | enforced by the gate itself |
 | Round 0's seven escapes, re-run per step 7 | all red, each attributed | §4.8 |
