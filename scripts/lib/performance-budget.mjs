@@ -455,6 +455,26 @@ export function tacticalOverlayLayerBudgetReason(measured) {
   return null;
 }
 
+// AND THE FORM THE BROWSER CONSUMER CALLS, WHICH THROWS RATHER THAN RETURNING.
+//
+// The reason function above is the pure core and is inverted exhaustively in-process. But a function
+// that RETURNS null-or-reason leaves one obligation at the call site -- the caller must assert on the
+// return value, and assert on it correctly. That obligation is a call site the same failure class can
+// live in, and it is not hypothetical: with the reason form called directly,
+// `.toBeDefined()`, `.toBeTruthy()` and simply discarding the result all left this suite green while
+// a breach returned a reason nobody read. That is the sixth spelling of the same defect, found by
+// inverting rather than by review.
+//
+// So the consumer calls a form with NO RETURN VALUE. There is nothing to assert weakly and nothing to
+// discard; a breach throws, and a browser test fails on a thrown error exactly as it fails on an
+// assertion. The remaining way to defeat it is to not call it at all -- which is a single, visible
+// fact that scripts/test-svg-pipeline-measurement.mjs checks directly -- or to wrap the call in a
+// deliberate `try`/`catch`, which this does not prevent and does not pretend to.
+export function assertTacticalOverlayLayerBudget(measured) {
+  const reason = tacticalOverlayLayerBudgetReason(measured);
+  if (reason) throw new Error(reason);
+}
+
 export function tacticalInputToPaintBudgetReason(budget, measuredMilliseconds) {
   requireFiniteMeasurement(`${budget.label} inputToPaintMilliseconds`, measuredMilliseconds);
   if (measuredMilliseconds < budget.maximumInputToPaintMilliseconds) return null;

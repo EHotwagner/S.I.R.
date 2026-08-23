@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
-import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalOverlayLayerBudget, tacticalOverlayLayerBudgetReason, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
+import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalOverlayLayerBudget, tacticalOverlayLayerBudgetReason, assertTacticalOverlayLayerBudget, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 // validateDefinitions COMPOSES the budget: workload policy from the fixture file, ceiling from the
@@ -878,10 +878,22 @@ console.log(`JUSTIFIED tactical-overlay-budget-verdict: every branch of the over
 // no other assertion could be added beside it -- that is the bound on this check, stated rather than
 // implied, and it is the residue this design does not remove.
 const overlaySpec = readFileSync(new URL("../tests/SIR.Browser.Tests/visible-workflows.spec.js", import.meta.url), "utf8");
-assert.match(overlaySpec, /import\s*\{[^}]*\btacticalOverlayLayerBudgetReason\b[^}]*\}\s*from\s*["'][^"']*performance-budget\.mjs["']/,
-  "the browser spec must import the overlay verdict from the single declaration");
-assert.match(overlaySpec, /\btacticalOverlayLayerBudgetReason\s*\(/,
-  "the browser spec must CALL the overlay verdict; importing it and asserting something else is not deriving from the declaration");
+assert.match(overlaySpec, /import\s*\{[^}]*\bassertTacticalOverlayLayerBudget\b[^}]*\}\s*from\s*["'][^"']*performance-budget\.mjs["']/,
+  "the browser spec must import the THROWING overlay assertion from the single declaration");
+assert.match(overlaySpec, /\bassertTacticalOverlayLayerBudget\s*\(/,
+  "the browser spec must CALL the throwing overlay assertion; importing it and doing something else is not deriving from the declaration");
+// AND IT MUST NOT USE THE RETURNING FORM, which puts an assertion obligation back at the call site.
+// With the reason form called directly, `.toBeDefined()`, `.toBeTruthy()` and discarding the result
+// each left this suite green while a breach returned a reason nobody read.
+assert.doesNotMatch(overlaySpec, /\btacticalOverlayLayerBudgetReason\b/,
+  "the browser spec calls the returning reason form, which requires the call site to assert on the result correctly -- the obligation the throwing form exists to remove. Call assertTacticalOverlayLayerBudget instead.");
+// the throwing form must actually THROW on a breach -- the property the consumer now relies on
+assert.throws(() => assertTacticalOverlayLayerBudget({ countedNodes: overlayCeiling + 1, reportedEstimate: overlayCeiling + 1 }), /overlay-layer node budget exceeded/,
+  "the throwing assertion must throw on a breach; if it returned, the consumer would pass silently");
+assert.throws(() => assertTacticalOverlayLayerBudget({ countedNodes: 13, reportedEstimate: 12 }), /telemetry disagrees/,
+  "the throwing assertion must throw on a telemetry disagreement");
+assert.doesNotThrow(() => assertTacticalOverlayLayerBudget({ countedNodes: overlayCeiling, reportedEstimate: overlayCeiling }),
+  "and must not throw at the declared ceiling, or it would red every conforming run");
 // and it must carry no copy of the declared value. Scoped to ONE file in which that number provably
 // occurs for no other reason, so this is a restatement check rather than a rule about how to write a
 // comparison -- the S.I.R.#299 shape, which has held.
