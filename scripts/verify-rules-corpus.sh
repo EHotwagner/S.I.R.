@@ -179,6 +179,7 @@ source_digest_input=$(mktemp /tmp/sir-rules-source-digest.XXXXXX)
 # requires an invocation naming the REAL tree and the REAL manifests. No probe can satisfy it:
 # every probe passes a probe tree.
 arm_invocations=$(mktemp /tmp/sir-rules-arm-invocations.XXXXXX)
+msbuild_read_cache=$(mktemp -d /tmp/sir-rules-read-cache.XXXXXX)
 normalize_implementation_source() {
   local artifact_path=$1
   local input_path=$2
@@ -389,12 +390,13 @@ enforce_source_correspondence() {
 # carry it into its `timeout` subshell alongside the functions. Reads one project's XML on stdin
 # and writes one `Include` value per line; exits 3 when the XML cannot be parsed or when a value
 # cannot be represented line-wise, which the caller turns into "the read failed", never "none".
-msbuild_include_values() {  # tag [attribute]  (project XML on stdin)
+msbuild_include_values() {  # tag [attribute] [project_dir]  (project XML on stdin)
   python3 -c '
-import sys, xml.etree.ElementTree as ET
+import posixpath, sys, xml.etree.ElementTree as ET
 
 tag = sys.argv[1].lower()
 attribute = sys.argv[2]
+project_dir = sys.argv[3] if len(sys.argv) > 3 and sys.argv[3] != "" else None
 try:
     root = ET.fromstring(sys.stdin.buffer.read())
 except Exception as exc:
@@ -418,8 +420,26 @@ for element in root.iter():
         if "\n" in part or "\r" in part:
             sys.stderr.write("  Include value spans lines and cannot be emitted line-wise: %r\n" % part)
             sys.exit(3)
-        sys.stdout.write(part + "\n")
-' "$1" "${2:-Include}"
+        if project_dir is None:
+            sys.stdout.write(part + "\n")
+            continue
+        # Resolution happens HERE rather than through a `realpath` per include, because that was
+        # one process per item per project per read and this reader is already the process. It is
+        # the same LEXICAL normalisation `realpath -m --relative-to=<tree>` performs on
+        # <tree>/<project_dir>/<include>: `-m` requires nothing to exist, and both operands share
+        # the tree root, so the result never depended on which tree root was passed. An MSBuild
+        # expression is still emitted VERBATIM rather than resolved or dropped (#266), and a path
+        # that leaves the tree still leaves it -- as `../…` here, or as an absolute path, both of
+        # which the closure walk refuses.
+        part = part.replace("\\", "/")
+        if "$(" in part:
+            sys.stdout.write(posixpath.join(project_dir, part) + "\n")
+            continue
+        if posixpath.isabs(part):
+            sys.stdout.write(part + "\n")
+            continue
+        sys.stdout.write(posixpath.normpath(posixpath.join(project_dir, part)) + "\n")
+' "$1" "${2:-Include}" "${3-}"
 }
 
 project_elements() {
@@ -438,6 +458,35 @@ project_elements() {
     test -f "$tree_root/$project" || return 2
     content=$(command cat "$tree_root/$project") || return 1
   fi
+
+  # Read cache. This exists because the correct reader costs a `python3` START per project per
+  # read, and the probe suite below drives ~20 full containment runs over ~25 projects each: the
+  # first cut of this repair was CORRECT and blew the CI feedback budget
+  # (domain-conformance 147s -> 242s, `feedback-headroom-eroded`).
+  #
+  # A cache is a silent-wrong-answer risk, which is the exact class this gate exists to refuse, so
+  # neither key can go stale. At a REVISION the key names a commit SHA, a path, an element and an
+  # attribute -- git objects are immutable, so nothing it names can change underneath it. In the
+  # WORKING TREE the key additionally carries the file's mtime and size, so an edited fixture
+  # misses rather than hits; probe 40 breaks a project between two reads and requires the second to
+  # see the change. The value is now tree-root-independent, because resolution moved into the
+  # reader and was already lexical.
+  local cache_file=""
+  if test -n "${msbuild_read_cache:-}"; then
+    local cache_key
+    local cache_stamp
+    if test -n "$rev"; then
+      cache_key="rev.$rev.$tag.$attribute.$project"
+    else
+      cache_stamp=$(stat -c '%Y.%s' "$tree_root/$project" 2>/dev/null) || cache_stamp=nostat
+      cache_key="wt.$cache_stamp.$tag.$attribute.$tree_root.$project"
+    fi
+    cache_file="$msbuild_read_cache/${cache_key//\//%}"
+    if test -f "$cache_file"; then
+      command cat "$cache_file"
+      return 0
+    fi
+  fi
   # No output is an ordinary answer here -- most projects declare no ProjectReference at all -- so
   # the empty case returns 0 and only a genuine parse failure returns 1. `set -o pipefail` is in
   # force, which is what carries the reader's exit 3 out of the pipeline to be caught here rather
@@ -445,7 +494,7 @@ project_elements() {
   # EXISTENCE were already decided above, before this pipeline.
   local includes
   local includes_status=0
-  includes=$(printf '%s' "$content" | msbuild_include_values "$tag" "$attribute") || includes_status=$?
+  includes=$(printf '%s' "$content" | msbuild_include_values "$tag" "$attribute" "$project_dir") || includes_status=$?
   if test "$includes_status" -ne 0; then
     echo "project file did not parse as MSBuild XML: $project" >&2
     echo "  read at ${rev:-the working tree}" >&2
@@ -454,16 +503,9 @@ project_elements() {
     echo "  never 'there is nothing there' (#266)" >&2
     return 1
   fi
+  test -z "$cache_file" || printf '%s' "$includes${includes:+$'\n'}" > "$cache_file"
   test -n "$includes" || return 0
-  printf '%s\n' "$includes" \
-    | tr '\\' '/' \
-    | while IFS= read -r include; do
-        test -n "$include" || continue
-        case "$include" in
-          *'$('*) printf '%s\n' "$project_dir/$include" ;;
-          *) realpath -m --relative-to="$tree_root" "$tree_root/$project_dir/$include" 2>/dev/null || printf '%s\n' "$project_dir/$include" ;;
-        esac
-      done
+  printf '%s\n' "$includes"
 }
 
 project_compile_items() {
@@ -873,6 +915,7 @@ pin_probe_fail() {
   echo "$1" >&2
   rm -rf "$pin_probe_dir"
   rm -f "$pin_probe_log" "$source_digest_input" "$arm_invocations"
+  rm -rf "$msbuild_read_cache"
   exit 1
 }
 
@@ -1716,6 +1759,29 @@ test "$writer_unparseable_status" -ne 0 || {
   pin_probe_fail "the rebind writer read an unparseable project as 'this project compiles nothing': an unresolvable owner would be reported as an absent one"
 }
 
+# 40. The read cache cannot serve a stale answer. The cache exists for feedback time, but a cache
+#     that returns yesterday's items is a silent wrong answer from the one check that is supposed
+#     to refuse them -- strictly worse than the slow version. So it is measured, not reasoned
+#     about: read a project, CHANGE it, read it again, and require the second read to differ.
+#     Revision reads need no such probe (a commit SHA names an immutable object) and get none;
+#     working-tree reads carry mtime and size in the key and get this one.
+cache_probe_tree="$pin_probe_dir/cache-staleness"
+mkdir -p "$cache_probe_tree/src/SIR.Domain"
+printf '<Project Sdk="Microsoft.NET.Sdk">\n  <ItemGroup>\n    <Compile Include="Before.fs" />\n  </ItemGroup>\n</Project>\n' \
+  > "$cache_probe_tree/src/SIR.Domain/SIR.Domain.fsproj"
+cache_first=$(project_elements "$cache_probe_tree" src/SIR.Domain/SIR.Domain.fsproj Compile)
+test "$cache_first" = "src/SIR.Domain/Before.fs" || {
+  pin_probe_fail "the cache staleness probe did not read its own fixture (got: $cache_first)"
+}
+# A same-second rewrite of the same length is the case a coarse key would miss, so change the
+# length too -- and then prove the guard is the KEY and not the clock by checking the value.
+printf '<Project Sdk="Microsoft.NET.Sdk">\n  <ItemGroup>\n    <Compile Include="AfterExtraction.fs" />\n  </ItemGroup>\n</Project>\n' \
+  > "$cache_probe_tree/src/SIR.Domain/SIR.Domain.fsproj"
+cache_second=$(project_elements "$cache_probe_tree" src/SIR.Domain/SIR.Domain.fsproj Compile)
+test "$cache_second" = "src/SIR.Domain/AfterExtraction.fs" || {
+  pin_probe_fail "the read cache served a STALE answer after the project changed (got: $cache_second): a cached compile-item set is a silent wrong answer from the arm that exists to refuse one"
+}
+
 # 18. WIRING. Both S.I.R.#290 arms must have run against the REAL tree and the REAL manifests
 #     during this invocation, not merely against probe fixtures. Deleting either production call
 #     site reds here, which is the property probes 9-17 cannot provide on their own because they
@@ -1735,6 +1801,7 @@ grep -Fxq "$(printf 'sealed-blob\t%s\t%s' "$source_manifest" "$source_commit")" 
 
 rm -rf "$pin_probe_dir"
 rm -f "$pin_probe_log" "$arm_invocations"
+rm -rf "$msbuild_read_cache"
 printf 'package\t%s\nalgorithm\t%s\n' "$(jq -r '.packageSha256' "$source_manifest")" "$(jq -r '.algorithmFingerprint' "$source_manifest")" >> "$source_digest_input"
 actual_sources_digest=$(sha256sum "$source_digest_input" | cut -d' ' -f1)
 identity_mutant=$(mktemp /tmp/sir-rules-source-digest-mutant.XXXXXX)
