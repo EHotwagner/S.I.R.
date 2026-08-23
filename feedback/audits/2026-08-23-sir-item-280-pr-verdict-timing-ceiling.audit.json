@@ -1,0 +1,163 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-23-sir-item-280-pr-verdict-timing-ceiling.md",
+  "reportSha256": "173f6cbe2d623629bcc5d4888dd3c017583fc66d0a1e591671a3df558b919a9d",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "confidenceLimits": [
+        "Per-run attribution was absent in the first revision; run ids and heads for 243224, 283553 and 469739 are now named inline.",
+        "Wave maxima used for budget calibration are job wall times, not receipt totals; see §1."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#280",
+          "result": "verified"
+        },
+        {
+          "locator": "file:feedback/2026-08-21-sir-item-220-ci-budget-repair-phase-2.md",
+          "result": "verified",
+          "sha256": "aa7e90e3c23990d0ad66525263771b24e117093fb6618216815027a77e8eebc8"
+        }
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "confidenceLimits": [
+        "The first revision stated the queue wait as 191s, which is wall clock minus the enforced bound rather than a queue measurement. Corrected to the 207s dependency-satisfied-to-start interval."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "command:gh api repos/EHotwagner/S.I.R./actions/runs/32607930272/attempts/2/jobs",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#280",
+          "result": "verified"
+        }
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "confidenceLimits": [
+        "The first revision gave 272s (sum of per-wave maxima) where the dependency critical path is 263s. Both are now stated and distinguished; the conclusion is unchanged under either."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "command:gh api repos/EHotwagner/S.I.R./actions/runs/32607930272/attempts/2/jobs",
+          "result": "verified"
+        },
+        {
+          "locator": "file:.github/workflows/ci.yml",
+          "result": "verified",
+          "sha256": "0f8ab5d9f577acb460b30e5a588b4ca3d4cbfcc411c44eddc8f8f45b698ec181"
+        }
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "duplicate",
+      "missingFacts": [],
+      "confidenceLimits": [
+        "Duplicates S.I.R.#255 and feedback/2026-08-22-sir-item-252-audit-binding-ledger-currency.md §4.4; S.I.R.#279 covers the adjacent double-append defect. Retained as an observation with new evidence, not as a new handoff."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#255",
+          "result": "verified"
+        },
+        {
+          "locator": "file:feedback/2026-08-22-sir-item-252-audit-binding-ledger-currency.md",
+          "result": "verified",
+          "sha256": "a0c72a86014f7c2e5e9982c39d456687846ab5583467b42c4fa455f58790c286"
+        }
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "confidenceLimits": [
+        "The first revision's headline (selection by route breadth) was contradicted by scripts/ci-integrity-plan.mjs:19, which selects by path relevance and names the two edited files; and its owner was wrong, the message being emitted by the FS-GG Kit. Both corrected."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/ci-integrity-plan.mjs",
+          "result": "verified",
+          "sha256": "e1e557d5c1af9538f2cdbcfd61b0802f833696f648711d535c20e76688205b8d"
+        },
+        {
+          "locator": "file:.agents/skills/fs-gg-feedback-report/scripts/FeedbackReportTool.fs",
+          "result": "verified",
+          "sha256": "94406cddf8169482ba12e90566cacc044ba2bbeb01ea199f53727698a042e200"
+        }
+      ]
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "confidenceLimits": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-ci-product-performance-route.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-ci-product-performance-route.sh",
+          "result": "verified",
+          "sha256": "02b7b01a76eb32154480ff33f978e152573c309820df70d4a3215b4d1e7547f6"
+        }
+      ]
+    },
+    {
+      "id": "§4.7",
+      "status": "actionable",
+      "missingFacts": [],
+      "confidenceLimits": [
+        "Raised by the critic as this report's largest omission rather than found by the author."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/ci-route.mjs",
+          "result": "verified",
+          "sha256": "05ae7dc9ccb06721d7eec52348fa22ae314b053c0a430835f21c53110012822e"
+        },
+        {
+          "locator": "file:scripts/test-ci-route.mjs",
+          "result": "verified",
+          "sha256": "3950ebdf0ab889d98cde5f61785cbd6b784664312982b45b038e49119f3c7a96"
+        }
+      ]
+    },
+    {
+      "id": "§4.8",
+      "status": "actionable",
+      "missingFacts": [],
+      "confidenceLimits": [
+        "Found by independent review critic avocet-d92c during round 1 of PR #281's review, not by the author and not by this report's actionability critic, which verified §2's citations without executing the harness they described.",
+        "The three guards (null control, no-op refusal, wrong-reason refusal) were each exercised deliberately and observed firing before this finding was written."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-ci-route-mutations.sh",
+          "result": "verified",
+          "sha256": "6d462cd33455ba0e6cea11c2110db0e72a0d19b44e2c81ce3996b05069e7fc7d"
+        },
+        {
+          "locator": "file:scripts/ci-integrity-plan.mjs",
+          "result": "verified",
+          "sha256": "e1e557d5c1af9538f2cdbcfd61b0802f833696f648711d535c20e76688205b8d"
+        }
+      ]
+    }
+  ]
+}

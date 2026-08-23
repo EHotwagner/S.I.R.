@@ -1,0 +1,159 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-22-sir-item-256-agent-toolchain-wiring.md",
+  "reportSha256": "9868cf3bdc876d0082cdfd6f718bcd2fc409839068c6482c8adec7ca9eb8e87f",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:global.json",
+          "result": "verified",
+          "sha256": "0588e32d44bdf884e0305ded21820b13a59b1518efd39976c34d909eff3b1044"
+        },
+        {
+          "locator": "file:scripts/test-agent-env.sh",
+          "result": "verified",
+          "sha256": "988b72528342a89c3dd0648868a23084c56dab93f8c6fdaf3ba1f4d23e89bd10"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#256",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "One machine.",
+        "global.json witnesses only the pin half. The reproduction route is the committed negative control, group A of scripts/test-agent-env.sh, which asserts all four entry points fail without the wiring; the critic ran the suite. The impact claims are carried by the issue's own Impact section rather than measured by this cycle.",
+        "An earlier draft cited docs/workspace-onboarding.md, which is this branch's remedy and restates the finding rather than witnessing it; that citation was removed rather than reclassified."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/fixtures/item-256-host-environment-probes.md",
+          "result": "verified",
+          "sha256": "c815d7bb80c6d5ffbc26b55443f29f60fca7fdfeb3127d03007a67ee88e9f348"
+        }
+      ],
+      "confidenceLimits": [
+        "Two host versions (Claude Code 2.1.240, Codex CLI 0.149.0), one machine, one date.",
+        "No machine-captured run log sits behind the fixture transcripts; what makes them reproducible is that the fixture ships a regenerate command with each probe, and the critic re-executed both and matched them byte for byte.",
+        "An earlier draft also cited .claude/settings.json and .codex/config.toml. Those are the remedy, not the witness, and were removed rather than reclassified."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/fixtures/item-256-host-environment-probes.md",
+          "result": "verified",
+          "sha256": "c815d7bb80c6d5ffbc26b55443f29f60fca7fdfeb3127d03007a67ee88e9f348"
+        }
+      ],
+      "confidenceLimits": [
+        "One Claude Code build (2.1.240); the shell snapshot is a generated file whose owner is free to change it, which the report concedes in §1.",
+        "The Probe D1 transcript initially omitted one matching line with no trim marker while its header claimed verbatim output. The defect was found by re-running the fixture's own regenerate command, is now repaired, and the repair is disclosed in the fixture header. The finding was independently reproduced both before and after that repair, so the defect was a gap in the evidence rather than a downgrade of the finding.",
+        "An earlier draft also cited scripts/agent-env.sh, which restates the finding in its own comments rather than witnessing it; that citation was removed rather than reclassified."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-agent-env.sh",
+          "result": "verified",
+          "sha256": "988b72528342a89c3dd0648868a23084c56dab93f8c6fdaf3ba1f4d23e89bd10"
+        },
+        {
+          "locator": "file:docs/workspace-onboarding.md",
+          "result": "verified",
+          "sha256": "8d446dbe51fe09910a811ea78240c443a36615b29d5cba71f6a390c5c1c0a219"
+        }
+      ],
+      "confidenceLimits": [
+        "The practice claim generalizes from one cycle.",
+        "The critic swapped in the pre-repair shim and re-ran the committed suite: all 36 checks pass against it, so the suite does not discriminate the review repair at all, and only group H discriminates the existence of the wiring itself. The report discloses this rather than letting 36 green lines read as proof of the repair."
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#255",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Engine version fs.gg.coord.cli 0.71.0 only.",
+        "The cause is owned end to end by an open issue and also appears in a prior cycle report, which this report now names; this cycle contributes one additional field name (evidenceRef)."
+      ]
+    },
+    {
+      "id": "§4.6",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/ci-route.mjs",
+          "result": "verified",
+          "sha256": "aec19c9ac8fecf30dbea864b9229d0ef60190d2a93ea461f8cb75c9fc4276f9d"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#252",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The integrity failure itself is described rather than cited to a run log.",
+        "Resolution re-verified after rebasing onto the #254 merge commit: scripts/test-feedback-audit-binding-exceptions.sh exits 0, where the pre-rebase head emitted both invalidation lines."
+      ]
+    },
+    {
+      "id": "§4.7",
+      "status": "duplicate",
+      "missingFacts": [
+        "No locator for the host ruling itself (no comment id or receipt).",
+        "No locator establishing that two agents were live in this lane concurrently; issue #261's Impact section records the overrun and could have been cited for it."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#261",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "One board pass and one host's judgement; recorded as a host disposition for this pass rather than a settled rule."
+      ]
+    },
+    {
+      "id": "§4.8",
+      "status": "duplicate",
+      "missingFacts": [
+        "No locator for the observed behaviour itself (no command route, and no packed-contract line showing the documented idiom).",
+        "No locator for the dispatch brief that pre-empted the failure in this cycle."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#266",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Not observed in this cycle: the report states the failure was pre-empted by the dispatch brief, so the finding is inherited from the issue rather than measured here."
+      ]
+    }
+  ]
+}

@@ -11,6 +11,18 @@ export const policyVersion = "2";
 export const feedbackBudgetMilliseconds = 300_000;
 export const feedbackHeadroomMilliseconds = 60_000;
 export const feedbackAcceptanceTargetMilliseconds = feedbackBudgetMilliseconds - feedbackHeadroomMilliseconds;
+// Structural feedback model (S.I.R.#280). The pull-request pipeline is a four-stage DAG:
+// the `route` job, one wave of subjects that need only `route`, one wave of subjects that
+// consume prepared producer artifacts, and the `pr-verdict` join. A ceiling stated as one
+// flat constant is therefore necessarily tightest exactly where the graph is widest, which
+// is what made `cross-cutting` -- the classification that selects every gate -- unsatisfiable.
+// Overhead covers the two un-instrumented end jobs: measured 12s (`route`) + 11s (`pr-verdict`)
+// on run 32607930272 attempt 2. The per-wave allowance is calibrated from the slowest wave of
+// the widest route this pipeline can select: 129s (wave 1, `spatial-mutations`) and 120s
+// (wave 2, `domain-conformance`) on that same run, and 132s/123s on run 32434802616.
+export const feedbackPipelineOverheadMilliseconds = 30_000;
+export const feedbackWaveBudgetMilliseconds = 180_000;
+export const feedbackHeadroomBasisPoints = 2_000;
 export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence"];
 export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web", "prepare-docs"];
 export const helperOrder = ["spatial-mutations", "cancellation-mutations", "browser-general-helper", "browser-delivery"];
@@ -26,6 +38,17 @@ export const gateParts = {
   documentation: ["web", "docs"],
   evidence: [],
 };
+// A subject is second-wave exactly when it consumes prepared producer artifacts; that is
+// already the discriminator `gateParts` encodes, and it agrees with ci.yml's `needs:` graph
+// (verified in scripts/test-ci-route.mjs against the workflow itself).
+export const subjectWave = (subject) => ((gateParts[subject] ?? []).length > 0 ? 2 : 1);
+export const feedbackWaveCount = (subjects) => Math.max(1, ...subjects.map(subjectWave));
+// A route is never held to LESS than the historical flat budget: this removes the inversion,
+// it does not tighten any route that passes today.
+export const feedbackBudgetFor = (subjects) => Math.max(
+  feedbackBudgetMilliseconds,
+  feedbackPipelineOverheadMilliseconds + feedbackWaveCount(subjects) * feedbackWaveBudgetMilliseconds,
+);
 export const expectedBuildInvocations = {
   integrity: [],
   "prepare-native": ["build:SIR.slnx", "producer:native"],
@@ -274,23 +297,52 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
     } else if (!producerOrder.includes(subject) && (result.artifactDigest !== null || Object.keys(result.artifactBindings ?? {}).length > 0)) failures.push({ code: "unexpected-artifact-binding", subject });
   }
   const elapsed = completedAtMilliseconds - startedAtMilliseconds;
-  const requiresRepresentativeHeadroom = ["cross-cutting", "performance"].includes(route?.classification);
-  const acceptanceTargetMilliseconds = requiresRepresentativeHeadroom ? feedbackAcceptanceTargetMilliseconds : feedbackBudgetMilliseconds;
-  const requiredHeadroomMilliseconds = requiresRepresentativeHeadroom ? feedbackHeadroomMilliseconds : 0;
+  // Each receipt's `total` is anchored by run-ci-gate.sh at its own job's first step, so it is
+  // in-job wall time with the runner queue wait EXCLUDED. Summing the per-wave maxima therefore
+  // yields the part of feedback latency this diff actually controls, whereas the raw elapsed
+  // wall clock also charges the diff for fleet saturation it has no influence over. Enforcing
+  // the queue-inclusive number made the same tree pass or fail on unrelated load.
+  const usableTotal = (subject) => {
+    const value = byGate.get(subject)?.timingMilliseconds?.total;
+    return Number.isSafeInteger(value) && value > 0 ? value : null;
+  };
+  for (const subject of expectedSubjects) {
+    if (byGate.has(subject) && usableTotal(subject) === null) failures.push({ code: "missing-feedback-timing", subject });
+  }
+  const waveCount = feedbackWaveCount(expectedSubjects);
+  const waveCriticalPathMilliseconds = Array.from({ length: waveCount }, (_ignored, index) => {
+    const totals = expectedSubjects.filter((subject) => subjectWave(subject) === index + 1).map(usableTotal).filter((value) => value !== null);
+    return totals.length === 0 ? 0 : Math.max(...totals);
+  });
+  const attributableCriticalPathMilliseconds = feedbackPipelineOverheadMilliseconds
+    + waveCriticalPathMilliseconds.reduce((sum, value) => sum + value, 0);
+  const budgetMilliseconds = feedbackBudgetFor(expectedSubjects);
+  // The reserve is a property of the measurement's variance, not of the classification's
+  // breadth. Reserving it for `cross-cutting` and `performance` alone is what left the widest
+  // route holding the shortest deadline even after the budget was shaped to the graph: at
+  // equal wave depth a two-gate `documentation` route kept the whole budget while the
+  // seven-gate route gave 20% of it back. Every route now reserves the same fraction, so the
+  // headroom check covers six classifications instead of two.
+  const requiredHeadroomMilliseconds = Math.round((budgetMilliseconds * feedbackHeadroomBasisPoints) / 10_000);
+  const acceptanceTargetMilliseconds = budgetMilliseconds - requiredHeadroomMilliseconds;
   if (!Number.isSafeInteger(elapsed) || elapsed < 0) failures.push({ code: "invalid-feedback-duration", subject: "timing" });
-  if (enforceBudget && Number.isSafeInteger(elapsed) && elapsed > feedbackBudgetMilliseconds) failures.push({ code: "feedback-budget-exceeded", subject: "timing", actual: elapsed, budget: feedbackBudgetMilliseconds });
-  if (enforceBudget && requiresRepresentativeHeadroom && Number.isSafeInteger(elapsed) && elapsed > feedbackAcceptanceTargetMilliseconds) failures.push({
+  if (enforceBudget && attributableCriticalPathMilliseconds > budgetMilliseconds) failures.push({
+    code: "feedback-budget-exceeded",
+    subject: "timing",
+    actual: attributableCriticalPathMilliseconds,
+    budget: budgetMilliseconds,
+  });
+  if (enforceBudget && attributableCriticalPathMilliseconds > acceptanceTargetMilliseconds) failures.push({
     code: "feedback-headroom-eroded",
     subject: "timing",
-    actual: elapsed,
-    target: feedbackAcceptanceTargetMilliseconds,
-    requiredHeadroom: feedbackHeadroomMilliseconds,
-    budget: feedbackBudgetMilliseconds,
+    actual: attributableCriticalPathMilliseconds,
+    target: acceptanceTargetMilliseconds,
+    requiredHeadroom: requiredHeadroomMilliseconds,
+    budget: budgetMilliseconds,
   });
   const ordered = subjectOrder.filter((gate) => byGate.has(gate)).map((gate) => byGate.get(gate));
   const validTotals = ordered.map((result) => result?.timingMilliseconds?.total).filter((value) => Number.isSafeInteger(value) && value >= 0);
   const observedGateCriticalPath = Math.max(0, ...validTotals);
-  const criticalPath = Number.isSafeInteger(elapsed) && elapsed >= 0 ? elapsed : observedGateCriticalPath;
   const runnerMilliseconds = validTotals.reduce((sum, value) => sum + value, 0);
   const timing = {
     schema: timingSchema,
@@ -298,11 +350,16 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
     startedAtMilliseconds,
     completedAtMilliseconds,
     totalMilliseconds: Number.isSafeInteger(elapsed) && elapsed >= 0 ? elapsed : null,
-    budgetMilliseconds: feedbackBudgetMilliseconds,
+    budgetMilliseconds,
     acceptanceTargetMilliseconds,
     requiredHeadroomMilliseconds,
-    actualHeadroomMilliseconds: Number.isSafeInteger(elapsed) && elapsed >= 0 ? feedbackBudgetMilliseconds - elapsed : null,
-    criticalPathMilliseconds: criticalPath,
+    actualHeadroomMilliseconds: budgetMilliseconds - attributableCriticalPathMilliseconds,
+    criticalPathMilliseconds: attributableCriticalPathMilliseconds,
+    waveCriticalPathMilliseconds,
+    pipelineOverheadMilliseconds: feedbackPipelineOverheadMilliseconds,
+    // Observed wall clock minus the attributable path: runner queue and inter-job scheduling.
+    // Reported so the cost observer keeps seeing real end-to-end latency; never enforced.
+    queuedMilliseconds: Number.isSafeInteger(elapsed) && elapsed >= 0 ? Math.max(0, elapsed - attributableCriticalPathMilliseconds) : null,
     observedGateCriticalPathMilliseconds: observedGateCriticalPath,
     runnerMilliseconds,
     cacheHits: ordered.filter((result) => result.cacheHit).length,
