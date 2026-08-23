@@ -25,6 +25,12 @@ working-set-measurement swapped-source=src/SIR.Simulation/Simulation.fs   base-b
 working-set-measurement before-assembly=<sha256> after-assembly=<sha256> assemblies-differ=yes
 ```
 
+`e118571` remains the recorded base after a later rebase onto a newer `main`, and that is checked
+rather than assumed: across the 12 intervening commits both swapped files have identical blob ids
+(`SpatialQuery.fs` `772d34c5…`, `Simulation.fs` `01d2a118…`), so the `before` side is the same code
+and the figures below still describe this change. This is the same check that retired the false
+"the rebase moved F4" story below — applied before restating a number rather than after.
+
 Two independent guards, and they catch different things:
 
 - **On source blobs, not on commits.** Two different commits routinely carry identical text for these
