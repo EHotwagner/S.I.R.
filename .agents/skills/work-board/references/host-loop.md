@@ -70,15 +70,42 @@ supports slash-based skill selection.
 
 At each worker's review handoff, spawn a fresh critic under the `independent-review` contract loaded
 by `$pnext-item`, route
-up to three numbered repairs back to the still-live worker, and require the same critic's confirmation
-after each repair. Before merge, verify PR state/head/checks, the durable review marker, the ordered
+up to three numbered repairs back to the still-live worker, and require a confirmation for each
+repair — from the same critic while it is available, or from a **fresh successor** when it is not.
+A successor is legal: the engine accepts a `confirmation` bound to a different critic after a
+`changes-required` verdict, and `review <ref> --pr <n>` actively returns `dispatchSuccessor` on a
+repaired head. It is refused only after a `pass`, with `every record in one review generation must
+bind the same critic`. Do not read "the same critic" as a hard requirement — a rule stricter than the
+engine is obeyed silently and produces a chain the ledger will not accept. Before merge, verify PR state/head/checks, the durable review marker, the ordered
 round/URL/SHA chain, critic independence, each material finding's disposition, and newly filed work.
 Validate the chain and confirm its latest round is less than three before routing each repair.
 A critic may file review-discovered work only when
 materiality, distinct root cause, dedupe, and actionability are evidenced; nonmaterial observations
 must not create issues, board rows, blocker edges, or follow-up entries. Post the exact-SHA
 `fsgg:review-accepted:v1` marker only after these pre-merge checks pass; the worker may not merge
-before it observes that marker. If material findings remain after round three, verify the escalation
+before it observes that marker.
+
+**Then record the acceptance the engine gates on.** The marker is human-readable review evidence;
+`landable` reads the structured `fsgg.coord.review-decision/v2` ledger, and refuses a PR that carries
+only the marker. Host acceptance is a record you write, not a marker you post:
+
+```sh
+scripts/fsgg-coord review record <ref> accept.json --pr <n>   # kind: acceptance, verdict: accepted
+```
+
+Three things about that draft are invisible from its field names, and each costs a wasted round:
+
+- **`critic` carries the CRITIC's worker id, not yours.** Every record in one review generation must
+  bind the same critic; your own id is refused with `every record in one review generation must bind
+  the same critic`, which reads like a complaint about the critic's record rather than your own.
+- **`precedingReview` must equal the `complete` wait event's `evidenceRef`, exactly** — the critic
+  record's comment URL is the natural value for both.
+- **You author no digest, `revision`, `previousDigest`, `claimGeneration` or `baseSha`.** The engine
+  derives all five from live state and discards the draft's values, so a placeholder is correct. An
+  acceptance draft is also pre-validated against the resulting chain before anything is posted, so a
+  wrong draft costs an error message rather than a corrupted ledger.
+
+The full contract is [`docs/coordination-engine-contracts.md`](../../../../docs/coordination-engine-contracts.md). If material findings remain after round three, verify the escalation
 marker, close the ordinary PR without merging, and automatically enter the repair phase; do not post
 acceptance, merge, or permit round four on the exhausted chain.
 
