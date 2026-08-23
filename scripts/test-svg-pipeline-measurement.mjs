@@ -39,7 +39,8 @@ assert.equal(summary.nextBottleneck.stage, "paint");
 assert.equal(summary.dispositions.packedTransport, "unresolved");
 assert.match(summary.interpretation, /not a permanent supported-size ceiling/);
 assert.deepEqual(extractFrameHealth(journeyTrace, definitions.frameBudget).intervalsMilliseconds, [16, 31]);
-assert.equal(extractFrameHealth(journeyTrace, definitions.frameBudget).droppedFrames, 1);
+assert.equal(extractFrameHealth(journeyTrace, definitions.frameBudget).droppedFrames, 1,
+  "of the 16/31/10 ms frames only the 31 ms one exceeds the declared ceiling; if this count moved, the drop threshold moved with the declaration, which is the intended derivation -- update the declaration deliberately, not this number");
 assert.throws(() => extractFrameHealth(journeyTrace), /undeclared threshold/,
   "frame health must refuse to count dropped frames with no declared ceiling rather than fall back to a literal");
 assert.equal(extractInputToPaint(journeyTrace, "selection").milliseconds, 1);
