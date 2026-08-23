@@ -18,6 +18,17 @@
 ///   `Subject:` comments name where each shape is USED, so that a reader knows which call site
 ///   the ordering claim is about -- they are not a claim that the call site is under test.
 ///
+///   AND THE ROUTING FOLLOWS FROM THAT, deliberately. This project's only ProjectReference is
+///   src/SIR.Simulation (see the .fsproj), so that IS a compile input of this gate -- but a
+///   `domain`-classified route changes src/SIR.Simulation WITHOUT selecting `collection-strategies`,
+///   and that is intended rather than an accident of the classifier. Nothing here calls into it:
+///   the opens below are System, System.Diagnostics, System.Collections.Generic and FS.GG.Game.Core,
+///   and the only external call in any measured loop is Edges.edgeBetween. So a change there cannot
+///   move a ratio; it can only break the BUILD, which prepare-native already covers wherever
+///   SIR.slnx is compiled. Selecting on it would re-measure, on every domain PR, a number that could
+///   not have changed. Recorded here because a row whose whole subject is "a regression gate nothing
+///   runs is indistinguishable from a gate that passes" cannot leave its own non-selection unstated.
+///
 /// The second failure direction is the load-bearing one: a benchmark that quietly stops measuring
 /// anything collapses its own ratios, so `list-is-not-viable-at-MaxEdges` and its siblings red on
 /// a dead harness exactly as they do on a reintroduced slow shape.

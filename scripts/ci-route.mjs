@@ -49,6 +49,13 @@ export const gateParts = {
   // sir.ci-gate-result/v1 receipt with its own timings, and `pr-verdict` requires it like any other.
   // And it does not lean on S.I.R.#326's inflated reused receipt: strip `browser-delivery` from the
   // wave entirely and the maximum is still `browser` at 77288ms against this gate's ~25s.
+  //
+  // ROUTING BOUNDARY, stated because it is a decision and not a gap: a `domain` route changes
+  // src/SIR.Simulation -- this harness's only ProjectReference, so genuinely a compile input -- and
+  // does NOT select this gate. That is intended. Collections.fs calls nothing from it (its only
+  // external call in a measured loop is FS.GG.Game.Core's Edges.edgeBetween), so such a change
+  // cannot move a ratio; it can only break the build, which prepare-native already covers. The
+  // reasoning lives at the top of Collections.fs alongside what the gate does and does not guard.
   "collection-strategies": ["native"],
 };
 // S.I.R.#304. THE one derivation of "which producers does this route need". Both sides of the

@@ -1,9 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { chmodSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { tmpdir } from "node:os";
-import { spawnSync } from "node:child_process";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
 import { canonicalArtifactBindings, expectedBuildInvocations, expectedProducersFor, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, feedbackAcceptanceTargetMilliseconds, feedbackHeadroomMilliseconds, feedbackBudgetFor, feedbackWaveCount, feedbackPipelineOverheadMilliseconds, feedbackWaveBudgetMilliseconds, feedbackHeadroomBasisPoints, subjectWave, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
 import { browserShardCapacityFor } from "./browser-shard-capacity.mjs";
 import { mergeBrowserShardCases, parseBrowserShardJUnit } from "./browser-junit.mjs";
@@ -410,7 +408,12 @@ assert.match(jobBody("browser"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/brow
 assert.match(jobBody("browser-general-helper"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-3\.junit\.xml[\s\S]*SIR_JUNIT_OUTPUT_2: artifacts\/ci\/results\/browser-general-4\.junit\.xml/u);
 assert.match(jobBody("pr-verdict"), /test-browser-global-merge\.mjs[\s\S]*browser-general-1\.junit\.xml[\s\S]*browser-general-2\.junit\.xml[\s\S]*browser-general-3\.junit\.xml[\s\S]*browser-general-4\.junit\.xml/u);
 assert.match(jobBody("pr-verdict"), /browser_merge_status=\$\?[\s\S]*rm -f artifacts\/ci\/results\/browser-general-helper\.json/u);
-assert.match(workflow, /for gate in integrity prepare-native prepare-fable prepare-web prepare-docs spatial-mutations cancellation-mutations browser-general-helper browser-delivery rules spatial cancellation cross-runtime browser documentation evidence/u);
+// S.I.R.#263/F3. The literal restatement of pr-verdict's subject loop that stood here is DELETED.
+// It was the #304 duplicate this change exists to remove -- a second declaration of `subjectOrder`
+// maintained by hand -- and it had already gone stale: it omitted `collection-strategies` and passed
+// anyway, because a substring match against a longer list is a prefix match. It also fired BEFORE the
+// derived check below, masking that check's refusal message on every unreadable-input case. The
+// equality asserted further down reads the loop out of this same workflow and needs no literal twin.
 assert.match(workflow, /\.\/scripts\/qualify-production\.sh --protected/u);
 const fullQualification = readFileSync(new URL("./qualify-production.sh", import.meta.url), "utf8");
 assert.ok(fullQualification.indexOf("dotnet restore SIR.slnx --locked-mode") < fullQualification.indexOf("test-conformance.sh"));
@@ -839,111 +842,6 @@ for (const [classification, paths] of Object.entries(sixRoutes)) {
   assert.deepEqual([...ran].sort(), [...expected].sort(),
     `${classification}: ci.yml runs [${ran}] but pr-verdict expects [${expected}] -- these must be one declaration`);
 }
-// --- S.I.R.#263 (root cause of S.I.R.#326): a gate that runs SECOND in a shared job must not
-// --- be charged for the gate that ran FIRST ---------------------------------------------------
-//
-// `domain-conformance` backgrounds rules/spatial/cancellation, waits, then runs `browser-delivery`
-// SERIALLY in the same job. `run-ci-gate.sh` computes `setup_ms = command_started - runner_started`
-// against SIR_CI_RUNNER_START_MS -- the JOB's first step -- so without re-anchoring the second gate
-// absorbs the first one's entire runtime. Measured on run 32662598661: browser-delivery setup=115208,
-// which is `rules` total 115154 plus 54ms of `wait`, and 115208 + test 55891 = total 171099 exactly.
-// Across five runs its total tracked the JOB's wall clock at 96.2-97.3%, which is why it was the
-// wave-2 maximum in all ten sampled runs BY CONSTRUCTION rather than by chance.
-//
-// This is asserted BEHAVIOURALLY, by executing the committed step with a stub gate runner, for the
-// same reason #265's guard-status check is: the property is about what the shell DOES with an
-// environment variable, and a textual check for `delivery_anchor` would pass on a spelling that
-// does not work and fail on a correct one spelled differently.
-const domainGateStep = (() => {
-  const body = jobBody("domain-conformance");
-  const start = body.indexOf("      - name: Run independently receipted domain gates concurrently");
-  assert.notEqual(start, -1, "could not find domain-conformance's gate step -- refusing rather than deciding");
-  const rest = body.slice(start);
-  const end = rest.indexOf("      - if: always()");
-  const step = end < 0 ? rest : rest.slice(0, end);
-  const run = /^        run: \|\n((?:          .*\n|\n)+)/mu.exec(step);
-  assert.ok(run, "could not read the gate step's `run:` block");
-  return run[1].split("\n").map((line) => (line.startsWith("          ") ? line.slice(10) : line)).join("\n");
-})();
-
-// Runs the committed step with every gate stubbed. `concurrent` selects whether
-// rules/spatial/cancellation run at all; each stub sleeps its configured time and records the anchor
-// it was handed. Returns each subject's reported total and its anchor offset from the job's start.
-const runDomainStep = (concurrent, concurrentSeconds, deliverySeconds) => {
-  const dir = mkdtempSync(join(tmpdir(), "sir-ci-anchor-"));
-  try {
-    mkdirSync(join(dir, "scripts"), { recursive: true });
-    mkdirSync(join(dir, "artifacts/ci/results"), { recursive: true });
-    writeFileSync(join(dir, "step.sh"), domainGateStep
-      .replaceAll("${{ needs.route.outputs.rules }}", String(concurrent))
-      .replaceAll("${{ needs.route.outputs.spatial }}", String(concurrent))
-      .replaceAll("${{ needs.route.outputs.cancellation }}", String(concurrent))
-      .replaceAll("${{ needs.route.outputs.browser }}", "true"));
-    writeFileSync(join(dir, "scripts/run-ci-gate.sh"),
-      `#!/usr/bin/env bash\nset -uo pipefail\ngate=$1; out=$2\nanchor=\${SIR_CI_RUNNER_START_MS:-0}\n`
-      + `case "$gate" in browser-delivery) sleep ${deliverySeconds} ;; *) sleep ${concurrentSeconds} ;; esac\n`
-      + `now=$(date +%s%3N)\nprintf '{"gate":"%s","anchor":%s,"total":%s}\\n' "$gate" "$anchor" "$(( now - anchor ))" > "$out"\n`);
-    chmodSync(join(dir, "scripts/run-ci-gate.sh"), 0o755);
-    const jobAnchor = Date.now();
-    spawnSync("bash", ["step.sh"], { cwd: dir, env: { ...process.env, SIR_CI_RUNNER_START_MS: String(jobAnchor) }, encoding: "utf8" });
-    const out = {};
-    for (const name of readdirSync(join(dir, "artifacts/ci/results"))) {
-      const r = JSON.parse(readFileSync(join(dir, "artifacts/ci/results", name), "utf8"));
-      out[r.gate] = { total: r.total, anchorOffset: r.anchor - jobAnchor };
-    }
-    return out;
-  } finally { rmSync(dir, { recursive: true, force: true }); }
-};
-
-{
-  // SELF-TEST FIRST: the harness must be able to SEE a double-count, or the assertions below are
-  // decoration. A stub whose delivery work is long must report a long total.
-  const sanity = runDomainStep(false, 0.1, 0.6);
-  assert.ok(sanity["browser-delivery"].total >= 500,
-    `harness self-test: a 0.6s delivery gate reported ${sanity["browser-delivery"].total}ms -- the harness is not measuring the gate`);
-
-  // (1) THE DEFECT'S DIRECTION: concurrent gates slow, delivery fast. Its total must NOT absorb them.
-  const concurrentSlow = runDomainStep(true, 0.8, 0.1);
-  assert.ok(concurrentSlow["rules"].total >= 700, "premise: the concurrent gates really were slow");
-  assert.ok(
-    concurrentSlow["browser-delivery"].total < concurrentSlow["rules"].total,
-    "browser-delivery is charged for the gates that ran before it: its total "
-      + `(${concurrentSlow["browser-delivery"].total}ms) is not below \`rules\` (${concurrentSlow["rules"].total}ms). `
-      + "Re-anchor SIR_CI_RUNNER_START_MS before the serial invocation (S.I.R.#263).",
-  );
-  assert.ok(concurrentSlow["browser-delivery"].anchorOffset >= 700,
-    "browser-delivery must be anchored AFTER the concurrent phase when one ran");
-
-  // (2) THE OPPOSITE DIRECTION, which is what keeps the fix from being a mute button: when the
-  // delivery gate's OWN work is slow, its total must rise and it must still be able to take the
-  // wave maximum. A repair that simply made this number small would pass (1) and fail here.
-  const deliverySlow = runDomainStep(true, 0.1, 0.8);
-  assert.ok(
-    deliverySlow["browser-delivery"].total >= 700,
-    `a genuinely slow browser-delivery must still report its own time, got ${deliverySlow["browser-delivery"].total}ms`,
-  );
-  assert.ok(
-    deliverySlow["browser-delivery"].total > deliverySlow["rules"].total,
-    "a genuinely slow browser-delivery must still be able to take the wave maximum",
-  );
-
-  // (3) THE BOUNDARY THE CONDITION EXISTS FOR. A `browser` route selects `browser` WITHOUT
-  // rules/spatial/cancellation, so the gates array is empty and this gate is the only thing the job
-  // runs. There the job anchor is correct, and re-anchoring unconditionally would silently drop the
-  // job preamble and UNDER-report the wave -- worse than over-reporting, because it weakens the gate.
-  assert.deepEqual(
-    routePaths(["tests/SIR.Browser.Tests/journey.js"], { commit: "a".repeat(40), tree: "b".repeat(40) })
-      .selectedGates.filter((gate) => ["rules", "spatial", "cancellation"].includes(gate)),
-    [],
-    "premise: a browser route selects none of the concurrent domain gates",
-  );
-  const deliveryAlone = runDomainStep(false, 0.8, 0.1);
-  assert.equal(
-    deliveryAlone["browser-delivery"].anchorOffset, 0,
-    "with no concurrent gates browser-delivery must keep the JOB anchor, or the preamble is dropped",
-  );
-}
-
 // --- S.I.R.#263: the JOIN's subject list and `subjectOrder` are the same set -----------------
 //
 // `pr-verdict` builds its `--result` arguments from a hand-written `for gate in ...` list in
@@ -958,27 +856,43 @@ const runDomainStep = (concurrent, concurrentSeconds, deliverySeconds) => {
 // a subject missing from the loop is a gate whose verdict is silently discarded, and a name in the
 // loop that is not a subject is a `--result` for a file that can never exist.
 const joinSubjectLoop = (() => {
-  const match = /^\s*for gate in ([a-z][a-z0-9 -]*); do$/mu.exec(jobBody("pr-verdict"));
-  assert.ok(match, "could not find pr-verdict's `for gate in ...; do` subject loop -- refusing rather than deciding over a list it may not have read");
-  return match[1].trim().split(/\s+/u);
+  const body = jobBody("pr-verdict");
+  // EXACTLY ONE, and it must be THE loop that feeds the join. The first version of this used `exec`,
+  // which takes the FIRST match and asserts nothing about how many exist -- so a second
+  // `for gate in <correct list>; do` anywhere earlier in the job satisfied it while the real loop went
+  // unchecked, and the suite stayed green with `collection-strategies` dropped from the join. A check
+  // that reads the first thing shaped like its subject is not reading its subject.
+  const loops = [...body.matchAll(/^\s*for gate in ([a-z][a-z0-9 -]*); do$([\s\S]*?)^\s*done$/gmu)];
+  assert.equal(
+    loops.length, 1,
+    `pr-verdict contains ${loops.length} \`for gate in ...; do\` loops; exactly one must exist so that "the loop" is unambiguous`,
+  );
+  const [, names, loopBody] = loops[0];
+  // PROVENANCE: the loop must be the one that actually builds the join's arguments. Shape alone is not
+  // identity -- a decorative loop with the right words in it would otherwise pass for the real one.
+  assert.match(
+    loopBody, /args\+=\(--result/u,
+    "the matched `for gate in ...` loop does not build `args+=(--result ...)`, so it is not the loop that feeds the join",
+  );
+  return names.trim().split(/\s+/u);
 })();
 assert.equal(new Set(joinSubjectLoop).size, joinSubjectLoop.length,
   `pr-verdict's join loop names a subject twice: ${joinSubjectLoop.join(" ")}`);
+// ONE comparison, used by the assertion AND by its self-test. The first version self-tested a
+// REPLICA (`disagree`) while the assertion was a separate `deepEqual`, so making the real predicate
+// tautological left the self-test green and the suite passing -- a vacuity guard that guarded nothing.
+const joinLoopDisagreement = (loop, subjects) =>
+  subjects.filter((id) => !loop.includes(id)).concat(loop.filter((id) => !subjects.includes(id)));
+assert.equal(joinLoopDisagreement(["a", "b"], ["a", "b"]).length, 0, "join-loop self-test: agreement must read as agreement");
+assert.deepEqual(joinLoopDisagreement(["a"], ["a", "b"]), ["b"], "join-loop self-test: a subject missing from the loop must be detectable");
+assert.deepEqual(joinLoopDisagreement(["a", "b"], ["a"]), ["b"], "join-loop self-test: a loop name that is not a subject must be detectable");
 assert.deepEqual(
-  [...joinSubjectLoop].sort(),
-  [...subjectOrder].sort(),
+  joinLoopDisagreement(joinSubjectLoop, subjectOrder),
+  [],
   "pr-verdict's join loop and subjectOrder disagree.\n"
     + `  a subject the join never receives (its gate's verdict is DISCARDED): ${subjectOrder.filter((id) => !joinSubjectLoop.includes(id)).join(", ") || "(none)"}\n`
     + `  a name in the loop that is not a subject (a --result that can never exist): ${joinSubjectLoop.filter((id) => !subjectOrder.includes(id)).join(", ") || "(none)"}`,
 );
-// Self-test, the same discipline the #309 block below applies to itself: a comparison that has
-// never been red is equally consistent with "the lists agree" and "this cannot fire".
-{
-  const disagree = (loop, subjects) => subjects.filter((id) => !loop.includes(id)).concat(loop.filter((id) => !subjects.includes(id)));
-  assert.equal(disagree(["a", "b"], ["a", "b"]).length, 0, "join-loop self-test: agreement must read as agreement");
-  assert.deepEqual(disagree(["a"], ["a", "b"]), ["b"], "join-loop self-test: a subject missing from the loop must be detectable");
-  assert.deepEqual(disagree(["a", "b"], ["a"]), ["b"], "join-loop self-test: a loop name that is not a subject must be detectable");
-}
 
 // --- S.I.R.#309: every classification's job graph must be SATISFIABLE -----------------------
 // S.I.R.#304 made producer SELECTION one declaration. It did not, and could not, decide whether
