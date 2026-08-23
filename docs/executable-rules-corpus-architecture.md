@@ -676,9 +676,114 @@ mistaken for accidents:
   `CanonicalEncoding.fs`, `CanonicalHash.fs` and `FixedPoint.fs` are listed for
   exactly this reason — omitting them was once filed as a defect and fixed by
   inclusion.
-- **The set is closed under refactoring.** When code moves out of a listed file
-  into a new one, the new file joins the list in the same change, so extraction
-  cannot quietly move implementation out from under the digest.
+- **The set is frozen at `sourceCommit`, and cannot grow in the change that
+  creates a file.** The two requirements binding `.sources` are jointly
+  unsatisfiable for a new path: the seal is computed from each listed path's blob
+  *at* `sourceCommit`, so a path a pull request creates has no blob to hash, and
+  `sourceCommit` must already be an ancestor of the canonical default branch, so
+  it cannot be advanced to the pull request's own head either. Adding a path is
+  refused with an actionable diagnostic naming both remedies; before S.I.R.#290 it
+  aborted the whole gate at exit 128 with a raw `git fatal:`.
+
+  This paragraph replaces an earlier claim that the set is *closed under
+  refactoring* — that when code moves out of a listed file into a new one, "the
+  new file joins the list in the same change". That was false in both directions
+  and is measured so on S.I.R.#290: doing literally what it said aborted the gate,
+  and the extraction it promised to prevent passed green. It also contradicted the
+  sentence above it, since a list that "does not change when the tree changes"
+  cannot gain a member when the tree gains a file.
+
+  **The consequence, stated plainly:** code extracted out of a listed file into a
+  new one is **not** covered by correspondence until `sourceCommit` is next
+  advanced, which is a deliberate rebind of the immutable half.
+
+- **That loss of coverage is detected, not absorbed.** The verifier computes the
+  *rules implementation closure* — every project that compiles a declared source,
+  plus every project reachable from one of those through `ProjectReference`,
+  transitively — and compares its compile items against the same closure at
+  `sourceCommit`. An item that entered the closure after the seal, and is neither a
+  declared source nor recorded in `source-correspondence.json` `.outsideIdentity`,
+  is refused. So an extraction is either kept inside a listed file, or **declared**
+  — a reviewable line in the diff rather than nothing at all.
+
+  **Why the dependency direction is the complete one**, and not merely a wider
+  guess: extraction moves code the declared source still *calls*. A declared source
+  can only call code its own project can reach, and .NET forbids reference cycles,
+  so a project that *references* the declared source's project can never be an
+  extraction target — the declared source could not call back into it. That leaves
+  exactly two destinations: the same project, and its transitive `ProjectReference`
+  closure. Both are covered.
+
+  This is stated precisely because the first version of this check was **not**
+  complete and said it was. It walked one hop — only the projects that list a
+  declared source directly — which at the time was 9 projects of 25. S.I.R.#290's
+  round-0 critic extracted `saturate` into a **new project** referenced from
+  `SIR.Domain`, and all four steps of the production `rules` gate passed
+  byte-identically to a clean tree. The transitive walk is the repair.
+
+  **The limits, stated rather than implied**, because an overclaimed limit is how a
+  real gap becomes invisible:
+
+  - It does not detect code moved into a compile item that was **already in the
+    baseline closure** at `sourceCommit`. That file was outside the seal before the
+    move as well, so the move narrows nothing relative to the baseline.
+  - It classifies **files**, not behaviour. A refactor that moves an implementation
+    *and* its call site out of a declared source is not caught by this arm, because
+    the moved code is no longer statically reachable from the declared source. It is
+    still visible: changing the declared source's text forces a correspondence
+    rebind, and that diff is the backstop.
+  - Neither arm is a behaviour gate. Behaviour is gated by manifest regeneration and
+    by executing the corpus.
+
+  An `Include` the check cannot evaluate is never walked past. An MSBuild property
+  expression, a reference to a project that is not in the tree, a reference
+  resolving outside the repository, and a project file whose XML does not parse are
+  each **refused**, because whatever they name would otherwise be invisible to
+  exactly the check they sit inside. The last of those is the reason the check
+  **parses** each project rather than matching its text: a reader that finds no
+  match in a file it could not interpret reports "this project compiles nothing",
+  which is the same answer it gives for a project that genuinely declares nothing.
+
+  **The reader reads MSBuild, not one shape of it** — and this too is stated
+  because the previous version was not complete and said it was. Round 1 matched
+  `Include` as an *attribute* rather than as the substring `<Tag Include="`, giving
+  attribute order as the reason; the reason does not stop at attribute order, and
+  the regex did. A single-quoted attribute value, a non-canonically-cased element
+  name, and a literal `>` inside an attribute value (which XML permits, and which
+  `[^>]*>` truncates) were all invisible to it, and each yielded *no items* rather
+  than an error — so `saturate` could leave the pinned `src/SIR.Domain/FixedPoint.fs`
+  through any of them with all four steps of the `rules` gate green. Each spelling
+  was confirmed legal by **building** it and observing the extracted type in the
+  emitted assembly, which also fixes the two boundaries the reader now relies on: a
+  lowercase `include=` *attribute* is not legal MSBuild (`MSB4232`), so the
+  attribute name is matched exactly; a semicolon-separated item list is legal and
+  compiles every member, so it is split rather than treated as one path.
+
+  **An item can also reach a project from a file the project never names**, and
+  that is resolved rather than guessed at. `Directory.Build.props` and
+  `Directory.Build.targets` are imported with no `<Import>` element anywhere to
+  see, and MSBuild finds them by starting in the **project's own directory** and
+  walking **up**, taking the first file of each name and stopping — so a file
+  nearer the project *shadows* the one at the tree root. The check performs that
+  same walk for every project in the closure and refuses `Compile` or
+  `ProjectReference` items in whichever file MSBuild would actually select, and
+  refuses an `<Import>` inside it as unfollowable.
+
+  This replaced a guard that read two fixed paths at the tree root and said, in
+  its own comment, that doing otherwise "would be an overclaimed limit". That
+  sentence was itself the overclaim: declaring the extracted file only in
+  `src/SIR.Domain/Directory.Build.props`, with the project file *and* the root
+  props byte-identical to pristine, built, emitted the extracted type into the
+  assembly, and passed all four steps — and removing only that one file failed the
+  build with `FS0039`, so it was the sole supplier. The nearest-wins semantics
+  were confirmed by **building**, not by reading the documentation: with a nested
+  file present, items declared at the root are ignored.
+
+  **The stated boundary**: the walk stops at the tree root. A
+  `Directory.Build.props` *above* the repository would also apply to a real build,
+  but it is not in the tree, not in the diff, and not something this arm can
+  describe — the same boundary the out-of-repository `ProjectReference` refusal
+  already draws.
 
 `source-correspondence.json` is the **mutable half**. It records, per declared
 source, the SHA-256 of that file's text after the normalization
@@ -686,6 +791,15 @@ source, the SHA-256 of that file's text after the normalization
 tree to still match it — byte-exactly, for every declared source. Correspondence
 covers the identity set **exactly**: a missing row and an undeclared row are both
 refusals, so a source cannot be unfrozen by deleting its entry.
+
+It also carries `.outsideIdentity`, the **complement** of the identity set: the
+compile items of those projects that are knowingly outside the seal. Recording a
+path there never adds coverage — it declares the absence of it — so the register
+cannot be used to widen the frozen set the way adding a `.sources` entry would.
+The register must be present and must be an array of strings; absent or wrongly
+typed is a refusal, because an absent register cannot be told apart from a
+deliberate empty one. A stale entry, naming a path no longer in the closure, is
+refused too: it would go on excusing nothing while hiding the next real escape.
 
 Because that baseline is rebindable, it cannot be the last line of defence. Every
 check described so far compares **declarations**: regenerated manifest, coverage
@@ -736,8 +850,10 @@ To change a declared implementation source:
    moved, then `--write` to record their new digests, **in the same commit**.
    The tool rebinds only paths whose normalized text actually differs and refuses
    to add or remove a path. Before recording anything it builds **every project
-   that actually compiles a rebound path** — resolved by reading `Compile Include`
-   entries and comparing resolved paths, not by naming convention — plus the
+   that actually compiles a rebound path** — resolved by **parsing** each project's
+   `Compile` items and comparing resolved paths, not by naming convention and not
+   by matching the substring `Compile Include="`, which is blind to spellings
+   MSBuild builds — plus the
    corpus test project, and then executes the corpus fixtures; it refuses if any
    of those builds fails, if the fixtures refuse, or if **no project compiles a
    declared path at all**.
