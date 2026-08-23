@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
-import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
+import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 validateDefinitions(source);
@@ -115,10 +115,6 @@ assert.throws(() => validateEvidenceReceipt(unboundCandidate, source, authority)
 const unboundDigest = structuredClone(evidence); unboundDigest.matrix.rawSummarySha256 = "f".repeat(64); reseal(unboundDigest);
 assert.throws(() => validateEvidenceReceipt(unboundDigest, source, authority), /authority binding/, "coordinated digest reseal must fail");
 console.log("JUSTIFIED evidence-binding: coordinated candidate and digest reseals rejected by tracked authority");
-const report = process.env.SIR_SVG_PIPELINE_JUNIT || "artifacts/test-results/svg-pipeline.junit.xml";
-mkdirSync(dirname(report), { recursive: true });
-writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="25" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="25" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="fixture-capacity"/><testcase name="axis-inventory"/><testcase name="trace-timing"/><testcase name="trace-window"/><testcase name="observed-run"/><testcase name="map-extent-control"/><testcase name="visible-density-control"/><testcase name="global-unit-control"/><testcase name="overlay-control"/><testcase name="event-rate-control"/><testcase name="supporting-list-control"/><testcase name="unique-unit-cells"/><testcase name="production-visible-observation"/><testcase name="production-global-observation"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/><testcase name="raw-trace-binding"/><testcase name="raw-trace-missing"/><testcase name="raw-trace-changed"/><testcase name="unreadable-input"/></testsuite></testsuites>\n');
-console.log("svg-pipeline measurement unit gates: PASS");
 
 // --- #268: the verdict must be derived from measurements, and must be able to say "fail" ---
 // These gates exist because `result` was a literal "pass" in the producer and the finalizer gated on it.
@@ -238,11 +234,68 @@ assert.equal(accepted.status, 0, `a conforming matrix must finalize, got: ${acce
 
 // and an artifact that CLAIMS a pass its own measurements do not support must be refused, because the
 // finalizer re-derives instead of trusting the field -- this is the route a bad merge reintroduces
-const lying = structuredClone(budgetMatrix);
-for (const run of lying.runs) run.frameBudget = { result: "pass" };
-lying.result = "pass";
-assert.notEqual(finalize(lying).status, 0, "an artifact whose claimed verdicts contradict its measurements must be refused");
+// The finalizer has THREE independent refusals and each needs a fixture that actually reaches it.
+// An earlier version of this block built its contradiction case from the BREACHING matrix, so it was
+// refused for the budget at the first check and never reached the integrity checks it was named for --
+// the assertion named for contradiction-refusal was provided by the budget refusal. Each case below is
+// therefore built from the CONFORMING matrix, so the budget check passes and the next one is reached,
+// and each matches its own error text rather than merely asserting a non-zero status.
+const perRunContradiction = structuredClone(conforming);
+const contradicted = perRunContradiction.runs.find((run) => (run.frameHealth?.frameDurationsMilliseconds || []).length);
+contradicted.frameBudget = { result: "fail" };
+const perRunRefusal = finalize(perRunContradiction);
+assert.notEqual(perRunRefusal.status, 0, "a run claiming a verdict its own measurements contradict must be refused");
+assert.match(`${perRunRefusal.stderr}`, /run verdicts disagree with the budget re-derived from their own measurements/,
+  "and refused FOR the disagreement, not incidentally for the budget");
+assert.match(`${perRunRefusal.stderr}`, new RegExp(`${contradicted.fixture}/${contradicted.journey} claims fail but measures pass`),
+  "naming the run that disagrees");
+
+const artifactContradiction = structuredClone(conforming);
+artifactContradiction.result = "fail";
+const artifactRefusal = finalize(artifactContradiction);
+assert.notEqual(artifactRefusal.status, 0, "an artifact whose own result contradicts its conforming runs must be refused");
+assert.match(`${artifactRefusal.stderr}`, /is not a passing matrix: it declares result "fail"/,
+  "and refused by the artifact-result check, which is a different refusal from the per-run one");
 rmSync(sandbox, { recursive: true, force: true });
-console.log("JUSTIFIED frame-budget-finalizer: the real finalizer refuses a breaching matrix and a self-contradicting one, and accepts a conforming one");
+console.log("JUSTIFIED frame-budget-finalizer: each of the three refusals reached by a fixture that gets past the preceding one, and each matched by its own error text");
 
 console.log("JUSTIFIED frame-budget-verdict: derived per-run and artifact verdicts red on the retained breaching matrix, green on its conforming runs, and fail closed on unmeasured input");
+
+// --- #268 F2: the surfaces an operator reads must carry the derived verdict, not a literal ---
+// The artifact said `fail` while the exit code, the printed line and the JUnit report all said pass
+// unconditionally. All three now read one derivation, so they are asserted here rather than in a browser.
+const failingRun = { fixture: "controlled-baseline", journey: "playback", result: "fail", frameBudget: { reason: "measured p95=124 ms against the declared ceiling of 16.67 ms" } };
+const passingRun = { fixture: "controlled-baseline", journey: "selection", result: "pass", frameBudget: { reason: "within ceiling" } };
+const exemptRun = { fixture: "controlled-baseline", journey: "idle", result: "unevaluated", frameBudget: { reason: "declared frame-exempt and produced no AnimationFrame records" } };
+
+const failingReport = measurementReport([failingRun, passingRun, exemptRun], evaluateArtifactVerdict([
+  { frameBudget: { result: "fail" } }, { frameBudget: { result: "pass" } }, { frameBudget: { result: "unevaluated" } }]));
+assert.equal(failingReport.exitCode, 1, "a breaching matrix must exit non-zero, not report success to the shell");
+assert.match(failingReport.summaryLine, /^svg-pipeline: FAIL /, "the printed line must say FAIL when the verdict is fail");
+assert.match(failingReport.junitXml, /failures="1"/, "the JUnit report must count the failing run");
+assert.match(failingReport.junitXml, /skipped="1"/, "and must count the unevaluated run as skipped, not passed");
+assert.match(failingReport.junitXml, /<failure message="[^"]*p95=124 ms/, "the failing testcase must carry its measured reason");
+assert.match(failingReport.junitXml, /name="idle"><skipped/, "the unevaluated run must be skipped rather than silently passing");
+
+const passingReport = measurementReport([passingRun], evaluateArtifactVerdict([{ frameBudget: { result: "pass" } }]));
+assert.equal(passingReport.exitCode, 0, "a conforming matrix must still exit zero, so the gate is not merely inverted");
+assert.match(passingReport.summaryLine, /^svg-pipeline: PASS /);
+assert.match(passingReport.junitXml, /failures="0"/);
+assert.doesNotMatch(passingReport.junitXml, /<failure/, "a passing run must carry no failure element");
+
+// a matrix of nothing but exemptions is not a pass, and the surfaces must say so too
+const exemptOnly = measurementReport([exemptRun], evaluateArtifactVerdict([{ frameBudget: { result: "unevaluated" } }]));
+assert.equal(exemptOnly.exitCode, 1, "an all-exempt matrix claims no pass, so it must not exit zero");
+assert.throws(() => measurementReport([passingRun], undefined), /derived artifact verdict is required/,
+  "reporting without a derived verdict must fail closed rather than invent one");
+console.log("JUSTIFIED frame-budget-report-surfaces: exit status, printed line and JUnit report all derive from the one verdict");
+
+
+// The JUnit report and the PASS line are written HERE, after every assertion above, and nowhere earlier.
+// They used to be written mid-file: under a mutation the suite exited 1 having ALREADY published a green
+// record, which is worse than publishing none -- a green artifact that outlives a red run. Node exits on
+// the first failed assertion, so reaching this line is what makes the report true.
+const report = process.env.SIR_SVG_PIPELINE_JUNIT || "artifacts/test-results/svg-pipeline.junit.xml";
+mkdirSync(dirname(report), { recursive: true });
+writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="34" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="34" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="fixture-capacity"/><testcase name="axis-inventory"/><testcase name="trace-timing"/><testcase name="trace-window"/><testcase name="observed-run"/><testcase name="map-extent-control"/><testcase name="visible-density-control"/><testcase name="global-unit-control"/><testcase name="overlay-control"/><testcase name="event-rate-control"/><testcase name="supporting-list-control"/><testcase name="unique-unit-cells"/><testcase name="production-visible-observation"/><testcase name="production-global-observation"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/><testcase name="raw-trace-binding"/><testcase name="raw-trace-missing"/><testcase name="raw-trace-changed"/><testcase name="unreadable-input"/><testcase name="frame-budget-declaration"/><testcase name="frame-budget-boundary"/><testcase name="frame-budget-fail-closed"/><testcase name="frame-budget-closed-domain"/><testcase name="frame-budget-artifact-verdict"/><testcase name="frame-budget-workload-identity"/><testcase name="frame-budget-retained-matrix"/><testcase name="frame-budget-finalizer"/><testcase name="frame-budget-report-surfaces"/></testsuite></testsuites>\n');
+console.log("svg-pipeline measurement unit gates: PASS");

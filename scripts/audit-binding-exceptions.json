@@ -87,7 +87,7 @@
       "locator": "file:scripts/measure-svg-pipeline.mjs",
       "path": "scripts/measure-svg-pipeline.mjs",
       "previousSha256": "c44057768f5d3cf6e283e5528378e06f11a01d43a2ea40bf24f251605ff1ca60",
-      "replacementSha256": "7b3d8d776255f0b9c6d27063e5f059048a385b3df6de1e2faec2d24a591c5062",
+      "replacementSha256": "d454ea3a7935e80bb9018f8d1991e25a2ab35a9f992a079485dca009e9fcd721",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The repaired-cycle audit is authored with the sampler-free runner it reviews; the focused source inversion rejects reintroduction of the observer workload. S.I.R.#268 then replaced this runner's two hardcoded `result: \"pass\"` literals with a verdict derived from the measured AnimationFrame durations against the budget declared in the fixture contract, repaired the stale build-identity manifest path (artifacts/publish/.vite -> artifacts/publish/wwwroot/.vite, which threw ENOENT and so prevented the runner from starting at all), and switched the fixture binding to fixtureIdentityDigest. The finding this entry attests to is unaffected: the runner remains sampler-free. Measured rather than asserted -- the diff adds zero lines matching observer/sampler/setInterval/PerformanceObserver, so no observer workload is reintroduced, and the focused source inversion still rejects one."
     },
@@ -97,7 +97,7 @@
       "locator": "file:scripts/lib/svg-pipeline-measurement.mjs",
       "path": "scripts/lib/svg-pipeline-measurement.mjs",
       "previousSha256": "6901cede8f372bf28205e56526fbb649bada83797bc6b7f4bf7985cd01be29a4",
-      "replacementSha256": "393c98ee61cba387d5aebd662584cf4f7199f6d58783fde01a903d132052d8e8",
+      "replacementSha256": "6360bd2e04ed6785ee447d453641bdbd9e94fa7ba6c56ce15d6a5e9313d7733f",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The repaired-cycle audit is authored with the clock-sync trace extraction it reviews; the focused timing and trace-window gates verify these bytes. S.I.R.#268 then added four exports to this library -- percentile, evaluateRunFrameVerdict, evaluateArtifactVerdict, and fixtureIdentityDigest -- required a declared frameBudget in validateDefinitions, and annotated droppedFrames as a reported diagnostic rather than a gate. The finding this entry attests to is unaffected: the clock-sync trace extraction it reviews is untouched. Measured rather than asserted -- the diff changes zero lines matching extractJourneyTrace/clock_sync/sync_id/traceTimestamp, removes no export, and the focused timing and trace-window gates still verify these bytes. Note that fixtureIdentityDigest deliberately excludes frameBudget from the fixture identity, so declaring a budget does not report existing evidence as coming from different fixtures; the workload digest is byte-identical to the pre-change whole-file digest."
     },
@@ -137,7 +137,7 @@
       "locator": "file:scripts/test-svg-pipeline-measurement.mjs",
       "path": "scripts/test-svg-pipeline-measurement.mjs",
       "previousSha256": "781bfa980922a717843c9a9f75495c46eb253fec74b2268e77f6d42556b491b4",
-      "replacementSha256": "f39288abb4091b09fcdced676ddfc13ee8fa752925a5991c898dffc520ecf1eb",
+      "replacementSha256": "fcb4b962704ed1e30f422ec9e4506f979ad488a32e5bf48023293b1e27ea8cae",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The repaired-cycle audit is authored with its focused gate; executing it proves the sampler, axis, retained-byte, and binding inversions remain live. S.I.R.#268 then appended frame-budget verdict coverage to this gate and extended its import; it removed nothing. The finding this entry attests to is unaffected: the sampler, axis, retained-byte and binding inversions it names are all still present and still executed. Measured rather than asserted -- the JUSTIFIED subject lines go 8 to 9 with every original subject still emitted and none removed, and the assertion count goes 30 to 50, so the added cases extend the gate rather than displace it. Executing it remains the declared replacement evidence and it passes."
     },

@@ -5,7 +5,7 @@ import { spawn } from "node:child_process";
 import { cpus, platform, release } from "node:os";
 import { basename, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
-import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, fixtureIdentityDigest, extractFrameHealth, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, stableJson, summarize, validateDefinitions, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
+import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, fixtureIdentityDigest, measurementReport, extractFrameHealth, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, stableJson, summarize, validateDefinitions, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
 
 const args = process.argv.slice(2);
 const option = (name, fallback) => { const index = args.indexOf(name); return index >= 0 ? args[index + 1] : fallback; };
@@ -167,6 +167,10 @@ try {
   const artifactVerdict = evaluateArtifactVerdict(runs);
 const artifact = { schema: "sir.svg-pipeline-measurement/1", result: artifactVerdict.result, frameBudget: { ...artifactVerdict, declared: definitions.frameBudget }, candidate, buildIdentity, fixtureDefinition: { path: "scripts/svg-pipeline-fixtures.v1.json", sha256: fixtureIdentityDigest(definitions) }, environment: { browserVersion, executableName: basename(executablePath), node: process.version, platform: platform(), release: release(), cpuCount: cpus().length }, selection: { fixtures: fixtures.map((fixture) => fixture.id), journeys }, runs, rawTraceManifest: rawTraceManifest ? { path: "work/231-svg-pipeline-measurement/raw-trace-manifest.json", sha256: digest(rawTraceManifest) } : null, summary: summarize(runs, definitions.materialShareThreshold) };
   writeFileSync(resolve(out, "summary.json"), stableJson(artifact));
-  writeFileSync(resolve(out, "measurement.junit.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="${runs.length}" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-production-chromium" tests="${runs.length}" failures="0" errors="0" skipped="0">${runs.map((run) => `<testcase classname="${run.fixture}" name="${run.journey}"/>`).join("")}</testsuite></testsuites>\n`);
-  console.log(`svg-pipeline: PASS runs=${runs.length} next=${artifact.summary.nextBottleneck.stage} artifact=${resolve(out, "summary.json")}`);
+  // One derivation, three surfaces. See measurementReport in ./lib/svg-pipeline-measurement.mjs.
+  const report = measurementReport(runs, artifactVerdict, { next: artifact.summary.nextBottleneck.stage, artifactPath: resolve(out, "summary.json") });
+  writeFileSync(resolve(out, "measurement.junit.xml"), report.junitXml);
+  console.log(report.summaryLine);
+  // set, not exit(), so the finally block still tears the browser and server down
+  process.exitCode = report.exitCode;
 } finally { await browser.close(); if (server) server.kill("SIGTERM"); }

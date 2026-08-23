@@ -291,6 +291,33 @@ export function evaluateRunFrameVerdict(frameHealth, journey, budget) {
   return { ...base, result: "pass", reason: `every evaluated percentile is within the declared ceiling of ${ceiling} ms` };
 }
 
+// Every surface that reports an outcome -- exit status, the printed line, the JUnit report -- is derived
+// HERE from the one verdict, rather than each translating it again. The artifact used to say what it
+// measured while the exit code, the printed line and the JUnit report said "pass" unconditionally: the
+// same defect as a literal `result`, at the two surfaces an operator actually reads. Keeping this in one
+// function is what stops a second translation existing to drift from the first, and it is what makes the
+// reporting assertable without a browser.
+const xmlEscape = (value) => String(value).replace(/[<>&"']/gu, (character) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" })[character]);
+
+export function measurementReport(runs, artifactVerdict, context = {}) {
+  if (!artifactVerdict?.result) throw new Error("a derived artifact verdict is required to report a measurement");
+  const rows = runs || [];
+  const failed = rows.filter((run) => run.result === "fail");
+  const unevaluated = rows.filter((run) => run.result === "unevaluated");
+  const counts = `tests="${rows.length}" failures="${failed.length}" errors="0" skipped="${unevaluated.length}"`;
+  const testcases = rows.map((run) => {
+    const open = `<testcase classname="${xmlEscape(run.fixture)}" name="${xmlEscape(run.journey)}"`;
+    if (run.result === "fail") return `${open}><failure message="${xmlEscape(run.frameBudget?.reason ?? "breached the declared frame budget")}"/></testcase>`;
+    if (run.result === "unevaluated") return `${open}><skipped message="${xmlEscape(run.frameBudget?.reason ?? "not evaluated against the declared frame budget")}"/></testcase>`;
+    return `${open}/>`;
+  }).join("");
+  return {
+    exitCode: artifactVerdict.result === "pass" ? 0 : 1,
+    junitXml: `<?xml version="1.0" encoding="UTF-8"?>\n<testsuites ${counts}><testsuite name="svg-pipeline-production-chromium" ${counts}>${testcases}</testsuite></testsuites>\n`,
+    summaryLine: `svg-pipeline: ${artifactVerdict.result.toUpperCase()} runs=${rows.length} passed=${artifactVerdict.passedRunCount} failed=${artifactVerdict.failedRunCount} unevaluated=${artifactVerdict.unevaluatedRunCount} reason=${artifactVerdict.reason}${context.next ? ` next=${context.next}` : ""}${context.artifactPath ? ` artifact=${context.artifactPath}` : ""}`,
+  };
+}
+
 // Derive the ARTIFACT verdict from the per-run verdicts. These are different questions: a run asks
 // whether one journey met the budget, the artifact asks whether the matrix as a whole did. The artifact
 // passes only when nothing failed AND at least one run was genuinely evaluated -- a matrix of nothing but
