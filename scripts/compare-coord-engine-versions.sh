@@ -76,12 +76,21 @@
 #   contract unreadable: { this is not json              REFUSED, not graded compatible, exit 1
 #   mislabelled engine in a version directory            aborts naming what actually answered, exit 2
 #   removed flag: --write-probe                    (R1)  unknown argument, exit 2
+#   value-taking option last, its value absent   (#303)  refuses naming the option, exit 2
+#                                                        (before #303: looped forever, killed at 124)
 #   python3 absent from PATH, all three board      (R2)  REFUSED command-contract, FAIL, exit 1
 #     surfaces still evaluating                           (before R2: "compatible", headline PASS, exit 0)
 #
 # The DIFFERS row is the one that matters after the R1 repair: the new exit-code guard must not swallow
 # a real engine difference into a refusal. It does not - 0.58.0 and 0.72.0 both evaluate, so the byte
 # comparison still fires and still reds.
+#
+# The #303 row is the only one that breaks the harness before it measures anything, which is why it was
+# possible to miss for so long: it is a setup refusal in the same class as the --write-probe row above,
+# not a comparison verdict. It is listed because the table's subject is this script's failure modes, and
+# an argument parser that never returns is one. All five value-taking options shared the defect and all
+# five were measured; `scripts/test-compare-coord-engine-versions.sh` re-derives that list from the
+# parser and re-runs the check, so this row does not depend on anyone re-typing it.
 #
 # The R2 row is an ENVIRONMENT mutation, not a code one, so it needs a guard the others do not: it was run
 # under `env -i` with a PATH carrying git/gh/dotnet but no python3, wrapped in a preflight that ABORTS at
@@ -101,14 +110,47 @@ set -uo pipefail
 
 die() { echo "compare-engines: $*" >&2; exit 2; }
 
+# ARGUMENT PARSING (S.I.R.#303). Every value-taking option reaches ONE guarded `shift 2`, and there is
+# deliberately no other `shift` anywhere in this loop.
+#
+# THE DEFECT THIS SHAPE CLOSES. The previous parser gave each option its own arm:
+# `--old) OLD="${2:-}"; shift 2 ;;`. With that option LAST on the command line there is no `$2`, so
+# `${2:-}` quietly substituted the empty string and `shift 2` then failed, because the shift count
+# exceeded `$#`. This script runs under `set -uo pipefail` and deliberately NOT `-e`, so that failure
+# was discarded: nothing was shifted, `$1` was still the same option, and the `while` loop re-processed
+# it forever. Measured at d500145, before this repair: each of `--old`, `--new`, `--ref`, `--pr` and
+# `--repo`, alone, ran until `timeout 5` killed it — exit 124, five times out of five. It was never a
+# defect in `--old`; it was in the arm shape that all five copies shared, so `--old` is not where it is
+# repaired.
+#
+# WHY THIS IS NOT FIVE PER-OPTION CHECKS. Guarding each arm separately rebuilds the original hazard in
+# a new place: it leaves five sites to keep correct, and the sixth value-taking option is added without
+# one. Here the option NAME selects only which variable is assigned; whether a value exists to assign is
+# decided once, ahead of every assignment. A new value-taking option joins the outer pattern list and
+# inherits the guard, because there is no private `shift` for it to forget.
+#
+# THE STRUCTURE IS ENFORCED, NOT MERELY INTENDED. `scripts/test-compare-coord-engine-versions.sh` reads
+# the option list out of THIS block instead of carrying its own copy, so an option added here is
+# exercised without being registered there; and it reds if a second `shift` appears in this loop, which
+# is what a relapse into per-option arms looks like. Its four inversions restore the unguarded arms (all
+# five), then guard only `--old` (the enumerated repair), then add a NEW unguarded option, then restore
+# per-option arms that are all correctly guarded — and each is required to be caught: the second on
+# options other than `--old`, the third on nothing but the option it introduced, and the fourth by the
+# shift count alone, because that mutant is behaviourally correct and no amount of running it reveals
+# the structure it lost.
 OLD="" NEW="" REF="" PR="" REPO="S.I.R."
 while [ $# -gt 0 ]; do
   case "$1" in
-    --old) OLD="${2:-}"; shift 2 ;;
-    --new) NEW="${2:-}"; shift 2 ;;
-    --ref) REF="${2:-}"; shift 2 ;;
-    --pr) PR="${2:-}"; shift 2 ;;
-    --repo) REPO="${2:-}"; shift 2 ;;
+    --old|--new|--ref|--pr|--repo)
+      [ $# -ge 2 ] || die "option $1 requires a value (usage: $1 VALUE)"
+      case "$1" in
+        --old)  OLD="$2" ;;
+        --new)  NEW="$2" ;;
+        --ref)  REF="$2" ;;
+        --pr)   PR="$2" ;;
+        --repo) REPO="$2" ;;
+      esac
+      shift 2 ;;
     *) die "unknown argument: $1" ;;
   esac
 done
