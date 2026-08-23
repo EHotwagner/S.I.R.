@@ -106,6 +106,22 @@ const mixed = summarize(run, jobs, artifacts, [receipts[0],
 assert.deepEqual(mixed.baselineComparison.verdict.receipts.map(({ within }) => within), [true, false]);
 assert.equal(mixed.baselineComparison.verdict.result, "fail");
 
+// The graded quantity is read from `timing.criticalPathMilliseconds` BY NAME, never through the
+// receipt-inventory `??` chain. A join that also carries a `timingMilliseconds.total` -- which that
+// chain prefers -- must still be graded on its attributable critical path, because `total` is
+// queue-inclusive wall clock and is not the quantity the gate enforces.
+const withWallClock = summarize(run, jobs, artifacts, [receipts[0], {
+  ...receipts[1],
+  value: {
+    ...receipts[1].value,
+    timingMilliseconds: { total: 999_999 },
+    timing: { criticalPathMilliseconds: 259_393, acceptanceTargetMilliseconds: 312_000, budgetMilliseconds: 390_000 },
+  },
+}]);
+assert.equal(withWallClock.baselineComparison.verdict.receipts[0].observedMilliseconds, 259_393);
+assert.equal(withWallClock.baselineComparison.verdict.result, "pass");
+assert.equal(withWallClock.baselineComparison.observed.verdictMilliseconds, 259_393);
+
 // A basis this code cannot evaluate is REFUSED, and the refusal reaches the report's only
 // exit-code path. The implementation enumerates none of these shapes -- it requires a positive safe
 // integer -- so a shape nobody listed here refuses on the same rule rather than being graded.
