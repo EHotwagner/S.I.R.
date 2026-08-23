@@ -364,8 +364,34 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with: { name: gate-prepare-docs, path: artifacts/ci/results, retention-days: 1 }
 
+  # S.I.R.#309. This job hosts THREE gates whose parts differ (rules->native, spatial->native+fable,
+  # cancellation->native+web), so its `needs:` must statically name the UNION -- but any one route
+  # selects only a subset, and GitHub skips a job whose `needs:` were skipped. That is the whole
+  # defect: a `domain` route legitimately does not select `web`, `prepare-web` correctly did not run,
+  # and this job was skipped with its own `if:` true, so `rules` and `spatial` were never written and
+  # `pr-verdict` reported `missing-gate-result` for both. `needs:` is static YAML and cannot be
+  # derived at run time; what CAN be derived is PARTICIPATION, and it is derived here from the same
+  # `expectedProducersFor` declaration S.I.R.#304 made the single source of producer selection.
+  #
+  # `!cancelled()` is what lifts GitHub's implicit "every need succeeded" requirement -- without a
+  # status-check function the job is skipped before this expression is ever consulted. Lifting it
+  # would also let a genuinely FAILED producer through, so each producer is re-admitted explicitly
+  # and only when this route did not select it: `prepare_X != 'true'` is the route saying it was
+  # never needed, and nothing else satisfies the clause. A producer that ran and failed keeps
+  # `prepare_X == 'true'` with a non-success result, and still blocks the job.
+  #
+  # Index syntax (`needs['prepare-native']`) rather than dot dereference: a hyphenated job id has no
+  # precedent anywhere in this repository's workflows, and no linter here can decide whether GitHub's
+  # expression parser reads that hyphen as part of the name or as subtraction. Index syntax is
+  # unambiguous under either reading, so the question does not need answering.
   domain-conformance:
-    if: needs.route.outputs.rules == 'true' || needs.route.outputs.spatial == 'true' || needs.route.outputs.cancellation == 'true'
+    if: >-
+      !cancelled()
+      && needs.route.result == 'success'
+      && (needs.route.outputs.rules == 'true' || needs.route.outputs.spatial == 'true' || needs.route.outputs.cancellation == 'true')
+      && (needs.route.outputs.prepare_native != 'true' || needs['prepare-native'].result == 'success')
+      && (needs.route.outputs.prepare_fable != 'true' || needs['prepare-fable'].result == 'success')
+      && (needs.route.outputs.prepare_web != 'true' || needs['prepare-web'].result == 'success')
     needs: [route, prepare-native, prepare-fable, prepare-web]
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -380,14 +406,32 @@ jobs:
         with: { node-version: 26.5.0 }
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: ci-route, path: artifacts/ci }
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      # Consumption follows the same derived flags as participation. A part this route never
+      # prepared has no artifact to download and nothing to extract; asking for it unconditionally
+      # would turn the skip this job just stopped being into a red download step instead.
+      - if: needs.route.outputs.prepare_native == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: prepared-part-native, path: artifacts/ci/parts }
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - if: needs.route.outputs.prepare_fable == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: prepared-part-fable, path: artifacts/ci/parts }
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - if: needs.route.outputs.prepare_web == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: prepared-part-web, path: artifacts/ci/parts }
-      - name: Extract verified domain inputs once
-        run: ./scripts/qualify-pr.sh extract-parts native fable web
+      - name: Extract exactly the verified domain inputs this route prepared
+        shell: bash
+        run: |
+          parts=()
+          [[ '${{ needs.route.outputs.prepare_native }}' == 'true' ]] && parts+=(native)
+          [[ '${{ needs.route.outputs.prepare_fable }}' == 'true' ]] && parts+=(fable)
+          [[ '${{ needs.route.outputs.prepare_web }}' == 'true' ]] && parts+=(web)
+          # Every gate this job hosts consumes `native`, so an empty set means the route flags and
+          # this job's own run condition disagree -- refuse rather than extract nothing and proceed.
+          if [[ ${#parts[@]} -eq 0 ]]; then
+            echo "domain-conformance: this route prepared none of native/fable/web, yet the job ran." >&2
+            exit 1
+          fi
+          ./scripts/qualify-pr.sh extract-parts "${parts[@]}"
       - name: Run independently receipted domain gates concurrently
         shell: bash
         env:
