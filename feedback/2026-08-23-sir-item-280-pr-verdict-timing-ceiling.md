@@ -287,8 +287,8 @@ editing would have caught it immediately.
 - **Expected:** A mutation harness distinguishes "the mutation broke the contract" from "the fixture
   could not start".
 - **Observed:** The fixture copied seven files. `scripts/test-ci-route.mjs` imports
-  `browser-shard-capacity.mjs` and `browser-junit.mjs` and reads twenty sibling sources, so every case
-  died on `ERR_MODULE_NOT_FOUND`. It stayed invisible because `expect_red` wrote the child's output to
+  `browser-shard-capacity.mjs` and `browser-junit.mjs` and performs twenty `new URL()` reads of which
+  twelve are sibling scripts, so every case died on `ERR_MODULE_NOT_FOUND`. It stayed invisible because `expect_red` wrote the child's output to
   `mutation.log`, never read it, and the `trap` deleted it — the evidence was produced and discarded on
   every run. Two consequences compounded it. A `sed` matching nothing was counted as a success, and the
   tree carried a live instance: case 14, `/run_delivery=true/d`, names a variable refactored out of
@@ -392,11 +392,14 @@ spent on making gates faster to fit an unsatisfiable ceiling (§4.1).
 - Time to first reproduction of the defect in a unit fixture: one probe iteration after the structural
   analysis; the probe reproduced the exact reported failure codes and `actual: 469739`.
 - First green on the full route contract after the fix: same working session.
-- Gate-inversion evidence: 34 mutations in a harness that can now execute its subject, green only
+- Gate-inversion evidence: 33 mutations in a harness that can now execute its subject, green only
   when every case produces an `AssertionError`. The first revision of this line claimed eleven
   mutations "each confirmed to fail on an assertion rather than a syntax error (three spot-checked
   explicitly)". The three spot-checks were real but were run against an ad-hoc tree that supplied the
-  modules the shipped fixture omits, so they said nothing about the harness CI actually runs. See §4.8.
+  modules the shipped fixture omits, so they said nothing about the harness CI actually runs. A second
+  revision then said 34, from `grep -c '^expect_red'` without the trailing space, which also counts the
+  `expect_red() {` definition at line 58. Verification: `grep -c '^expect_red '
+  scripts/test-ci-route-mutations.sh` → 33 (observed 2026-08-23). See §4.8.
 - Ship readiness: PR #281 opened, `verify-paths` OK, delivery obligations declared, review-wait entered,
   oracle at `dispatchCritic` / `awaitingInitialReview`.
 - Estimates: elapsed developer time is not recorded precisely and is not estimated here.
