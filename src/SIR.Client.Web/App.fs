@@ -7058,6 +7058,29 @@ let private tacticalSidebarOwnerEqual side (previous: Model) (current: Model) =
         // this is the cost that branch already accepted -- now it fails safe for
         // every side and workspace instead of one.
         && previous.Shell = current.Shell
+        // Same argument, three more fields.  The comment above states the rule
+        // and then applies it to Shell ALONE; Simulator, Live and Battlefield
+        // stayed enumerated per (side, workspace).  That is the same hole, and
+        // it is open where it matters most: tacticalPanelBody dispatches
+        // "rules", "data" and "samples" BEFORE the first Workspace test, so
+        // those panels render in EVERY workspace and no per-workspace branch
+        // ever accounts for what they read.  Data renders LazyRulesExplorer
+        // from Simulator, SimulatorSelectedUnit and Live.Bootstrap; Rules reads
+        // Battlefield.PaletteId through evidenceFor.  An EditorPulse tick
+        // rebuilds Simulator alone, the Right/EditorWorkspace branch compared
+        // none of it, and the Data panel froze on a stale simulator -- silently,
+        // which is the whole failure mode this owner exists to prevent.
+        //
+        // Identity rather than structural equality: these are large immutable
+        // records replaced wholesale, so ReferenceEquals is O(1) and fails
+        // SAFE.  A rebuild that happens to be structurally equal re-renders,
+        // costing one frame; the converse -- missing a real change -- freezes a
+        // panel with no error.  SimulatorSelectedUnit is an int option, so it
+        // is compared structurally: exact, and free.
+        && System.Object.ReferenceEquals(previous.Simulator, current.Simulator)
+        && System.Object.ReferenceEquals(previous.Live, current.Live)
+        && System.Object.ReferenceEquals(previous.Battlefield, current.Battlefield)
+        && previous.SimulatorSelectedUnit = current.SimulatorSelectedUnit
     let activeStateEqual =
         match side, current.Workspace with
         | Left, EditorWorkspace ->
@@ -7081,15 +7104,12 @@ let private tacticalSidebarOwnerEqual side (previous: Model) (current: Model) =
                         WorkerStatus = "" })
             consumedPlanningState previous = consumedPlanningState current
         | Left, SimulatorWorkspace ->
+            // Simulator and SimulatorSelectedUnit moved into `common` above, by
+            // identity, so every workspace gets them rather than this one.
             previous.Editor = current.Editor
-            && previous.Simulator = current.Simulator
-            && previous.SimulatorSelectedUnit = current.SimulatorSelectedUnit
             && previous.TacticalParcelEditor = current.TacticalParcelEditor
             && previous.TacticalParcelImportText = current.TacticalParcelImportText
-        | Right, SimulatorWorkspace ->
-            previous.Editor = current.Editor
-            && previous.Simulator = current.Simulator
-            && previous.SimulatorSelectedUnit = current.SimulatorSelectedUnit
+        | Right, SimulatorWorkspace -> previous.Editor = current.Editor
         | _, ReplayWorkspace -> true // subsumed by the shared Shell comparison above
         | _, DocsWorkspace -> true
     common && activeStateEqual

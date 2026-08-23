@@ -77,9 +77,9 @@
       "locator": "file:docs/performance-budget.md",
       "path": "docs/performance-budget.md",
       "previousSha256": "5fb42b445999b25fe2fe4dbd80ee350099a1c145e4d44006c01ab6213d72798b",
-      "replacementSha256": "51551e927ac22cf7038861f86f4a3a915f8c82d57482eca0027b561205f00dba",
+      "replacementSha256": "143102015550c543cf80d131594709bdd23d29f0c8bc47bb27c688a27e519381",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
-      "reason": "The SVG pipeline measurement extends the cited performance contract; its focused exact-head fixture and protected-subject gate verifies the replacement workload contract."
+      "reason": "The SVG pipeline measurement extends the cited performance contract; its focused exact-head fixture and protected-subject gate verifies the replacement workload contract. S.I.R.#232 then extended this measurement surface for viewport chunking and semantic zoom: the harness gained `validateCullingMeasurementContract`, which requires candidate, global and emitted primitive growth to be reported as separate quantities and requires emitted-visible equality to hold, and `measure-svg-pipeline.mjs` had its manifest read corrected to the published `artifacts/publish/wwwroot/.vite/manifest.json`. The cited gate `node scripts/test-svg-pipeline-measurement.mjs` was re-run against these exact replacement bytes and passed (`svg-pipeline measurement unit gates: PASS`), so the replacement is verified by the same command this exception already names rather than merely re-hashed."
     },
     {
       "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
@@ -87,9 +87,9 @@
       "locator": "file:scripts/measure-svg-pipeline.mjs",
       "path": "scripts/measure-svg-pipeline.mjs",
       "previousSha256": "c44057768f5d3cf6e283e5528378e06f11a01d43a2ea40bf24f251605ff1ca60",
-      "replacementSha256": "c44057768f5d3cf6e283e5528378e06f11a01d43a2ea40bf24f251605ff1ca60",
+      "replacementSha256": "2935d4956c42290f342c7fbc4475046fbb1beaf9db02120eb416c7d932b3b286",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
-      "reason": "The repaired-cycle audit is authored with the sampler-free runner it reviews; the focused source inversion rejects reintroduction of the observer workload."
+      "reason": "The repaired-cycle audit is authored with the sampler-free runner it reviews; the focused source inversion rejects reintroduction of the observer workload. S.I.R.#232 then extended this measurement surface for viewport chunking and semantic zoom: the harness gained `validateCullingMeasurementContract`, which requires candidate, global and emitted primitive growth to be reported as separate quantities and requires emitted-visible equality to hold, and `measure-svg-pipeline.mjs` had its manifest read corrected to the published `artifacts/publish/wwwroot/.vite/manifest.json`. The cited gate `node scripts/test-svg-pipeline-measurement.mjs` was re-run against these exact replacement bytes and passed (`svg-pipeline measurement unit gates: PASS`), so the replacement is verified by the same command this exception already names rather than merely re-hashed."
     },
     {
       "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
@@ -97,9 +97,9 @@
       "locator": "file:scripts/lib/svg-pipeline-measurement.mjs",
       "path": "scripts/lib/svg-pipeline-measurement.mjs",
       "previousSha256": "6901cede8f372bf28205e56526fbb649bada83797bc6b7f4bf7985cd01be29a4",
-      "replacementSha256": "6901cede8f372bf28205e56526fbb649bada83797bc6b7f4bf7985cd01be29a4",
+      "replacementSha256": "5d46f2a0d72b66811b066fe3ad93421edd9ecd27e4bcbba4bf547642dee40cf6",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
-      "reason": "The repaired-cycle audit is authored with the clock-sync trace extraction it reviews; the focused timing and trace-window gates verify these bytes."
+      "reason": "The repaired-cycle audit is authored with the clock-sync trace extraction it reviews; the focused timing and trace-window gates verify these bytes. S.I.R.#232 then extended this measurement surface for viewport chunking and semantic zoom: the harness gained `validateCullingMeasurementContract`, which requires candidate, global and emitted primitive growth to be reported as separate quantities and requires emitted-visible equality to hold, and `measure-svg-pipeline.mjs` had its manifest read corrected to the published `artifacts/publish/wwwroot/.vite/manifest.json`. The cited gate `node scripts/test-svg-pipeline-measurement.mjs` was re-run against these exact replacement bytes and passed (`svg-pipeline measurement unit gates: PASS`), so the replacement is verified by the same command this exception already names rather than merely re-hashed."
     },
     {
       "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
@@ -137,9 +137,9 @@
       "locator": "file:scripts/test-svg-pipeline-measurement.mjs",
       "path": "scripts/test-svg-pipeline-measurement.mjs",
       "previousSha256": "781bfa980922a717843c9a9f75495c46eb253fec74b2268e77f6d42556b491b4",
-      "replacementSha256": "781bfa980922a717843c9a9f75495c46eb253fec74b2268e77f6d42556b491b4",
+      "replacementSha256": "d80c4ecf24b5a20d2dff1ae462503a083393aec6bc80af2d7de4008096d75565",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
-      "reason": "The repaired-cycle audit is authored with its focused gate; executing it proves the sampler, axis, retained-byte, and binding inversions remain live."
+      "reason": "The repaired-cycle audit is authored with its focused gate; executing it proves the sampler, axis, retained-byte, and binding inversions remain live. S.I.R.#232 then extended this measurement surface for viewport chunking and semantic zoom: the harness gained `validateCullingMeasurementContract`, which requires candidate, global and emitted primitive growth to be reported as separate quantities and requires emitted-visible equality to hold, and `measure-svg-pipeline.mjs` had its manifest read corrected to the published `artifacts/publish/wwwroot/.vite/manifest.json`. The cited gate `node scripts/test-svg-pipeline-measurement.mjs` was re-run against these exact replacement bytes and passed (`svg-pipeline measurement unit gates: PASS`), so the replacement is verified by the same command this exception already names rather than merely re-hashed."
     },
     {
       "audit": "feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement-2.audit.json",
