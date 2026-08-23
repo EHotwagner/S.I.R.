@@ -201,7 +201,15 @@ test("View analysis overlays share pointer and keyboard commands and restore ind
   // The equality assertion directly above therefore keeps the telemetry honest rather than
   // licensing this bound, and the no-restatement rule now REQUIRES it to exist: an earlier version
   // of this test leaned on it while nothing demanded it, so deleting it would have left the gate
-  // green. Both identifiers are covered by that rule, so a literal written onto either is refused.
+  // green. Both identifiers are covered by that rule -- and the rule now requires the identifier
+  // this assertion bounds to be one of them, rather than leaving it protected by coincidence.
+  //
+  // THE BOUND ON THAT CLAIM, STATED: the requirement is that the cross-check is WRITTEN, not that it
+  // is exercised in the states where the telemetry is wrong. Review of this item measured the
+  // estimate matching the count exactly at this assertion point, and diverging only in states this
+  // test never enters. So this assertion corroborates the attribute here; it does not certify it
+  // everywhere.
+  //
   // No number appears in this assertion, deliberately: a comment carrying one is a copy too.
   expect(actualOverlayNodes).toBeLessThanOrEqual(tacticalOverlayLayerBudget.maximumOverlayDomNodes);
   const footprintBox = await footprint.boundingBox();

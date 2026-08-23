@@ -664,9 +664,14 @@ const unsweepableTacticalQuantities = new Map([
   // THE SAME VALUE AS THE LINE ABOVE, AND A DIFFERENT QUANTITY. Exemptions are keyed by quantity for
   // exactly this case: 5000 is unsweepable because of occurrences that have nothing to do with
   // either budget, and each quantity has to say so for itself rather than inherit the other's
-  // reason. What holds this one is not Rule B at all -- it is Rule C, which refuses ANY numeric
-  // literal on the lines carrying the measurement read from data-overlay-node-estimate, so a plant
-  // equal to the declared value is refused exactly as readily as a plant that differs.
+  // reason. What holds this one is not Rule B at all -- it is Rule C, and this exemption is only as
+  // good as that claim, so the claim is stated exactly. Rule C refuses any numeric literal on the
+  // lines carrying the measurement read from data-overlay-node-estimate, on any identifier asserted
+  // EQUAL to it by a declared equality matcher, and -- the part that makes this exemption safe --
+  // it requires the identifier the budget is actually bound to be one of those. Without that last
+  // requirement the sentence was FALSE while reading as true: the bound had been moved onto a
+  // counted identifier that this rule protected only by coincidence, and a literal-identical plant
+  // on it went green with no second net anywhere (S.I.R.#327 review round 2).
   ["tacticalOverlayLayerBudget.maximumOverlayDomNodes", "shares its value with the representative row's scene node cap, which is unsweepable for occurrences unrelated to either budget: a readiness timeout in the review generator and a trace-fixture duration in this suite"],
   [`${representativeWorkload.key}.maximumInputToPaintMilliseconds`, "also a Playwright wait, a percentile computation, a declared workload's unit count, and a percentage assertion string"],
   ["tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame", "a small integer COUNT of vsyncs rather than a millisecond figure; it is the commonest literal in any source and sweeping it by value would red on every increment"],
@@ -828,7 +833,11 @@ for (const surface of tacticalBudgetSurfaces) {
       new RegExp(`expect\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)\\s*\\.\\s*${matcher}\\(\\s*${identifier}\\s*\\)`, "g"),
       new RegExp(`expect\\(\\s*${identifier}\\s*\\)\\s*\\.\\s*${matcher}\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)`, "g"),
     ]);
-    const mirrors = [...new Set(mirrorPatterns.flatMap((pattern) => [...text.matchAll(pattern)].map((match) => match[1])))];
+    // A MIRROR MUST BE A DIFFERENT IDENTIFIER. `expect(x).toBe(x)` is exact equality, uses a
+    // classified matcher, and proves NOTHING -- so counting it as a cross-check let a tautologised
+    // assertion satisfy the requirement below while corroborating no measurement at all.
+    const mirrors = [...new Set(mirrorPatterns.flatMap((pattern) => [...text.matchAll(pattern)].map((match) => match[1])))]
+      .filter((mirror) => mirror !== identifier);
     // A SELF-REPORTED SURFACE MUST BE CROSS-CHECKED, AND THAT IS DEMANDED RATHER THAN HOPED FOR.
     // The budget for such a surface is gated on a counted measurement, and what makes the attribute
     // trustworthy beside it is the equality assertion. An earlier version of this item LEANED on
@@ -840,6 +849,37 @@ for (const surface of tacticalBudgetSurfaces) {
       assert.ok(mirrors.length > 0,
         `${consumer} reads the self-reported ${surface.attribute} into ${identifier} and never asserts it equal to an independently measured identifier. That cross-check is what keeps the telemetry honest; without it the attribute is an unchecked self-report, and the budget beside it is gated on a number nothing corroborates.`);
     const boundedIdentifiers = [identifier, ...mirrors];
+
+    // AND THE IDENTIFIER THE BUDGET IS ACTUALLY BOUND TO MUST BE ONE OF THE PROTECTED ONES.
+    //
+    // Everything above protects a SET of identifiers. Nothing above tied that set to the identifier
+    // the consumer actually compares against the declaration, so the budget's own subject was
+    // protected only by COINCIDENCE -- it happened to be a mirror. Round 1 of this item moved the
+    // bound from the surface identifier onto a counted one for a good reason and, in doing so,
+    // moved it out from under this rule: tautologise the cross-check and a literal-identical
+    // restatement on the shipped bound went green, with the key rule and the value rule both
+    // exempt for this quantity and no second net anywhere.
+    //
+    // So the link is now STRUCTURAL: every line where this consumer compares something against this
+    // surface's declared quantity must compare an identifier this rule protects. A line whose bound
+    // identifier cannot be read is REFUSED rather than skipped -- an unparseable comparison is not a
+    // conforming one (#266).
+    const quantityRead = new RegExp(`\\.\\s*${surface.quantity}\\b`);
+    const boundLines = text.split("\n").filter((line) => quantityRead.test(line) && /expect\s*\(/.test(line));
+    for (const line of boundLines) {
+      const boundMatch = line.match(/expect\(\s*([A-Za-z_$][\w$]*)\s*\)/);
+      assert.ok(boundMatch,
+        `${consumer} compares something against the declared ${surface.quantity} on a line this rule cannot read the subject of: ${line.trim()}. The bound identifier has to be legible for the ban to be known to cover it, so this is refused rather than assumed to conform.`);
+      assert.ok(boundedIdentifiers.includes(boundMatch[1]),
+        `${consumer} bounds ${boundMatch[1]} by the declared ${surface.quantity}, and ${boundMatch[1]} is not the measurement read from ${surface.attribute} (${identifier})${mirrors.length ? ` nor any identifier asserted EQUAL to it (${mirrors.join(", ")})` : " and no identifier is asserted equal to it"}. The budget's own subject would then be outside the literal ban that protects this surface, so a restatement on it -- including one equal to the declared value -- would not be refused.`);
+    }
+    // A self-reported surface must actually HAVE that comparison: its budget is gated on a counted
+    // measurement, so a consumer that reads the attribute and never bounds anything by the declared
+    // quantity has no budget comparison for this rule to protect.
+    if (surface.selfReported)
+      assert.ok(boundLines.length > 0,
+        `${consumer} reads the self-reported ${surface.attribute} but bounds nothing by the declared ${surface.quantity}. The budget comparison this rule exists to protect is absent, and an absent comparison is a gap rather than a pass.`);
+
     const identifierLines = text.split("\n").filter((line) => boundedIdentifiers.some((name) => new RegExp(`\\b${name}\\b`).test(line)));
     assert.ok(identifierLines.length >= 2,
       `${consumer} reads ${surface.attribute} into ${identifier} and never uses it. A declared surface that is read and then not gated on means the assertion beside it is bounded by something other than the declaration, or is gone.`);
