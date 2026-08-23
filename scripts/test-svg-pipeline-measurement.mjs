@@ -630,6 +630,27 @@ const sweptTacticalValues = [...new Set(declaredBudgetEntries
 assert.ok(sweptTacticalValues.length >= 4, `Rule B sweeps only ${sweptTacticalValues.length} value(s); it is not reaching the declaration`);
 assert.ok(unsweepableTacticalQuantities.size < declaredBudgetEntries.length, "every declared budget quantity is exempt from Rule B, so Rule B checks nothing");
 
+// AND EVERY DECLARED BUDGET MUST BE PUBLISHED SOMEWHERE. This item exists because CI enforced two
+// figures no document stated; the mirror of that defect is a budget declared in code and projected
+// into nothing, which is how the first version of this guard let a budget added to a workload row
+// pass silently -- it reached neither the published table nor the published manifest, and no rule
+// noticed. A declared budget that appears in no published surface is undeclared to every reader who
+// is not reading this module.
+const publishedNumbers = new Set([
+  ...documentedTacticalBudgetRows().flatMap((row) => Object.values(row)
+    .flatMap((cell) => [...String(cell).matchAll(/[\d,]*\d(?:\.\d+)?/g)].map((match) => Number(match[0].replaceAll(",", ""))))),
+  ...Object.values(tacticalReviewManifestBudgets).flatMap((row) => Object.values(row)),
+]);
+// One quantity is legitimately unpublished, and only because what it DERIVES is published.
+const derivationInputQuantities = new Map([
+  ["tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame", "a derivation input for intervalCeilingMilliseconds, which IS published, and the published table's prose states the rule it expresses"],
+]);
+for (const id of derivationInputQuantities.keys())
+  assert.ok(declaredBudgetEntries.some((entry) => entry.id === id), `${id} is recorded as an unpublished derivation input but is no longer declared; the exemption is stale`);
+for (const entry of declaredBudgetEntries)
+  assert.ok(publishedNumbers.has(entry.value) || derivationInputQuantities.has(entry.id),
+    `the declaration carries ${entry.id} = ${entry.value}, and no published surface -- neither the ${tacticalBudgetTableDocumentation.path} table nor the review manifest -- states it. A budget declared in code and published nowhere is undeclared to every reader who is not reading the module, which is the defect S.I.R.#318 repaired from the other direction.`);
+
 const restatesValue = (text) => sweptTacticalValues.filter((value) => new RegExp(`(?<![\\d.\\w])${String(value).replace(".", "\\.")}(?![\\d.\\w])`).test(text));
 // The rules are self-tested against planted text before being trusted against the tree: a rule that
 // cannot fire is not a rule that found nothing. The planted fixtures are BUILT from the declared
