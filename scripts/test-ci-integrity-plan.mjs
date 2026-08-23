@@ -58,7 +58,7 @@ assert.ok(
 // #252 is a defect about a gate that silently did not run, so pin the subject inventory ABSOLUTELY.
 // Every other assertion here is relative to `subjectOrder`; without this line, deleting a subject
 // shrinks the sweep and the whole suite still passes — the same class of silence being repaired.
-const declaredSubjects = ["npm-audit", "governance", "dependency-surface", "sdd-byte-stability", "feedback-audit", "review-contract"];
+const declaredSubjects = ["npm-audit", "governance", "dependency-surface", "sdd-byte-stability", "feedback-audit", "review-contract", "collection-strategies"];
 assert.deepEqual(subjectOrder, declaredSubjects, "an integrity subject was added or removed; update this pin deliberately");
 
 // The sweep runs every subject over exactly those paths.
@@ -94,12 +94,12 @@ const allOmitted = (ids) => ids.map((id) => [id, false, omissionReason(id)]);
 assert.deepEqual(conditionalSelection(omittedPaths), allOmitted(declaredSubjects), "an inert route must select nothing");
 assert.deepEqual(
   conditionalSelection(["package-lock.json"]),
-  [["npm-audit", true, "relevant-path"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", false, "measured-omission"], ["review-contract", false, "cost-bounded-omission"]],
+  [["npm-audit", true, "relevant-path"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", false, "measured-omission"], ["review-contract", false, "cost-bounded-omission"], ["collection-strategies", false, "cost-bounded-omission"]],
   "per-PR selection must stay path-conditional",
 );
 assert.deepEqual(
   conditionalSelection(["scripts/audit-binding-exceptions.json"]),
-  [["npm-audit", false, "measured-omission"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", true, "relevant-path"], ["review-contract", false, "cost-bounded-omission"]],
+  [["npm-audit", false, "measured-omission"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", true, "relevant-path"], ["review-contract", false, "cost-bounded-omission"], ["collection-strategies", false, "cost-bounded-omission"]],
   "the subject this item repairs must still be selected by its own paths on a pull request",
 );
 
@@ -152,6 +152,87 @@ assert.ok(
   conservativeSubjects.every((id) => mirrorPlan.get(id).run && mirrorPlan.get(id).reason === "unknown-conservative"),
   "the exemption is per-subject: the other five must still take the conservative fallback on the same route",
 );
+
+// ---------------------------------------------------------------------------
+// S.I.R.#263 — the collection-strategies subject, from both sides.
+//
+// Same shape as #265 above, and pinned absolutely for the same reason: this row repairs a gate
+// that existed and that no route selected, so a relative assertion could not tell "selected" from
+// "the predicate returned the same thing twice".
+// ---------------------------------------------------------------------------
+
+// SELECTED, one path at a time. Each of these can move the gate's verdict on its own, so each must
+// select it on its own — a set-union assertion would pass while all but one were dead.
+for (const path of [
+  "tests/SIR.PhysicalCombat.Performance/Collections.fs",
+  "tests/SIR.PhysicalCombat.Performance/Program.fs",
+  "tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj",
+  "tests/SIR.PhysicalCombat.Performance/packages.lock.json",
+  "scripts/verify-collection-strategies.sh",
+  "global.json",
+]) {
+  const selected = byId(planFor(route([path]))).get("collection-strategies");
+  assert.equal(selected.run, true, `${path} must select collection-strategies on its own`);
+  assert.equal(
+    selected.reason,
+    "relevant-path",
+    `${path} must select collection-strategies by PATH, not by a conservative fallback`,
+  );
+  assert.deepEqual(selected.matchingPaths, [path], `${path} must be recorded as the reason it was selected`);
+}
+
+// A file that does not exist YET in that project must select it too. The predicate is a prefix
+// precisely so that adding a source file to the harness cannot silently drop it out of selection,
+// and an enumeration would pass every other assertion here while failing this one.
+{
+  const future = byId(planFor(route(["tests/SIR.PhysicalCombat.Performance/NotYetWritten.fs"]))).get("collection-strategies");
+  assert.deepEqual([future.run, future.reason], [true, "relevant-path"], "a new file in the harness project must select the subject");
+}
+
+// NOT SELECTED, and this pair is the load-bearing one.
+//
+// `tests/SIR.PhysicalCombat.Performance/` matches no prefix in ci-route.mjs, so every path under it
+// is RP-005-unknown-conservative. Without the cost-bounded exemption the `unknown` fallback would
+// select this subject on exactly the routes the predicate already selects — the predicate would be
+// unfalsifiable, which is the decorative-selector mirror of the decorative gate this row removes.
+// So assert BOTH that the harness route is unknown-conservative for everyone else AND that this
+// subject reaches it by `relevant-path`; together those say the predicate is what did the work.
+{
+  const harness = byId(planFor(route(["tests/SIR.PhysicalCombat.Performance/Collections.fs"])));
+  assert.ok(
+    conservativeSubjects.every((id) => harness.get(id).run && harness.get(id).reason === "unknown-conservative"),
+    "the harness directory must still be RP-005 for the non-exempt subjects, or this pair proves nothing",
+  );
+  assert.deepEqual(
+    [harness.get("collection-strategies").run, harness.get("collection-strategies").reason],
+    [true, "relevant-path"],
+    "the exemption must leave the PREDICATE as the only thing selecting this subject on that route",
+  );
+}
+
+// The production code the `Subject:` comments name is deliberately NOT a selector: nothing in
+// Collections.fs calls into it, so a change there cannot move a ratio. Asserted rather than argued,
+// because it is the difference between a bounded subject and ~80s added to every domain PR.
+for (const path of ["src/SIR.Simulation/SpatialQuery.fs", "src/SIR.Domain/Combat.fs"]) {
+  const plan = byId(planFor(route([path]))).get("collection-strategies");
+  assert.deepEqual(plan.matchingPaths, [], `${path} must not match the collection-strategies predicate`);
+  assert.deepEqual(
+    [plan.run, plan.reason],
+    [false, "cost-bounded-omission"],
+    `${path} must not run collection-strategies, and must say WHY it was omitted`,
+  );
+}
+
+// The two cost-bounded subjects must not have collapsed into each other. `global.json` selects
+// both; a path that selects one and not the other is what proves the predicates are distinct.
+{
+  const runner = byId(planFor(route(["scripts/verify-collection-strategies.sh"])));
+  assert.equal(runner.get("collection-strategies").run, true);
+  assert.equal(runner.get("review-contract").run, false, "the runner must not select review-contract");
+  const contract = byId(planFor(route(["docs/coordination-engine-contracts.md"])));
+  assert.equal(contract.get("review-contract").run, true);
+  assert.equal(contract.get("collection-strategies").run, false, "the contract document must not select collection-strategies");
+}
 
 // ---------------------------------------------------------------------------
 // S.I.R.#265 — the conservative exemption, from both sides.
@@ -503,6 +584,7 @@ const declaredDispatch = {
   "sdd-byte-stability": ["scripts/test-item-184-sdd-byte-stability.sh"],
   "feedback-audit": ["scripts/test-feedback-audit-binding-exceptions.sh"],
   "review-contract": ["scripts/test-review-contract-coherence.sh"],
+  "collection-strategies": ["scripts/verify-collection-strategies.sh"],
 };
 assert.deepEqual(
   Object.keys(declaredDispatch).sort(),

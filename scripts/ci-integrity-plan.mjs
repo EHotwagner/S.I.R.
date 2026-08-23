@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export const schema = "sir.ci-integrity-plan/v1";
-export const subjectOrder = ["npm-audit", "governance", "dependency-surface", "sdd-byte-stability", "feedback-audit", "review-contract"];
+export const subjectOrder = ["npm-audit", "governance", "dependency-surface", "sdd-byte-stability", "feedback-audit", "review-contract", "collection-strategies"];
 export const planModes = ["pull-request", "sweep"];
 export const sweepEnvironmentVariable = "SIR_CI_INTEGRITY_SWEEP";
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
@@ -50,6 +50,38 @@ const predicates = {
     "scripts/fsgg-coord",
     "scripts/test-review-contract-coherence.sh",
   ].includes(path),
+
+  // S.I.R.#263. `scripts/verify-collection-strategies.sh` measures the collection-strategy
+  // ORDERING that S.I.R.#249's cost model rests on, and until this row no CI route selected it --
+  // the same shape #265 repaired one subject earlier, and the fourth instance of it on this board.
+  //
+  // The set is DERIVED from what the gate's verdict can actually move on, which is a smaller set
+  // than "things the benchmark is about":
+  //   tests/SIR.PhysicalCombat.Performance/  the project it builds and runs, WHOLE. Collections.fs
+  //                                          carries the strategies and the ratio assertions,
+  //                                          Program.fs the `--collections` dispatch and the exit
+  //                                          code, the .fsproj the compile list, packages.lock.json
+  //                                          the FS.GG.Game.Core version whose Edge/Cell types and
+  //                                          Edges.edgeBetween are inside every measured loop.
+  //                                          A PREFIX, not the four filenames: any file added to
+  //                                          that project is by construction compiled into the
+  //                                          harness, so enumerating would go stale silently the
+  //                                          first time someone adds one.
+  //   scripts/verify-collection-strategies.sh  itself -- the runner, and the environment confound
+  //                                          guard that decides whether the numbers are admissible.
+  //   global.json                            the SDK pin. The gate ABORTS unless the resolved SDK
+  //                                          is this file's value, and the runtime that pin selects
+  //                                          is what produces the nanoseconds being compared.
+  //
+  // DELIBERATELY ABSENT: src/SIR.Simulation and src/SIR.Domain, which the .fsproj references and
+  // the `Subject:` comments name. Nothing in Collections.fs calls into them -- every strategy is a
+  // local reimplementation over FS.GG.Game.Core types, stated at the top of that file -- so a
+  // change there cannot move a ratio. It can only break the BUILD, which `prepare-native` already
+  // covers on every route that compiles SIR.slnx. Selecting on them would add ~80s of benchmark to
+  // every domain PR to re-measure a number that could not have changed: a decorative selector, and
+  // the same mistake in the opposite direction from the decorative gate this row removes.
+  "collection-strategies": (path) => under(path, "tests/SIR.PhysicalCombat.Performance")
+    || ["scripts/verify-collection-strategies.sh", "global.json"].includes(path),
 };
 
 // Per-PR selection is path-conditional on purpose (#248): a PR pays only for the subjects its own
@@ -85,7 +117,26 @@ export const sweepRequested = (environment = process.env) => environment[sweepEn
 // unobserved. What is given up is a conservative re-run on routes that changed none of its inputs.
 // The omission carries its OWN reason code so it is legible in an archived plan instead of being
 // indistinguishable from a subject whose predicates simply did not match.
-export const costBoundedSubjects = new Set(["review-contract"]);
+// S.I.R.#263 joins this set, on the same two measured grounds and NOT on "it is slow".
+//
+//   ITS INPUT SET IS CLOSED. Derivable by reading the script: one project, its own runner, and the
+//   SDK pin. That is why the predicate above could be written by enumeration at all, and it is why
+//   "the router could not classify some path" carries no information about this subject.
+//
+//   AND THE FALLBACK ROUTES ARE EXACTLY WHERE IT IS UNAFFORDABLE. This matters more here than it
+//   did for `review-contract`, because of a coincidence worth naming: the harness's own directory,
+//   `tests/SIR.PhysicalCombat.Performance/`, matches NO classifier prefix in `ci-route.mjs` and so
+//   files under RP-005-unknown-conservative. Without this exemption the `unknown` fallback would
+//   select this subject on every route that touches the harness -- which is every route the
+//   predicate above already selects, plus every unrelated unclassified path. The predicate would
+//   then be unable to fail: reverting it entirely would change nothing observable on the paths this
+//   row is about, which is the definition of a decorative selector.
+//
+//   The exemption is what makes the predicate the ONLY thing that selects this subject on a pull
+//   request, and therefore the only thing that has to be right. The off-PR sweep below still runs
+//   it unconditionally, so the #248/#252 bargain is intact and it cannot sit red on the default
+//   branch unobserved.
+export const costBoundedSubjects = new Set(["review-contract", "collection-strategies"]);
 
 export function planFor(route, { sweep = false } = {}) {
   if (route?.schema !== "sir.ci-route/v2" || !Array.isArray(route.paths) || route.paths.length === 0 || !route.digest) throw new Error("ci-integrity-plan: malformed route");
