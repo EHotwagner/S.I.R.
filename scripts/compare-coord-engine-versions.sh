@@ -76,10 +76,20 @@
 #   contract unreadable: { this is not json              REFUSED, not graded compatible, exit 1
 #   mislabelled engine in a version directory            aborts naming what actually answered, exit 2
 #   removed flag: --write-probe                    (R1)  unknown argument, exit 2
+#   python3 absent from PATH, all three board      (R2)  REFUSED command-contract, FAIL, exit 1
+#     surfaces still evaluating                           (before R2: "compatible", headline PASS, exit 0)
 #
 # The DIFFERS row is the one that matters after the R1 repair: the new exit-code guard must not swallow
 # a real engine difference into a refusal. It does not - 0.58.0 and 0.72.0 both evaluate, so the byte
 # comparison still fires and still reds.
+#
+# The R2 row is an ENVIRONMENT mutation, not a code one, so it needs a guard the others do not: it was run
+# under `env -i` with a PATH carrying git/gh/dotnet but no python3, wrapped in a preflight that ABORTS at
+# exit 99 unless python3 is genuinely absent. That guard was itself verified non-decorative by running the
+# same wrapper with python3 present, where it aborted at 99 as designed. A prose claim that the PATH was
+# stripped is not evidence; a run that refuses to report unless the confound is gone is. The same run was
+# made against the pre-repair script to confirm the false PASS reproduces, so this row records a repair
+# that reds on the escape that was actually found, not merely a new case that happens to be red.
 
 # USAGE
 #   scripts/compare-coord-engine-versions.sh --old 0.71.0 --new 0.73.1 --ref "S.I.R.#250" --pr 257 \
@@ -173,10 +183,16 @@ failures=0
 # fail-closed protocol state therefore yielded a confident adoption clearance in which not one of the
 # three decisive surfaces had been evaluated.
 #
-# `compare_command_surface` below already applies the right rule — "an unreadable contract is not evidence
-# that the surface is compatible" — and this function did not. It does now: a non-zero exit on EITHER side
-# is refused, never graded. `.github#266`: "I could not evaluate this" is never "I evaluated it and it
-# passed".
+# This function did not apply that rule; it does now, and a non-zero exit on EITHER side is refused
+# rather than graded. `.github#266`: "I could not evaluate this" is never "I evaluated it and it passed".
+#
+# CORRECTION (R2). This paragraph used to open by asserting that "`compare_command_surface` below already
+# applies the right rule". That was FALSE, and a critic measured it: that function refused an unreadable
+# contract but not an unrunnable COMPARATOR, so with python3 absent it graded a surface it never evaluated
+# as `compatible` and the run still exited 0. The R1 repair fixed this site and left the sibling, then
+# wrote a sentence certifying the sibling was already correct — documentation asserting a property the
+# code did not have, inside a harness whose entire job is comparing surfaces. The claim is withdrawn here
+# rather than softened, and the sibling is repaired at its own site below.
 #
 # Note that `review` returns exit 4 for a fail-closed no-verdict, which is a real protocol state and a
 # perfectly ordinary thing to encounter. It is still a non-evaluation, so it is refused rather than
@@ -280,6 +296,33 @@ print("REMOVED_COMMANDS %s" % ",".join(removed_commands))
 print("REMOVED_FLAGS %s" % ",".join(removed_flags))
 PY
 )
+  local comparator_status=$?
+
+  # THE INTERPRETER ITSELF IS A SUBJECT, AND AN UNCHECKED ONE IS THIS GATE'S OWN BLIND SPOT.
+  # `UNREADABLE` above can only be produced by a python3 that RAN and raised inside its own `try`. When
+  # python3 does not run at all - absent from PATH, crashed, killed, output truncated - `$report` is
+  # EMPTY: it matches no case arm, all four `sed -n` extractions yield "", the removed-* test is false,
+  # and control reaches `compatible command-contract (additive only)` and `return 0` without having
+  # compared anything. The run then prints its headline PASS at exit 0. That is `.github#266` exactly -
+  # "I could not evaluate this" reported as "I evaluated it and it passed" - in the very function whose
+  # comment at line ~176 is cited as already applying the right rule.
+  #
+  # Checking the command substitution's STATUS rather than preflighting with `command -v python3` is
+  # deliberate: it covers the crashed, killed and truncated interpreter as well as the missing one, and
+  # a preflight covers only the last of those. The empty-output test is belt-and-braces for an
+  # interpreter that somehow exits 0 having written nothing.
+  #
+  # This is also the "environment richer than production" sub-shape (`FS.GG.Templates#392`): python3 is
+  # present in the authoring and review environment, so the demonstration passed for a reason a
+  # consumer's environment may not supply. `gh` is guarded this way at line ~127; python3 was the one
+  # undeclared, unchecked dependency.
+  if [ "$comparator_status" -ne 0 ] || [ -z "$report" ]; then
+    echo "  REFUSED    command-contract — the contract comparator did not run to completion" >&2
+    echo "             (python3 exited $comparator_status, ${#report} bytes of output)." >&2
+    echo "             A surface that was never evaluated is not evidence that it is compatible." >&2
+    failures=$((failures + 1))
+    return 1
+  fi
 
   case "$report" in
     UNREADABLE*)
