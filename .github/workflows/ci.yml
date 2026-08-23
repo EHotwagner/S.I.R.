@@ -69,7 +69,16 @@ jobs:
       # `needs.route.outputs.prepare_*`, an output the head's router never published reads as the
       # empty string, all four skip, `browser`/`documentation`/`cross-runtime`/`domain-conformance`
       # skip by `needs:` propagation, and `pr-verdict` reports `missing-gate-result` naming four
-      # gates the branch never asked to skip. Observed twice on one branch (PRs #298 and #310).
+      # gates the branch never asked to skip. Each instance below is named by RUN, not by PR, so it
+      # can be checked rather than taken on trust -- the whole hazard here is a symptom that is
+      # indistinguishable from its cause without the run's timestamp. The contract landed on `main`
+      # at 2026-08-23T09:48:02Z (`d500145`). After it:
+      #   * PR #310, run 32632975380 (10:09:16Z, head 3180497): all four `prepare-*` skipped,
+      #     `pr-verdict` failed `missing-gate-result`.
+      #   * PR #307, run 32634022856 (10:32:19Z, head a914d64): the same, on a second branch.
+      # Both heads' routers predate `3db14a6`. PR #310's NEXT run, 32633609791 at 10:23:16Z, went
+      # green with all four producers running once it had taken its base -- the same branch, the
+      # same workflow, fourteen minutes later. That pair is the remedy below, observed in production.
       #
       # The required keys are declared HERE and deliberately NOT derived from `scripts/`. That is
       # the whole point rather than a shortcut: `scripts/` is head-supplied, and a head that
