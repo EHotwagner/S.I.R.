@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-250-engine-currency-hygiene
 lane: none
 toolVersion: n/a
-commit: e67a4373f185f4a49ada3e1f9d0264aeb4b82df8
+commit: 355e8e8b477bf11ea030e7b260965f30ef011d4a
 ---
 
 # S.I.R. item 250 — coordination engine currency hygiene
@@ -395,11 +395,17 @@ Not reached at this commit, and not asserted: merge, post-merge obligations, don
    reflecting on the engine assembly or reading a refusal.
 3. **Compare engine versions by measurement, and require the comparison to prove it can fail.** Owner:
    `EHotwagner/S.I.R.`, `scripts/compare-coord-engine-versions.sh` — delivered by this cycle.
-   Acceptance: the harness reds on a contract mutant with a genuinely removed command, refuses a
-   malformed contract instead of grading it compatible, and aborts when the shim resolved an engine
-   other than the one requested. All three were run and are recorded in commit `5e6f198`'s message and
-   in the PR body's inversion table; re-running them requires constructing the mutant, which the
-   `FSGG_COMPARE_CONTRACT_OVERRIDE_NEW` hook in the script exists to make possible.
+   Acceptance, widened in repair round 1 because the original set graded only two of the script's four
+   decision points: the harness reds on a contract mutant with a genuinely removed command, refuses a
+   malformed contract instead of grading it compatible, aborts when the shim resolved an engine other
+   than the one requested, **refuses rather than grades a surface that did not evaluate** (`--ref` or
+   `--repo` naming something that does not exist), and **still reds on a real engine difference** rather
+   than swallowing it into that refusal. Every row is recorded in the script's own header block, which
+   is where the evidence belongs — travelling with the artifact rather than only in a commit message.
+
+   The lesson generalises past this script: **the gate that goes uninverted is the one its author is
+   most confident about.** The two inversions originally recorded covered the checks added defensively;
+   the check the header called *"the decisive one"* was the one nobody broke.
 4. **Give each lane its own scratchpad, or qualify scratch filenames by worker id.** Prevents §4.5.
    **This restates `feedback/2026-08-22-sir-item-252-audit-binding-ledger-currency.md` §11.6 rather
    than proposing something new**, and is repeated here only because the condition recurred in a second
@@ -417,7 +423,7 @@ Not reached at this commit, and not asserted: merge, post-merge obligations, don
 | sdd-authoring | not-exercised | Route `lightweight`, `sddPackageReady: true`; no SDD package owed. The recorded not-used case for the lifecycle-authoring phase. |
 | implementation-apis | not-exercised | No product API touched. |
 | dependencies-build | exercised | `dotnet tool restore` restored all six pinned tools including `fs.gg.coord.cli 0.72.0`; feed availability confirmed against `nuget.org`, the sole source after `NuGet.Config`'s `<clear />`. |
-| testing | exercised | The diff adds one gate — the harness — and it ships with subject-mutation evidence it can fail: a contract mutant removing `done` and `widen --paths` reds naming both (exit 1); a malformed contract is REFUSED, not graded compatible (exit 1); a mislabelled engine aborts naming what actually answered (exit 2). Each was run once; the results are recorded in commit `5e6f198`'s message and the PR body, and the `FSGG_COMPARE_CONTRACT_OVERRIDE_NEW` hook exists so the first two can be re-run. The manifest change itself adds no gate. |
+| testing | exercised | The diff adds one gate — the harness. It shipped with three subject-mutation inversions, and an independent critic found that all three exercised only its *contract* check and its version guard, while `compare_surface` — the decision point its own header calls decisive — carried no recorded inversion at all. That gate was then measured to grade two mutual refusals as agreement and to announce a durable write it never performed. Repair round 1 fixed both and the file now records the full set: positive control PASS at exit 0; a genuinely different engine pair (0.58.0 vs 0.72.0) DIFFERS at exit 1; `--ref S.I.R.#999999` and `--repo NoSuchRepoAtAll` each REFUSED at exit 1; the contract mutant REMOVED naming both cuts at exit 1; an unreadable contract REFUSED at exit 1; a mislabelled engine aborting at exit 2; and the removed `--write-probe` at exit 2. The manifest change itself adds no gate. |
 | evidence | exercised | Each acceptance criterion carries a reproduction locator; the three tier-absence checks in §4.1 are the negative controls that make criterion 2 a measurement rather than a reading; §4.6 records the one conclusion whose refusal could not be executed and why. |
 | runtime-playtest | not-exercised | No reachable game functionality in scope. |
 | performance | not-exercised | No performance claim made or required; the performance-first gate does not apply to a manifest bump (§9). |

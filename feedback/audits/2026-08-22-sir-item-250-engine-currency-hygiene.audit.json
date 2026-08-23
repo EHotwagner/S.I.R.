@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-22-sir-item-250-engine-currency-hygiene.md",
-  "reportSha256": "ffb731f56e4dfb632d6cfad3fd4785914a56bb7239eb6c72dde250194b674352",
+  "reportSha256": "f5b5c521bdd58d8b8aacaf71292f23f1429e2c5c1ba71512a1ea4ea4b74d4162",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -158,7 +158,8 @@
       "confidenceLimits": [
         "The refusal was not executed: done requires a merged PR and this one is not merged, so the conclusion rests on help text, release notes and Core XML rather than an observed refusal.",
         "The grep locator reaches only the absence of PrematureCompletion at 0.72.0; its presence at 0.73.1, and the three-engine done help comparison, are carried by checkpoint event 6 because 0.73.1 is not installed in this workspace.",
-        "The 0.73.1 adoption follow-up row did not exist when this report was written and is not asserted as filed."
+        "The 0.73.1 adoption follow-up row did not exist when this report was written and is not asserted as filed.",
+        "The harness cited here was repaired in review round 1 after this audit's passes: --write-probe was removed for announcing a durable write it never performed, and compare_surface now refuses a surface that did not evaluate rather than grading two mutual refusals as agreement. The cited command still runs and still yields the byte-identical, additive-only result recorded above; the repair strengthened the gate without changing that measurement, verified by the 0.58.0-vs-0.72.0 difference still reporting DIFFERS."
       ]
     }
   ]
