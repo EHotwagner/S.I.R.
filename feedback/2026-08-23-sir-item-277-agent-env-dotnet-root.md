@@ -42,7 +42,8 @@ digest is kept rather than dropped: `route`, `kind`, `revision` and `sddPackageR
 unverifiable by a non-holder, so removing only the most checkable of the five would improve
 nothing),
 `sddPackageReady: true`, so no `fsgg-sdd` front half was owed and none was authored. `toolVersion`
-is `n/a` for the same reason. Coordination engine `fs.gg.coord.cli` 0.71.0, resolved at
+is `n/a` for the same reason. Coordination engine `fs.gg.coord.cli` `0.71.0` **at the described
+commit `4ec2925`**, resolved at
 `scripts/fsgg-coord` **tier 4** — this repository is a coord *receiver*, a fact that turns out to
 matter for §4.4 and §4.5.
 
@@ -128,7 +129,8 @@ reproduce it from the repository alone, and none by anyone re-reading the text.
   `DOTNET_ROOT` is the framework-dependent **apphost**, and the suite contained none. A suite can be
   thorough along one axis and structurally blind along another.
 - **Evidence:** file:scripts/agent-env.sh; file:scripts/test-agent-env.sh; command:git worktree add --detach ../sir-277-base f69f1e6cdc203121bd908a3a1bd025545e0aff56 && sed -i -e '\|export DOTNET_ROOT="$candidate"|d' ../sir-277-base/scripts/agent-env.sh && ( cd ../sir-277-base && ./scripts/test-agent-env.sh ) && git worktree remove --force ../sir-277-base; issue:EHotwagner/S.I.R.#277
-- **Version:** `fs.gg.coord.cli` 0.71.0; .NET SDK 10.0.302 pinned by `global.json`. The 36/0 result
+- **Version:** `fs.gg.coord.cli` `0.71.0` at the described commit `4ec2925`; .NET SDK 10.0.302
+  pinned by `global.json`. The 36/0 result
   is a property of **base commit `f69f1e6`** and does not reproduce at the described commit, where
   the same mutation yields 49 checks and 1 unexpected — that difference is the repair. The cited
   command **never touches the working tree**: it checks the base commit out into a throwaway
@@ -214,9 +216,12 @@ reproduce it from the repository alone, and none by anyone re-reading the text.
   carries only `SIR.*` projects), and `scripts/fsgg-coord` states that only the repo owning coord's
   source can resolve there while "a receiver resolves at tier 1/3/4". Confirmed by elimination on
   this machine: `FSGG_COORD_ENGINE_BIN` unset (tier 1 miss), no `fsgg-coord-engine` on `PATH` (tier
-  3 miss), manifest declares `fs.gg.coord.cli` 0.71.0 → command `fsgg-coord-engine` (tier 4 hit).
+  3 miss), the manifest declares `fs.gg.coord.cli` (`0.71.0` at the described commit `4ec2925`; the
+  pinned version moves with the base, and the tier-4 hit does not depend on which version it is) →
+  command `fsgg-coord-engine` (tier 4 hit).
 - **Evidence:** file:scripts/fsgg-coord; file:.config/dotnet-tools.json; command:git ls-tree --name-only HEAD src/
-- **Version:** `fs.gg.coord.cli` 0.71.0 declared in `.config/dotnet-tools.json`.
+- **Version:** `fs.gg.coord.cli` `0.71.0` as declared in `.config/dotnet-tools.json` **at the
+  described commit `4ec2925`**; recompute at any later head rather than reading it as current.
 - **Owner:** S.I.R. / `scripts/fsgg-coord` resolution-order documentation
 - **Recurrence:** new
 - **Avoidable cost:** one measurement round redirected; no rework, no retries, no lifecycle reruns.
@@ -242,7 +247,9 @@ reproduce it from the repository alone, and none by anyone re-reading the text.
   command.** Every call goes through the muxer — `dotnet fable`, `dotnet fsgg-sdd`,
   `dotnet tool run` — confirmed by scanning every occurrence of each global tool name across the
   shell and `.mjs` sources. **The characterisation of the residue in an earlier revision was wrong
-  and is corrected:** that grep returns 89 lines, and the non-`dotnet` remainder is not only XML
+  and is corrected:** that grep returns 89 lines **at the described commit `4ec2925`** — it counts
+  the surrounding tree rather than anything this item changed, so it moves whenever the base does and
+  is named relative to its commit rather than restated as current — and the non-`dotnet` remainder is not only XML
   testcase labels and a route-name array — it also includes shell `case`/part labels, a verb
   comparison in `dotnet-invocation-trace.sh`, tool-id strings in receipt builders, a loop variable,
   `--outDir` path names, JS fixtures and an error message. The load-bearing claim survives every one
@@ -521,8 +528,9 @@ useful content.***
   "does not run the full historical validator or read cited files". A tool that never reads the file
   cannot compare digests, so a touch-based trigger is the documented and correct behaviour. The gap
   is between that trigger and the **remedy's shape**: every ledger entry carries both
-  `previousSha256` *and* `replacementSha256` — the live `ci-route.mjs` entry runs
-  `10da76f4…` → `aec19c9ac8fe…` — so the remedy describes a **movement**, while the output that
+  `previousSha256` *and* `replacementSha256` — the live `ci-route.mjs` entry runs from a
+  `previousSha256` of `10da76f4…` to a `replacementSha256` that tracks the file's bytes and therefore
+  moves with the base, so it is not quoted here — so the remedy describes a **movement**, while the output that
   demands it reports a **touch**. Measured on the cleanest possible input: `--changed` over only the
   13 ledgered paths, a change set in which **not one digest differs from its recorded citation**,
   reports `2 merged feedback-audit binding(s) invalidated`. Nothing had moved. Of the citations this
@@ -531,8 +539,11 @@ useful content.***
 - **Consequence for this PR.** Adding the two owed entries reddens the wrapper gate, because it
   copies the whole real ledger into a curated fixture and any entry whose path the fixture lacks is
   `overbroad or mismatched`. Extending the fixture with the 256 audit leaves it red on a **third**
-  citation, §4.6 `file:scripts/ci-route.mjs`, whose recorded digest `aec19c9ac8fe…` **equals the
-  current file**. Green therefore requires an entry with `previousSha256 == replacementSha256`: a
+  citation, §4.6 `file:scripts/ci-route.mjs`, whose recorded `replacementSha256` **equals the sha256
+  of the file at the same commit**. That equality is the load-bearing fact and it is an *invariant* —
+  ledger entry and file move together on every base take — so it is stated as the invariant rather
+  than by quoting a digest that goes stale the moment either moves. Green therefore requires an entry
+  with `previousSha256 == replacementSha256`: a
   record of a replacement that never happened, plus a reason attesting that a third party's finding
   survives bytes that never changed.
 - **The blockage is dishonesty, not impossibility.** Nothing indicates the tool rejects such an

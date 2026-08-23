@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-277-agent-env-dotnet-root.md",
-  "reportSha256": "a3416ac2c7c612c9c57f6d001b6610c68a4a924fe41df449449f4d6e31476a48",
+  "reportSha256": "7f87684157b5702661df07bbd32e42d5b457c5877983b77963734f150e57fdc1",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
