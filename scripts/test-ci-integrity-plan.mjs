@@ -361,14 +361,19 @@ assert.deepEqual(
 // `mkdtempSync` rather than a fixed path, deliberately: a probe that writes stubs to a shared
 // filename is a differential another process can silently overwrite, which is the failure this
 // very item is about. Each call gets a directory no other process names.
-const probeGuard = (block) => {
+const probeGuard = (block, failing = "") => {
   const root = mkdtempSync(join(tmpdir(), "sir-integrity-guard-probe-"));
   const log = join(root, "invocations.log");
   const shim = join(root, ".shim");
   mkdirSync(shim, { recursive: true });
+  // The stub records its own argv and then decides its status from `SIR_PROBE_FAIL`: empty means
+  // EVERY named command fails, a token means only the command whose `$0 $*` contains that token
+  // fails and the rest succeed. The second mode is what makes each command in a MULTI-command
+  // guard individually observable — see the loop below for why that is not optional.
   const stub = (path) => {
     mkdirSync(dirname(path), { recursive: true });
-    writeFileSync(path, `#!/usr/bin/env bash\nprintf '%s %s\\n' "$0" "$*" >> ${JSON.stringify(log)}\nexit 1\n`);
+    writeFileSync(path, `#!/usr/bin/env bash\nprintf '%s %s\\n' "$0" "$*" >> ${JSON.stringify(log)}\n`
+      + `if [[ -z "\${SIR_PROBE_FAIL:-}" || "$0 $*" == *"\${SIR_PROBE_FAIL}"* ]]; then exit 1; fi\nexit 0\n`);
     chmodSync(path, 0o755);
   };
   // Every in-tree script the guard names, created at the path the guard names it by.
@@ -386,7 +391,7 @@ const probeGuard = (block) => {
   // guard exited non-zero for a reason that had nothing to do with the guard. Assertion 2 below
   // refused that as proof, which is the only reason it was noticed. So the file is removed from
   // the child AND the shim is prepended INSIDE the script, after anything BASH_ENV would have done.
-  const env = { ...process.env, PATH: `${shim}:${process.env.PATH}` };
+  const env = { ...process.env, PATH: `${shim}:${process.env.PATH}`, SIR_PROBE_FAIL: failing };
   delete env.BASH_ENV;
   delete env.ENV;
   const probe = spawnSync("bash", ["--noprofile", "--norc", "-c",
@@ -437,33 +442,152 @@ assert.equal(
   "guard-probe self-test: a backgrounded subject discards its status and must be detectable",
 );
 
+// SELF-TEST FOR THE SELECTIVE MODE (round 2, F2). The per-command assertions below are only worth
+// anything if failing exactly one command of a MULTI-command guard is distinguishable from failing
+// another. Round 1's probe could not do this — it stubbed everything to fail, so the first command
+// aborted the block and the second was unobservable in status and in existence alike. These rows
+// prove the distinction exists BEFORE it is relied on, and they prove it in BOTH positions, since
+// a mechanism that only sees the first command is exactly the defect being repaired.
+{
+  const first = "./scripts/probe-first.sh";
+  const second = "./scripts/probe-second.sh";
+  const twoCommand = (firstTail, secondTail) =>
+    `    if integrity_runs probe-subject; then\n      ${first}${firstTail}\n      ${second}${secondTail}\n    fi`;
+  const healthy = twoCommand("", "");
+  assert.notEqual(probeGuard(healthy, "probe-first.sh").status, 0, "selective self-test: a failing FIRST command must fail a healthy guard");
+  assert.notEqual(probeGuard(healthy, "probe-second.sh").status, 0, "selective self-test: a failing SECOND command must fail a healthy guard");
+  assert.ok(probeGuard(healthy, "probe-second.sh").invoked.includes("probe-first.sh"),
+    "selective self-test: the earlier command must still run, or the later one was never reached");
+
+  const secondSwallowed = twoCommand("", " || true");
+  assert.notEqual(probeGuard(secondSwallowed, "probe-first.sh").status, 0, "selective self-test: swallowing the SECOND must not mask the FIRST");
+  assert.equal(probeGuard(secondSwallowed, "probe-second.sh").status, 0,
+    "selective self-test: a swallowed SECOND command must be detectable — this is the case round 1 could not see at all");
+
+  const firstSwallowed = twoCommand(" || true", "");
+  assert.equal(probeGuard(firstSwallowed, "probe-first.sh").status, 0, "selective self-test: a swallowed FIRST command must be detectable");
+  assert.notEqual(probeGuard(firstSwallowed, "probe-second.sh").status, 0, "selective self-test: swallowing the FIRST must not mask the SECOND");
+}
+
+// ---------------------------------------------------------------------------
+// S.I.R.#265 round 2, F2 — the round-1 probe could only observe a guard's FIRST command.
+//
+// Every command was stubbed to exit 1 and the block ran under `set -euo pipefail`, so the first
+// stub aborted it and everything after was unobservable in status AND in existence. `npm-audit` is
+// the only multi-command guard and its two commands are not interchangeable:
+// `check-npm-audit.mjs` is the policy runner and is clean in CI, so it proves nothing on its own;
+// `test-npm-audit.mjs` is the SOLE provider of the proof that the runner can tell a high-severity
+// advisory from a clean report. Measured through the production route, arms differing by one line
+// of `qualify-pr.sh` with an identical break in the checker: control exit 1 / receipt `fail`;
+// delete `node .github/scripts/test-npm-audit.mjs` (0 added, 1 removed) → exit 0, receipt `pass`,
+// suite green. At suite level `|| true` on EITHER command alone also escaped.
+//
+// This is the same shape as the two layers before it: the repair claimed "the spellings nobody has
+// thought of are covered too" while the evidence covered single-command guards only. The claim
+// outran the measurement. Two things are needed, and neither substitutes for the other.
+// ---------------------------------------------------------------------------
+
+// (I) THE COMMAND INVENTORY IS DECLARED, NOT DERIVED — and that is the whole answer to DELETION.
+//
+// No probe that reads its expectations out of the block can see a command removed FROM that block:
+// the mutant simply shrinks the expected set and the probe agrees with itself. That is this repo's
+// own `declaredSubjects` lesson one level down, so the remedy is the same one — an absolute pin
+// that an author must update deliberately, stated here where a reviewer reads it rather than
+// recovered from the shell being checked.
+//
+// Each entry is a distinctive substring of the command's `$0 $*` as the sandbox observes it.
+const declaredDispatch = {
+  "npm-audit": [".github/scripts/test-npm-audit.mjs", ".github/scripts/check-npm-audit.mjs"],
+  governance: ["scripts/verify-fable-game-governance.sh"],
+  "dependency-surface": ["fsgg-sdd dependency-surface"],
+  "sdd-byte-stability": ["scripts/test-item-184-sdd-byte-stability.sh"],
+  "feedback-audit": ["scripts/test-feedback-audit-binding-exceptions.sh"],
+  "review-contract": ["scripts/test-review-contract-coherence.sh"],
+};
+assert.deepEqual(
+  Object.keys(declaredDispatch).sort(),
+  [...subjectOrder].sort(),
+  "every dispatched subject needs a declared command inventory, and only dispatched subjects may have one",
+);
+
+// The statements a guard actually contains. Split on `;` and newline, which is exactly the shape
+// this case block is written in; a command carrying a literal `;` inside quotes would be
+// miscounted, and the count assertion below would then fire and demand a deliberate look rather
+// than silently miscounting.
+const guardStatements = (block) => block
+  .replace(/^\s*if integrity_runs [a-z0-9-]+; then/u, "")
+  .replace(/\bfi\s*$/u, "")
+  .split(/[;\n]/u)
+  .map((statement) => statement.trim())
+  .filter((statement) => statement.length > 0 && !statement.startsWith("#"));
+
 for (const { id, block } of guards) {
+  const declared = declaredDispatch[id];
+  const statements = guardStatements(block);
+
+  // (I.a) One statement per declared command, and no others. Deletion shortens `statements`;
+  //       an added command lengthens it. Both are refused here rather than absorbed.
+  assert.equal(
+    statements.length,
+    declared.length,
+    `the \`${id}\` guard runs ${statements.length} command(s) but ${declared.length} are declared for it.\n`
+      + `  declared: ${declared.join(", ")}\n  found:    ${statements.join(" | ")}\n`
+      + "  A command DELETED from a guard cannot be seen by probing the guard — the probe would just expect less.\n"
+      + "  If this change is intended, update `declaredDispatch` deliberately and say why in the commit.",
+  );
+  // (I.b) …and they are the declared ones, matched one-to-one in both directions.
+  for (const command of declared) {
+    assert.equal(
+      statements.filter((statement) => statement.includes(command)).length,
+      1,
+      `the \`${id}\` guard does not run exactly one statement containing \`${command}\`:\n  ${statements.join("\n  ")}`,
+    );
+  }
+  for (const statement of statements) {
+    assert.equal(
+      declared.filter((command) => statement.includes(command)).length,
+      1,
+      `the \`${id}\` guard runs \`${statement}\`, which matches no single declared command for it`,
+    );
+  }
+
+  // (II) EACH DECLARED COMMAND IS INDIVIDUALLY LOAD-BEARING. Only this command fails; every other
+  //      succeeds, so the block reaches it and its status is the only thing that can fail the
+  //      guard. Round 1 asserted this for the first command and, by aborting there, for no other.
+  for (const command of declared) {
+    const { status, invoked } = probeGuard(block, command);
+    assert.ok(
+      Number.isInteger(status) && status !== 0,
+      `qualify-pr.sh discards the exit status of \`${command}\` in the \`${id}\` guard:`
+        + ` with only that command failing and every other succeeding, the guard still succeeded (status ${status}).`
+        + " That command's failure cannot fail the integrity gate, so a real defect it detects would be printed"
+        + " into a green run's log. Remove whatever swallows the status (`|| true`, `|| :`, a trailing `&`, a subshell).",
+    );
+    assert.ok(
+      invoked.includes(command),
+      `the \`${id}\` guard never reached \`${command}\`, so its non-zero status is unexplained:\n${invoked.trim() || "(nothing invoked)"}`,
+    );
+  }
+
+  // (III) The whole-guard properties round 1 established, unchanged: with EVERYTHING failing the
+  //       guard fails, it invoked something, and what it invoked names its own subject.
   const { status, invoked } = probeGuard(block);
-  // 1. The subject's exit status is load-bearing.
   assert.ok(
     Number.isInteger(status) && status !== 0,
     `qualify-pr.sh discards the \`${id}\` subject's exit status: with every command it invokes failing, the guard still succeeded (status ${status}).`
       + " A subject whose failure does not fail the integrity gate is indistinguishable from one that passed —"
-      + " the run goes green with the failure printed in its own log. Remove whatever swallows the status (`|| true`, `; true`, a trailing `&`, a subshell).",
+      + " the run goes green with the failure printed in its own log.",
   );
-  // 2. It actually invoked something, so (1) is not satisfied by `command not found`. An empty log
-  //    means the sandbox stubbed nothing the guard runs, and the non-zero status above then says
-  //    nothing about the guard.
   assert.ok(
     invoked.trim().length > 0,
     `the \`${id}\` guard invoked none of the stubs, so its non-zero status is unexplained; refusing rather than counting it as proof`,
   );
-  // 3. What it invoked names the subject it is guarding. Every committed dispatch satisfies this by
-  //    construction — `review-contract` runs `test-review-contract-coherence.sh`, `governance` runs
-  //    `verify-fable-game-governance.sh`, `dependency-surface` runs `dotnet fsgg-sdd
-  //    dependency-surface`, and so on — so it is derived from the shell rather than from a second
-  //    list here. It is what catches a guard pointed at ANOTHER subject's script, which (1) and (2)
-  //    cannot see: that mutant fails and invokes something, it just runs the wrong thing. A future
-  //    subject whose command does not name it fails here and must be renamed or deliberately noted.
+  // What it invoked names the subject it is guarding — what catches a guard pointed at ANOTHER
+  // subject's script, which the assertions above cannot see: that mutant fails and invokes
+  // something, it just runs the wrong thing.
   assert.ok(
     invoked.includes(id),
-    `the \`${id}\` guard runs a command that does not name \`${id}\`:\n${invoked.trim()}\n`
-      + "  A guard pointed at another subject's script still fails when that script fails, so nothing else here can see it.",
+    `the \`${id}\` guard runs a command that does not name \`${id}\`:\n${invoked.trim()}`,
   );
 }
 
