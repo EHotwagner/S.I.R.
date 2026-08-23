@@ -468,16 +468,18 @@ passes into it. You need both, and the second is the one people skip.
 `scripts/test-review-contract-coherence.sh` holds this page to that standard, and it is precise about
 how far that goes:
 
-- **Derived claims** — the required and optional draft-key lists, the vocabulary table, both wait
-  examples' key sets, the engine-overwrites table, the route-evidence cardinalities, the initial-record
-  round, the `reviewGeneration` shape, the wait-window ceiling, the authorization table's **token**
-  column, and the two subject forms — are **parsed out of this document** and compared against the live
-  engine. Falsify one here and the gate reds, because its expectation is this text.
-- **Transcribed claims** — the authorization table's **wait-state** column. Which wait state authorizes
-  which record kind is decided by `authorizeReviewRecordWait` in the CLI, behind a live GitHub
-  transport, so nothing in `FS.GG.Coord.Core` knows it and the gate cannot derive it. The gate compares
-  the column against an explicit transcription of the decompiled switch, and labels it as one. Falsify
-  the column here and the gate still reds; falsify the *engine* and it would not notice.
+- **Derived claims** — the required and optional draft-key lists, **every row** of the vocabulary
+  table, both wait examples' key sets, the route-evidence cardinalities, the initial-record round, the
+  `reviewGeneration` shape, the wait-window ceiling, the authorization table's **token** and
+  **receipt-kind** columns, and the two subject forms — are **parsed out of this document** and
+  compared against the live engine. Falsify one here and the gate reds, because its expectation is
+  this text.
+- **Transcribed claims** — the authorization table's **wait-state** column, and the engine-overwrites
+  table (both its field list and each row's description). These are CLI behaviour, decided by
+  `authorizeReviewRecordWait` and `recordReview$cont@2412-3` behind a live GitHub transport, so nothing
+  in `FS.GG.Coord.Core` knows them and the gate cannot derive them. The gate compares them against an
+  explicit transcription of the decompiled code and labels it as one. Falsify them here and the gate
+  still reds; falsify the *engine* and it would not notice.
 - **Literal-only claims** — the traps, the warnings, the quoted refusal strings, and everything else
   stated as prose with no machine form — are checked for presence only. Rewriting such a sentence to
   say the opposite while keeping its key phrase would not be caught, and the gate claims no inversion
@@ -487,12 +489,23 @@ An earlier revision claimed it "fails when any load-bearing claim here is invert
 documented claims were falsified and it stayed green. The distinction above is the repair, and stating
 it honestly is part of the repair rather than a caveat on it.
 
-**The repair itself then reproduced the defect twice, in miniature, and both are worth recording.**
-The rebuilt gate iterated only four of the authorization table's five rows, so the `acceptance` row
-could be falsified undetected; and it "checked" the wait-state column against
-`if kindName = "initial" then "Waiting" else "Waiting"` — a constant compared with itself, which is
-precisely the transcribed-expectation pattern the rebuild existed to remove. It also "proved" the
-literal-only claims red-when-deleted with a loop that deleted every line containing a literal and then
-checked the literal was gone: an assertion and its own mutation being the same operation. All three
-were found by review of the repair, not by the repair's own sweep. **A gate's inversion evidence is
-itself a claim that can be vacuous, and it needs the same scrutiny as the thing it defends.**
+**The repair reproduced the defect in miniature, twice over, across two review rounds.**
+
+Round one's repair iterated only four of the authorization table's five rows, so the `acceptance` row
+could be falsified undetected; "checked" the wait-state column against
+`if kindName = "initial" then "Waiting" else "Waiting"`, a constant compared with itself; and "proved"
+the literal-only claims red-when-deleted with a loop whose mutation and assertion were the same
+`grep`.
+
+Round two's review then found three more, all filed under **Derived** while being nothing of the kind:
+two vocabulary rows were parsed into the expectation file and never looped over — parsed-but-unchecked,
+which is worse than unparsed because the expectation file makes it look covered; the overwrites table
+was compared against a string literal inside the gate, three lines below a comment introducing the
+Transcribed category it belonged in; and the authorization table's receipt-kind column was captured by
+the parser and thrown away, belonging to no category and checked by nothing.
+
+Note where the error concentrated: **the `Derived` bucket, every time.** The Transcribed category held
+up under review, with its one member confirmed against the decompiled switch, and the literal-only
+claims behaved exactly as this page says they will. Over-claiming is the failure mode, and it lands on
+whichever bucket promises the most. **A gate's inversion evidence is itself a claim that can be
+vacuous, and it needs the same scrutiny as the thing it defends.**

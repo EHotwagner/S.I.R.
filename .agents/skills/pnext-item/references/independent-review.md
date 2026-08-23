@@ -99,10 +99,16 @@ invariant in the validator's own words, the wait-window expiry trap, and how to 
 prose does not answer — is [`docs/coordination-engine-contracts.md`](../../../../docs/coordination-engine-contracts.md),
 which `scripts/test-review-contract-coherence.sh` holds to the engine — it parses that document's
 own tables and key lists and compares them against the pinned engine, so falsifying a documented claim
-reds the gate. Run it directly, or as `scripts/run-ci-gate.sh review-contract`, which is the named
-subject it is dispatchable under. **The workflow row that invokes that subject on every PR lives in
-`.github/workflows/ci.yml`, which this change does not touch** — until that row lands the gate is
-dispatchable and green but not automatic, so run it by hand when you change the contract.
+reds the gate.
+
+**Run it directly: `bash scripts/test-review-contract-coherence.sh`. That is the only route that
+works today, and nothing runs it for you.** It is not wired into CI, and it is deliberately not
+half-wired: an earlier revision of this change added a `review-contract` case to
+`scripts/run-ci-gate.sh` and said the gate was "dispatchable", but that route could never report a
+pass — `ci-route.mjs` refuses an unknown subject, so it exited 1 on a correct document and 1 on a
+falsified one alike, unable to distinguish them. Wiring it properly needs `ci-route.mjs`,
+`qualify-pr.sh`, `test-ci-route.mjs` and `.github/workflows/ci.yml` to change together, which is
+`S.I.R.#265`. Until that lands, run it by hand whenever you change the contract.
 
 
 Every item gets one independent critique cycle before merge. The implementer and critic are different
