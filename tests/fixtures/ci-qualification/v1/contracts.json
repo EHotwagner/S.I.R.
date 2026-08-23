@@ -7,6 +7,10 @@
   "feedbackWaveBudgetMilliseconds": 180000,
   "feedbackHeadroomBasisPoints": 2000,
   "feedbackWaveCount": 2,
+  "costReportVerdictBasisSchema": "sir.ci-join/v1",
+  "costReportVerdictObservedField": "timing.criticalPathMilliseconds",
+  "costReportVerdictBasisField": "timing.acceptanceTargetMilliseconds",
+  "costReportVerdictBaselineKeys": ["runnerMilliseconds", "artifactBytes"],
   "runnerClass": "ubuntu-latest",
   "gateOrder": [
     "rules",
