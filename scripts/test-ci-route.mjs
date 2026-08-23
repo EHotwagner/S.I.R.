@@ -641,14 +641,14 @@ for (const producer of producerOrder) {
   const key = producer.replace("-", "_");
   assert.match(jobBody("route"), new RegExp(`^      ${key}: \\$\\{\\{ steps\\.route\\.outputs\\.${key} \\}\\}$`, "mu"),
     `the route job must publish the ${key} output`);
-  // The emitted VALUE must be the derived membership, not a constant. A flag hard-wired `true`
-  // reintroduces exactly the defect -- every route running every producer -- while still looking
-  // like a per-producer output.
-  assert.match(routeSource, /\.\.\.producerOrder\.map\(\(producer\) => `\$\{producer\.replace\("-", "_"\)\}=\$\{routeProducers\.includes\(producer\)\}`\)/u,
-    "scripts/ci-route.mjs must emit each producer flag as its derived membership in expectedProducersFor");
-  assert.match(routeSource, /const routeProducers = expectedProducersFor\(route\.selectedGates\);/u,
-    "the route CLI must derive its producer flags from expectedProducersFor");
 }
+// The emitted VALUE must be the derived membership, not a constant. A flag hard-wired `true`
+// reintroduces exactly the defect -- every route running every producer -- while still looking
+// like a per-producer output.
+assert.match(routeSource, /\.\.\.producerOrder\.map\(\(producer\) => `\$\{producer\.replace\("-", "_"\)\}=\$\{routeProducers\.includes\(producer\)\}`\)/u,
+  "scripts/ci-route.mjs must emit each producer flag as its derived membership in expectedProducersFor");
+assert.match(routeSource, /const routeProducers = expectedProducersFor\(route\.selectedGates\);/u,
+  "the route CLI must derive its producer flags from expectedProducersFor");
 
 // Every producer job keys on its own derived flag: enumerated, never negated, and never
 // re-deriving the classification by hand. `classification != 'evidence-only'` is the shape that
