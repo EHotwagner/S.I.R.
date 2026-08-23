@@ -35,7 +35,7 @@ export default class DeclaredBudgetExecutionReporter {
   // test entirely, which afterwards is indistinguishable from a shard that never carried it -- the
   // allowance that makes this reporter shard-safe is the same allowance that hides this edit.
   onBegin(config) {
-    this.#filterRefusal = tacticalOverlayLayerFilterRefusal(config);
+    this.#filterRefusal = tacticalOverlayLayerFilterRefusal(config, process.argv);
   }
 
   onTestEnd(test, result) {

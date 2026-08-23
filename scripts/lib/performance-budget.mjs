@@ -590,10 +590,31 @@ export function assertTacticalOverlayLayerRunNetArmed(config) {
 // Excluding a COHORT is legitimate; excluding THIS TAG is the one filter that silently removes the
 // budget. Only the second is refused, and it is read off the run's resolved filter rather than off
 // any file.
-export function tacticalOverlayLayerFilterRefusal(config) {
-  const grepInvert = config?.grepInvert;
-  if (grepInvert instanceof RegExp && grepInvert.test(tacticalOverlayLayerBudgetTag))
-    return `this run excludes ${tacticalOverlayLayerBudgetTag} with --grep-invert (${grepInvert}), which removes the overlay-layer budget test from the run entirely. A run that filtered the budget out is not a run that met it, and it is indistinguishable afterwards from a shard that was never given the test -- which is why it is refused here, while the filtering itself is still available for every other tag.`;
+export function tacticalOverlayLayerFilterRefusal(config, argv = []) {
+  // BOTH CHANNELS, BECAUSE THE ONE THAT MATTERS IS NOT THE OBVIOUS ONE. A `grepInvert` written into
+  // the config file arrives on the resolved config; a `--grep-invert` passed on the COMMAND LINE does
+  // NOT -- Playwright applies it as a selection filter and `config.grepInvert` stays null. Measured,
+  // not assumed: the first version of this check read only the config and could not fire on the CLI
+  // form at all, which is the form test-browser-shards.mjs actually uses.
+  const patterns = [];
+  if (config?.grepInvert instanceof RegExp) patterns.push({ source: "the config's grepInvert", value: config.grepInvert.source });
+  for (let index = 0; index < argv.length; index += 1) {
+    const argument = `${argv[index]}`;
+    if (argument === "--grep-invert" && index + 1 < argv.length) patterns.push({ source: "--grep-invert", value: `${argv[index + 1]}` });
+    else if (argument.startsWith("--grep-invert=")) patterns.push({ source: "--grep-invert", value: argument.slice("--grep-invert=".length) });
+  }
+  for (const pattern of patterns) {
+    let excludes = false;
+    try {
+      excludes = new RegExp(pattern.value).test(tacticalOverlayLayerBudgetTag);
+    } catch {
+      // An unreadable filter is refused rather than assumed harmless: a pattern this cannot parse is
+      // one whose effect on the budget tag is unknown (#266).
+      return `this run was filtered with ${pattern.source} ${JSON.stringify(pattern.value)}, which is not a pattern this check can parse. Its effect on ${tacticalOverlayLayerBudgetTag} is therefore unknown, and an unknown effect on the budget's own test is refused rather than assumed harmless.`;
+    }
+    if (excludes)
+      return `this run excludes ${tacticalOverlayLayerBudgetTag} via ${pattern.source} (${pattern.value}), which removes the overlay-layer budget test from the run entirely. A run that filtered the budget out is not a run that met it, and afterwards it is indistinguishable from a shard that was never given the test -- which is why it is refused here, while filtering every other tag stays available.`;
+  }
   return null;
 }
 

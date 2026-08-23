@@ -1009,13 +1009,24 @@ for (const unreadable of [undefined, null, {}, { reporter: "list" }, { reporter:
 // AND A RUN THAT FILTERED THE BUDGET TAG OUT IS REFUSED, while ordinary cohort filtering is not --
 // test-browser-shards.mjs routinely passes --grep/--grep-invert, so refusing filtering outright would
 // red correct runs and the check would be removed.
-assert.equal(tacticalOverlayLayerFilterRefusal({ grepInvert: null }), null, "an unfiltered run is not refused");
-assert.equal(tacticalOverlayLayerFilterRefusal({}), null, "and neither is a run with no filter at all");
-assert.equal(tacticalOverlayLayerFilterRefusal({ grepInvert: /@some-other-cohort/ }), null,
-  "excluding an unrelated cohort is ordinary sharding and must not be refused");
-assert.match(`${tacticalOverlayLayerFilterRefusal({ grepInvert: new RegExp(tacticalOverlayLayerBudgetTag) })}`, /excludes .* with --grep-invert/,
-  "excluding the budget tag removes the test from the run entirely and must be refused");
-console.log(`JUSTIFIED tactical-overlay-budget-net-installation: the run-level net's own installation is enumerated -- an armed run passes in two entry spellings, an unregistered reporter is refused, ${5} unreadable configurations are refused rather than assumed armed, and a run that excludes ${tacticalOverlayLayerBudgetTag} by --grep-invert is refused while unrelated cohort filtering is not`);
+assert.equal(tacticalOverlayLayerFilterRefusal({ grepInvert: null }, []), null, "an unfiltered run is not refused");
+assert.equal(tacticalOverlayLayerFilterRefusal({}, []), null, "and neither is a run with no filter at all");
+assert.equal(tacticalOverlayLayerFilterRefusal({ grepInvert: /@some-other-cohort/ }, ["--grep-invert", "@some-other-cohort"]), null,
+  "excluding an unrelated cohort is ordinary sharding -- test-browser-shards.mjs turns that knob -- and must not be refused");
+assert.match(`${tacticalOverlayLayerFilterRefusal({ grepInvert: new RegExp(tacticalOverlayLayerBudgetTag) }, [])}`, /excludes .* via the config's grepInvert/,
+  "a config-file grepInvert on the budget tag must be refused");
+// THE CHANNEL THAT ACTUALLY MATTERS. A CLI --grep-invert never reaches config.grepInvert: Playwright
+// applies it as a selection filter and the resolved config stays null. Measured against a live run --
+// the first version of this check read only the config and could not fire on the CLI form at all,
+// which is the form the shard splitter uses.
+for (const argv of [["--grep-invert", tacticalOverlayLayerBudgetTag], [`--grep-invert=${tacticalOverlayLayerBudgetTag}`]])
+  assert.match(`${tacticalOverlayLayerFilterRefusal({ grepInvert: null }, argv)}`, /excludes .* via --grep-invert/,
+    `a command-line ${argv.join(" ")} must be refused, since config.grepInvert is null for it`);
+assert.equal(tacticalOverlayLayerFilterRefusal({ grepInvert: null }, ["--grep-invert", "@other"]), null,
+  "and a command-line filter naming another cohort is still allowed");
+assert.match(`${tacticalOverlayLayerFilterRefusal({ grepInvert: null }, ["--grep-invert", "@("])}`, /not a pattern this check can parse/,
+  "an unparseable filter has an unknown effect on the budget tag and is refused rather than assumed harmless (#266)");
+console.log(`JUSTIFIED tactical-overlay-budget-net-installation: the run-level net's own installation is enumerated -- an armed run passes in two entry spellings, an unregistered reporter is refused, ${5} unreadable configurations are refused rather than assumed armed, and a run that excludes ${tacticalOverlayLayerBudgetTag} is refused through BOTH the config and the command line -- the channel that matters, since a CLI --grep-invert never reaches the resolved config -- while unrelated cohort filtering and an unparseable pattern are handled distinctly`);
 
 console.log(`JUSTIFIED tactical-overlay-budget-run-refusal: a declared-but-unexecuted ${tacticalOverlayLayerBudgetTag} test is refused in 3 suppression states, an executed or failed one is not, a shard that never carried it is not, and an unreadable run is refused rather than passed`);
 console.log(`JUSTIFIED tactical-overlay-budget-wiring: the browser spec is WIRED to the declared verdict -- it imports and references the throwing form, does not use the returning form, tags the budget-bearing test, and carries no copy of ${overlayCeiling}; ${tacticalOverlayLayerSurface.attribute} is still emitted by the product. This is a source check and says NOTHING about whether the verdict executes: that is the evaluation guard and the run-level refusal. Both are inverted above, and so is the run-level net\u2019s own INSTALLATION -- an earlier revision of this line said "both inverted above" while only the guard had its installation checked, which is the asymmetry round 3 found.`);
