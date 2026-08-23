@@ -132,10 +132,12 @@ die() { echo "compare-engines: $*" >&2; exit 2; }
 # THE STRUCTURE IS ENFORCED, NOT MERELY INTENDED. `scripts/test-compare-coord-engine-versions.sh` reads
 # the option list out of THIS block instead of carrying its own copy, so an option added here is
 # exercised without being registered there; and it reds if a second `shift` appears in this loop, which
-# is what a relapse into per-option arms looks like. Its three inversions restore the unguarded arms
-# (all five), then guard only `--old` (the enumerated repair), then add a NEW unguarded option — and
-# each is required to be caught, the second on options other than `--old` and the third on nothing but
-# the option it introduced.
+# is what a relapse into per-option arms looks like. Its four inversions restore the unguarded arms (all
+# five), then guard only `--old` (the enumerated repair), then add a NEW unguarded option, then restore
+# per-option arms that are all correctly guarded — and each is required to be caught: the second on
+# options other than `--old`, the third on nothing but the option it introduced, and the fourth by the
+# shift count alone, because that mutant is behaviourally correct and no amount of running it reveals
+# the structure it lost.
 OLD="" NEW="" REF="" PR="" REPO="S.I.R."
 while [ $# -gt 0 ]; do
   case "$1" in

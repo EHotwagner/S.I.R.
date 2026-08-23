@@ -23,11 +23,12 @@
 # anyone remembering to register it; that is the difference between a suite that tests the fix and a
 # suite that tests the example.
 #
-# Three inversions are built and required to red, and the first is the least interesting:
+# Four inversions are built and required to red, and the first is the least interesting:
 #
 #   A  the pre-#303 parser, every arm unguarded              — the original defect
 #   B  the same parser with ONLY `--old` guarded             — the ENUMERATED repair
 #   C  the repaired parser plus a NEW unguarded option       — the next option, added tomorrow
+#   D  per-option arms, all guarded, all on ONE line         — the relapse behaviour cannot see
 #
 # B is the repair a reader gets by fixing the case named in the issue and stopping. It passes for
 # `--old` and hangs on the other four, and the suite is required not merely to red on it but to red on
@@ -109,6 +110,23 @@ derive_options() {  # derive_options <script>
 }
 
 # ---------------------------------------------------------------------------------------------------
+# STEP 2's measurement, as a function, so an inversion can be held to it too.
+#
+# It counts OCCURRENCES, not matching lines. `grep -c` answers "how many lines matched", which reads a
+# relapse written as `--old) …; shift 2 ;; --new) …; shift 2 ;;` on one line as a single shift. That was
+# this check's own blind spot, measured before it shipped: on such a line `grep -c` returned 1 and
+# `grep -o | wc -l` returned 2. Inversion D below is that exact shape, and it is deliberately a
+# behaviourally CORRECT parser, so nothing but this count can catch it.
+# ---------------------------------------------------------------------------------------------------
+count_shifts() {  # count_shifts <script>
+  local s=$1 span start end
+  span=$(locate_parser "$s") || { printf 'NA'; return 1; }
+  start=${span% *}; end=${span#* }
+  sed -n "${start},${end}p" "$s" \
+    | grep -oE '(^|[^[:alnum:]_])shift([^[:alnum:]_]|$)' | grep -c . || true
+}
+
+# ---------------------------------------------------------------------------------------------------
 # The probe. For a script and its derived options, require that EVERY option, with its value missing,
 # terminates with a diagnostic naming it — both alone and last after a complete prefix of the others,
 # which is the shape an operator's typo actually takes.
@@ -186,7 +204,7 @@ fi
 # STEP 2 — structural: the repaired parser routes every option through exactly one `shift`.
 # ===================================================================================================
 start=${span% *}; end=${span#* }
-shift_count=$(sed -n "${start},${end}p" "$SUBJECT" | grep -cE '(^|[^[:alnum:]_])shift([^[:alnum:]_]|$)')
+shift_count=$(count_shifts "$SUBJECT")
 if [ "$shift_count" = 1 ]; then
   ok "the parser contains exactly one \`shift\` (per-option arms have not returned)"
 else
@@ -375,6 +393,50 @@ if mutant=$(make_mutant inversion-c "$WORK/block-c"); then
   fi
 else
   bad "inversion C could not be built — the mutation anchor no longer applies."
+fi
+
+# D — the relapse the BEHAVIOURAL probe cannot see, which is the only reason STEP 2 exists.
+#
+# Per-option arms are back, each with its own `shift 2`, every one of them correctly guarded, and all
+# five packed onto a SINGLE line. The parser is therefore behaviourally RIGHT: every option terminates
+# with a diagnostic naming it, and `probe_parser` passes it. What has been lost is the property that made
+# the repair a repair — one guard, in one place, that a sixth option cannot be added without.
+#
+# ONE LINE IS THE POINT, AND IT IS MEASURED, NOT STYLISTIC. This check first counted matching LINES with
+# `grep -c`. On this block that returns exactly 1 — the value STEP 2 expects — so a complete relapse
+# passed. Counting occurrences returns 5 and reds. Both numbers were measured on this exact block before
+# the count was changed. A two-arms-per-line variant returns 3, which reds either way; it is the
+# single-line shape that escapes, so that is the shape kept here.
+#
+# This inversion is asserted from both ends. The behavioural probe must PASS it (otherwise the mutant is
+# not the subtle case it is meant to be, and STEP 2 is being credited for a catch the probe made), and
+# the count must red.
+cat > "$WORK/block-d" <<'BLOCK'
+OLD="" NEW="" REF="" PR="" REPO="S.I.R."
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --old) [ $# -ge 2 ] || die "option --old requires a value"; OLD="$2"; shift 2 ;; --new) [ $# -ge 2 ] || die "option --new requires a value"; NEW="$2"; shift 2 ;; --ref) [ $# -ge 2 ] || die "option --ref requires a value"; REF="$2"; shift 2 ;; --pr) [ $# -ge 2 ] || die "option --pr requires a value"; PR="$2"; shift 2 ;; --repo) [ $# -ge 2 ] || die "option --repo requires a value"; REPO="$2"; shift 2 ;;
+    *) die "unknown argument: $1" ;;
+  esac
+done
+BLOCK
+
+if mutant=$(make_mutant inversion-d "$WORK/block-d"); then
+  d_shifts=$(count_shifts "$mutant")
+  if probe_parser "$mutant" "$MUTANT_TIMEOUT" >/dev/null; then
+    if [ "$d_shifts" != 1 ] && [ "$d_shifts" != NA ]; then
+      ok "inversion D (five guarded arms on one line) passes behaviourally, caught structurally: $d_shifts shifts"
+    else
+      bad "INVERSION D survived: the shift count read $d_shifts on a parser with five of them."
+      note "Counting matching LINES instead of occurrences is what lets a doubled-up relapse through."
+    fi
+  else
+    bad "inversion D was caught behaviourally, so it is not the case it was built to be."
+    note "It must be a CORRECT parser with the wrong structure, or STEP 2 is being credited for a"
+    note "catch the behavioural probe actually made."
+  fi
+else
+  bad "inversion D could not be built — the mutation anchor no longer applies."
 fi
 
 echo
