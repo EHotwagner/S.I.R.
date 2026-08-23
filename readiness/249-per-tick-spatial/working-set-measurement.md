@@ -31,13 +31,18 @@ rather than assumed: across the 12 intervening commits both swapped files have i
 and the figures below still describe this change. This is the same check that retired the false
 "the rebase moved F4" story below — applied before restating a number rather than after.
 
-Two independent guards, and they catch different things:
+Three guards, and each is stated at the strength it actually has:
 
 - **On source blobs, not on commits.** Two different commits routinely carry identical text for these
   two files, so "the refs differ" does not imply "the sides differ". Refuses when every swapped
-  source is byte-identical between the base and the working tree.
-- **On the built assemblies.** The source check proves the two *checkouts* differ; it cannot prove
-  the two *builds* differ. This one was found the hard way — see below.
+  source is byte-identical between the base and the working tree. A real detector.
+- **On the built assemblies — in the equality direction only.** Two identical assemblies built from
+  two *different* sources means a build was skipped, and that is refused (exit 4). Digest
+  **inequality** proves nothing, for the reason below, so this guard cannot certify that two sides
+  differ; it can only catch the case where they provably do not.
+- **On the runtime.** Each side records the framework it actually loaded, and the harness refuses
+  when they disagree (exit 9). A framework version, unlike a build digest, *is* a meaningful
+  identity.
 
 ## The harness produced ~1.00x on repeated runs, and that was a real defect
 
@@ -47,9 +52,22 @@ tree was restored with its *original* mtimes, older than the build outputs alrea
 incremental build therefore considered the sources up to date and handed back the previous side's
 assembly. Both sides then measured the same code.
 
-Fixed by touching the sources on restore and before each side's build, and backstopped by the
-assembly-identity guard above, which refuses when the two sides build to the same bytes. This class
-is exactly why the guard is on the artifact actually executed rather than only on the inputs.
+**What closes it is the `touch` pair, and that is a mitigation rather than a detector.** Touching the
+swapped sources on restore and before each side's build makes them newer than any existing output, so
+the incremental build cannot skip. Nothing detects the escape after the fact.
+
+An earlier revision of this file claimed the assembly-digest comparison was the thing that caught it.
+**That was wrong, and the reason is a property of the ground rather than of the implementation: this
+toolchain does not guarantee reproducible output.** The evidence is in this file's own recorded
+provenance — three different `before-assembly` digests across the three clean runs below, for the one
+immutable base blob at `e118571`. (Repeated rebuilds of an unchanged source often *do* agree — five
+in a row did — which is precisely why inequality cannot be relied upon: it is not stable enough to
+mean "different", and not unstable enough to notice.)
+
+So digest inequality carries no information, and no detector can be built on it. Digest **equality**
+does carry information: two identical assemblies from two different sources means a build was
+skipped. That case is refused (exit 4), verified by stubbing `dotnet build` to a no-op so both sides
+copy the same assembly. The claim is narrow because the mechanism is narrow.
 
 ## Results — 3 independent runs, 3 interleaved rounds each, one workload per process
 
@@ -148,7 +166,26 @@ unconditionally — on both the direct route and the `--prepared-pr` CI route. *
 change to `scripts/qualify-pr.sh`**, which is owned by S.I.R.#272.
 
 **F5 remains measured but ungated.** Its signal is small (+5–16%) and it is folded into the F2+F5
-workload; a budget that narrow would be a flake rather than a gate.
+workload; a budget that narrow would be a flake rather than a gate. F4 is gated; F5 is the one
+remaining ungated acceptance criterion, and it is stated rather than hidden.
+
+### The budget's anti-vacuity assertions, and the one that was decorative
+
+An earlier revision guarded the budget with `expansions > 0`. That was decorative: `boundedPath`'s
+**fast path returns `int32 path.Length` as its expansion count**, so the counter is positive on both
+routes and separates neither. Emptying the wall-dense world validates the package A* candidate and
+never enters the fallback loop — `expansions=21 path-cells=21`, 504,896 bytes — and the old assertion
+passed it.
+
+Two assertions replace it, both inverted and observed red:
+
+| escape | observed | caught by |
+|---|---|---|
+| emptied world → fast path taken | `expansions=21 path-cells=21`, 504,896 B | `expansions > path-cells`, which the fast path cannot produce because it forces equality |
+| thinned walls → fallback still entered, still under ceiling | `boundaries=79 expansions=521 path-cells=27`, 16,343,104 B | the calibrated pin `184/545/35/34/Found` |
+
+The second matters because it fits *under* the 20,000,000 ceiling: without the pin it would have
+re-baselined the budget silently instead of failing.
 
 ## Gate-inversion harness wiring
 
@@ -164,11 +201,25 @@ It is deliberately NOT on the concurrent prepared-PR route: it mutates `Simulati
 those same sources. `test-spatial-subject-mutations.sh` may run there because it builds its mutants
 in an isolated directory; this one does not.
 
-It also no longer leaves a mutant binary behind. Restoring the sources is not enough — the last
-mutant it built is still in `bin/`, and any later step running with `--no-build` will execute it.
-That is not hypothetical: `verify-spatial-query.sh` runs `--print-spatial-performance --no-build`
-after calling this harness, and was safe only because an unrelated `dotnet build` happened to sit
-between them. The harness now rebuilds the restored sources before returning, so it is self-contained
-rather than ordering-dependent. Verified by running the suites with `--no-build` immediately after it,
-which reproduced a spurious `dynamic spatial cache tier was not bounded` failure before the fix and
-passes after.
+It also no longer leaves a mutant binary behind. Restoring the sources is not enough — the harness
+builds mutants into **two** project output directories, and both survive it, so any later step
+running with `--no-build` executes one of them. That is not hypothetical: `verify-spatial-query.sh`
+runs `--print-spatial-performance --no-build` after calling this harness, and was safe only because
+an unrelated `dotnet build` happened to sit between them.
+
+Measured with the fix reverted, running each consumer with `--no-build` immediately afterwards —
+**two** spurious failures, not one:
+
+| consumer | residue | spurious failure |
+|---|---|---|
+| `SIR.Match.Tests` | `dynamic-cache-bound` mutant | `The dynamic spatial cache tier was not bounded: 1025 distinct keys left 1025 entries` |
+| `--print-spatial-performance` | `neighbours-once-per-expansion` mutant | `Spatial bounded-path allocation budget exceeded: 26831424 bytes` |
+| conformance corpus | `neighbours-once-per-expansion` mutant | **none — exit 0** |
+
+The third row is worth keeping. The `neighbours` mutant leaves the full canonical corpus green, which
+is an independent re-proof of why F4 needs an allocation budget at all: the corpus cannot see it. The
+second row is this item's own new gate, which would have gone red for a reason that had nothing to do
+with the code under test.
+
+The harness now rebuilds the restored sources before returning, so it is self-contained rather than
+ordering-dependent.

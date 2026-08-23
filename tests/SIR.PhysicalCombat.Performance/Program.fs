@@ -703,6 +703,14 @@ let private measureRepeated warmup iterations (action: unit -> 'a) =
 // workloads never executed. `GC.Collect` between workloads did not settle it. Isolation did.
 let private runWorkingSetMeasurement selected =
     let selects name = selected = "all" || selected = name
+    // Which RUNTIME actually loaded. Three lanes on this board have now been bitten by
+    // `DOTNET_ROOT_X64`: with it set, two invocation routes can resolve different runtimes, and a
+    // before/after comparison across them measures the runtime difference as if it were the code
+    // difference. Unlike an assembly digest, a framework version is a MEANINGFUL identity - so the
+    // driver records this per side and refuses when the two disagree.
+    printfn
+        "working-set runtime=%s"
+        (System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription.Replace(" ", "-"))
     // F2 + F5 - exact line of sight over a 4x4 footprint, which is 256 origin/target pairs, on a
     // walled map. F2 is the per-crossing boundary resolution; F5 is the line materialization.
     if selects "f2f5" then

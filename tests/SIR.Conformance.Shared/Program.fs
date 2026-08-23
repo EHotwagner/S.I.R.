@@ -192,8 +192,26 @@ let main arguments =
         // runtime-version drift, which a byte-exact assertion would turn into a flake.
         if allocated > 20_000_000L then
             failwithf "Spatial bounded-path allocation budget exceeded: %d bytes. `neighbours` is evaluated more than once per expansion in boundedPath's fallback loop." allocated
-        if pathOutcome <> SpatialOutcome.Found || pathExpansions <= 0 then
-            failwith "Spatial bounded-path allocation gate did not exercise the fallback loop, so its budget proves nothing."
+        // The fallback loop must actually have been entered, or the byte budget above describes some
+        // other query. `expansions > 0` does NOT establish that and was decorative: `boundedPath`'s
+        // FAST path returns `int32 path.Length` AS its expansion count, so the two counters are
+        // EQUAL by construction there and positive on both routes. Emptying this world validates the
+        // package A* candidate and yields `expansions=21 path-cells=21`, which the old assertion
+        // waved through at 504,896 bytes.
+        //
+        // Strict inequality is the discriminator, because the fast path CANNOT produce it. The
+        // fallback loop counts expansions independently of the path it returns, and on this fixture
+        // explores 545 nodes to return 35 cells.
+        if pathExpansions <= pathCells then
+            failwithf
+                "Spatial bounded-path allocation gate did not enter the fallback loop: expansions=%d path-cells=%d. boundedPath's fast path returns path.Length as its expansion count, so equality means the package A* candidate validated and the byte budget describes the wrong query."
+                pathExpansions pathCells
+        // And it must be the CALIBRATED workload, because the ceiling was derived from this exact
+        // search. A fixture that drifts silently re-baselines the budget instead of failing.
+        if pathOutcome <> SpatialOutcome.Found || pathBoundaries <> 184 || pathExpansions <> 545 || pathCells <> 35 || pathCost <> 34 then
+            failwithf
+                "Spatial bounded-path allocation workload changed: boundaries=%d expansions=%d path-cells=%d cost=%d outcome=%A (expected 184/545/35/34/Found). The 20,000,000 byte ceiling was calibrated for that exact search and must be re-derived, not re-baselined."
+                pathBoundaries pathExpansions pathCells pathCost pathOutcome
         0
     | [ "--print-rules-performance" ] ->
         let stopwatch = System.Diagnostics.Stopwatch.StartNew()

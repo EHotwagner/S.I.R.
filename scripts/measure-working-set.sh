@@ -144,10 +144,24 @@ for round in $(seq 1 "$rounds"); do
     for side in before after; do
       cp --remove-destination "$temporary_dir/SIR.Simulation.$side.dll" "$bin/SIR.Simulation.dll"
       dotnet "$bin/SIR.PhysicalCombat.Performance.dll" --working-set "$workload" \
-        | sed "s/^working-set /round$round $side /"
+        | sed "s/^working-set /round$round $side /" \
+        | tee -a "$temporary_dir/observed.log"
     done
   done
 done
+
+# The two sides must have executed under the SAME runtime. A framework version, unlike a build
+# digest, is a meaningful identity: equal means equal, and differing means the comparison spans two
+# runtimes and is measuring them rather than the code. See `DOTNET_ROOT_X64` above.
+observed_runtimes=$(grep -ho "runtime=[^ ]*" "$temporary_dir/observed.log" 2>/dev/null | sort -u | wc -l)
+if [[ "$observed_runtimes" -gt 1 ]]; then
+  echo "measure-working-set: REFUSING - the two sides ran under DIFFERENT runtimes:" >&2
+  grep -ho "runtime=[^ ]*" "$temporary_dir/observed.log" | sort -u | sed "s/^/    /" >&2
+  echo "  The comparison would attribute a runtime difference to the code change. Check" >&2
+  echo "  DOTNET_ROOT_X64 (currently '${DOTNET_ROOT_X64:-<unset>}') and DOTNET_ROOT." >&2
+  exit 9
+fi
+echo "working-set-measurement runtime=$(grep -ho "runtime=[^ ]*" "$temporary_dir/observed.log" | sort -u | head -1 | cut -d= -f2) dotnet-root=${DOTNET_ROOT:-<unset>} dotnet-root-x64=${DOTNET_ROOT_X64:-<unset>}"
 
 cp --remove-destination "$temporary_dir/SIR.Simulation.after.dll" "$bin/SIR.Simulation.dll"
 echo "Working-set measurement complete: $rounds interleaved round(s), one workload per process, before=$before_ref ($before_sha), head=$head_sha."
