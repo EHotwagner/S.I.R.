@@ -141,8 +141,11 @@ Knowing which is which matters, because only the first is reachable from `dotnet
 
 **`ReviewWait.validate` — the pure validator** (measured against it directly):
 
-- **`expiresAt - enteredAt` must be at most 24 hours**, or
-  `a review wait may be bounded for at most 24 hours`. There is no way to open a longer window.
+<!-- scalar-governed:wait-window-max-hours -->
+- **`expiresAt - enteredAt` has a hard ceiling**, and exceeding it is refused with a message of the
+  form *a review wait may be bounded for at most N hours*, where N is `wait-window-max-hours` in the
+  Scalar invariants table. There is no way to open a longer window.
+<!-- /scalar-governed -->
 - `expiresAt` must be strictly later than `enteredAt`, or `expiresAt must be later than enteredAt`.
 - It does **not** check that the window is anywhere near *now*: a receipt entered 30 days in the
   future, or expiring 10 days in the past, passes this layer.
@@ -222,7 +225,7 @@ engine would be precisely the over-claim the honesty section below exists to pre
 > review wait expiry` and the generation cannot be completed at all — it can only be cancelled or
 > timed out and re-entered. The window is whatever you put in `expiresAt`, and the claim lease
 > defaults to 120 minutes, so a wait window sized to match the lease leaves no margin for a slow
-> review. **The window is capped at 24 hours** — `a review wait may be bounded for at most 24 hours` —
+> review. **The window is capped** — see `wait-window-max-hours` in the Scalar invariants table —
 > so "open a very long window" is not available to you. Size `expiresAt` for the review you expect
 > within that ceiling, complete it as soon as the critic's record is posted, and do not let a passing
 > review sit uncompleted.
@@ -339,12 +342,22 @@ An earlier revision of this page said the validator "names every invariant it en
 eight. That sentence is why the `acceptedExceptions` reversal above went unnoticed: a list presented as
 complete stops a reader from checking.
 
-- `initial review round must be zero` — an `initial` record must carry `"round": 0`.
+<!-- scalar-governed:initial-round -->
+- An `initial` record must carry the `initial-round` value from the Scalar invariants table; the
+  validator refuses any other.
+<!-- /scalar-governed -->
+  The refusal reads `initial review round must be zero`. **That quotation sits outside the governed
+  region deliberately** — it is the engine's wording, not this page asserting a value, and it is a
+  LITERAL-ONLY claim over which the gate claims no inversion. Values live in the table; quotations of
+  the engine are quotations.
+<!-- scalar-governed:confirmation-round-first,confirmation-round-second -->
 - **`confirmation round must be contiguous within its generation`** — the first `confirmation` record
-  must be `"round": 1`, the second `2`, and so on; the validator names the number it expected. Round
-  `0` is refused twice over, also as `confirmation round must be positive`. **A successor critic
+  carries `confirmation-round-first` from the Scalar invariants table, the next carries
+  `confirmation-round-second`, and so on; the validator names the number it expected. A round below
+  the first is refused twice over, also as `confirmation round must be positive`. **A successor critic
   cannot pick its round freely**, and this is the rule it needs — ask the review oracle, which reports
   the round it is waiting for.
+<!-- /scalar-governed -->
 - **The same-critic rule has an exception, and the successor handoff depends on it.** `every record in
   one review generation must bind the same critic` holds after a `pass`, but a `confirmation` by a
   *different* critic **is accepted after a `changes-required` verdict**. That is what makes the
@@ -364,8 +377,11 @@ complete stops a reader from checking.
   URLs from the `commentUrl` that `review record` printed for the records concerned.
 - `claimGeneration and baseSha belong to the acceptance record` — they must be absent from the
   initial record. (You are not supplying them anyway; the engine does.)
-- `routeApplicability: "meaningful"` requires **exactly four** `routeEvidence` entries;
-  `"not-meaningful"` requires **exactly one**.
+<!-- scalar-governed:meaningful-evidence-count,not-meaningful-evidence-count -->
+- `routeApplicability: "meaningful"` requires exactly `meaningful-evidence-count` `routeEvidence`
+  entries, and `"not-meaningful"` exactly `not-meaningful-evidence-count` — both in the Scalar
+  invariants table.
+<!-- /scalar-governed -->
 
 > **The route-evidence refusal message overstates what is checked.** It reads `meaningful route
 > evidence must contain built artifact, command, comparison, and result`, but the validator only
@@ -373,6 +389,38 @@ complete stops a reader from checking.
 > terms, while three or five are refused whatever they say. Treat the four-part structure as a real
 > authoring obligation that no tool will enforce for you — a reader who believes the message is
 > being checked will record vacuous route evidence in good faith. Filed against the Kit.
+
+### Scalar invariants, stated as a table
+
+**Five invariants on this page used to be sentences carrying a number.** Every one of them escaped
+review, three rounds running, and each escape defeated the previous round's repair by *rephrasing*:
+`must be at most 24 hours` was widened, so the pattern was loosened to `at most 24 hours`, so the next
+widening spelled the number as a word; `` `"round": 0` `` was matched, so the next widening wrote
+*"must carry round one instead"*. **A claim stated in prose has no enumerable cell, so its parse is a
+phrasing-specific pattern — which is presence-shaped for every phrasing it was not written to see.**
+Patching the pattern with each counterexample is how the escapes kept coming, and this page's own
+guidance says why that cannot terminate: *prose has more shapes than anyone enumerates; the fix is to
+match the structure of the thing being asserted.*
+
+So they are a table, with the same two-column extension the vocabulary table uses — the one shape that
+has never escaped. Every literal in both columns is probed against the engine, so widening a row reds.
+
+| invariant | value | must be refused |
+|---|---|---|
+| `wait-window-max-hours` | `24` | `25`, `48`, `72` |
+| `initial-round` | `0` | `1`, `2` |
+| `confirmation-round-first` | `1` | `0`, `2` |
+| `confirmation-round-second` | `2` | `1`, `3` |
+| `meaningful-evidence-count` | `4` | `3`, `5` |
+| `not-meaningful-evidence-count` | `1` | `0`, `2` |
+| `generation-token-shape` | `<headSha>:<kind>:<round>` | `<kind>:<headSha>:<round>`, `<headSha>-<kind>-<round>` |
+
+**The prose that used to state these values no longer states them.** Each such passage is wrapped in
+`<!-- scalar-governed:<id> -->` … `<!-- /scalar-governed -->`, and the gate refuses any digit, any
+number word, and any `<a>:<b>` shape token inside a governed region. That is a rule about **where a
+claim may live**, not about how a sentence may be phrased, so it does not need to anticipate the next
+author's wording — which is the property every previous repair here lacked. Write the value in the
+table; write `N` in the prose.
 
 ### Rules with two outcomes, stated as outcomes
 
@@ -420,16 +468,13 @@ is wrong in the strict direction — it forbids the handoff the engine relies on
 decimal string. It is exactly the `markerId` that `take --json` already hands you, and the same value
 `who --json` reports for your claim. It is not a hash and not derived.
 
-**`reviewGeneration` is not a hash either.** `ReviewWait.generationToken` returns the literal string:
-
-```
-<headSha>:<kind>:<round>
-```
-
-for example `1d8c93d…:initial-review:0`. The ledger reader compares your receipt against the output of
-that same function, so composing the string by hand is safe — but calling the function is safer, and
-it is a public static on `FS.GG.Coord.Core.dll`. Note that it is **curried**: `generationToken head
-kind round`, not a tupled call.
+<!-- scalar-governed:generation-token-shape -->
+**`reviewGeneration` is not a hash either.** `ReviewWait.generationToken` returns a literal string
+whose shape is `generation-token-shape` in the Scalar invariants table. The ledger reader compares your
+receipt against the output of that same function, so composing the string by hand is safe — but
+calling the function is safer, and it is a public static on `FS.GG.Coord.Core.dll`. Note that it is
+**curried**: `generationToken head kind round`, not a tupled call.
+<!-- /scalar-governed -->
 
 ## The command order
 
