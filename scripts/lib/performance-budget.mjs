@@ -519,6 +519,39 @@ export function assertTacticalOverlayLayerBudgetWasEvaluatedSince(mark) {
     throw new Error(`the overlay-layer node budget was never evaluated during this test. ${tacticalOverlayLayerSurface.layer} may have grown past its declared ceiling of ${tacticalOverlayLayerBudget.maximumOverlayDomNodes} without anything noticing. A skipped, commented-out, or short-circuited call reaches this the same way a deleted one does -- the guard observes whether the verdict RAN, not how the call was written.`);
 }
 
+// THE RUN-LEVEL REFUSAL, BECAUSE A FIXTURE CANNOT POLICE A TEST THAT NEVER STARTS.
+//
+// The per-test guard above runs as part of the test's lifecycle, so it catches everything that
+// happens INSIDE a running test: a commented-out call, `if (false)`, a body-level `test.skip()`
+// (setup has already happened by then), a deleted call. It cannot catch the `.skip` / `.fixme`
+// MODIFIERS, because Playwright suppresses the test BEFORE fixture setup -- one token,
+// `overlayBudgetTest(` to `overlayBudgetTest.skip(`, and a genuine 5001-element breach reported
+// `1 skipped`, exit 0, `failures="0"`.
+//
+// That escape stayed invisible because ONE measurement -- body-level `test.skip()` -- was
+// generalised across TWO different mechanisms that look identical and are not. So this second net is
+// keyed off the RUN'S OWN ACCOUNTING, which exists whether or not the test ever started.
+//
+// KEYED ON A TAG, NOT A TITLE. A title is prose and drifts; the tag is a declared identity that
+// survives the modifier, since a skipped test is still a declared test with its tags intact.
+//
+// SHARD-SAFE BY CONSTRUCTION, and that is not incidental: this suite is sharded, so a rule that
+// demanded the test be present in every shard would red on correct runs and would be removed. A run
+// that carries NO tagged test is a shard that was not given it -- not a suppression -- and is
+// allowed. A run that CARRIES one and did not execute it is refused.
+export const tacticalOverlayLayerBudgetTag = "@tactical-overlay-budget";
+
+export function tacticalOverlayLayerRunRefusal(outcomes) {
+  if (!Array.isArray(outcomes))
+    throw new Error("the overlay-layer run refusal needs the run's outcomes; an unreadable run is refused, not passed");
+  const tagged = outcomes.filter((outcome) => (outcome?.tags ?? []).includes(tacticalOverlayLayerBudgetTag));
+  // Not in this shard. The absence of the test is not evidence that it was suppressed.
+  if (tagged.length === 0) return null;
+  const notExecuted = tagged.filter((outcome) => outcome.status !== "passed" && outcome.status !== "failed");
+  if (notExecuted.length === 0) return null;
+  return `${notExecuted.length} test(s) carrying ${tacticalOverlayLayerBudgetTag} were declared in this run and never executed (${notExecuted.map((outcome) => `${outcome.title}: ${outcome.status}`).join("; ")}). The overlay-layer node budget is enforced only by running that test, so a skipped or suppressed one means ${tacticalOverlayLayerSurface.layer} was never measured against its declared ceiling of ${tacticalOverlayLayerBudget.maximumOverlayDomNodes}. A run that did not check is not a run that passed.`;
+}
+
 export function tacticalInputToPaintBudgetReason(budget, measuredMilliseconds) {
   requireFiniteMeasurement(`${budget.label} inputToPaintMilliseconds`, measuredMilliseconds);
   if (measuredMilliseconds < budget.maximumInputToPaintMilliseconds) return null;
