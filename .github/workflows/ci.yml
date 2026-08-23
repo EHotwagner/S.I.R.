@@ -83,9 +83,11 @@ jobs:
         shell: bash
         env:
           SIR_ROUTE_EMITTED: ${{ toJSON(steps.route.outputs) }}
-          # Exactly the `needs.route.outputs.*` keys this workflow's own job conditions read.
-          # `classification` and `prepare` are published but gated on by nothing, so they are not
-          # required: a head that omits them breaks no job graph.
+          # Exactly the `needs.route.outputs.*` keys this workflow's own run conditions read --
+          # ten job-level `if:` and one step-level one (`evidence`, on the integrity job's evidence
+          # step, which a head omitting that key would silently skip). `classification` and
+          # `prepare` are published but gated on by nothing, so they are NOT required: a head that
+          # omits them breaks no job graph and this step must not invent a failure for them.
           SIR_ROUTE_REQUIRED: >-
             rules spatial cancellation cross_runtime browser documentation evidence
             prepare_native prepare_fable prepare_web prepare_docs
@@ -121,7 +123,7 @@ jobs:
           console.log(`route-contract: this head's scripts/ci-route.mjs emitted ${emittedKeys.length}`
             + ` route output(s): ${emittedKeys.join(", ") || "(none)"}`);
           console.log(`route-contract: of those, producer keys: ${producerKeys.join(", ") || "(none)"}`);
-          console.log(`route-contract: this workflow's job conditions read: ${required.join(", ")}`);
+          console.log(`route-contract: this workflow's run conditions read: ${required.join(", ")}`);
           const missing = required.filter((key) => !(key in emitted));
           // The other direction of the same split: a head whose router emits a producer this
           // workflow has no job for. Nothing runs it, and the head's own join then expects a
@@ -812,7 +814,8 @@ jobs:
           say("");
           if (missing.length > 0) {
             say(`  * this branch's router never publishes: ${missing.join(", ")}`);
-            say("  * every job whose `if:` reads one of those sees the empty string and SKIPS");
+            say("  * every job or step whose `if:` reads one of those sees the empty string,");
+            say("    so it SKIPS");
             say("  * that skip propagates through `needs:` to their consumers");
             say("  * the join then reports those receipts missing, naming gates this branch");
             say("    never asked to skip");
