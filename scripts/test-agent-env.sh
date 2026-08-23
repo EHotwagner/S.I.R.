@@ -38,7 +38,10 @@
 #   delete the startup shim-missing guard                              J3, J4, J8
 #   lock_holder_state: classify unreadable pid as `dead` (case arm)    J5, J6
 #   lock_holder_state: classify ABSENT pid as `dead` (cat arm)         J7
-#   lock_older_than_window: always false (staleness disabled)          J8
+#   lock_older_than_window: always false (staleness disabled)          J8, J12
+#   the dispatch's age bound dropped for `live` only (refuse always)   J12
+#   the dispatch reclaims a `live` lock without consulting the age     J1, J2, J13
+#   the live refusal's window sentence deleted (bound unstated)        J13
 #   trap 'on_signal TERM' TERM  ->  trap cleanup TERM  (non-exiting)   J9
 #   trap 'on_signal INT'  INT   ->  trap cleanup INT   (non-exiting)   J11
 #   cleanup: remove the shim-restore branch                            J10
@@ -59,6 +62,11 @@
 # re-derived by an independent reviewer using mutations it chose without reading this table. J7,
 # J9, J10 and the section I row were re-derived by the author at this head. Nothing in this table
 # is carried from a transcript alone.
+#
+# THE THREE #306 ROWS WERE RE-DERIVED WHEN THEY WERE ADDED, and the `lock_older_than_window` row was
+# re-run rather than reasoned about: bounding `live` by the same window gave that long-standing
+# mutation a second redding check, so the row gained `J12` from a measurement, not from an
+# expectation that it would.
 
 set -uo pipefail
 
@@ -131,10 +139,28 @@ lock_holder_state() { # lock_holder_state <lockdir> -> live | dead | unreadable
   if kill -0 "$pid" 2>/dev/null; then printf 'live'; else printf 'dead'; fi
 }
 
-# AN UNREADABLE LOCK IS BOUNDED BY AGE, NOT GUESSED AT. It is not evidence the holder lives and not
-# evidence it died. Refusing forever wedges the suite; reclaiming at once deletes a live holder's
-# lock. Age is the only honest discriminator available, so only an unreadable lock older than the
-# window is reclaimed, and the window is nameable by a caller that knows its own runtime.
+# NO REFUSAL IS UNBOUNDED, AND THAT IS ONE POLICY OVER ALL THREE ARMS (S.I.R.#306). It used to be
+# two rules and an exception: `dead` reclaimed at once, `unreadable` reclaimed once older than the
+# window, and `live` reclaimed NEVER. An unreadable pid is not evidence the holder lives and not
+# evidence it died — refusing forever wedges the suite, reclaiming at once deletes a live holder's
+# lock — so age was already the honest discriminator there. `live` was left out, and a live pid is
+# the WEAKEST of the three signals, not the strongest: it says something is running at that number,
+# never that it is the process which took this lock. Pids are recycled. A run killed with SIGKILL
+# leaves its lock behind, the kernel later hands its pid to an unrelated process, and every
+# subsequent run reads the pid, finds something alive at it, and refuses — permanently, with no path
+# to reclamation. Measured at 0c33870 against a lock seeded with a live unrelated pid: REFUSED at
+# age=now, at age=2h and still at age=30d, while `unreadable` reclaimed at 2h and `dead` at once.
+#
+# So the window bounds EVERY refusal, and only a provably `dead` holder short-circuits it. The three
+# arms now read as one sentence: reclaim when the holder is provably dead, or when the lock is older
+# than the window; otherwise refuse, under the holder's own name.
+#
+# THE WINDOW IS SAFE FOR `live` BY MEASUREMENT, NOT BY ASSERTION. A full green run of this suite is
+# 12s wall at 0c33870, against a default window of 30m — a factor of ~150. A genuine holder is
+# therefore never within two orders of magnitude of its own lock being reclaimed, and a caller whose
+# runtime is not ours can still name its own window. That headroom is what makes sharing ONE window
+# with `unreadable` honest rather than merely tidy; a suite that grew to take half an hour would owe
+# this number a re-measurement, which is why it is stated as a number and not as "comfortably".
 LOCK_STALE_MINUTES="${FSGG_AGENT_ENV_LOCK_STALE_MINUTES:-30}"
 lock_older_than_window() { [ -n "$(find "$1" -maxdepth 0 -mmin "+$LOCK_STALE_MINUTES" 2>/dev/null)" ]; }
 
@@ -199,21 +225,21 @@ acquired=0
 refusal=''
 if claim_lock; then acquired=1
 else
-  case "$(lock_holder_state "$LOCKDIR")" in
-    dead)
-      rm -rf "$LOCKDIR"
-      if claim_lock; then acquired=1; fi
-      ;;
-    unreadable)
-      if lock_older_than_window "$LOCKDIR"; then
-        rm -rf "$LOCKDIR"
-        if claim_lock; then acquired=1; fi
-      else
-        refusal='unreadable'
-      fi
-      ;;
-    *) refusal='live' ;;
-  esac
+  # ONE POLICY, THREE ARMS (S.I.R.#306) — see the window's own comment above. `dead` is the only
+  # state that reclaims without consulting the age, because it is the only one that is positive
+  # evidence the holder is gone. Everything else — `live`, `unreadable`, and any state a later
+  # reader adds to the predicate's type without revisiting this dispatch — is reclaimable only once
+  # the lock is older than the window, and refuses under its own name until then. The catch-all sits
+  # on the REFUSING side inside the window, so an unrecognised state still fails closed.
+  holder="$(lock_holder_state "$LOCKDIR")"
+  if [ "$holder" = dead ] || lock_older_than_window "$LOCKDIR"; then
+    rm -rf "$LOCKDIR"
+    if claim_lock; then acquired=1; fi
+  elif [ "$holder" = unreadable ]; then
+    refusal='unreadable'
+  else
+    refusal='live'
+  fi
 fi
 if [ "$acquired" -ne 1 ]; then
   if [ "$refusal" = unreadable ]; then
@@ -225,6 +251,10 @@ if [ "$acquired" -ne 1 ]; then
     echo "REFUSED: another $0 run holds $LOCKDIR."
     echo "  Section H moves the real tracked scripts/agent-env.sh; a concurrent run cannot produce a"
     echo "  trustworthy result in EITHER direction, so this refuses instead of guessing (S.I.R.#277)."
+    echo "  A live pid says something is running at that number, never that it is the process which"
+    echo "  took this lock, so this refusal is bounded by the same window as the one above: the lock"
+    echo "  is reclaimed automatically once older than"
+    echo "  ${LOCK_STALE_MINUTES}m (FSGG_AGENT_ENV_LOCK_STALE_MINUTES) (S.I.R.#306)."
   fi
   exit 99
 fi
@@ -472,6 +502,24 @@ chmod +x "$FX/scripts/test-agent-env.sh"
 FXGIT="$(command git -C "$FX" rev-parse --absolute-git-dir 2>/dev/null)"
 FXLOCK="$FXGIT/fsgg-agent-env-suite.lock"
 
+# THE AGE-BOUND CHECKS DERIVE THEIR AGES FROM THE SUBJECT, NOT FROM A SECOND COPY OF THE WINDOW
+# (S.I.R.#306). J12 and J13 differ in exactly one input — the lock's mtime, one minute either side of
+# the window — so the window is what they measure. Writing "31 minutes" here would make them assert
+# the suite's own opinion of the default rather than the subject's: change `LOCK_STALE_MINUTES` and a
+# duplicated literal keeps testing the old value while reading as if it tested the new one. So both
+# ages are computed from `$LOCK_STALE_MINUTES`, which is the subject's own line, evaluated in the
+# subject.
+#
+# AND THE WINDOW IS PASSED TO THE FIXTURE EXPLICITLY, WHICH IS NOT REDUNDANT. `fresh` runs every
+# check under `env -i`, so the fixture never inherits the caller's
+# FSGG_AGENT_ENV_LOCK_STALE_MINUTES. A caller that overrides it would therefore age these locks
+# against ITS window while the fixture reclaimed against the default 30 — the two sides silently
+# disagreeing, which reds a check for a reason having nothing to do with the guard. Naming it on the
+# fixture invocation keeps outer and fixture on one value whatever the caller set.
+FXWINDOW="$LOCK_STALE_MINUTES"
+FXAGED="$((FXWINDOW + 1)) minutes ago"
+FXINSIDE="$((FXWINDOW / 2)) minutes ago"
+
 # A LIVE holder must refuse, and must say so as a LOCK refusal. `$$` is this suite's own pid, which
 # is by definition alive, so no sleeper process is needed and nothing can outlive the run.
 run pass "J1: a live lock holder is REFUSED at exit 99, naming the lock" \
@@ -533,6 +581,47 @@ run pass "J8: an unreadable lock AGED past the window is reclaimed, so it cannot
      out="$(FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" 2>&1)"; rc=$?;
      mv "'"$FX"'/scripts/ae.hold" "'"$FX"'/scripts/agent-env.sh";
      test "$rc" -eq 99 && printf "%s" "$out" | grep -q "missing before the suite started"'
+
+# --- #306: ...AND NEITHER MUST THE `live` ARM, WHICH WAS THE ONE LEFT UNBOUNDED ----------------
+# J8 above bounds `unreadable`. These two bound `live`, and they are a PAIR: J13 is not a duplicate
+# of J1 but its control. J1 fixes the pid and asks whether a live holder refuses; J12 and J13 fix the
+# pid — the SAME live pid, `$$`, alive by construction — and vary only the lock's age across the
+# window. Without J13 a mutation that reclaimed every `live` lock unconditionally would leave J12
+# green, and the pair would prove that reclamation happens rather than that the WINDOW decides it.
+#
+# `$$` IS A LIVE PROCESS THAT NEVER HELD THIS LOCK, which is exactly the shape of a recycled pid: the
+# lock names a number, the number resolves to something alive, and that something is not the holder.
+# Simulating real pid recycling would need the kernel to wrap its pid counter; this is the same
+# condition reached in one line, and like J1 it needs no sleeper that could outlive the run.
+#
+# RECLAMATION IS OBSERVED BY CONTRAST, like J3 and J8: with the fixture's shim also moved aside, a
+# reclaimed lock reaches the startup shim guard and refuses with the SHIM message, while a lock that
+# was not reclaimed still refuses with J1's LOCK message. Same exit code, different cause.
+run pass "J12: a LIVE pid on a lock AGED past the window is reclaimed, not refused forever" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'rm -rf "'"$FXLOCK"'"; mkdir -p "'"$FXLOCK"'"; printf "%s" "$$" > "'"$FXLOCK"'/pid";
+     touch -d "'"$FXAGED"'" "'"$FXLOCK"'";
+     mv "'"$FX"'/scripts/agent-env.sh" "'"$FX"'/scripts/ae.hold";
+     out="$(FSGG_AGENT_ENV_LOCK_STALE_MINUTES='"$FXWINDOW"' FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" 2>&1)"; rc=$?;
+     mv "'"$FX"'/scripts/ae.hold" "'"$FX"'/scripts/agent-env.sh";
+     test "$rc" -eq 99 && printf "%s" "$out" | grep -q "missing before the suite started"'
+# ...and INSIDE the window the same live pid must still refuse, and still keep the lock. This is the
+# half that keeps the repair from becoming "always reclaim": two genuinely concurrent runs are a lock
+# seconds old, which is this row, not J12's.
+#
+# IT ALSO ASSERTS THAT THE REFUSAL STATES ITS OWN BOUND, and that is not decoration. The recovery
+# path for this refusal is an operator reading the message, so a bound announced only in a source
+# comment is a bound the person who hits it never sees. The `unreadable` refusal already names its
+# window; this makes the `live` one do the same, and asserts it rather than trusting it — the value
+# grepped for is computed from the window the fixture was told, not written out as a literal.
+run pass "J13: the same LIVE pid INSIDE the window still refuses at 99, keeps the lock, and names the bound" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'rm -rf "'"$FXLOCK"'"; mkdir -p "'"$FXLOCK"'"; printf "%s" "$$" > "'"$FXLOCK"'/pid";
+     touch -d "'"$FXINSIDE"'" "'"$FXLOCK"'";
+     out="$(FSGG_AGENT_ENV_LOCK_STALE_MINUTES='"$FXWINDOW"' FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" 2>&1)"; rc=$?;
+     test "$rc" -eq 99 && test -d "'"$FXLOCK"'" && test -f "'"$FXLOCK"'/pid" &&
+     printf "%s" "$out" | grep -q "run holds" &&
+     printf "%s" "$out" | grep -q "'"${FXWINDOW}"'m (FSGG_AGENT_ENV_LOCK_STALE_MINUTES)"'
 
 # --- F2: THE TRAP. This section's heading names two obligations and used to discharge one. -----
 # A bash trap handler that does not exit RESUMES the interrupted script. So `trap cleanup INT TERM`
