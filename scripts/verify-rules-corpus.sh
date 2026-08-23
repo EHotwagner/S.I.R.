@@ -444,6 +444,45 @@ if test -n "$copied_semantics"; then
   exit 1
 fi
 
+# ---------------------------------------------------------------------------------------------
+# Execute the corpus (S.I.R.#264 round 1).
+#
+# A rebindable correspondence baseline CANNOT be the only thing standing between a changed
+# implementation source and a green gate. Everything above this line is a comparison of
+# DECLARATIONS: regenerated manifest/coverage/representative-application, sealed digests, recorded
+# per-path text digests. A change to an algorithm BODY moves none of them -- `implementationDigest`
+# is a sealed literal, `semanticDigest` derives from it plus the DECLARATIVE rule payload, and the
+# representative application does not exercise every registered symbol. Byte identity against the
+# pin used to be the only detector of that class, and making it rebindable retires it.
+#
+# So execute the rules rather than only re-describing them. An independent critic demonstrated the
+# gap on this pull request: mutating CombatRules.resolveCoverImpact -- the symbol manifest.json
+# binds to COMBAT-COVER-003 and COMBAT-COVER-DESTRUCTION-001 -- and rebinding its correspondence in
+# the same tree left every declared artifact byte-identical and this gate green, while the corpus
+# fixtures refused. This step is what makes the rebind path safe, and it is deliberately NOT
+# restricted to rule-hosting paths: FixedPoint.fs, CanonicalEncoding.fs, Rules.fs and CombatModel.fs
+# are all pinned, none is rule-hosting, and a damage-arithmetic change in any of them moves rule
+# behaviour while remaining rebindable.
+conformance_log=$(mktemp /tmp/sir-rules-conformance.XXXXXX)
+if ! dotnet run --project "$project" -c Release --no-build >"$conformance_log" 2>&1; then
+  echo "registered executable behaviour does not satisfy the rules corpus fixtures" >&2
+  echo "  a rebound source correspondence cannot make this pass: the corpus is executed, not described" >&2
+  grep -iE 'exception|failwith|did not' "$conformance_log" | head -5 >&2
+  rm -f "$conformance_log"
+  exit 1
+fi
+rm -f "$conformance_log"
+
+# And prove that execution is not vacuous: a divergence injected into the combat route -- the same
+# class as the critic's mutation, without needing a rebuild -- must be refused.
+combat_divergence_log=$(mktemp /tmp/sir-rules-combat-divergence.XXXXXX)
+if dotnet run --project "$project" -c Release --no-build -- --inject-combat-divergence >"$combat_divergence_log" 2>&1; then
+  echo "combat divergence mutation unexpectedly passed the corpus conformance route" >&2
+  rm -f "$combat_divergence_log"
+  exit 1
+fi
+rm -f "$combat_divergence_log"
+
 mutation_log=$(mktemp /tmp/sir-rules-mutation.XXXXXX)
 trap 'rm -f "$mutation_log"' EXIT
 if dotnet run --project "$project" -c Release --no-build -- --inject-rules-corpus-divergence >"$mutation_log" 2>&1; then

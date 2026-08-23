@@ -108,15 +108,29 @@ if test "$mode" != write; then
   exit 0
 fi
 
-# Refuse to record a digest for text that does not compile. A correspondence entry asserts that the
-# sealed corpus identity still describes this source; recording one for a tree nobody built would
-# make that assertion untestable at exactly the moment it matters.
-echo "building the simulation before recording new implementation identity digests..." >&2
-dotnet build "$repo_root/src/SIR.Simulation/SIR.Simulation.fsproj" -c Release >/dev/null 2>&1 || {
-  echo "refusing to rebind: src/SIR.Simulation does not build" >&2
+# Refuse to record a digest for text whose behaviour the corpus rejects.
+#
+# A correspondence entry asserts that the sealed corpus identity still describes this source.
+# Building is not enough to support that claim: a change to an algorithm body compiles cleanly,
+# moves no declared rule value, and would be blessed here while the rules it implements no longer
+# behave as the corpus says (S.I.R.#264 round 1). So execute the corpus before recording anything.
+# This is defence in depth, not the guard: scripts/verify-rules-corpus.sh runs the same conformance
+# route, so a hand-edited correspondence file that never went through this tool is still refused.
+echo "building and executing the rules corpus before recording new identity digests..." >&2
+dotnet build "$repo_root/tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj" -c Release >/dev/null 2>&1 || {
+  echo "refusing to rebind: the corpus test project does not build" >&2
   echo "  a correspondence digest recorded for text nobody compiled is an untestable assertion" >&2
   exit 1
 }
+conformance_log=$(mktemp /tmp/sir-rules-rebind-conformance.XXXXXX)
+if ! dotnet run --project "$repo_root/tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj" -c Release --no-build >"$conformance_log" 2>&1; then
+  echo "refusing to rebind: registered executable behaviour does not satisfy the rules corpus fixtures" >&2
+  echo "  rebinding here would record a digest asserting the corpus still describes this source, which it does not" >&2
+  grep -iE 'exception|failwith|did not' "$conformance_log" | head -5 >&2
+  rm -f "$conformance_log"
+  exit 1
+fi
+rm -f "$conformance_log"
 
 updated=$(mktemp /tmp/sir-rules-rebind.XXXXXX)
 cp "$correspondence_manifest" "$updated"

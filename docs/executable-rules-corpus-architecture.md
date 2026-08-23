@@ -687,6 +687,30 @@ tree to still match it — byte-exactly, for every declared source. Corresponden
 covers the identity set **exactly**: a missing row and an undeclared row are both
 refusals, so a source cannot be unfrozen by deleting its entry.
 
+Because that baseline is rebindable, it cannot be the last line of defence. Every
+check described so far compares **declarations**: regenerated manifest, coverage
+and representative application, sealed digests, recorded per-path text digests. A
+change to an algorithm **body** moves none of them — `ImplementationDigest` is a
+sealed literal, `SemanticDigest` derives from it together with the *declarative*
+rule payload, and the representative application does not exercise every
+registered symbol. Byte identity against `sourceCommit` used to be the only
+detector of that class, and making it rebindable retires it.
+
+The verifier therefore **executes** the corpus as well as describing it: it runs
+the conformance fixtures over the registered rules, so registered executable
+behaviour that no longer matches the corpus fails the gate even when its
+correspondence has been rebound in the same commit. `scripts/rebind-rules-corpus-sources.sh`
+runs the same route before recording anything, so the tool refuses to bless such a
+change at authoring time; the gate is what makes a hand-edited correspondence file
+fail too.
+
+This check is deliberately **not** limited to rule-hosting paths. Only
+`CombatRules.fs` binds a rule symbol, but `FixedPoint.fs`, `CanonicalEncoding.fs`,
+`Rules.fs` and `CombatModel.fs` are all pinned and none is rule-hosting — and a
+damage-arithmetic change in any of them moves rule behaviour while remaining
+rebindable. Restricting the guard to rule-hosting sources would close one instance
+and leave the class open.
+
 ### `sourceCommit` semantics and the rebind procedure
 
 `sourceCommit` names the commit that published rule **source links** resolve
