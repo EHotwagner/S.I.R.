@@ -632,6 +632,22 @@ let main args =
             raise (AwarenessPerformanceExit(verifyAwarenessPerformanceReceipt (argument "--verify-awareness-receipt" args) (argument "--candidate-commit" args)))
         elif args |> Array.contains "--awareness" then
             raise (AwarenessPerformanceExit(runAwarenessPerformance ()))
+        elif args |> Array.contains "--collections" then
+            let receipt = Collections.run ()
+            printf "%s" (Collections.render receipt)
+            args
+            |> Array.tryFindIndex ((=) "--collections-receipt")
+            |> Option.bind (fun index -> args |> Array.tryItem (index + 1))
+            |> Option.iter (fun path ->
+                Path.GetDirectoryName path
+                |> Option.ofObj
+                |> Option.iter (Directory.CreateDirectory >> ignore)
+                File.WriteAllText(
+                    path,
+                    JsonSerializer.Serialize(receipt, JsonSerializerOptions(WriteIndented = true))
+                    + Environment.NewLine)
+                printfn "collections-receipt=%s" path)
+            raise (AwarenessPerformanceExit(if receipt.Failures.Length = 0 then 0 else 1))
         let receiptPath = argument "--receipt" args
         let candidateCommit = argument "--candidate-commit" args
         let sourceTreeState = argument "--source-tree-state" args

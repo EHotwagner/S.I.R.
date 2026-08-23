@@ -3,6 +3,7 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Collections.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
