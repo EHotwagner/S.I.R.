@@ -556,10 +556,10 @@ const restatesKey = (text) => [
   ...retiredBudgetKeys.filter((key) => definesKey(text, key) || readsKey(text, key)),
 ];
 // A budget WIDENED by arithmetic at a call site is a second, undeclared budget reached by addition
-// instead of by a literal -- the exact shape of the removed tolerance. No consumer needs to add to a
-// budget, so the operator is refused on a budget field outright.
-// Scoped to the MAXIMUM-bearing manifest fields -- the ones a consumer compares a measurement
-// against -- and deliberately NOT to the raw declared constants. Building a fixture relative to the
+// instead of by a literal -- the exact shape of the removed tolerance -- so the operator is refused
+// on a budget field outright. Scoped to the MAXIMUM-bearing manifest fields, the ones a consumer
+// compares a measurement against, and deliberately NOT to the raw declared constants. Building a
+// fixture relative to the
 // declared ceiling (`ceiling + 3.33`, as the band fixture above does) is how a discriminating
 // measurement gets constructed; widening the ceiling a consumer then GATES on is the defect. Those
 // are different structures and only the second is refused.
@@ -568,21 +568,7 @@ const widensBudget = (text) => declaredBudgetKeys
 
 const representativeWorkload = tacticalWorkloadBudgetList[0];
 const stressWorkload = tacticalWorkloadBudgetList[tacticalWorkloadBudgetList.length - 1];
-const sweptTacticalValues = [
-  stressWorkload.maximumDomNodes,
-  representativeWorkload.maximumEffects,
-  stressWorkload.maximumEffects,
-  stressWorkload.maximumInputToPaintMilliseconds,
-  tacticalFrameCadenceBudget.intervalCeilingMilliseconds,
-];
-const unsweepableTacticalValues = new Map([
-  [representativeWorkload.maximumDomNodes, "also a readiness timeout in the review generator, a trace-fixture duration in this suite, and an unrelated overlay-layer node bound in the browser spec"],
-  [representativeWorkload.maximumInputToPaintMilliseconds, "also a Playwright wait, a percentile computation, a declared workload's unit count, and a \"100%\" assertion string"],
-  [tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame, "a small integer COUNT of vsyncs rather than a millisecond figure; it is the commonest literal in any source and sweeping it by value would red on every increment"],
-]);
-// EVERY declared value is accounted for: swept by Rule B, or named unsweepable WITH a reason. A new
-// budget figure added to the declaration and reachable by neither rule fails here rather than
-// silently joining the unswept set.
+
 // DERIVED FROM THE DECLARED OBJECTS, NOT LISTED HERE. This was three named fields, and adding a
 // fourth budget to a workload row walked straight past it: a hand-maintained list of budget values,
 // inside the gate that exists to stop hand-maintained copies of budget values, is the same disease
@@ -594,26 +580,37 @@ const unsweepableTacticalValues = new Map([
 const workloadIdentityFields = ["units"];
 const budgetFieldName = (key) => /^maximum|Milliseconds$|Ceiling$/.test(key);
 const declaredBudgetObjects = [...tacticalWorkloadBudgetList, tacticalFrameCadenceBudget];
+const budgetOwner = (declared) => declared.key ?? "tacticalFrameCadenceBudget";
 for (const declared of declaredBudgetObjects)
   for (const [key, value] of Object.entries(declared)) {
     if (typeof value !== "number") continue;
     assert.ok(budgetFieldName(key) || workloadIdentityFields.includes(key),
-      `the declaration carries a numeric field ${key} that is neither a recognised budget name nor a declared workload identity, so no rule here would check it. Name it as a budget or record it as an identity.`);
+      `the declaration carries a numeric field ${budgetOwner(declared)}.${key} that is neither a recognised budget name nor a declared workload identity, so no rule here would check it. Name it as a budget or record it as an identity.`);
   }
-const allDeclaredTacticalValues = [...new Set(declaredBudgetObjects.flatMap((declared) => Object.entries(declared)
+const declaredBudgetEntries = declaredBudgetObjects.flatMap((declared) => Object.entries(declared)
   .filter(([key, value]) => typeof value === "number" && budgetFieldName(key))
-  .map(([, value]) => value)))];
-for (const value of allDeclaredTacticalValues)
-  assert.ok(sweptTacticalValues.includes(value) || unsweepableTacticalValues.has(value),
-    `the declared budget value ${value} is neither swept by value nor recorded as unsweepable with a reason; add it to one or the other rather than letting it join the unswept set silently`);
-for (const value of unsweepableTacticalValues.keys())
-  assert.ok(allDeclaredTacticalValues.includes(value), `${value} is recorded as an unsweepable budget value but is no longer declared; the exemption is stale`);
+  .map(([field, value]) => ({ id: `${budgetOwner(declared)}.${field}`, value })));
+
+// Exemptions are keyed by QUANTITY, never by value. Keying them by value would let a new budget
+// inherit an exemption written for an unrelated one that happens to share its number -- and a value
+// two quantities share is precisely the situation this whole item exists to make safe.
+const unsweepableTacticalQuantities = new Map([
+  [`${representativeWorkload.key}.maximumDomNodes`, "also a readiness timeout in the review generator, a trace-fixture duration in this suite, and an unrelated overlay-layer node bound in the browser spec"],
+  [`${representativeWorkload.key}.maximumInputToPaintMilliseconds`, "also a Playwright wait, a percentile computation, a declared workload's unit count, and a percentage assertion string"],
+  ["tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame", "a small integer COUNT of vsyncs rather than a millisecond figure; it is the commonest literal in any source and sweeping it by value would red on every increment"],
+]);
+for (const id of unsweepableTacticalQuantities.keys())
+  assert.ok(declaredBudgetEntries.some((entry) => entry.id === id), `${id} is recorded as an unsweepable budget quantity but is no longer declared; the exemption is stale`);
+const sweptTacticalValues = [...new Set(declaredBudgetEntries
+  .filter((entry) => !unsweepableTacticalQuantities.has(entry.id))
+  .map((entry) => entry.value))];
 assert.ok(sweptTacticalValues.length >= 4, `Rule B sweeps only ${sweptTacticalValues.length} value(s); it is not reaching the declaration`);
+assert.ok(unsweepableTacticalQuantities.size < declaredBudgetEntries.length, "every declared budget quantity is exempt from Rule B, so Rule B checks nothing");
 
 const restatesValue = (text) => sweptTacticalValues.filter((value) => new RegExp(`(?<![\\d.\\w])${String(value).replace(".", "\\.")}(?![\\d.\\w])`).test(text));
 // The rules are self-tested against planted text before being trusted against the tree: a rule that
-// cannot fire is not a rule that found nothing.
-// The planted fixtures are BUILT from the declared names rather than typed out, so this file does not
+// cannot fire is not a rule that found nothing. The planted fixtures are BUILT from the declared
+// names rather than typed out, so this file does not
 // itself carry the code positions it forbids -- a self-test that trips its own gate is a gate nobody
 // can keep.
 const [nodeKey, effectKey, inputKey, frameKey] = declaredBudgetKeys;
@@ -693,7 +690,7 @@ for (const surface of tacticalBudgetSurfaces) {
     `no tactical consumer reads ${surface.attribute}, so the subject rule for ${surface.quantity} checks nothing and would pass vacuously`);
 }
 assert.ok(surfaceBoundedIdentifiers >= tacticalBudgetSurfaces.length, "the subject rule bound fewer identifiers than there are declared surfaces");
-console.log(`JUSTIFIED tactical-budget-no-restatement: ${budgetConsumers.length} DERIVED consumers declare none of the ${declaredBudgetKeys.length} budget keys, widen no budget by arithmetic, and carry none of the ${sweptTacticalValues.length} sweepable declared values; ${unsweepableTacticalValues.size} declared value(s) are covered by the key rule alone, each with a recorded reason; and ${surfaceBoundedIdentifiers} measurement(s) read from the ${tacticalBudgetSurfaces.length} declared DOM surface(s) meet no numeric literal at all, so an INVENTED bound is refused as readily as a copied one`);
+console.log(`JUSTIFIED tactical-budget-no-restatement: ${budgetConsumers.length} DERIVED consumers declare none of the ${declaredBudgetKeys.length} budget keys, widen no budget by arithmetic, and carry none of the ${sweptTacticalValues.length} sweepable declared values; ${unsweepableTacticalQuantities.size} declared quantit(ies) are covered by the key rule alone, each with a recorded reason; and ${surfaceBoundedIdentifiers} measurement(s) read from the ${tacticalBudgetSurfaces.length} declared DOM surface(s) meet no numeric literal at all, so an INVENTED bound is refused as readily as a copied one`);
 
 // 4. THE THRESHOLDS CI ENFORCES CAN FAIL, AND THEY FAIL AT THE DECLARED NUMBER.
 // scripts/test-tactical-visual-review.mjs needs a built client and a browser, so its comparisons
