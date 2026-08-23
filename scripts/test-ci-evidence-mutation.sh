@@ -207,7 +207,111 @@ grep -F "qualify-pr: evidence coverage not-evidenced: work/220-bounded-pr-ci" "$
   exit 1
 }
 
+# 4. The two states are no longer the same bytes. Before the repair a checked-and-passed run and a
+#    not-checked run produced identical (empty) output and the same exit status, which is the whole
+#    defect; this pins them apart directly rather than by inference from the outcome vocabulary.
+if cmp -s "$temporary/coverage-present.log" "$temporary/coverage-absent.log"; then
+  echo "ci-evidence coverage: a checked run and an unchecked run produced byte-identical output" >&2
+  exit 1
+fi
+if [[ ! -s "$temporary/coverage-midlifecycle.log" ]]; then
+  echo "ci-evidence coverage: a passing unchecked run produced no output at all" >&2
+  exit 1
+fi
+if cmp -s "$temporary/coverage-present.log" "$temporary/coverage-midlifecycle.log"; then
+  echo "ci-evidence coverage: a passing checked run and a passing unchecked run produced byte-identical output" >&2
+  exit 1
+fi
+
 cp -p "$evidence_backup" "$evidence_declaration"
 cp -p "$tasks_backup" "$tasks_declaration"
 
-echo "CI evidence clean-checkout mutations passed: tracked observed evidence verifies, missing cited evidence fails closed, hosted verification failure propagates, absent/non-executable routed hooks fail closed, every routed work item gets a recorded coverage outcome, and an absent evidence.yml is reported rather than skipped — fatally when the package still declares completed implementation."
+# 5. A failing item does not silently abandon the routed items behind it. Before the repair a bare
+#    `break` left every later work item unverified and unmentioned.
+printf '%s\n' work/220-bounded-pr-ci/evidence.yml work/231-svg-pipeline-measurement/spec.md \
+  >"$checkout/artifacts/ci/changed-paths.txt"
+(
+  cd "$checkout"
+  ./scripts/qualify-pr.sh route artifacts/ci/changed-paths.txt
+)
+rm -- "$evidence_declaration"
+rm -f -- "$coverage"
+set +e
+run_evidence_gate >"$temporary/coverage-not-reached.log" 2>&1
+not_reached_status=$?
+set -e
+if [[ $not_reached_status -eq 0 ]]; then
+  echo "ci-evidence coverage: a fatal first work item left the gate green" >&2
+  exit 1
+fi
+if [[ "$(coverage_field 231-svg-pipeline-measurement outcome)" != not-reached \
+   || "$(coverage_field 231-svg-pipeline-measurement checked)" != false ]]; then
+  echo "ci-evidence coverage: a work item abandoned behind a failure was not recorded as not-reached" >&2
+  cat "$coverage" >&2
+  exit 1
+fi
+grep -F "qualify-pr: evidence coverage not-reached: work/231-svg-pipeline-measurement" "$temporary/coverage-not-reached.log" >/dev/null || {
+  echo "ci-evidence coverage: an abandoned work item was not reported on the gate output" >&2
+  sed -n '1,160p' "$temporary/coverage-not-reached.log" >&2
+  exit 1
+}
+cp -p "$evidence_backup" "$evidence_declaration"
+
+# 6. Removing the whole routed work package is recorded rather than skipped, and is not conflated
+#    with a package that was checked.
+printf '%s\n' work/220-bounded-pr-ci/spec.md >"$checkout/artifacts/ci/changed-paths.txt"
+(
+  cd "$checkout"
+  ./scripts/qualify-pr.sh route artifacts/ci/changed-paths.txt
+)
+package_backup="$temporary/220-bounded-pr-ci"
+cp -a "$checkout/work/220-bounded-pr-ci" "$package_backup"
+rm -rf -- "$checkout/work/220-bounded-pr-ci"
+rm -f -- "$coverage"
+set +e
+run_evidence_gate >"$temporary/coverage-removed.log" 2>&1
+removed_status=$?
+set -e
+if [[ $removed_status -ne 0 ]]; then
+  echo "ci-evidence coverage: removing a work package failed the gate for the wrong reason (got $removed_status)" >&2
+  sed -n '1,160p' "$temporary/coverage-removed.log" >&2
+  exit 1
+fi
+if [[ "$(coverage_field 220-bounded-pr-ci outcome)" != work-package-removed \
+   || "$(coverage_field 220-bounded-pr-ci checked)" != false ]]; then
+  echo "ci-evidence coverage: a removed work package was not recorded as work-package-removed/unchecked" >&2
+  cat "$coverage" >&2
+  exit 1
+fi
+rm -rf -- "$checkout/work/220-bounded-pr-ci"
+cp -a "$package_backup" "$checkout/work/220-bounded-pr-ci"
+
+# 7. A checked item whose verify fails is recorded as checked-and-failed, so `checked` is a fact
+#    about coverage and not a synonym for success.
+verify_fail_bin="$temporary/verify-fail-bin"
+mkdir -p "$verify_fail_bin"
+cat >"$verify_fail_bin/dotnet" <<'STUB'
+#!/usr/bin/env bash
+[[ "${2:-}" == verify ]] && exit 9
+exit 0
+STUB
+chmod +x "$verify_fail_bin/dotnet"
+rm -f -- "$coverage"
+set +e
+(cd "$checkout" && PATH="$verify_fail_bin:$fake_bin:$PATH" ./scripts/qualify-pr.sh gate evidence) \
+  >"$temporary/coverage-failed.log" 2>&1
+failed_status=$?
+set -e
+if [[ $failed_status -ne 9 ]]; then
+  echo "ci-evidence coverage: a failing fsgg-sdd verify did not propagate exit 9 (got $failed_status)" >&2
+  sed -n '1,160p' "$temporary/coverage-failed.log" >&2
+  exit 1
+fi
+if [[ "$(coverage_field 220-bounded-pr-ci outcome)" != failed \
+   || "$(coverage_field 220-bounded-pr-ci checked)" != true ]]; then
+  echo "ci-evidence coverage: a checked-and-failed item was not recorded as failed/checked" >&2
+  cat "$coverage" >&2
+  exit 1
+fi
+
+echo "CI evidence clean-checkout mutations passed: tracked observed evidence verifies, missing cited evidence fails closed, hosted verification failure propagates, absent/non-executable routed hooks fail closed, every routed work item gets a recorded coverage outcome (verified, failed, not-evidenced, work-package-removed, not-reached), an absent evidence.yml is reported rather than skipped — fatally when the package still declares completed implementation — and a checked run is never byte-identical to an unchecked one."
