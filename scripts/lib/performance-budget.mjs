@@ -552,6 +552,51 @@ export function tacticalOverlayLayerRunRefusal(outcomes) {
   return `${notExecuted.length} test(s) carrying ${tacticalOverlayLayerBudgetTag} were declared in this run and never executed (${notExecuted.map((outcome) => `${outcome.title}: ${outcome.status}`).join("; ")}). The overlay-layer node budget is enforced only by running that test, so a skipped or suppressed one means ${tacticalOverlayLayerSurface.layer} was never measured against its declared ceiling of ${tacticalOverlayLayerBudget.maximumOverlayDomNodes}. A run that did not check is not a run that passed.`;
 }
 
+// AND THE RUN-LEVEL NET'S OWN INSTALLATION IS CHECKED, BECAUSE A NET THAT MUST BE INSTALLED TO WORK
+// IS A NET WHOSE INSTALLATION IS PART OF WHAT IT CLAIMS (S.I.R.#327 review round 3).
+//
+// The per-test guard got both halves checked: the function, and the fact that it ran -- the tag the
+// constructor injects is what proves the second. The run-level net got only the first. Its behaviour
+// was enumerated as a pure function while its INSTALLATION -- one array element in the Playwright
+// config -- was assumed, so unregistering the reporter left a suppressed budget test reported as a
+// clean run, and the in-process gate still printed a line asserting a property of RUNS on evidence
+// about a FUNCTION. That is the tag/import-line defect one link further along: satisfied by something
+// adjacent to the thing it names.
+//
+// Read from the RESOLVED CONFIG OF THE RUNNING RUN, not from the config file's text. A regex over
+// playwright.config.js would be a fifth spelling of the check that exhausted this item's first chain;
+// this asks the run what it actually armed.
+export const tacticalOverlayLayerReporterModule = "declared-budget-reporter.js";
+
+export function assertTacticalOverlayLayerRunNetArmed(config) {
+  const reporters = config?.reporter;
+  if (!Array.isArray(reporters))
+    throw new Error("the overlay-layer budget could not read this run's reporter list, so it cannot tell whether the run-level net is armed; an unreadable configuration is refused rather than assumed armed");
+  const armed = reporters.some((entry) => {
+    const target = Array.isArray(entry) ? entry[0] : entry;
+    return typeof target === "string" && target.endsWith(tacticalOverlayLayerReporterModule);
+  });
+  if (!armed)
+    throw new Error(`this run does not have ${tacticalOverlayLayerReporterModule} registered as a reporter, so nothing would refuse a run in which the overlay-layer budget test was suppressed before it started. The per-test guard cannot cover that case -- Playwright applies .skip/.fixme before fixture setup -- so with the reporter unregistered the budget has no enforcement against suppression at all.`);
+}
+
+// AND THE RUN MUST NOT HAVE FILTERED THE BUDGET TEST OUT BY TAG.
+//
+// The run-level refusal deliberately allows a run that carries no tagged test, because sharding
+// splits this suite and a shard that was not given the test is not a suppression. `--grep-invert` on
+// the tag exploits exactly that allowance, and it is not a contrived attack: test-browser-shards.mjs
+// already passes --grep/--grep-invert to split cohorts, so tag filtering is a knob this suite turns.
+//
+// Excluding a COHORT is legitimate; excluding THIS TAG is the one filter that silently removes the
+// budget. Only the second is refused, and it is read off the run's resolved filter rather than off
+// any file.
+export function tacticalOverlayLayerFilterRefusal(config) {
+  const grepInvert = config?.grepInvert;
+  if (grepInvert instanceof RegExp && grepInvert.test(tacticalOverlayLayerBudgetTag))
+    return `this run excludes ${tacticalOverlayLayerBudgetTag} with --grep-invert (${grepInvert}), which removes the overlay-layer budget test from the run entirely. A run that filtered the budget out is not a run that met it, and it is indistinguishable afterwards from a shard that was never given the test -- which is why it is refused here, while the filtering itself is still available for every other tag.`;
+  return null;
+}
+
 export function tacticalInputToPaintBudgetReason(budget, measuredMilliseconds) {
   requireFiniteMeasurement(`${budget.label} inputToPaintMilliseconds`, measuredMilliseconds);
   if (measuredMilliseconds < budget.maximumInputToPaintMilliseconds) return null;

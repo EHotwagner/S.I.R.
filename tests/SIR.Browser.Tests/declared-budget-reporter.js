@@ -1,4 +1,4 @@
-import { tacticalOverlayLayerRunRefusal } from "../../scripts/lib/performance-budget.mjs";
+import { tacticalOverlayLayerFilterRefusal, tacticalOverlayLayerRunRefusal } from "../../scripts/lib/performance-budget.mjs";
 
 // A RUN THAT DID NOT CHECK IS NOT A RUN THAT PASSED.
 //
@@ -29,12 +29,21 @@ export default class DeclaredBudgetExecutionReporter {
     return false;
   }
 
+  #filterRefusal = null;
+
+  // The run's own filter, read once it is resolved. `--grep-invert` on the budget tag removes the
+  // test entirely, which afterwards is indistinguishable from a shard that never carried it -- the
+  // allowance that makes this reporter shard-safe is the same allowance that hides this edit.
+  onBegin(config) {
+    this.#filterRefusal = tacticalOverlayLayerFilterRefusal(config);
+  }
+
   onTestEnd(test, result) {
     this.#outcomes.push({ title: test.title, tags: test.tags ?? [], status: result.status });
   }
 
   onEnd() {
-    const refusal = tacticalOverlayLayerRunRefusal(this.#outcomes);
+    const refusal = this.#filterRefusal ?? tacticalOverlayLayerRunRefusal(this.#outcomes);
     if (!refusal) return undefined;
     console.error(`\n[declared-budget] ${refusal}`);
     // Both, deliberately. The returned status is the documented channel; the exit code is what CI

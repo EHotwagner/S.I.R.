@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
-import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalOverlayLayerBudget, tacticalOverlayLayerBudgetReason, assertTacticalOverlayLayerBudget, assertTacticalOverlayLayerBudgetWasEvaluatedSince, tacticalOverlayLayerEvaluationMark, tacticalOverlayLayerSurface, tacticalOverlayLayerRunRefusal, tacticalOverlayLayerBudgetTag, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
+import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalOverlayLayerBudget, tacticalOverlayLayerBudgetReason, assertTacticalOverlayLayerBudget, assertTacticalOverlayLayerBudgetWasEvaluatedSince, tacticalOverlayLayerEvaluationMark, tacticalOverlayLayerSurface, tacticalOverlayLayerRunRefusal, tacticalOverlayLayerBudgetTag, assertTacticalOverlayLayerRunNetArmed, tacticalOverlayLayerFilterRefusal, tacticalOverlayLayerReporterModule, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 // validateDefinitions COMPOSES the budget: workload policy from the fixture file, ceiling from the
@@ -990,8 +990,35 @@ assert.throws(() => tacticalOverlayLayerRunRefusal(undefined), /unreadable run i
   "an unreadable run is refused rather than treated as clean (#266)");
 assert.match(`${tacticalOverlayLayerRunRefusal([taggedOutcome("skipped")])}`, new RegExp(`${tacticalOverlayLayerBudget.maximumOverlayDomNodes}`),
   "and the refusal names the ceiling that went unchecked, so the message says what was lost");
+// AND THE RUN-LEVEL NET'S INSTALLATION IS ITSELF ENUMERATED. Round 3's finding was that this net had
+// its FUNCTION checked and its INSTALLATION assumed -- the asymmetry with the per-test guard, whose
+// tag proves it ran. Both halves are checked for both nets now, and both directions matter: refusing
+// an unarmed run, and NOT refusing an armed one.
+const reporterEntry = [`/repo/tests/SIR.Browser.Tests/${tacticalOverlayLayerReporterModule}`, {}];
+const otherEntry = ["/repo/tests/SIR.Browser.Tests/deterministic-junit-reporter.js", { outputFile: "x" }];
+assert.doesNotThrow(() => assertTacticalOverlayLayerRunNetArmed({ reporter: [reporterEntry, otherEntry] }),
+  "a run with the declared reporter registered is armed and must not be refused");
+assert.doesNotThrow(() => assertTacticalOverlayLayerRunNetArmed({ reporter: [tacticalOverlayLayerReporterModule] }),
+  "and a bare string entry counts as registration too, or the check would depend on the tuple spelling");
+assert.throws(() => assertTacticalOverlayLayerRunNetArmed({ reporter: [otherEntry] }), /does not have .* registered as a reporter/,
+  "a run with the reporter UNREGISTERED must be refused: nothing would then refuse a suppressed budget test");
+for (const unreadable of [undefined, null, {}, { reporter: "list" }, { reporter: null }])
+  assert.throws(() => assertTacticalOverlayLayerRunNetArmed(unreadable), /could not read this run's reporter list/,
+    `a configuration this check cannot read (${JSON.stringify(unreadable)}) is refused rather than assumed armed (#266)`);
+
+// AND A RUN THAT FILTERED THE BUDGET TAG OUT IS REFUSED, while ordinary cohort filtering is not --
+// test-browser-shards.mjs routinely passes --grep/--grep-invert, so refusing filtering outright would
+// red correct runs and the check would be removed.
+assert.equal(tacticalOverlayLayerFilterRefusal({ grepInvert: null }), null, "an unfiltered run is not refused");
+assert.equal(tacticalOverlayLayerFilterRefusal({}), null, "and neither is a run with no filter at all");
+assert.equal(tacticalOverlayLayerFilterRefusal({ grepInvert: /@some-other-cohort/ }), null,
+  "excluding an unrelated cohort is ordinary sharding and must not be refused");
+assert.match(`${tacticalOverlayLayerFilterRefusal({ grepInvert: new RegExp(tacticalOverlayLayerBudgetTag) })}`, /excludes .* with --grep-invert/,
+  "excluding the budget tag removes the test from the run entirely and must be refused");
+console.log(`JUSTIFIED tactical-overlay-budget-net-installation: the run-level net's own installation is enumerated -- an armed run passes in two entry spellings, an unregistered reporter is refused, ${5} unreadable configurations are refused rather than assumed armed, and a run that excludes ${tacticalOverlayLayerBudgetTag} by --grep-invert is refused while unrelated cohort filtering is not`);
+
 console.log(`JUSTIFIED tactical-overlay-budget-run-refusal: a declared-but-unexecuted ${tacticalOverlayLayerBudgetTag} test is refused in 3 suppression states, an executed or failed one is not, a shard that never carried it is not, and an unreadable run is refused rather than passed`);
-console.log(`JUSTIFIED tactical-overlay-budget-wiring: the browser spec is WIRED to the declared verdict -- it imports and references the throwing form, does not use the returning form, tags the budget-bearing test, and carries no copy of ${overlayCeiling}; ${tacticalOverlayLayerSurface.attribute} is still emitted by the product. This is a source check and says NOTHING about whether the verdict executes: that is the evaluation guard and the run-level refusal, both inverted above.`);
+console.log(`JUSTIFIED tactical-overlay-budget-wiring: the browser spec is WIRED to the declared verdict -- it imports and references the throwing form, does not use the returning form, tags the budget-bearing test, and carries no copy of ${overlayCeiling}; ${tacticalOverlayLayerSurface.attribute} is still emitted by the product. This is a source check and says NOTHING about whether the verdict executes: that is the evaluation guard and the run-level refusal. Both are inverted above, and so is the run-level net\u2019s own INSTALLATION -- an earlier revision of this line said "both inverted above" while only the guard had its installation checked, which is the asymmetry round 3 found.`);
 
 // 5. THE REMOVED TOLERANCE WAS ADMITTING A REAL BREACH, MEASURED ON THE RETAINED ARTIFACT.
 // This is the discriminating case, and it is taken from the production telemetry this repo actually
