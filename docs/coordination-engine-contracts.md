@@ -407,7 +407,7 @@ has never escaped. Every literal in both columns is probed against the engine, s
 
 | invariant | value | must be refused |
 |---|---|---|
-| `wait-window-max-hours` | `24` | `25`, `48`, `72` |
+| `wait-window-max-hours` | `26` | `25`, `48`, `72` |
 | `initial-round` | `0` | `1`, `2` |
 | `confirmation-round-first` | `1` | `0`, `2` |
 | `confirmation-round-second` | `2` | `1`, `3` |
