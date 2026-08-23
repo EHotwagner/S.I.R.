@@ -15,7 +15,50 @@
 # A check that lets a profile load passes for the wrong reason.
 #
 # Usage: scripts/test-agent-env.sh [repo-root]
-# Exit code is the number of unexpected outcomes, so 0 is green.
+# Exit code is the number of unexpected outcomes, so 0 is green. Refusal to run at all exits 99.
+#
+# ============================================================================================
+# INVERSION INVENTORY — WHICH MUTATION REDS WHICH CHECK (S.I.R.#277)
+# ============================================================================================
+# Every gate this suite adds shipped with a mutation that reds it, and each mutation was run and
+# the redding check identified. That claim used to live only in commit messages and review
+# transcripts. It is committed here because a claim about the repository that the repository does
+# not contain is exactly the defect this suite exists to catch — the same finding, one frame up,
+# recurring inside the section that celebrates catching it.
+#
+# Re-derive any row by applying the mutation to a THROWAWAY COPY (`git worktree add --detach`),
+# running the suite from inside it, and reading which labels go WRONG. Do not mutate a live tree:
+# the suite moves the real tracked shim, and section J is what stops two runs colliding.
+#
+#   mutation applied to the subject                                    reds
+#   ---------------------------------------------------------------  --------------------
+#   delete `export DOTNET_ROOT="$candidate"` from the shim             section I check 1
+#   lock_holder_state: treat any existing lock as `dead`               J1, J2
+#   lock_holder_state: treat every lock as `live` (no reclaim)         J3
+#   delete the startup shim-missing guard                              J3, J4, J8
+#   lock_holder_state: classify unreadable pid as `dead` (case arm)    J5, J6
+#   lock_holder_state: classify ABSENT pid as `dead` (cat arm)         J7
+#   lock_older_than_window: always false (staleness disabled)          J8
+#   trap 'on_signal TERM' TERM  ->  trap cleanup TERM  (non-exiting)   J9
+#   trap 'on_signal INT'  INT   ->  trap cleanup INT   (non-exiting)   J11
+#   cleanup: remove the shim-restore branch                            J10
+#   cleanup: remove the lock-release branch                            J9, J10, J11
+#   J10's own `saw` precondition inverted (`-eq 0`)                    J10
+#
+# TWO ENTRIES ARE DELIBERATELY NOT "DELETE THE TRAP". Removing `trap 'on_signal INT' INT` outright
+# leaves every check GREEN and is the wrong mutation: the default disposition is what `on_signal`
+# re-raises to, so deleting the trap produces the correct behaviour by accident. The mutation that
+# proves J9/J11 is the NON-EXITING handler, which is the bug that actually occurred.
+#
+# ANCHOR YOUR MUTATION ON THE CODE, NOT ON THIS TABLE. The rows below quote the very lines they
+# describe, so a naive search-and-replace now matches twice — once in the code and once here. That
+# was hit on the first re-derivation after this table was written. Match on a unique code
+# neighbourhood (e.g. the `trap` line together with the `HUP` line that follows it).
+#
+# PROVENANCE, because an inventory is itself a claim. J1, J2, J3, J4, J5, J6, J8 and J11 were
+# re-derived by an independent reviewer using mutations it chose without reading this table. J7,
+# J9, J10 and the section I row were re-derived by the author at this head. Nothing in this table
+# is carried from a transcript alone.
 
 set -uo pipefail
 
@@ -34,17 +77,30 @@ CLOBBER='export PATH='"$FRESH_PATH"';'
 # THIS SUITE MUTATES THE REAL TRACKED FILE, SO IT MUST NOT OVERLAP WITH ITSELF (S.I.R.#277).
 # Section H moves `$SHIM` — `scripts/agent-env.sh` in the working tree, not a copy — out of the way
 # to prove the wired case goes red without it. Anything else reading that file during the window
-# sees it missing. A concurrent run of this suite therefore reports `rc=1` in
-# "the apphost loads its runtime from the SAME install the resolved muxer lives in" for a reason
-# that has nothing to do with DOTNET_ROOT, and the two conditions are INDISTINGUISHABLE in the
-# output: a real inversion and a collision are both one WRONG at rc=1 in that check. That was
-# observed, not theorised — an independent reviewer's concurrent run produced exactly that false
-# red while this file was being edited. A signal that cannot separate two conditions is the very
-# defect this suite exists to prevent, so the suite refuses rather than emitting one.
+# sees it missing or truncated, so a concurrent run reds section I for a cause that has nothing to
+# do with DOTNET_ROOT. That is why the suite refuses rather than emitting a result it cannot
+# account for: the answer would be wrong, and it would cost the reader a run to find out.
+#
+# AN EARLIER VERSION OF THIS COMMENT CLAIMED THE TWO CONDITIONS ARE INDISTINGUISHABLE, AND SAID SO
+# AS OBSERVED FACT. IT WAS WRONG AND IS RETRACTED. Nobody had measured it. Measured since, at
+# `2e4b07e`, across three collision shapes and two timings, and reproduced independently by a second
+# reviewer at a different commit:
+#
+#     condition                  section I assertion   its non-vacuity control
+#     genuine `export` deletion   red, rc=1             GREEN
+#     concurrent collision        red, rc=3             ALSO red, rc=3
+#
+# They are distinguishable on two independent signals. rc=3 is the deliberate build-failure code —
+# a collision breaks the probe's `dotnet build`; it does not make the assertion fail — and a real
+# inversion breaks only the asserted probe while a collision breaks both. THE 3/4/5 EXIT-CODE
+# DISCIPLINE BELOW HAD ALREADY DONE THE JOB THE RETRACTED SENTENCE SAID WAS UNDONE. The claim
+# survived three review rounds because it pattern-matched this item's own thesis, which is the
+# one shape nobody re-measures. Keep the retraction here: a reader who deletes it will re-derive
+# the wrong story from the lock's existence.
 #
 # The lock lives in the git dir, which is untracked and per-worktree, and it is taken by `mkdir`
-# because that is atomic on every filesystem this runs on and needs no `flock`. A dead holder's
-# lock is reclaimed by PID check so a crashed run cannot wedge the suite forever.
+# because that is atomic on every filesystem this runs on and needs no `flock`. An unreadable
+# holder is bounded by age rather than guessed at, so a crashed run cannot wedge the suite forever.
 #
 # REFUSAL EXITS 99, NOT 1. This script's contract is "exit code is the number of unexpected
 # outcomes", so exiting 1 would be indistinguishable from one failed check — which is the same
