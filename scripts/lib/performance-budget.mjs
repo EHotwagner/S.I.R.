@@ -516,7 +516,7 @@ export function assertTacticalOverlayLayerBudgetWasEvaluatedSince(mark) {
   if (!Number.isInteger(mark))
     throw new Error("the overlay-layer evaluation guard needs a mark taken before the work ran; without one it cannot tell a fresh evaluation from an older one");
   if (tacticalOverlayLayerEvaluations === mark)
-    throw new Error(`the overlay-layer node budget was never evaluated during this test. ${tacticalOverlayLayerSurface.layer} may have grown past its declared ceiling of ${tacticalOverlayLayerBudget.maximumOverlayDomNodes} without anything noticing. A skipped, commented-out, or short-circuited call reaches this the same way a deleted one does -- the guard observes whether the verdict RAN, not how the call was written.`);
+    throw new Error(`the overlay-layer node budget was never evaluated during this test. ${tacticalOverlayLayerSurface.layer} may have grown past its declared ceiling of ${tacticalOverlayLayerBudget.maximumOverlayDomNodes} without anything noticing. A commented-out, short-circuited, body-level-skipped or deleted call reaches this the same way -- the guard observes whether the verdict RAN, not how the call was written. It does NOT reach a test suppressed by the .skip / .fixme MODIFIERS, which Playwright applies before fixture setup so that nothing belonging to the test runs at all; those are refused by tacticalOverlayLayerRunRefusal instead. An earlier revision of this sentence claimed skipping was covered here, which was true of one form and false of the other, and that hid a real escape.`);
 }
 
 // THE RUN-LEVEL REFUSAL, BECAUSE A FIXTURE CANNOT POLICE A TEST THAT NEVER STARTS.

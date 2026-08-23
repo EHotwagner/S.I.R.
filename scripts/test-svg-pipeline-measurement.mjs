@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
-import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalOverlayLayerBudget, tacticalOverlayLayerBudgetReason, assertTacticalOverlayLayerBudget, assertTacticalOverlayLayerBudgetWasEvaluatedSince, tacticalOverlayLayerEvaluationMark, tacticalOverlayLayerSurface, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
+import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalOverlayLayerBudget, tacticalOverlayLayerBudgetReason, assertTacticalOverlayLayerBudget, assertTacticalOverlayLayerBudgetWasEvaluatedSince, tacticalOverlayLayerEvaluationMark, tacticalOverlayLayerSurface, tacticalOverlayLayerRunRefusal, tacticalOverlayLayerBudgetTag, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 // validateDefinitions COMPOSES the budget: workload policy from the fixture file, ceiling from the
@@ -873,15 +873,27 @@ console.log(`JUSTIFIED tactical-overlay-budget-verdict: every branch of the over
 
 // AND THE BROWSER CONSUMER MUST OBTAIN ITS VERDICT FROM THAT FUNCTION.
 //
-// This is the one claim about the consumer's TEXT that this design still makes, and it is deliberately
-// a small one: the spec imports the verdict from the declaration and calls it. It is not a claim that
-// no other assertion could be added beside it -- that is the bound on this check, stated rather than
-// implied, and it is the residue this design does not remove.
+// THESE CHECK WIRING, NOT EXECUTION, AND THAT DISTINCTION IS THE WHOLE POINT OF THIS BLOCK.
+//
+// They read the spec's source. Source cannot answer "did the verdict run?" -- with the call commented
+// out every assertion here still passed and this file still printed a line announcing that the spec
+// "calls" the verdict. A net that reports a guarantee it does not provide is worse than no net,
+// because it is why the escape read as covered (S.I.R.#327 review round 2, F2).
+//
+// So their claim is narrowed to exactly what source can support: the spec is WIRED to the
+// declaration -- it imports the throwing form and mentions it, and it does not use the returning
+// form. Whether it ever executes is answered by two mechanisms that observe running code and are
+// checked above: the per-test evaluation guard, and the run-level refusal for a declared-but-skipped
+// test. Neither of them is here, and nothing in this block may be read as evidence about them.
 const overlaySpec = readFileSync(new URL("../tests/SIR.Browser.Tests/visible-workflows.spec.js", import.meta.url), "utf8");
 assert.match(overlaySpec, /import\s*\{[^}]*\bassertTacticalOverlayLayerBudget\b[^}]*\}\s*from\s*["'][^"']*performance-budget\.mjs["']/,
   "the browser spec must import the THROWING overlay assertion from the single declaration");
 assert.match(overlaySpec, /\bassertTacticalOverlayLayerBudget\s*\(/,
-  "the browser spec must CALL the throwing overlay assertion; importing it and doing something else is not deriving from the declaration");
+  "the browser spec must REFERENCE the throwing overlay assertion; importing it and never naming it is not wiring. This is a wiring check only -- that the reference is reached at runtime is established by the evaluation guard and the run-level refusal, not here.");
+// AND THE TEST THAT CARRIES THE BUDGET MUST STILL BE TAGGED, or the run-level refusal has nothing to
+// key off and would pass vacuously on every run -- including one where the test was skipped.
+assert.match(overlaySpec, new RegExp(`\\btacticalOverlayLayerBudgetTag\\b`),
+  "the browser spec must tag the budget-bearing test with the declared tag; without it the run-level refusal cannot tell a skipped budget test from a shard that never carried one");
 // AND IT MUST NOT USE THE RETURNING FORM, which puts an assertion obligation back at the call site.
 // With the reason form called directly, `.toBeDefined()`, `.toBeTruthy()` and discarding the result
 // each left this suite green while a breach returned a reason nobody read.
@@ -947,7 +959,27 @@ assert.doesNotMatch(overlaySpec, new RegExp(`(?<![\\d.\\w])${overlayCeiling}(?![
   `the browser spec restates the declared overlay ceiling ${overlayCeiling} as a literal. It imports the verdict; a number written there is a second statement of the bound.`);
 assert.ok(readFileSync(new URL("../src/SIR.Client.Web/App.fs", import.meta.url), "utf8").includes(tacticalOverlayLayerBudget.surfacedAs),
   `${tacticalOverlayLayerBudget.surfacedAs} must still be emitted, or the verdict's telemetry cross-check reads an attribute nothing publishes`);
-console.log(`JUSTIFIED tactical-overlay-budget-derivation: the browser spec imports and calls the declared verdict, carries no copy of ${overlayCeiling}, and ${tacticalOverlayLayerBudget.surfacedAs} is still emitted by the product for the cross-check to read`);
+// THE RUN-LEVEL REFUSAL IS A PURE FUNCTION OF THE RUN'S OUTCOMES, so it is enumerated too. It exists
+// because a fixture cannot police a test that never starts, and its two failure directions matter
+// equally: refusing a suppressed test, and NOT refusing a shard that was never given one. A gate that
+// reds on correct runs is a gate that gets removed.
+const taggedOutcome = (status) => ({ title: "View analysis overlays", tags: [tacticalOverlayLayerBudgetTag], status });
+assert.equal(tacticalOverlayLayerRunRefusal([]), null,
+  "a run with no outcomes at all is a shard that carried nothing; that is not a suppression");
+assert.equal(tacticalOverlayLayerRunRefusal([{ title: "something else", tags: [], status: "passed" }]), null,
+  "a run that was never given the tagged test must NOT be refused, or every shard without it reds");
+assert.equal(tacticalOverlayLayerRunRefusal([taggedOutcome("passed")]), null, "an executed budget test conforms");
+assert.equal(tacticalOverlayLayerRunRefusal([taggedOutcome("failed")]), null,
+  "a FAILED budget test ran -- the run reds through the failure itself, and refusing it again here would report 'never executed' for a genuine breach");
+for (const suppressed of ["skipped", "interrupted", "timedOut"])
+  assert.match(`${tacticalOverlayLayerRunRefusal([taggedOutcome(suppressed)])}`, /declared in this run and never executed/,
+    `a ${suppressed} budget test must be refused: the layer was never measured against its ceiling`);
+assert.throws(() => tacticalOverlayLayerRunRefusal(undefined), /unreadable run is refused/,
+  "an unreadable run is refused rather than treated as clean (#266)");
+assert.match(`${tacticalOverlayLayerRunRefusal([taggedOutcome("skipped")])}`, new RegExp(`${tacticalOverlayLayerBudget.maximumOverlayDomNodes}`),
+  "and the refusal names the ceiling that went unchecked, so the message says what was lost");
+console.log(`JUSTIFIED tactical-overlay-budget-run-refusal: a declared-but-unexecuted ${tacticalOverlayLayerBudgetTag} test is refused in 3 suppression states, an executed or failed one is not, a shard that never carried it is not, and an unreadable run is refused rather than passed`);
+console.log(`JUSTIFIED tactical-overlay-budget-wiring: the browser spec is WIRED to the declared verdict -- it imports and references the throwing form, does not use the returning form, tags the budget-bearing test, and carries no copy of ${overlayCeiling}; ${tacticalOverlayLayerSurface.attribute} is still emitted by the product. This is a source check and says NOTHING about whether the verdict executes: that is the evaluation guard and the run-level refusal, both inverted above.`);
 
 // 5. THE REMOVED TOLERANCE WAS ADMITTING A REAL BREACH, MEASURED ON THE RETAINED ARTIFACT.
 // This is the discriminating case, and it is taken from the production telemetry this repo actually
