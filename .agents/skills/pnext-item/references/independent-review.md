@@ -113,14 +113,35 @@ rather than counted as one. A new claim without an inversion fails the gate inst
 quietly. If you add a row, the gate derives its widening inversion for you; if you add a claim of some
 other shape, you must supply the mutation that reds it.
 
-**Run it directly: `bash scripts/test-review-contract-coherence.sh`. That is the only route that
-works today, and nothing runs it for you.** It is not wired into CI, and it is deliberately not
-half-wired: an earlier revision of this change added a `review-contract` case to
-`scripts/run-ci-gate.sh` and said the gate was "dispatchable", but that route could never report a
-pass — `ci-route.mjs` refuses an unknown subject, so it exited 1 on a correct document and 1 on a
-falsified one alike, unable to distinguish them. Wiring it properly needs `ci-route.mjs`,
-`qualify-pr.sh`, `test-ci-route.mjs` and `.github/workflows/ci.yml` to change together, which is
-`S.I.R.#265`. Until that lands, run it by hand whenever you change the contract.
+**CI runs it, and the cadence is path-conditional plus an unconditional sweep — not "on every
+run" (`S.I.R.#265`).** It is an integrity subject: declared in `scripts/ci-integrity-plan.mjs`,
+dispatched from `scripts/qualify-pr.sh`'s `integrity` case, and therefore held to the same bargain
+as the other five subjects (#248's per-PR cost work, #252's sweep).
+
+- On a **pull request** it runs when a changed path selects it. The selectors are exactly the five
+  files the gate opens — `docs/coordination-engine-contracts.md`, `.config/dotnet-tools.json`,
+  `global.json`, `scripts/fsgg-coord`, and the gate script itself — plus the conservative routes
+  that run every integrity subject regardless: a path the router cannot classify, a
+  `.github/workflows` change, or a change to the planner itself.
+- Off the pull-request path — every push to `main`, the nightly cron, and `workflow_dispatch` —
+  the `integrity-sweep` job runs it **unconditionally**, so it cannot sit red on the default branch
+  while every PR truthfully reports a measured omission.
+- The packed skill mirrors, **this file included**, are deliberately not selectors. The gate does
+  not open them: falsify a load-bearing claim here and it still exits 0. They do still reach it,
+  because the router cannot classify `.claude/` or `.agents/` and runs every subject
+  conservatively — so naming them as selectors would buy no additional run and would only record
+  a relevance the gate cannot support.
+
+An earlier revision of `S.I.R.#255` added a `review-contract` case to `scripts/run-ci-gate.sh` and
+called the gate "dispatchable", but that route could never report a pass — `ci-route.mjs` refuses
+an unknown subject, so it exited 1 on a correct document and 1 on a falsified one alike, unable to
+distinguish them. It was removed rather than completed, and the note left here then said wiring it
+needed `ci-route.mjs`, `test-ci-route.mjs` and `.github/workflows/ci.yml` to change together. That
+was true only of the *gate*-subject route it had started down; as an *integrity* subject it needs
+none of the three, and `S.I.R.#265` changed none of them.
+
+Locally, run it directly: `bash scripts/test-review-contract-coherence.sh`. Do that whenever you
+change the contract rather than waiting for CI to tell you.
 
 
 Every item gets one independent critique cycle before merge. The implementer and critic are different

@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export const schema = "sir.ci-integrity-plan/v1";
-export const subjectOrder = ["npm-audit", "governance", "dependency-surface", "sdd-byte-stability", "feedback-audit"];
+export const subjectOrder = ["npm-audit", "governance", "dependency-surface", "sdd-byte-stability", "feedback-audit", "review-contract"];
 export const planModes = ["pull-request", "sweep"];
 export const sweepEnvironmentVariable = "SIR_CI_INTEGRITY_SWEEP";
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
@@ -17,6 +17,34 @@ const predicates = {
   "dependency-surface": (path) => under(path, "docs/dependency-surface") || path.endsWith(".fsproj") || path.endsWith("packages.lock.json") || ["Directory.Packages.props", ".config/dotnet-tools.json"].includes(path),
   "sdd-byte-stability": (path) => under(path, "work/184-scenario-catalog") || under(path, "readiness/184-scenario-catalog") || under(path, ".fsgg") || path === ".config/dotnet-tools.json",
   "feedback-audit": (path) => under(path, "feedback") || under(path, ".github/workflows") || ["scripts/audit-binding-exceptions.json", "scripts/test-feedback-audit-binding-exceptions.sh", "scripts/ci-route.mjs", "scripts/test-ci-route.mjs"].includes(path),
+
+  // S.I.R.#265. The set below is DERIVED from what scripts/test-review-contract-coherence.sh
+  // actually opens, not from what the contract is about — those are different sets, and the
+  // difference is the whole point of this row. The gate reads exactly five in-tree paths:
+  //   docs/coordination-engine-contracts.md   the document under test (its `doc` variable)
+  //   .config/dotnet-tools.json               the engine pin it resolves FS.GG.Coord.Core.dll from
+  //   global.json                             the SDK pin it resolves DOTNET_ROOT against
+  //   scripts/fsgg-coord                      the resolver it runs `facts --json` through
+  //   scripts/test-review-contract-coherence.sh  itself
+  // Change any one of those and the gate's verdict can move; that is what makes each a selector.
+  //
+  // THE PACKED SKILL MIRRORS ARE DELIBERATELY ABSENT, against the literal wording of #265's Scope
+  // ("the routes where packed skills … can change"), and the reason is measured rather than
+  // argued. `.claude`/`.agents/skills/pnext-item/references/independent-review.md` describe this
+  // same contract in prose, but the gate never opens them — the file says so itself ("That gate
+  // does not read this file, so this paragraph is not itself bound"). Falsifying a load-bearing
+  // claim in the mirror and running the gate at e5bda9d exits 0. A mirror edit that also edits the
+  // document is already selected by the document; a mirror edit that does not is a run whose
+  // verdict could not have differed. Selecting on it would therefore add cost that cannot ever
+  // report a finding — a decorative selector added while removing a decorative gate. If the
+  // mirrors are ever brought under a check that reads them, this list is where that path goes.
+  "review-contract": (path) => [
+    "docs/coordination-engine-contracts.md",
+    ".config/dotnet-tools.json",
+    "global.json",
+    "scripts/fsgg-coord",
+    "scripts/test-review-contract-coherence.sh",
+  ].includes(path),
 };
 
 // Per-PR selection is path-conditional on purpose (#248): a PR pays only for the subjects its own

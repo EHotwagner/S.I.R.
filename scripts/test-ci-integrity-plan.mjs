@@ -48,7 +48,7 @@ assert.ok(
 // #252 is a defect about a gate that silently did not run, so pin the subject inventory ABSOLUTELY.
 // Every other assertion here is relative to `subjectOrder`; without this line, deleting a subject
 // shrinks the sweep and the whole suite still passes — the same class of silence being repaired.
-const declaredSubjects = ["npm-audit", "governance", "dependency-surface", "sdd-byte-stability", "feedback-audit"];
+const declaredSubjects = ["npm-audit", "governance", "dependency-surface", "sdd-byte-stability", "feedback-audit", "review-contract"];
 assert.deepEqual(subjectOrder, declaredSubjects, "an integrity subject was added or removed; update this pin deliberately");
 
 // The sweep runs every subject over exactly those paths.
@@ -84,13 +84,72 @@ const allOmitted = (ids) => ids.map((id) => [id, false, "measured-omission"]);
 assert.deepEqual(conditionalSelection(omittedPaths), allOmitted(declaredSubjects), "an inert route must select nothing");
 assert.deepEqual(
   conditionalSelection(["package-lock.json"]),
-  [["npm-audit", true, "relevant-path"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", false, "measured-omission"]],
+  [["npm-audit", true, "relevant-path"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", false, "measured-omission"], ["review-contract", false, "measured-omission"]],
   "per-PR selection must stay path-conditional",
 );
 assert.deepEqual(
   conditionalSelection(["scripts/audit-binding-exceptions.json"]),
-  [["npm-audit", false, "measured-omission"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", true, "relevant-path"]],
+  [["npm-audit", false, "measured-omission"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", true, "relevant-path"], ["review-contract", false, "measured-omission"]],
   "the subject this item repairs must still be selected by its own paths on a pull request",
+);
+
+// ---------------------------------------------------------------------------
+// S.I.R.#265 — the review-contract subject, from both sides.
+//
+// Absolute tuples, not a comparison against another call of the same function: the defect this
+// row repairs is a gate that existed and that no route selected, and a relative assertion cannot
+// tell "selected" from "the predicate returned the same thing twice".
+// ---------------------------------------------------------------------------
+
+// SELECTED, one path at a time. Each of these five is a path the gate script actually opens, so
+// each must be able to select it ON ITS OWN — a set-union assertion would pass while four of the
+// five were dead.
+for (const path of [
+  "docs/coordination-engine-contracts.md",
+  ".config/dotnet-tools.json",
+  "global.json",
+  "scripts/fsgg-coord",
+  "scripts/test-review-contract-coherence.sh",
+]) {
+  const selected = byId(planFor(route([path]))).get("review-contract");
+  assert.equal(selected.run, true, `${path} must select review-contract on its own`);
+  assert.equal(selected.reason, "relevant-path", `${path} must select review-contract by PATH, not by a conservative fallback`);
+  assert.deepEqual(selected.matchingPaths, [path], `${path} must be recorded as the reason it was selected`);
+}
+
+// NOT SELECTED BY THE PREDICATE. #309's defect was a job graph that could not be satisfied
+// because a gate was declared where nothing could run it; the mirror of that is a subject
+// selected where it cannot find anything.
+//
+// The claim here is about the PREDICATE, and it is stated that way because the run outcome does
+// not distinguish it: `.claude/` and `.agents/` are outside every classifier prefix, so the
+// router files them under RP-005-unknown-conservative and the plan runs EVERY subject anyway.
+// That is the measurement that settles #265's Scope wording ("the routes where packed skills …
+// can change"): adding the mirrors to the predicate would not select one additional run, because
+// a mirror-only change already runs the whole integrity set. It would only move the recorded
+// `reason` from a conservative fallback to a claim of relevance that the gate cannot support —
+// it does not read those files, and falsifying a load-bearing claim in one leaves it exit 0.
+const mirrors = [".claude/skills/pnext-item/references/independent-review.md", ".agents/skills/pnext-item/references/independent-review.md"];
+const mirrorPlan = byId(planFor(route(mirrors)));
+assert.deepEqual(
+  mirrorPlan.get("review-contract").matchingPaths,
+  [],
+  "no review-contract predicate may match a packed skill mirror: the gate never opens those files",
+);
+assert.equal(
+  mirrorPlan.get("review-contract").reason,
+  "unknown-conservative",
+  "a mirror-only change must still run review-contract, and must say it did so conservatively rather than claim relevance",
+);
+assert.equal(mirrorPlan.get("review-contract").run, true);
+
+// The document is a `docs/` path, and `docs/` is the classification the sweep fixture uses for a
+// route that selects NOTHING. Pin that these two do not collapse into each other, or the
+// selection above and the omission above are the same assertion written twice.
+assert.deepEqual(
+  conditionalSelection(["docs/architecture.md"]),
+  allOmitted(declaredSubjects),
+  "an unrelated docs/ path must not select review-contract",
 );
 
 // The plan is a sealed artifact that `qualify-pr.sh` reads with jq and CI archives for 30 days, so
@@ -112,6 +171,64 @@ assert.equal(sweepRequested({ [sweepEnvironmentVariable]: "true" }), true);
 assert.equal(sweepRequested({ [sweepEnvironmentVariable]: "false" }), false);
 assert.equal(sweepRequested({ [sweepEnvironmentVariable]: "1" }), false);
 assert.equal(sweepRequested({}), false);
+
+// ---------------------------------------------------------------------------
+// S.I.R.#265 — the DECLARED subject set and the GATED subject set are the same
+// set, and this is the assertion that says so.
+//
+// This is the hole #265 fell through, one level up. `subjectOrder` decides what the plan
+// selects and what the sweep runs; `qualify-pr.sh` decides what actually EXECUTES. Nothing
+// joined them, so a subject could be planned, selected, recorded in an archived sweep plan as
+// `run: true` — and dispatched by nothing. That is indistinguishable from a subject that ran
+// and passed, which is the same shape as the decorative gate this row repairs and as the six
+// differentials that measured nothing on this board.
+//
+// Asserted in BOTH directions on purpose. A subject with no dispatch is a gate that cannot
+// fire. A dispatch whose id is in no plan is worse than dead code: `integrity_runs` asks jq for
+// a subject the plan does not contain, jq exits non-zero, and the `if` takes the else branch
+// forever — a dispatch that is silently skipped on every run rather than one that errors.
+//
+// The set equality is derived from the SUBJECT (the committed shell), not from a second list
+// maintained here; a hand-copied expectation would be one edit away from agreeing with itself.
+// ---------------------------------------------------------------------------
+const qualify = readFileSync(new URL("../scripts/qualify-pr.sh", import.meta.url), "utf8");
+const integrityCase = qualify.slice(qualify.indexOf("\n  integrity)\n"));
+const caseEnd = integrityCase.indexOf("\n    ;;\n");
+assert.ok(
+  integrityCase.startsWith("\n  integrity)\n") && caseEnd > 0,
+  "could not locate qualify-pr.sh's `integrity)` case block — refusing rather than deciding over a slice that may be the whole file",
+);
+const integrityBody = integrityCase.slice(0, caseEnd);
+
+// The guard SHAPE is pinned, not merely the id: a looser scan would also match the
+// `integrity_runs()` definition itself, an `integrity_runs x || true`, or a mention inside a
+// comment, and would then report a dispatch where none exists. Both committed layouts are
+// admitted — the one-liner (`; then <cmd>; fi`) and the multi-line block (`; then` at end of
+// line) — because the anchor is the guard, and which side of it the body sits on is style.
+const dispatched = [...integrityBody.matchAll(/^ +if integrity_runs ([a-z0-9-]+); then(?: .*)?$/gmu)].map(([, id]) => id);
+assert.ok(dispatched.length > 0, "found no `if integrity_runs …; then` guard at all — the scan below would pass vacuously");
+assert.equal(
+  new Set(dispatched).size,
+  dispatched.length,
+  `qualify-pr.sh dispatches a subject twice (${dispatched.join(", ")}); the second guard is unreachable work`,
+);
+assert.deepEqual(
+  [...dispatched].sort(),
+  [...subjectOrder].sort(),
+  `the planned subject set and the dispatched subject set disagree.\n`
+    + `  planned but never dispatched (a subject nothing runs): ${subjectOrder.filter((id) => !dispatched.includes(id)).join(", ") || "(none)"}\n`
+    + `  dispatched but never planned (a guard that is skipped on every run): ${dispatched.filter((id) => !subjectOrder.includes(id)).join(", ") || "(none)"}`,
+);
+
+// Self-test, in the shape this repo already applies to pr-verdict's collection-coverage check: a
+// comparison that has never been red is equally consistent with "nothing was wrong" and "it
+// cannot fire". Both directions, because the message above claims both.
+{
+  const disagree = (planned, gated) => planned.filter((id) => !gated.includes(id)).concat(gated.filter((id) => !planned.includes(id)));
+  assert.equal(disagree(["a", "b"], ["a", "b"]).length, 0, "plan/dispatch self-test: agreement must read as agreement");
+  assert.deepEqual(disagree(["a", "b"], ["a"]), ["b"], "plan/dispatch self-test: a planned-but-undispatched subject must be detectable");
+  assert.deepEqual(disagree(["a"], ["a", "b"]), ["b"], "plan/dispatch self-test: a dispatched-but-unplanned guard must be detectable");
+}
 
 // ---------------------------------------------------------------------------
 // A correct planner that nothing invokes is exactly the #252 failure with a
