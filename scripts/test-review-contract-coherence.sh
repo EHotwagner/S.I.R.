@@ -128,8 +128,13 @@ if len(blocks) >= 2:
 else:
     problems.append("expected two ```json examples in the review wait section")
 
-fields = [m.group(1) for m in re.finditer(r"^\|\s*`([a-zA-Z]+)`\s*\|", section("## The one thing to read first"), re.M)]
+over = section("## The one thing to read first")
+fields, descriptions = [], {}
+for m in re.finditer(r"^\|\s*`([a-zA-Z]+)`\s*\|\s*(.+?)\s*\|\s*$", over, re.M):
+    fields.append(m.group(1))
+    descriptions[m.group(1)] = m.group(2)
 out["overwrittenFields"] = fields
+out["overwriteDescriptions"] = descriptions
 if not fields: problems.append("could not parse the engine-overwrites table")
 
 inv = section("### Ledger invariants")
@@ -156,7 +161,9 @@ if not m: problems.append("could not parse the reviewGeneration token shape")
 rows = {}
 for row in re.finditer(r"^\|\s*`([a-z-]+)`\s*\|\s*`(\w+)`\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$",
                        section("### Which wait entry authorizes which record"), re.M):
-    rows[row.group(1)] = {"waitState": row.group(2), "token": ticked(row.group(4))}
+    rows[row.group(1)] = {"waitState": row.group(2),
+                         "receiptKind": (ticked(row.group(3)) or [row.group(3).strip()])[0],
+                         "token": ticked(row.group(4))}
 out["authorization"] = rows
 if "initial" not in rows: problems.append("authorization table has no `initial` row")
 
@@ -272,7 +279,11 @@ check "doc:optional-draft-keys" (sortedEq (strs "optionalKeys") engineOptional)
   (sprintf "document says [%s]; engine treats as optional [%s]" (j (strs "optionalKeys")) (j engineOptional))
 
 let vocab = expected.GetProperty "vocabularies"
-for field in [ "verdict"; "kind"; "routeApplicability" ] do
+// EVERY parsed vocabulary row is checked. An earlier revision parsed five rows into expected.json
+// and looped over three, so the `schema` and `policyVersion` rows could be falsified while the gate
+// stayed green -- parsed-but-unchecked is indistinguishable from unparsed, and worse, because the
+// expectation file makes it look covered.
+for field in [ "verdict"; "kind"; "routeApplicability"; "schema"; "policyVersion" ] do
   let documented =
     vocab.GetProperty(field).EnumerateArray() |> Seq.map (fun e -> e.GetString()) |> List.ofSeq
   let probes =
@@ -280,7 +291,10 @@ for field in [ "verdict"; "kind"; "routeApplicability" ] do
     | "verdict" -> [ "pass"; "changes-required"; "accepted"; "rejected"; "fail"; "Pass"; "" ]
     | "kind" -> [ "initial"; "confirmation"; "escalation"; "repair-phase"; "acceptance"
                   "repair"; "host-acceptance"; "Initial" ]
-    | _ -> [ "meaningful"; "not-meaningful"; "none"; "n/a"; "unknown"; "" ]
+    | "routeApplicability" -> [ "meaningful"; "not-meaningful"; "none"; "n/a"; "unknown"; "" ]
+    | "schema" -> [ "fsgg.coord.review-decision/v2"; "fsgg.coord.review-decision/v1"
+                    "fsgg.coord.review-decision/v3"; "fsgg.coord.review-wait/v1"; "" ]
+    | _ -> [ "structured-decisions/1"; "structured-decisions/2"; "structured-decisions"; "" ]
   let engineLegal = probes |> List.filter (engineAcceptsVocab field)
   // One check, both directions: a documented value the engine refuses, or an engine value the
   // document omits, are the same kind of drift.
@@ -346,6 +360,18 @@ for kindName, waitKind, round in
   if auth.TryGetProperty(kindName, &row) then
     let documentedState = row.GetProperty("waitState").GetString()
     let stateOk = documentedState = cliWaitState kindName
+    // The receipt-kind column was captured by the row regex and then thrown away, so it belonged to no
+    // honesty category and nothing checked it: falsifying it left the document self-contradictory and
+    // the gate green. It IS derivable -- the wire names come from the encoder -- so it is Derived.
+    let documentedReceiptKind = row.GetProperty("receiptKind").GetString()
+    let engineReceiptKind =
+      match waitKind with
+      | None -> "—"
+      | Some wk ->
+          let enc = ReviewWait.encode (ReviewWait.Transition.Enter { receipt with Kind = wk })
+          use d = JsonDocument.Parse(enc.Substring(enc.IndexOf '{'))
+          d.RootElement.GetProperty("kind").GetString()
+    let receiptKindOk = documentedReceiptKind = engineReceiptKind
     let tokenOk, detail =
       match waitKind with
       | None ->
@@ -358,8 +384,9 @@ for kindName, waitKind, round in
           let rendered = documented.Replace("<headSha>", "HEAD").Replace("<round>", string round)
           let engineToken = ReviewWait.generationToken "HEAD" wk round
           (rendered = engineToken), (sprintf "document renders %s; engine's token is %s" rendered engineToken)
-    check (sprintf "doc:authorization:%s" kindName) (stateOk && tokenOk)
-      (sprintf "wait state documented %s, CLI requires %s; %s" documentedState (cliWaitState kindName) detail)
+    check (sprintf "doc:authorization:%s" kindName) (stateOk && tokenOk && receiptKindOk)
+      (sprintf "wait state documented %s, CLI requires %s; receipt kind documented %s, engine emits %s; %s"
+         documentedState (cliWaitState kindName) documentedReceiptKind engineReceiptKind detail)
   else
     failures <- failures + 1
     printfn "  FAILED  doc:authorization:%s\n            the document has no row for this record kind" kindName
@@ -368,9 +395,34 @@ check "doc:record-subject-form" (str "recordSubjectExample" = subject)
   (sprintf "document's record subject is %s; the CLI derives %s" (str "recordSubjectExample") subject)
 check "doc:wait-item-form" (str "waitItemExample" = itemRef.Canonical)
   (sprintf "document's wait item is %s; the canonical ref is %s" (str "waitItemExample") itemRef.Canonical)
+// TRANSCRIBED, NOT DERIVED -- and an earlier revision filed it under Derived while comparing it to a
+// string literal three lines above, which is the same mistake in the same file twice. Which fields
+// `review record` overwrites, and what it substitutes, is CLI behaviour behind a live transport;
+// FS.GG.Coord.Core cannot report it. The transcription below is from the decompiled
+// `recordReview$cont@2412-3` and is labelled as a transcription.
+let cliOverwrites =
+  [ "revision", "existing.Length + 1"
+    "previousDigest", "the preceding record"
+    "claimGeneration", "acceptance records only"
+    "baseSha", "acceptance records only"
+    "digest", "reviewDigest" ]
 check "doc:overwritten-fields"
-  (sortedEq (strs "overwrittenFields") [ "revision"; "previousDigest"; "claimGeneration"; "baseSha"; "digest" ])
-  (sprintf "document's overwrite table lists [%s]" (j (strs "overwrittenFields")))
+  (sortedEq (strs "overwrittenFields") (cliOverwrites |> List.map fst))
+  (sprintf "document's overwrite table lists [%s]; the CLI overwrites [%s]"
+     (j (strs "overwrittenFields")) (j (cliOverwrites |> List.map fst)))
+// The second column carried no check at all, so `existing.Length + 1` could become `existing.Length`
+// and `(acceptance records only)` could become `(initial records only)` undetected. Each row's
+// description must still contain the substitution it names.
+let overwriteRows = expected.GetProperty "overwriteDescriptions"
+for field, needle in cliOverwrites do
+  let mutable desc = Unchecked.defaultof<JsonElement>
+  if overwriteRows.TryGetProperty(field, &desc) then
+    let text = desc.GetString()
+    check (sprintf "doc:overwrite-description:%s" field) (text.Contains needle)
+      (sprintf "the %s row no longer says %s: %s" field needle text)
+  else
+    failures <- failures + 1
+    printfn "  FAILED  doc:overwrite-description:%s\n            no row for this field" field
 
 // The wait window ceiling, derived from the document and checked against the pure validator.
 let validWindow (hours: float) =
@@ -476,6 +528,16 @@ mutate_and_expect_red "D7 authorization table gives \`initial\` the wrong token"
   '| `initial` | `Waiting` | `repair-confirmation` | `<headSha>:repair-confirmation:0` |'
 mutate_and_expect_red "S1 the record subject reverts to the canonical item ref" \
   'EHotwagner/S.I.R.#255/pr/259` |' 'EHotwagner/S.I.R.#255` |'
+mutate_and_expect_red "S6 the schema vocabulary row is falsified" \
+  '| `schema` | `fsgg.coord.review-decision/v2` |' '| `schema` | `fsgg.coord.review-decision/v1` |'
+mutate_and_expect_red "S7 the policyVersion vocabulary row is falsified" \
+  '| `policyVersion` | `structured-decisions/1` |' '| `policyVersion` | `structured-decisions/2` |'
+mutate_and_expect_red "S8 the revision substitution loses its off-by-one" \
+  '`existing.Length + 1` — the count of records' '`existing.Length` — the count of records'
+mutate_and_expect_red "S9 an overwrite row is rescoped to the wrong record kind" \
+  "the live winning claim marker's comment id (acceptance records only)" "the live winning claim marker's comment id (initial records only)"
+mutate_and_expect_red "S10 the authorization receipt-kind column is falsified" \
+  '| `initial` | `Waiting` | `initial-review` |' '| `initial` | `Waiting` | `repair-confirmation` |'
 mutate_and_expect_red "S4 the acceptance row wait state is falsified" \
   '| `acceptance` | `Completed` |' '| `acceptance` | `Waiting` |'
 mutate_and_expect_red "S5 an ordinary row wait state is falsified" \
