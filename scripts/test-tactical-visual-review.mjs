@@ -3,6 +3,11 @@ import { execFileSync } from "node:child_process";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
+// Every budget this file gates on is DERIVED, and every comparison it makes is declared with the
+// budget rather than written here (S.I.R.#318). This script cannot run without a built client and a
+// browser, so it cannot be inverted in-process; keeping the predicates in the declaration module is
+// what lets scripts/test-svg-pipeline-measurement.mjs break the subject and observe the refusal.
+import { tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets as declaredManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetFor } from "./lib/performance-budget.mjs";
 
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const requireTruth = (condition, message) => { if (!condition) throw new Error(message); };
@@ -49,7 +54,7 @@ const [bundle, styles, reviewFontRegular, reviewFontBold] = await Promise.all([
   readFile(resolve("scripts/assets/tactical-visual-review-font/SIRReviewMono-Bold.woff2")),
 ]);
 const stylesText = styles.toString("utf8");
-requireTruth(manifest.schema === "sir-tactical-visual-review-v2", "review schema drifted");
+requireTruth(manifest.schema === "sir-tactical-visual-review-v3", "review schema drifted");
 requireTruth(manifest.productionBundleSha256 === hash(bundle), "review is not bound to the production bundle");
 requireTruth(manifest.productionStylesSha256 === hash(styles), "review is not bound to the production stylesheet");
 requireTruth(
@@ -78,14 +83,17 @@ for (const declaration of ["--sir-canvas:#10161d", "animation-duration:var(--sir
   requireTruth(stylesText.includes(declaration), `critical visual declaration drifted: ${declaration}`);
 }
 requireTruth(manifest.visualSystem.identity === "tactical-visual-system-v1", "visual registry identity drifted");
-requireTruth(manifest.visualSystem.effectLimit === 256, "effect ceiling drifted");
+requireTruth(manifest.visualSystem.effectLimit === tacticalRuntimeEffectCap.maximumEffectInstances, `effect ceiling drifted from the declared runtime cap (${tacticalRuntimeEffectCap.path} ${tacticalRuntimeEffectCap.binding})`);
 requireTruth(manifest.visualSystem.effectCount > 0, "production after-state lost causal effects");
 requireTruth(manifest.visualSystem.layerOrder === manifest.visualSystem.paintedLayerOrder, "declared and painted layers diverged");
 requireTruth(manifest.visualSystem.effectKinds.length > 0 && manifest.visualSystem.effectLifecycles.length > 0, "effect kind/lifecycle semantics disappeared");
 requireTruth(manifest.densityScenes.map(({ units }) => units).join(",") === "100,200", "production density fixtures drifted");
 requireTruth(telemetry.schema === "sir-tactical-visual-telemetry-v1" && telemetry.densityScenes.map(({ units }) => units).join(",") === "100,200", "production telemetry drifted");
 for (const scene of manifest.densityScenes) {
-  const budget = scene.units === 100 ? manifest.budgets.representative100 : manifest.budgets.stress200;
+  // The DECLARED budget for this workload, not the manifest's copy of it. Reading the generated
+  // manifest back would compare an artifact against itself: a generator that published the wrong
+  // ceiling would be gated by the wrong ceiling and report green.
+  const budget = tacticalWorkloadBudgetFor(scene.units);
   const measured = telemetry.densityScenes.find(({ units }) => units === scene.units);
   requireTruth(scene.workload.renderedUnits === scene.units, `${scene.units}-unit production render drifted`);
   requireTruth(
@@ -101,9 +109,20 @@ for (const scene of manifest.densityScenes) {
   );
   requireTruth(["attack", "movement"].every((kind) => scene.workload.effectKinds.includes(kind)), `${scene.units}-unit production effect kinds drifted`);
   requireTruth(["accepted", "committed", "predicted"].every((lifecycle) => scene.workload.effectLifecycles.includes(lifecycle)), `${scene.units}-unit final simultaneous lifecycle state drifted`);
-  requireTruth(scene.workload.domNodes <= budget.maximumDomNodes && scene.workload.effects <= budget.maximumEffects, `${scene.units}-unit structural budget exceeded`);
-  requireTruth(measured && measured.inputToPaintMilliseconds < budget.maximumInputToPaintMilliseconds, `${scene.units}-unit input-to-paint budget exceeded`);
-  requireTruth(measured.animationFrameIntervalMilliseconds <= budget.targetAnimationFrameMilliseconds + budget.measurementToleranceMilliseconds, `${scene.units}-unit frame interval budget exceeded`);
+  const structuralReason = tacticalStructuralBudgetReason(budget, scene.workload);
+  requireTruth(!structuralReason, `${structuralReason}`);
+  requireTruth(measured, `${scene.units}-unit telemetry is missing; an unmeasured budget is refused, not passed`);
+  const inputToPaintReason = tacticalInputToPaintBudgetReason(budget, measured.inputToPaintMilliseconds);
+  requireTruth(!inputToPaintReason, `${inputToPaintReason}`);
+  const cadenceReason = tacticalFrameCadenceBudgetReason(budget, measured.animationFrameIntervalMilliseconds);
+  requireTruth(!cadenceReason, `${cadenceReason}`);
+  // The published manifest must carry the SAME numbers this gate just enforced, or the artifact a
+  // reviewer reads and the budget CI applies are two different things.
+  const publishedBudget = manifest.budgets[budget.key];
+  requireTruth(publishedBudget, `the manifest publishes no budget for ${budget.key}`);
+  for (const [field, declared] of Object.entries(declaredManifestBudgets[budget.key]))
+    requireTruth(publishedBudget[field] === declared, `manifest budgets.${budget.key}.${field} publishes ${JSON.stringify(publishedBudget[field])}; the declaration says ${JSON.stringify(declared)}`);
+  requireTruth(Object.keys(publishedBudget).length === Object.keys(declaredManifestBudgets[budget.key]).length, `manifest budgets.${budget.key} publishes fields the declaration does not: ${Object.keys(publishedBudget).join(", ")}`);
   requireTruth(hash(await readFile(resolve(root, scene.path))) === scene.sha256, `production density image drifted: ${scene.path}`);
 }
 requireTruth(hash(await readFile(resolve(root, manifest.after.path))) === manifest.after.sha256, "production after screenshot drifted");
@@ -129,7 +148,7 @@ try {
   for (const [reproductionIndex, reproductionRoot] of reproductionRoots.entries()) {
     const reproducedTelemetry = JSON.parse(await readFile(resolve(reproductionRoot, "telemetry.json"), "utf8"));
     for (const scene of reproducedTelemetry.densityScenes) {
-      const budget = scene.units === 100 ? manifest.budgets.representative100 : manifest.budgets.stress200;
+      const budget = tacticalWorkloadBudgetFor(scene.units);
       reproducedMeasurements.push({
         reproduction: reproductionIndex === 0 ? "A" : "B",
         root: reproductionRoot,
@@ -137,7 +156,7 @@ try {
         inputToPaintMilliseconds: scene.inputToPaintMilliseconds,
         maximumInputToPaintMilliseconds: budget.maximumInputToPaintMilliseconds,
         animationFrameIntervalMilliseconds: scene.animationFrameIntervalMilliseconds,
-        maximumAnimationFrameMilliseconds: budget.targetAnimationFrameMilliseconds + budget.measurementToleranceMilliseconds,
+        maximumAnimationFrameIntervalMilliseconds: tacticalFrameCadenceBudget.intervalCeilingMilliseconds,
       });
     }
   }
@@ -146,14 +165,11 @@ try {
     (error) => error ? rejectWrite(error) : resolveWrite(),
   ));
   for (const measurement of reproducedMeasurements) {
-    requireTruth(
-      measurement.inputToPaintMilliseconds < measurement.maximumInputToPaintMilliseconds,
-      `reproduced input-to-paint budget exceeded: reproduction=${measurement.reproduction} units=${measurement.units} measured=${measurement.inputToPaintMilliseconds} maximum=${measurement.maximumInputToPaintMilliseconds}; telemetry=${measurement.root}/telemetry.json`,
-    );
-    requireTruth(
-      measurement.animationFrameIntervalMilliseconds <= measurement.maximumAnimationFrameMilliseconds,
-      `reproduced frame interval budget exceeded: reproduction=${measurement.reproduction} units=${measurement.units} measured=${measurement.animationFrameIntervalMilliseconds} maximum=${measurement.maximumAnimationFrameMilliseconds}; telemetry=${measurement.root}/telemetry.json`,
-    );
+    const budget = tacticalWorkloadBudgetFor(measurement.units);
+    const reproducedInputToPaint = tacticalInputToPaintBudgetReason(budget, measurement.inputToPaintMilliseconds);
+    requireTruth(!reproducedInputToPaint, `reproduced ${reproducedInputToPaint}: reproduction=${measurement.reproduction}; telemetry=${measurement.root}/telemetry.json`);
+    const reproducedCadence = tacticalFrameCadenceBudgetReason(budget, measurement.animationFrameIntervalMilliseconds);
+    requireTruth(!reproducedCadence, `reproduced ${reproducedCadence}: reproduction=${measurement.reproduction}; telemetry=${measurement.root}/telemetry.json`);
   }
   reproductionAccepted = true;
 } finally {

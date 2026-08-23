@@ -1,5 +1,5 @@
 {
-  "schema": "sir-tactical-visual-review-v2",
+  "schema": "sir-tactical-visual-review-v3",
   "captureInputs": {
     "schema": "sir-tactical-capture-inputs-v1",
     "viewport": {
@@ -170,16 +170,18 @@
     "representative100": {
       "maximumDomNodes": 5000,
       "maximumEffects": 128,
-      "maximumInputToPaintMilliseconds": 100,
       "targetAnimationFrameMilliseconds": 16.67,
-      "measurementToleranceMilliseconds": 1
+      "maximumInputToPaintMilliseconds": 100,
+      "minimumClassifiableAnimationFrameIntervalMilliseconds": 12.5,
+      "maximumAnimationFrameIntervalMilliseconds": 25
     },
     "stress200": {
       "maximumDomNodes": 9000,
       "maximumEffects": 256,
-      "maximumInputToPaintMilliseconds": 150,
       "targetAnimationFrameMilliseconds": 16.67,
-      "measurementToleranceMilliseconds": 1
+      "maximumInputToPaintMilliseconds": 150,
+      "minimumClassifiableAnimationFrameIntervalMilliseconds": 12.5,
+      "maximumAnimationFrameIntervalMilliseconds": 25
     }
   }
 }

@@ -56,3 +56,326 @@ export const tacticalFrameBudgetDocumentation = Object.freeze({
 export function documentedFrameCeilingCell() {
   return `< ${tacticalFrameBudget.callbackMillisecondsCeiling} ms`;
 }
+
+// ---------------------------------------------------------------------------------------------
+// S.I.R.#318: the rest of the "Tactical visual-system budget" table, and the two figures that had
+// no table row at all.
+//
+// #299 brought the frame-ceiling COLUMN of that table here. The remaining columns were still
+// restated by hand -- the node cap in three places, the effect ceiling in five -- and two further
+// thresholds that CI enforces (`maximumInputToPaintMilliseconds`, and a `measurementTolerance`
+// silently ADDED to the frame ceiling) were declared in no document whatsoever.
+//
+// The same rule applies to everything below it that applies above it: this is the ONE place these
+// numbers are stated. A consumer needs one: import it.
+
+// THE REFRESH RATE IS DECLARED, AND THE FRAME PERIOD IS DERIVED FROM IT -- NOT FROM THE PUBLISHED
+// CALLBACK CEILING (S.I.R.#318 round 1).
+//
+// `callbackMillisecondsCeiling` is 16.67: one frame period at 60 Hz ROUNDED UP to the two decimals
+// the table publishes. As a ceiling on a callback DURATION that rounding is conservative and
+// harmless -- it admits 0.0033 ms more work than a perfect frame period.
+//
+// As the UNIT of a cadence measurement it is the opposite of harmless, and the first version of this
+// module got it wrong in exactly that way. Doubling a rounded-UP period gives 33.34 ms, which is
+// ABOVE a real one-dropped-frame interval at 60.000 Hz (2 x 16.6667 = 33.3333 ms). The gate that
+// exists to catch a dropped frame therefore admitted one -- at the nominal refresh the declaration
+// itself names, and at every refresh at or above 59.988 Hz. It was not theoretical: this repository's
+// own captures at ee6a2df measured periods of 16.602 and 16.642 ms, whose dropped-frame intervals are
+// 33.204 and 33.284 ms -- so a scene running at 30 fps, dropping every single frame, passed.
+//
+// A budget may be rounded for publication. A UNIT may not. The period below is exact.
+const displayRefreshHertz = 60;
+const framePeriodMilliseconds = 1000 / displayRefreshHertz;
+
+// The number of vsyncs a healthy inter-frame INTERVAL may span. This is a different quantity from a
+// callback duration, and it is declared here rather than derived by arithmetic at a call site.
+const maximumElapsedVsyncsPerFrame = 1;
+
+export const tacticalWorkloadBudgets = Object.freeze({
+  representative100: Object.freeze({
+    key: "representative100",
+    label: "Representative 100-unit replay",
+    units: 100,
+    maximumDomNodes: 5000,
+    maximumEffects: 128,
+    maximumInputToPaintMilliseconds: 100,
+  }),
+  stress200: Object.freeze({
+    key: "stress200",
+    label: "Stress 200-unit replay",
+    units: 200,
+    maximumDomNodes: 9000,
+    maximumEffects: 256,
+    maximumInputToPaintMilliseconds: 150,
+  }),
+});
+
+export const tacticalWorkloadBudgetList = Object.freeze(Object.values(tacticalWorkloadBudgets));
+
+export function tacticalWorkloadBudgetFor(units) {
+  const budget = tacticalWorkloadBudgetList.find((candidate) => candidate.units === units);
+  // A workload this table does not declare is an UNANSWERABLE question, not a passing one. Falling
+  // back to either row would gate an unknown workload against a budget nobody wrote for it.
+  if (!budget) throw new Error(`no declared tactical workload budget for ${units} units; declared workloads are ${tacticalWorkloadBudgetList.map(({ units: declared }) => declared).join(", ")}`);
+  return budget;
+}
+
+// The row that applies to an observed unit count, for a consumer measuring a live scene rather than
+// running one of the two declared review workloads. The smallest declared workload the scene still
+// fits, or the largest one if it exceeds them all -- so the tier boundary is the declared `units`
+// figure and not a literal repeated at the call site.
+export function tacticalWorkloadBudgetAtScale(unitCount) {
+  requireDeclaredUnitCount(unitCount);
+  return tacticalWorkloadBudgetList.find((candidate) => unitCount <= candidate.units)
+    ?? tacticalWorkloadBudgetList[tacticalWorkloadBudgetList.length - 1];
+}
+
+const requireDeclaredUnitCount = (unitCount) => {
+  if (typeof unitCount !== "number" || !Number.isFinite(unitCount) || unitCount < 0) throw new Error(`cannot choose a tactical workload budget for unit count ${JSON.stringify(unitCount)}; an unreadable scale is refused, not bucketed`);
+};
+
+// THE FRAME-CADENCE BUDGET, AND WHY IT IS ITS OWN QUANTITY (S.I.R.#318).
+//
+// The tactical review route measures `animationFrameIntervalMilliseconds`: the p80 of the deltas
+// between successive requestAnimationFrame timestamps. That is the INTERVAL BETWEEN frames -- the
+// vsync cadence -- and NOT the callback DURATION that `tacticalFrameBudget` declares. The two are
+// different quantities over different clocks, and the difference is not academic: an interval on a
+// vsync-locked clock is bounded BELOW by one frame period, so comparing it to a ceiling of exactly
+// one frame period is a comparison it can never comfortably win.
+//
+// That is what the removed `measurementToleranceMilliseconds: 1` was really doing. It entered bare
+// in ee6a2df with no derivation, no comment and no cited source -- `git log -S` shows the whole
+// budgets block arriving as literals in one commit -- so there is NO recoverable intent for the
+// value 1, and this module does not invent one for it. Its only observable effect was that the
+// route enforced a ceiling one millisecond LOOSER than the declared one while naming the declared
+// one in its failure message, and every retained production measurement since fee32c6 reads
+// 16.7 ms: a value that BREACHES the declared 16.67 ms ceiling and was reported green by the slack.
+//
+// HOW THE INTERVAL IS CLASSIFIED. A rAF interval on a vsync-locked clock is an integer multiple of
+// the frame period, so the question "was a frame dropped?" is "how many vsyncs elapsed?" -- and the
+// discriminating boundary between one and two is the MIDPOINT between them, not two periods. The
+// midpoint is maximally far from both candidates, which is exactly what makes the answer survive the
+// true period differing a little from nominal; a boundary sitting ON a candidate answers whichever
+// way the last digit falls. The first version of this module used two periods and was wrong for that
+// reason (see the note above `displayRefreshHertz`).
+//
+// AND THE RULE HAS A DOMAIN, WHICH IS ENFORCED RATHER THAN DESCRIBED. Nearest-vsync classification is
+// correct only while the true frame period is at least half the ceiling and below it -- refresh in
+// (40, 80] Hz for the declared 60. Outside that window a healthy interval and a dropped one can both
+// land inside the band, so a confident verdict would be an invention. An interval below the floor is
+// therefore REFUSED as unclassifiable rather than passed: "I could not evaluate this" is never "I
+// evaluated it and it passed" (#266).
+export const tacticalFrameCadenceBudget = Object.freeze({
+  displayRefreshHertz,
+  framePeriodMilliseconds,
+  maximumElapsedVsyncsPerFrame,
+
+  // The midpoint between the largest allowed vsync count and the next one up. Spelled over a common
+  // denominator so it is exact in binary floating point and publishes as a clean decimal: doubling
+  // and halving a period is where the rounding this budget exists to survive creeps back in.
+  intervalCeilingMilliseconds:
+    (2 * maximumElapsedVsyncsPerFrame + 1) * 1000 / (2 * displayRefreshHertz),
+
+  // Below this the measurement cannot be a single vsync at any refresh this rule classifies, so the
+  // verdict is a refusal rather than a pass. Derived from the ceiling, not authored.
+  minimumClassifiableIntervalMilliseconds:
+    ((2 * maximumElapsedVsyncsPerFrame + 1) * 1000 / (2 * displayRefreshHertz)) / (maximumElapsedVsyncsPerFrame + 1),
+
+  measures:
+    "p80 of the deltas between successive requestAnimationFrame timestamps on the production "
+    + "tactical route: the INTERVAL between frames, not the callback duration tacticalFrameBudget "
+    + "declares. Not a compositor, paint, GPU or swapchain claim.",
+  source: "scripts/lib/performance-budget.mjs (tacticalFrameCadenceBudget) -- the single declaration.",
+});
+
+// FIGURES THIS REPOSITORY HAS RETIRED, KEPT ON THE RECORD ON PURPOSE.
+//
+// A repair can only prove it discriminates by naming the alternative it must now exclude; S.I.R.#299
+// established that when it named the superseded 25 ms dropped-frame threshold in its own band
+// fixture. Without the superseded figure a band value is just another magic number.
+//
+// They live here, declared, so the suites that name them are checkable rather than merely commented:
+// the no-restatement sweep allows a retired figure to appear ONLY under the identifier declared for
+// it here, and refuses it anywhere else. A retired figure nobody names any more is a stale entry and
+// reds.
+export const supersededTacticalFigures = Object.freeze([
+  Object.freeze({
+    identifier: "supersededDropThresholdMilliseconds",
+    value: 25,
+    retiredBy: "S.I.R.#299",
+    reason: "the bare inline dropped-frame threshold, which no budget document declared and which contradicted the declared callback ceiling by 8.33 ms",
+  }),
+  Object.freeze({
+    identifier: "supersededToleranceMilliseconds",
+    value: 1,
+    retiredBy: "S.I.R.#318",
+    reason: "measurementToleranceMilliseconds, added to the frame ceiling at the call site so the route enforced a ceiling one millisecond looser than the one its failure message named",
+  }),
+  Object.freeze({
+    identifier: "supersededCadenceCeilingMilliseconds",
+    value: 33.34,
+    retiredBy: "S.I.R.#318 review round 1",
+    reason: "two ROUNDED-UP frame periods, which sits above a real one-dropped-frame interval at 60.000 Hz and so admitted the failure the cadence budget exists to catch",
+  }),
+]);
+
+// THE RUNTIME EFFECT CAP IS THE SAME NUMBER, NOT A NUMBER THAT AGREES (S.I.R.#318).
+//
+// `TacticalSceneProjection.MaximumEffectInstances` is what the product actually enforces: it
+// truncates the effect array to that length and publishes it as `data-effect-limit`. The stress-200
+// row's `maximumEffects` is that cap, not a budget that happens to match it. F# cannot import this
+// module, so -- exactly as with the published prose table -- the binding is a gate that re-reads the
+// source and refuses divergence in either direction. See assertRuntimeEffectCap in
+// scripts/test-svg-pipeline-measurement.mjs.
+export const tacticalRuntimeEffectCap = Object.freeze({
+  path: "src/SIR.Client/TacticalSceneProjection.fs",
+  binding: "MaximumEffectInstances",
+  surfacedAs: "data-effect-limit",
+  maximumEffectInstances: tacticalWorkloadBudgets.stress200.maximumEffects,
+});
+
+// WHERE EACH BUDGETED QUANTITY IS SURFACED TO A BROWSER CONSUMER.
+//
+// A consumer that reads one of these attributes off the live DOM is holding the MEASUREMENT, and the
+// only thing it may compare that measurement against is the declaration. Bounding it with a numeric
+// literal is either a restated budget or -- worse, and this is the half of S.I.R.#318 that had no
+// table row at all -- a fresh threshold invented at the point of use. The gate keyed off this list
+// refuses a numeric literal on any line that touches the identifier read from these attributes,
+// whatever the number is, so an invented bound is caught as readily as a copied one.
+export const tacticalBudgetSurfaces = Object.freeze([
+  Object.freeze({ quantity: "maximumDomNodes", attribute: "data-visual-node-estimate" }),
+  Object.freeze({ quantity: "maximumEffects", attribute: "data-effect-limit" }),
+]);
+
+// The manifest block `scripts/generate-tactical-visual-review.mjs` publishes, built HERE so that the
+// generator carries no budget key and no budget number at all. `sir-tactical-visual-review-v3`
+// renamed `measurementToleranceMilliseconds` to the cadence ceiling this module derives; v2 carried
+// the undeclared tolerance, so the shape change is a schema change and is versioned as one.
+// ONE PROJECTION LIST, TWO PUBLISHED SURFACES, AND EVERY ENTRY NAMES THE QUANTITY IT PUBLISHES.
+//
+// The published table and the review manifest used to be built independently, and the guard that
+// asked "is every declared budget published?" could only compare NUMBERS -- so an undeclared budget
+// whose value happened to equal 256, 16.67 or 150 was reported as published by a surface that had
+// never heard of it. That is "do these agree?" one level up, inside the guard written to stop it.
+//
+// Both surfaces are now generated from this list, and each entry declares the quantity ids it
+// projects. The guard asks whether the QUANTITY is projected, never whether its value appears.
+const tacticalBudgetProjections = Object.freeze([
+  Object.freeze({
+    column: "Estimated SVG nodes",
+    quantities: (workload) => [`${workload.key}.maximumDomNodes`],
+    cell: (workload) => `≤ ${documentedThousands(workload.maximumDomNodes)}`,
+    manifest: (workload) => ({ maximumDomNodes: workload.maximumDomNodes }),
+  }),
+  Object.freeze({
+    column: "Active effects",
+    quantities: (workload) => [`${workload.key}.maximumEffects`],
+    cell: (workload) => `≤ ${workload.maximumEffects}`,
+    manifest: (workload) => ({ maximumEffects: workload.maximumEffects }),
+  }),
+  Object.freeze({
+    column: tacticalFrameBudgetDocumentation.column,
+    quantities: () => ["tacticalFrameBudget.callbackMillisecondsCeiling"],
+    cell: () => documentedFrameCeilingCell(),
+    manifest: () => ({ targetAnimationFrameMilliseconds: tacticalFrameBudget.callbackMillisecondsCeiling }),
+  }),
+  Object.freeze({
+    column: "Input-to-paint p80",
+    quantities: (workload) => [`${workload.key}.maximumInputToPaintMilliseconds`],
+    cell: (workload) => `< ${workload.maximumInputToPaintMilliseconds} ms`,
+    manifest: (workload) => ({ maximumInputToPaintMilliseconds: workload.maximumInputToPaintMilliseconds }),
+  }),
+  Object.freeze({
+    // BOTH cadence bounds in one cell, because both are gate boundaries a run can meet and a
+    // published budget with an unpublished floor is half a budget.
+    column: "Frame cadence p80",
+    quantities: () => [
+      "tacticalFrameCadenceBudget.minimumClassifiableIntervalMilliseconds",
+      "tacticalFrameCadenceBudget.intervalCeilingMilliseconds",
+    ],
+    cell: () => `≥ ${tacticalFrameCadenceBudget.minimumClassifiableIntervalMilliseconds} ms, < ${tacticalFrameCadenceBudget.intervalCeilingMilliseconds} ms`,
+    manifest: () => ({
+      minimumClassifiableAnimationFrameIntervalMilliseconds: tacticalFrameCadenceBudget.minimumClassifiableIntervalMilliseconds,
+      maximumAnimationFrameIntervalMilliseconds: tacticalFrameCadenceBudget.intervalCeilingMilliseconds,
+    }),
+  }),
+]);
+
+// The quantity ids every published surface projects, for the guard that refuses a budget declared in
+// code and published nowhere. Ids, never values.
+export const tacticalProjectedQuantities = Object.freeze([...new Set(
+  tacticalWorkloadBudgetList.flatMap((workload) => tacticalBudgetProjections.flatMap((projection) => projection.quantities(workload))),
+)]);
+
+export const tacticalReviewManifestBudgets = Object.freeze(Object.fromEntries(
+  tacticalWorkloadBudgetList.map((workload) => [workload.key, Object.freeze(
+    Object.assign({}, ...tacticalBudgetProjections.map((projection) => projection.manifest(workload))),
+  )]),
+));
+
+// THE ENFORCEMENT LIVES HERE, NOT AT THE CALL SITE, AND THAT IS THE POINT.
+//
+// These three thresholds gate CI from `scripts/test-tactical-visual-review.mjs`, which cannot run
+// without a built client and a browser and therefore cannot be inverted in-process. Every
+// comparison they make is a pure function of a declared budget and a measured number, so the
+// comparison is declared here and the browser-route consumer calls it. The gate that proves these
+// can fail is `scripts/test-svg-pipeline-measurement.mjs`, which mutates the SUBJECT -- the declared
+// budget or the measurement -- and observes the refusal.
+//
+// Each returns null when the measurement conforms, and a REASON when it does not; an unmeasured
+// input is refused rather than passed, because "I could not evaluate this" is never "I evaluated it
+// and it passed" (#266).
+const requireFiniteMeasurement = (label, value) => {
+  if (typeof value !== "number" || !Number.isFinite(value)) throw new Error(`${label} was not measured (got ${JSON.stringify(value)}); an unmeasured budget is refused, not passed`);
+};
+
+export function tacticalStructuralBudgetReason(budget, measured) {
+  requireFiniteMeasurement(`${budget.label} domNodes`, measured?.domNodes);
+  requireFiniteMeasurement(`${budget.label} effects`, measured?.effects);
+  if (measured.domNodes > budget.maximumDomNodes) return `${budget.units}-unit SVG node budget exceeded: measured ${measured.domNodes} against the declared ceiling of ${budget.maximumDomNodes}`;
+  if (measured.effects > budget.maximumEffects) return `${budget.units}-unit active-effect budget exceeded: measured ${measured.effects} against the declared ceiling of ${budget.maximumEffects}`;
+  return null;
+}
+
+export function tacticalInputToPaintBudgetReason(budget, measuredMilliseconds) {
+  requireFiniteMeasurement(`${budget.label} inputToPaintMilliseconds`, measuredMilliseconds);
+  if (measuredMilliseconds < budget.maximumInputToPaintMilliseconds) return null;
+  return `${budget.units}-unit input-to-paint budget exceeded: measured ${measuredMilliseconds} ms against the declared ceiling of ${budget.maximumInputToPaintMilliseconds} ms`;
+}
+
+export function tacticalFrameCadenceBudgetReason(budget, measuredIntervalMilliseconds) {
+  requireFiniteMeasurement(`${budget.label} animationFrameIntervalMilliseconds`, measuredIntervalMilliseconds);
+  const { minimumClassifiableIntervalMilliseconds: floor, intervalCeilingMilliseconds: ceiling, displayRefreshHertz: hertz, maximumElapsedVsyncsPerFrame: allowed } = tacticalFrameCadenceBudget;
+  // NO ARITHMETIC HERE, DELIBERATELY. The removed defect was `measured <= ceiling + tolerance` at
+  // the call site: a second, undeclared budget reached by addition instead of by a literal. Both
+  // bounds are declared, and the reason names which one the measurement met.
+  //
+  // The floor comes FIRST, and it is a refusal rather than a pass. An interval below it cannot be a
+  // single vsync at any refresh this rule classifies, so the honest answer is that the classification
+  // does not apply -- not that the cadence was excellent.
+  if (measuredIntervalMilliseconds < floor)
+    return `${budget.units}-unit frame cadence is unclassifiable: measured ${measuredIntervalMilliseconds} ms, below the declared floor of ${floor} ms. Nearest-vsync classification holds only while the display's true frame period is at least half the ceiling and below it -- refresh in (${1000 / ceiling}, ${1000 / floor}] Hz for the declared ${hertz} Hz. Outside that window a healthy interval and a dropped one can both land inside the band, so this refuses rather than deciding.`;
+  if (measuredIntervalMilliseconds < ceiling) return null;
+  return `${budget.units}-unit frame cadence budget exceeded: measured ${measuredIntervalMilliseconds} ms against the declared ceiling of ${ceiling} ms. At ${hertz} Hz the frame period is ${tacticalFrameCadenceBudget.framePeriodMilliseconds} ms, so an interval at or above that ceiling has spanned more than the ${allowed} vsync this budget allows -- a dropped frame.`;
+}
+
+// --- the published projection of the whole table ------------------------------------------------
+// Every column below is a PROJECTION of a declaration above, rendered exactly as the published table
+// writes it. `Release projection p95` is deliberately absent: no consumer gates on it, nothing
+// restates it, and binding a column this module does not declare would make the gate assert
+// authority it does not have.
+const documentedThousands = (value) => value.toLocaleString("en-US");
+
+export const tacticalBudgetTableDocumentation = Object.freeze({
+  path: "docs/performance-budget.md",
+  tableHeading: "Tactical visual-system budget",
+  workloadColumn: "Production workload",
+});
+
+export function documentedTacticalBudgetRows() {
+  return tacticalWorkloadBudgetList.map((workload) => Object.freeze({
+    [tacticalBudgetTableDocumentation.workloadColumn]: workload.label,
+    ...Object.fromEntries(tacticalBudgetProjections.map((projection) => [projection.column, projection.cell(workload)])),
+  }));
+}
