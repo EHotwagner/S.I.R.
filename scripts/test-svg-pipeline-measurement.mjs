@@ -490,6 +490,29 @@ for (const [rowIndex, declaredRow] of documentedRows.entries()) {
 }
 console.log(`JUSTIFIED tactical-budget-document-binding: ${boundCells} published cell(s) across ${documentedRows.length} row(s) resolve to the declaration, and a column or row the declaration projects that the document does not publish is a failure rather than a skip`);
 
+// 1b. AND SO IS THE PUBLISHED REVIEW MANIFEST.
+// `scripts/test-tactical-visual-review.mjs` makes this same comparison, but it cannot run without a
+// built client and a browser -- so on the tree, in CI's fast lanes, and in review, nothing would have
+// executed it. The retained artifact is checked HERE too, in-process, against the same declaration:
+// a published budget block that has drifted from the declaration is caught whether or not a browser
+// is available. Field-for-field and key-for-key, in both directions.
+const retainedManifest = JSON.parse(readFileSync(new URL("../docs/assets/tactical-visual-system-review/manifest.json", import.meta.url), "utf8"));
+assert.ok(retainedManifest.budgets, "the retained tactical review manifest publishes no budgets block");
+assert.deepEqual(Object.keys(retainedManifest.budgets).sort(), Object.keys(tacticalReviewManifestBudgets).sort(),
+  "the retained manifest publishes a different set of workload budgets than the declaration");
+let retainedBudgetFields = 0;
+for (const [workloadKey, declared] of Object.entries(tacticalReviewManifestBudgets)) {
+  const published = retainedManifest.budgets[workloadKey];
+  assert.deepEqual(Object.keys(published).sort(), Object.keys(declared).sort(),
+    `the retained manifest publishes different budget fields for ${workloadKey} than the declaration; a field the declaration dropped is a stale copy and a field it added was never published`);
+  for (const [field, value] of Object.entries(declared)) {
+    assert.equal(published[field], value,
+      `the retained manifest publishes budgets.${workloadKey}.${field} = ${JSON.stringify(published[field])}; the declaration says ${JSON.stringify(value)}. Regenerate the review, or the artifact a reviewer reads and the budget CI applies are two different things.`);
+    retainedBudgetFields += 1;
+  }
+}
+console.log(`JUSTIFIED tactical-budget-manifest-binding: ${retainedBudgetFields} published manifest budget field(s) resolve to the declaration, checked without a browser so the retained artifact cannot drift unnoticed in a lane that cannot run the browser gate`);
+
 // 2. THE RUNTIME EFFECT CAP IS THE SAME NUMBER, NOT ONE THAT AGREES.
 // F# cannot import the declaration, so the binding is a gate, exactly as for the prose table. It
 // fails closed on a source it cannot read or cannot find the binding in: an unanswerable question is
@@ -752,5 +775,5 @@ console.log(`JUSTIFIED tactical-cadence-discriminates: every retained production
 // the first failed assertion, so reaching this line is what makes the report true.
 const report = process.env.SIR_SVG_PIPELINE_JUNIT || "artifacts/test-results/svg-pipeline.junit.xml";
 mkdirSync(dirname(report), { recursive: true });
-writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="39" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="39" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="fixture-capacity"/><testcase name="axis-inventory"/><testcase name="trace-timing"/><testcase name="trace-window"/><testcase name="observed-run"/><testcase name="map-extent-control"/><testcase name="visible-density-control"/><testcase name="global-unit-control"/><testcase name="overlay-control"/><testcase name="event-rate-control"/><testcase name="supporting-list-control"/><testcase name="unique-unit-cells"/><testcase name="production-visible-observation"/><testcase name="production-global-observation"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/><testcase name="raw-trace-binding"/><testcase name="raw-trace-missing"/><testcase name="raw-trace-changed"/><testcase name="unreadable-input"/><testcase name="frame-budget-declaration"/><testcase name="frame-budget-boundary"/><testcase name="frame-budget-fail-closed"/><testcase name="frame-budget-closed-domain"/><testcase name="frame-budget-artifact-verdict"/><testcase name="frame-budget-workload-identity"/><testcase name="frame-budget-retained-matrix"/><testcase name="frame-budget-finalizer"/><testcase name="frame-budget-report-surfaces"/><testcase name="tactical-budget-document-binding"/><testcase name="tactical-budget-runtime-effect-cap"/><testcase name="tactical-budget-no-restatement"/><testcase name="tactical-budget-enforcement"/><testcase name="tactical-cadence-discriminates"/></testsuite></testsuites>\n');
+writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="40" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="40" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="fixture-capacity"/><testcase name="axis-inventory"/><testcase name="trace-timing"/><testcase name="trace-window"/><testcase name="observed-run"/><testcase name="map-extent-control"/><testcase name="visible-density-control"/><testcase name="global-unit-control"/><testcase name="overlay-control"/><testcase name="event-rate-control"/><testcase name="supporting-list-control"/><testcase name="unique-unit-cells"/><testcase name="production-visible-observation"/><testcase name="production-global-observation"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/><testcase name="raw-trace-binding"/><testcase name="raw-trace-missing"/><testcase name="raw-trace-changed"/><testcase name="unreadable-input"/><testcase name="frame-budget-declaration"/><testcase name="frame-budget-boundary"/><testcase name="frame-budget-fail-closed"/><testcase name="frame-budget-closed-domain"/><testcase name="frame-budget-artifact-verdict"/><testcase name="frame-budget-workload-identity"/><testcase name="frame-budget-retained-matrix"/><testcase name="frame-budget-finalizer"/><testcase name="frame-budget-report-surfaces"/><testcase name="tactical-budget-document-binding"/><testcase name="tactical-budget-manifest-binding"/><testcase name="tactical-budget-runtime-effect-cap"/><testcase name="tactical-budget-no-restatement"/><testcase name="tactical-budget-enforcement"/><testcase name="tactical-cadence-discriminates"/></testsuite></testsuites>\n');
 console.log("svg-pipeline measurement unit gates: PASS");
