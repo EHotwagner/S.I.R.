@@ -269,9 +269,11 @@ enforce_source_correspondence "$source_manifest" "$correspondence_manifest" "$re
 # rather than passing quietly.
 #
 # Five prove refusals fire. The sixth proves a LEGAL input still exists, which is the class the
-# durability hardening in d76b477 lacked: it added four inversions, all four still pass, and every
-# one proves a bad input is refused while none proves a good input exists. That gap is what made
-# this gate unsatisfiable for four days.
+# durability hardening lacked: work item #239 shipped four inversions for its new refusals across
+# d76b477 and d1f6ea7, all four still pass, and every one proves a bad input is refused. None
+# demonstrates that the operation the new precondition constrains -- rebinding the pin so a changed
+# source can pass -- has any legal execution at all. That gap is what made this gate unsatisfiable
+# from d76b477 (2026-08-20) until it was first exercised.
 # ---------------------------------------------------------------------------------------------
 pin_probe_dir=$(mktemp -d /tmp/sir-rules-pin-probe.XXXXXX)
 pin_probe_log=$(mktemp /tmp/sir-rules-pin-probe-log.XXXXXX)
