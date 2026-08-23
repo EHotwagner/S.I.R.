@@ -38,6 +38,17 @@ export const gateParts = {
   documentation: ["web", "docs"],
   evidence: [],
 };
+// S.I.R.#304. THE one derivation of "which producers does this route need". Both sides of the
+// pipeline read it: `joinRoute` builds its expected set from it, and `route --github-output`
+// emits one boolean per producer from it, which is what each `prepare-*` job in ci.yml keys its
+// `if:` on. Before this, the workflow hand-wrote the condition and the join derived it, so the
+// two could disagree -- and did: `prepare-native` ran on the negation `classification !=
+// 'evidence-only'` while no `documentation` or `performance` route ever expected it, making
+// `pr-verdict` unsatisfiable for two of six classifications. Enumerating instead of negating
+// fixes that once; deriving both sides from HERE is what stops it coming back the next time a
+// classification or a gate part is added, because there is no second place left to update.
+export const expectedProducersFor = (selectedGates) =>
+  [...new Set((selectedGates ?? []).flatMap((gate) => gateParts[gate] ?? []))].map((part) => `prepare-${part}`);
 // A subject is second-wave exactly when it consumes prepared producer artifacts; that is
 // already the discriminator `gateParts` encodes, and it agrees with ci.yml's `needs:` graph
 // (verified in scripts/test-ci-route.mjs against the workflow itself).
@@ -217,8 +228,7 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
   const computedRouteDigest = routeDigest(route);
   if (route?.digest !== computedRouteDigest) failures.push({ code: "route-digest-mismatch", subject: "route", expected: computedRouteDigest, actual: route?.digest ?? null });
   const selectedGates = Array.isArray(route?.selectedGates) ? route.selectedGates : [];
-  const requiredParts = [...new Set(selectedGates.flatMap((gate) => gateParts[gate] ?? []))];
-  const expectedProducers = requiredParts.map((part) => `prepare-${part}`);
+  const expectedProducers = expectedProducersFor(selectedGates);
   const expectedHelpers = [
     ...(selectedGates.includes("spatial") ? ["spatial-mutations"] : []),
     ...(selectedGates.includes("cancellation") ? ["cancellation-mutations"] : []),
@@ -397,7 +407,8 @@ async function main(argv) {
     if (output) await writeJson(output, route);
     const githubOutput = one("github-output", undefined);
     if (githubOutput) {
-      const lines = [`classification=${route.classification}`, `prepare=${route.selectedGates.some((gate) => gate !== "evidence")}`, ...gateOrder.map((gate) => `${gate.replace("-", "_")}=${route.selectedGates.includes(gate)}`), `digest=${route.digest}`];
+      const routeProducers = expectedProducersFor(route.selectedGates);
+      const lines = [`classification=${route.classification}`, `prepare=${route.selectedGates.some((gate) => gate !== "evidence")}`, ...gateOrder.map((gate) => `${gate.replace("-", "_")}=${route.selectedGates.includes(gate)}`), ...producerOrder.map((producer) => `${producer.replace("-", "_")}=${routeProducers.includes(producer)}`), `digest=${route.digest}`];
       await writeFile(githubOutput, `${lines.join("\n")}\n`, { flag: "a" });
     }
     process.stdout.write(canonical(route));

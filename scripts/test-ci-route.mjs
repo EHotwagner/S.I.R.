@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { canonicalArtifactBindings, expectedBuildInvocations, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, feedbackAcceptanceTargetMilliseconds, feedbackHeadroomMilliseconds, feedbackBudgetFor, feedbackWaveCount, feedbackPipelineOverheadMilliseconds, feedbackWaveBudgetMilliseconds, feedbackHeadroomBasisPoints, subjectWave, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
+import { canonicalArtifactBindings, expectedBuildInvocations, expectedProducersFor, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, feedbackAcceptanceTargetMilliseconds, feedbackHeadroomMilliseconds, feedbackBudgetFor, feedbackWaveCount, feedbackPipelineOverheadMilliseconds, feedbackWaveBudgetMilliseconds, feedbackHeadroomBasisPoints, subjectWave, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
 import { browserShardCapacityFor } from "./browser-shard-capacity.mjs";
 import { mergeBrowserShardCases, parseBrowserShardJUnit } from "./browser-junit.mjs";
 
@@ -198,6 +198,7 @@ assert.ok(duplicatedSpatialTrace.failures.some(({ code, invocation }) => code ==
 assert.throws(() => gateResult("unknown", "pass"), /unknown gate result/u);
 
 const workflow = readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8");
+const routeSource = readFileSync(new URL("./ci-route.mjs", import.meta.url), "utf8");
 const jobBody = (name) => new RegExp(`^  ${name}:\\n([\\s\\S]*?)(?=^  [a-z][a-z-]*:\\n)`, "mu").exec(workflow)?.[1] ?? "";
 const contracts = JSON.parse(readFileSync(new URL("../tests/fixtures/ci-qualification/v1/contracts.json", import.meta.url), "utf8"));
 assert.equal(contracts.feedbackBudgetMilliseconds, feedbackBudgetMilliseconds);
@@ -276,7 +277,14 @@ assert.match(workflow, /hashFiles\('\*\*\/packages\.lock\.json', 'Directory\.Pac
 assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 19);
 for (const part of ["native", "fable", "web", "docs"]) assert.match(workflow, new RegExp(`qualify-pr\\.sh prepare-part ${part}`, "u"));
 assert.doesNotMatch(workflow, /qualify-pr\.sh prepare-part server/u);
-assert.match(jobBody("prepare-native"), /classification != 'evidence-only'/u);
+// S.I.R.#304. This line used to read `/classification != 'evidence-only'/` -- it PINNED the
+// defect. `prepare-native` ran on that negation while the join's expected set, derived from the
+// selected gates' `gateParts`, never listed prepare-native for `documentation` or `performance`.
+// Both classifications therefore ran a producer the join refused, and `pr-verdict` reported
+// `unexpected-gate-result: prepare-native`: two of six classifications could not pass at all.
+// The suite could not catch it because its join fixtures were built from the EXPECTED set, so
+// they never modelled what ci.yml actually runs. The agreement block further down closes that.
+assert.match(jobBody("prepare-native"), /if: needs\.route\.outputs\.prepare_native == 'true'/u);
 assert.doesNotMatch(workflow, /^  prepare:$/mu);
 assert.doesNotMatch(workflow, /prepared-candidate/u);
 assert.match(workflow, /domain-conformance:\n[\s\S]*?needs: \[route, prepare-native, prepare-fable, prepare-web\]/u);
@@ -289,7 +297,7 @@ assert.match(jobBody("cross-runtime"), /needs: \[route, prepare-native, prepare-
 assert.doesNotMatch(jobBody("cross-runtime"), /actions\/cache@|nuget-cache|dotnet tool restore/u);
 assert.match(jobBody("cross-runtime"), /SIR_CI_CACHE_HIT: "false"/u);
 assert.doesNotMatch(workflow, /^  spatial:$/mu);
-assert.match(jobBody("prepare-web"), /classification == 'performance'/u);
+assert.match(jobBody("prepare-web"), /if: needs\.route\.outputs\.prepare_web == 'true'/u);
 for (const browserJob of ["browser", "browser-general-helper", "browser-delivery"]) assert.match(jobBody(browserJob), /needs: \[route, prepare-web, prepare-native\]/u);
 assert.match(jobBody("browser-delivery"), /if: needs\.route\.outputs\.browser == 'true' && needs\.route\.outputs\.rules != 'true' && needs\.route\.outputs\.spatial != 'true' && needs\.route\.outputs\.cancellation != 'true'/u);
 assert.match(workflow, /documentation:\n[\s\S]*?needs: \[route, prepare-web, prepare-docs\]/u);
@@ -304,9 +312,22 @@ for (const browserJob of ["browser", "browser-general-helper", "browser-delivery
 // classification. A `browser` or `cross-cutting` route that requires production-review freshness
 // sets that output without being classified `documentation` (RP-010), so gating the jobs on the
 // classification would silently drop the documentation gate for exactly those routes.
+assert.match(jobBody("documentation"), /if: needs\.route\.outputs\.documentation == 'true'/u);
+// S.I.R.#304 moved `prepare-docs` onto its own derived flag, so the RP-010 property is now stated
+// as the equivalence it always meant: the docs PRODUCER runs exactly when the documentation GATE
+// is selected -- including the production-review-freshness route, which selects that gate without
+// being classified `documentation`. `docs` appears in no other gate's parts, so the derived flag
+// carries the guarantee the literal `documentation == 'true'` used to carry here.
+assert.match(jobBody("prepare-docs"), /if: needs\.route\.outputs\.prepare_docs == 'true'/u);
 for (const documentationJob of ["documentation", "prepare-docs"]) {
-  assert.match(jobBody(documentationJob), /if: needs\.route\.outputs\.documentation == 'true'/u);
   assert.doesNotMatch(jobBody(documentationJob), /classification == 'documentation'/u);
+}
+for (const sample of [["docs/index.md"], ["scripts/measure-svg-pipeline.mjs"], ["src/SIR.Domain/Rules.fs"],
+  ["tests/SIR.Browser.Tests/journey.js"], [".github/workflows/ci.yml"], ["work/220-bounded-pr-ci/spec.md"],
+  ["src/SIR.Client/UnifiedTacticalWorkspace.fs"]]) {
+  const candidate = route(sample);
+  assert.equal(expectedProducersFor(candidate.selectedGates).includes("prepare-docs"), candidate.selectedGates.includes("documentation"),
+    `${sample}: the docs producer must run exactly when the documentation gate is selected`);
 }
 assert.ok(route(["src/SIR.Client/UnifiedTacticalWorkspace.fs"]).selectedGates.includes("documentation"));
 assert.notEqual(route(["src/SIR.Client/UnifiedTacticalWorkspace.fs"]).classification, "documentation");
@@ -585,6 +606,161 @@ assert.ok(genuineOverrun.failures.some(({ code }) => code === "feedback-budget-e
 // A wave-1 regression is caught the same way, so the ceiling is not blind to either wave.
 assert.ok(joinRoute(crossCutting, measuredRun({ "prepare-native": 400_000 }), measuredWallClock)
   .failures.some(({ code }) => code === "feedback-budget-exceeded"));
+
+
+// --- S.I.R.#304: the run set and the expected set are ONE declaration, for ALL SIX routes ----
+// The defect this closes was not a wrong condition, it was TWO sources of truth. `ci.yml` decided
+// which producers to run from a hand-written classification test; `joinRoute` decided which
+// producers to expect from the selected gates' `gateParts`. Nothing compared them, so they drifted
+// and `pr-verdict` became unsatisfiable for `documentation` and `performance`. Both sides now read
+// `expectedProducersFor`, and this block is what holds them there.
+//
+// SELF-TEST FIRST. A comparison that has never been red is equally consistent with "the two agree"
+// and "this cannot detect disagreement". Prove both directions fire before trusting the verdict --
+// the same discipline pr-verdict's own collection-coverage check applies to itself.
+{
+  const agree = (ran, expected) => ({
+    ranNotExpected: ran.filter((s) => !expected.includes(s)),
+    expectedNotRun: expected.filter((s) => !ran.includes(s)),
+  });
+  const clean = agree(["prepare-web"], ["prepare-web"]);
+  assert.deepEqual([clean.ranNotExpected, clean.expectedNotRun], [[], []], "agreement self-test: identical sets must compare equal");
+  // Direction 1 -- a producer the workflow runs that no classification expects. This is the exact
+  // shape of the defect: `unexpected-gate-result: prepare-native`.
+  assert.deepEqual(agree(["prepare-web", "prepare-native"], ["prepare-web"]).ranNotExpected, ["prepare-native"],
+    "agreement self-test: a producer that ran but was not expected must be detected");
+  // Direction 2 -- a producer expected that the workflow never runs: `missing-gate-result`.
+  assert.deepEqual(agree(["prepare-web"], ["prepare-web", "prepare-docs"]).expectedNotRun, ["prepare-docs"],
+    "agreement self-test: a producer that was expected but never ran must be detected");
+}
+
+// The route job must PUBLISH every producer flag. An unpublished output reads as the empty string
+// in `needs.route.outputs.*`, so the job would silently never run -- a missing-gate-result dressed
+// as a skip.
+for (const producer of producerOrder) {
+  const key = producer.replace("-", "_");
+  assert.match(jobBody("route"), new RegExp(`^      ${key}: \\$\\{\\{ steps\\.route\\.outputs\\.${key} \\}\\}$`, "mu"),
+    `the route job must publish the ${key} output`);
+}
+// The emitted VALUE must be the derived membership, not a constant. A flag hard-wired `true`
+// reintroduces exactly the defect -- every route running every producer -- while still looking
+// like a per-producer output.
+assert.match(routeSource, /\.\.\.producerOrder\.map\(\(producer\) => `\$\{producer\.replace\("-", "_"\)\}=\$\{routeProducers\.includes\(producer\)\}`\)/u,
+  "scripts/ci-route.mjs must emit each producer flag as its derived membership in expectedProducersFor");
+assert.match(routeSource, /const routeProducers = expectedProducersFor\(route\.selectedGates\);/u,
+  "the route CLI must derive its producer flags from expectedProducersFor");
+
+// Every producer job keys on its own derived flag: enumerated, never negated, and never
+// re-deriving the classification by hand. `classification != 'evidence-only'` is the shape that
+// broke two routes; `classification == 'domain' || ...` is the shape that silently goes stale when
+// a classification is added.
+for (const producer of producerOrder) {
+  const condition = /^    if: (.+)$/mu.exec(jobBody(producer))?.[1];
+  assert.equal(condition, `needs.route.outputs.${producer.replace("-", "_")} == 'true'`,
+    `${producer} must run exactly when the route says its part is needed`);
+  assert.doesNotMatch(condition, /classification/u,
+    `${producer} must not re-derive the classification by hand -- that is the second source of truth this closed`);
+}
+
+// And the agreement itself, over all six classifications -- not just the two that were broken.
+// `ran` is evaluated from the workflow's OWN condition text against the route's OWN emitted
+// outputs; `expected` is what pr-verdict's join will require. They must be equal for every route.
+// Evaluate ci.yml's own condition TEXT, so this models the workflow whatever shape the condition
+// takes -- a derived flag, a classification test, or a negation. Modelling only the shape we just
+// wrote would make the check agree with itself; this one disagrees when the workflow is wrong.
+const evalWorkflowTerm = (term, outputs) => {
+  if (term === "always()") return true;
+  const parsed = /^(.+?)\s*(==|!=)\s*'([^']*)'$/u.exec(term);
+  assert.ok(parsed, `unparsed ci.yml condition term: ${term}`);
+  const [, lhsRaw, operator, literal] = parsed;
+  const lhs = lhsRaw.trim();
+  let actual;
+  if (lhs === "github.event_name") actual = "pull_request";
+  else {
+    const output = /^needs\.route\.outputs\.([a-z_]+)$/u.exec(lhs);
+    assert.ok(output, `unparsed ci.yml condition operand: ${lhs}`);
+    assert.ok(output[1] in outputs, `ci.yml reads needs.route.outputs.${output[1]}, which the route job never emits`);
+    actual = outputs[output[1]];
+  }
+  return operator === "==" ? actual === literal : actual !== literal;
+};
+const evalWorkflowCondition = (expression, outputs) => expression.split("||")
+  .some((clause) => clause.split("&&").every((term) => evalWorkflowTerm(term.trim(), outputs)));
+// Exactly what `route --github-output` writes, derived the same way the CLI derives it.
+const emittedRouteOutputs = (candidate) => {
+  const outputs = { classification: candidate.classification, prepare: String(candidate.selectedGates.some((gate) => gate !== "evidence")) };
+  for (const gate of gateOrder) outputs[gate.replace("-", "_")] = String(candidate.selectedGates.includes(gate));
+  const producers = expectedProducersFor(candidate.selectedGates);
+  for (const producer of producerOrder) outputs[producer.replace("-", "_")] = String(producers.includes(producer));
+  return outputs;
+};
+const producersWorkflowRuns = (candidate) => producerOrder.filter((producer) =>
+  evalWorkflowCondition(/^    if: (.+)$/mu.exec(jobBody(producer))?.[1] ?? "", emittedRouteOutputs(candidate)));
+const sixRoutes = {
+  documentation: ["docs/index.md"],
+  domain: ["src/SIR.Domain/Rules.fs"],
+  browser: ["tests/SIR.Browser.Tests/journey.js"],
+  performance: ["scripts/measure-svg-pipeline.mjs"],
+  "evidence-only": ["work/220-bounded-pr-ci/spec.md"],
+  "cross-cutting": [".github/workflows/ci.yml"],
+};
+assert.deepEqual(Object.keys(sixRoutes).sort(), ["browser", "cross-cutting", "documentation", "domain", "evidence-only", "performance"],
+  "all six classifications must be covered; a repair proven on two leaves four unproven");
+for (const [classification, paths] of Object.entries(sixRoutes)) {
+  const candidate = route(paths);
+  assert.equal(candidate.classification, classification, `${classification} sample must classify as ${classification}`);
+  const expected = expectedProducersFor(candidate.selectedGates);
+  const ran = producersWorkflowRuns(candidate);
+  // Set equality, not order: `expectedProducersFor` preserves the selected gates' part order (which
+  // is what joinRoute's expectedSubjects has always used), while `ran` reads `producerOrder`. The
+  // contract is which producers run, not the sequence the two lists happen to name them in.
+  assert.deepEqual([...ran].sort(), [...expected].sort(),
+    `${classification}: ci.yml runs [${ran}] but pr-verdict expects [${expected}] -- these must be one declaration`);
+}
+// END TO END, through the real join: feed `joinRoute` the producer set ci.yml actually runs and
+// require a verdict with no producer complaint. This is the assertion that would have caught the
+// defect at authoring time -- the suite's existing join fixtures were all built from the EXPECTED
+// set, so they modelled a pipeline that never ran prepare-native for `documentation`, which is
+// precisely the run the real workflow produced and the real join refused.
+for (const [classification, paths] of Object.entries(sixRoutes)) {
+  const candidate = route(paths);
+  const selected = candidate.selectedGates;
+  const producersRun = producersWorkflowRuns(candidate);
+  const subjects = ["integrity", ...producersRun,
+    ...(selected.includes("spatial") ? ["spatial-mutations"] : []),
+    ...(selected.includes("cancellation") ? ["cancellation-mutations"] : []),
+    ...(selected.includes("browser") ? ["browser-general-helper", "browser-delivery"] : []),
+    ...selected];
+  const digestsFor = (part) => ({ native: "c", fable: "d", web: "e", docs: "f" }[part] ?? "e").repeat(64);
+  const receipt = (gate) => gateResult(gate, "pass", { setup: 100, restore: 200, build: 300, test: 400, total: 1_000 }, {
+    source: candidate.source,
+    routeDigest: candidate.digest,
+    artifactBindings: Object.fromEntries((gateParts[gate] ?? []).map((part) => [part, digestsFor(part)])),
+    artifactDigest: gate.startsWith("prepare-")
+      ? digestsFor(gate.slice("prepare-".length))
+      : (gateParts[gate] ?? []).length > 0
+        ? bindingDigest(canonicalArtifactBindings(Object.fromEntries(gateParts[gate].map((part) => [part, digestsFor(part)]))))
+        : null,
+    receiptReused: (gateParts[gate] ?? []).length > 0,
+    buildInvocations: expectedBuildInvocations[gate],
+  });
+  const verdict = joinRoute(candidate, subjects.map(receipt), { startedAtMilliseconds: 0, completedAtMilliseconds: 1 });
+  const producerComplaints = verdict.failures.filter(({ code, subject }) =>
+    ["unexpected-gate-result", "missing-gate-result", "missing-prepared-artifact-binding"].includes(code)
+    && (subject ?? "").startsWith("prepare-"));
+  assert.deepEqual(producerComplaints, [],
+    `${classification}: pr-verdict must not refuse the producer set ci.yml runs, got ${JSON.stringify(producerComplaints)}`);
+  assert.equal(verdict.result, "pass",
+    `${classification}: pr-verdict must pass when every gate ci.yml runs reports pass, got ${JSON.stringify(verdict.failures)}`);
+}
+
+// The two routes the defect made unsatisfiable, stated explicitly so a regression names itself.
+for (const unsatisfiable of ["documentation", "performance"]) {
+  assert.ok(!expectedProducersFor(route(sixRoutes[unsatisfiable]).selectedGates).includes("prepare-native"),
+    `${unsatisfiable} must not expect prepare-native`);
+  assert.doesNotMatch(jobBody("prepare-native"), /classification/u,
+    `prepare-native must not run on a classification negation -- that is what made ${unsatisfiable} unsatisfiable`);
+}
 
 console.log("CI route matrix, conservative fallback, deterministic join mutations, budget boundary, and workflow DAG contract passed.");
 

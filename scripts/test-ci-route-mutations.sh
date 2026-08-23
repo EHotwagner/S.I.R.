@@ -87,7 +87,33 @@ expect_red scripts/ci-route.mjs 's/ || (productionReviewRequired && gate === "do
 expect_red scripts/ci-route.mjs 's/ || classification === "cross-cutting"//;'
 expect_red .github/workflows/ci.yml "s/needs.route.outputs.documentation == 'true'/needs.route.outputs.classification == 'documentation'/;"
 expect_red scripts/build-docs.sh '/test-production-review-freshness-mutations.sh/d;'
-expect_red .github/workflows/ci.yml "s/ || needs.route.outputs.classification == 'performance'//g;"
+# Was `s/ || needs.route.outputs.classification == 'performance'//g`, which matched nothing after
+# S.I.R.#304: prepare-web no longer enumerates classifications by hand, so that string is gone from
+# ci.yml. Same intent against live code -- putting a producer back on a hand-written classification
+# test must fail, because that second source of truth is the whole defect.
+expect_red .github/workflows/ci.yml "s/needs.route.outputs.prepare_web == 'true'/needs.route.outputs.classification == 'performance'/;"
+
+# --- S.I.R.#304: the run set and the expected set must stay ONE declaration. -----------------
+# Each mutation below reintroduces a divergence between what ci.yml runs and what pr-verdict's
+# join expects. Every one of them must fail red, in BOTH directions, or the agreement is asserted
+# rather than enforced.
+
+# The defect itself, restored verbatim: prepare-native back on the broad negation. This ran the
+# producer for `documentation` and `performance`, which never expect it -- `unexpected-gate-result`.
+expect_red .github/workflows/ci.yml "s/needs.route.outputs.prepare_native == 'true'/needs.route.outputs.classification != 'evidence-only'/;"
+# A producer wired to the WRONG derived flag. For `documentation` this withholds a producer the
+# join requires (missing-gate-result); for `domain` it runs one the join refuses
+# (unexpected-gate-result). One mutation, both directions.
+expect_red .github/workflows/ci.yml "s/needs.route.outputs.prepare_docs == 'true'/needs.route.outputs.prepare_fable == 'true'/;"
+# Stop publishing a producer flag. `needs.route.outputs.prepare_web` then reads as the empty string
+# and the job silently never runs -- a missing producer dressed as a skip.
+expect_red .github/workflows/ci.yml '/^      prepare_web: /d;'
+# Hard-wire the emitted flag instead of deriving it: every route runs every producer again.
+expect_red scripts/ci-route.mjs 's/=\${routeProducers.includes(producer)}`)/=true`)/;'
+# Sever the join from the shared derivation, so the two sides can drift apart again.
+expect_red scripts/ci-route.mjs 's/const expectedProducers = expectedProducersFor(selectedGates);/const expectedProducers = producerOrder;/;'
+# Drop the docs part, which is what ties the docs PRODUCER to the documentation GATE (RP-010).
+expect_red scripts/ci-route.mjs 's/  documentation: \["web", "docs"\],/  documentation: ["web"],/;'
 expect_red .github/workflows/ci.yml 's/^  full-qualification:/  omitted-full-qualification:/;'
 expect_red .github/workflows/ci.yml 's#\./scripts/qualify-production.sh --protected#./scripts/qualify-production.sh#;'
 expect_red scripts/qualify-pr.sh '/node_modules\/playwright-core/d;'
@@ -137,4 +163,4 @@ expect_red scripts/ci-route.mjs 's/if (byGate.has(subject) \&\& usableTotal(subj
 # Let the documented contract drift from the enforced one.
 expect_red tests/fixtures/ci-qualification/v1/contracts.json 's/"feedbackWaveBudgetMilliseconds": 180000/"feedbackWaveBudgetMilliseconds": 900000/;'
 
-echo "CI route policy, feedback-timing ceiling inversions, production-review freshness/preparer wiring, performance scope/headroom, prepared Playwright runtime reuse, co-scheduled rules/spatial receipts, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."
+echo "CI route policy, producer run-set/expected-set agreement (S.I.R.#304), feedback-timing ceiling inversions, production-review freshness/preparer wiring, performance scope/headroom, prepared Playwright runtime reuse, co-scheduled rules/spatial receipts, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."
