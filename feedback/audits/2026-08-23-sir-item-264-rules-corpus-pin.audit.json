@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-264-rules-corpus-pin.md",
-  "reportSha256": "e6d93c81e44b724c96b048003e60050c48d4fcd7458821da8d605d3d7fb142b2",
+  "reportSha256": "287b3e5ae33ea84a9624de9c61c02589ce2893bd023b024611a234e79e1df7b1",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -21,7 +21,7 @@
         {
           "locator": "file:scripts/verify-rules-corpus.sh",
           "result": "verified",
-          "sha256": "7208987e4ddd580a20ca90fb00194d987897e271efd026e203ce67579306a82c"
+          "sha256": "a0949483f206c8cff934acdd7d117a89257719d9deb98ce649e7b62defaeb689"
         },
         {
           "locator": "file:work/239-durable-rules-identity/spec.md",
@@ -102,7 +102,7 @@
         {
           "locator": "file:scripts/verify-rules-corpus.sh",
           "result": "verified",
-          "sha256": "7208987e4ddd580a20ca90fb00194d987897e271efd026e203ce67579306a82c"
+          "sha256": "a0949483f206c8cff934acdd7d117a89257719d9deb98ce649e7b62defaeb689"
         },
         {
           "locator": "file:src/SIR.Simulation/CombatRules.fs",
@@ -213,6 +213,35 @@
         "The critic reconstructed the session from the locator description alone, ran it against 0.71.0, and the encoded document came back byte-identical to the accepted board comment 5383248885 including the posting marker, independently confirming the claim that only the marker needed stripping.",
         "ReviewWait.validate returned 'claimGeneration is required' verbatim, and generationToken(head, kind, round) matches the decompiled signature.",
         "The clause that hand-written documents were not attempted is an assertion about the author's own process and remains unfalsifiable from artifacts."
+      ]
+    },
+    {
+      "id": "\u00a74.9",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#264",
+          "result": "verified"
+        },
+        {
+          "locator": "command:gh api repos/EHotwagner/S.I.R./issues/276/comments --jq '.[] | select(.id==5383452179) | .body'",
+          "result": "verified"
+        },
+        {
+          "locator": "command:gh run view 32607930272 --repo EHotwagner/S.I.R. --json attempt --jq .attempt",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git show --stat bf2b93afed5291a664baec0c36d60cb335660abf",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "An earlier version of this finding was judged by the actionability critic to convert one critic-caught defect into a general insight authored by the person who caused it, and to recruit an uncitable relayed remark to inflate the instance count. The causal 'mastered class' framing was supplied by the host, adopted without peer-level scrutiny, and has been removed.",
+        "The host's own reported instance - inferring a sound diff from sixteen green gate receipts - is deliberately NOT counted: it appears nowhere on issue #264 or PR #276 and has no artifact, so a reader cannot check it.",
+        "Instance (1) carries no claim that a class had been mastered when the mutation was chosen; nothing had been characterised at that point, and ordinary insufficient adversariality explains it.",
+        "The hand-edit bypass used to validate the M1 repair is self-reported: the guard's design is checkable in the committed script, but no artifact records that particular run."
       ]
     }
   ]

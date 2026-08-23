@@ -5,17 +5,17 @@ workspace: agent-a262fbe43be42b495
 cycle: item-264-rules-corpus-pin
 lane: none
 toolVersion: 1.0.1
-commit: 01944c2cb219eb6a44617f9d597b5fc6930233e0
+commit: d62234b81e69681d47820b3a4157f00b030158ca
 ---
 
 ## §1 Provenance and confidence
 
 - **activation:** active
 - **phases:** lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 8
+- **material events:** 10
 - **zero-event reason:** not applicable
 
-This report covers one board item worker lane: EHotwagner/S.I.R.#264, claimed by minted worker `swift-10be` through `fsgg-coord take` and carried from claim to review handoff on PR #276. The stable checkpoint file is `feedback/checkpoints/item-264-rules-corpus-pin.jsonl` with eight events.
+This report covers one board item worker lane: EHotwagner/S.I.R.#264, claimed by minted worker `swift-10be` through `fsgg-coord take` and carried from claim to review handoff on PR #276. The stable checkpoint file is `feedback/checkpoints/item-264-rules-corpus-pin.jsonl` with ten events.
 
 Pinned inputs exercised: .NET SDK 10.0.302 (`global.json`, `rollForward: disable`), `fs.gg.coord.cli` 0.71.0, `fsgg-sdd` 1.0.1, bash 5.3.15.
 
@@ -149,6 +149,30 @@ The generalisation worth carrying: **a gate can be made unsatisfiable as a side 
 - **Avoidable cost:** none
 - **Disposition:** accepted
 
+#### §4.9 Acceptance evidence that confirms the thesis is not adversarial evidence
+
+- **Kind:** quality-gap
+- **Impact:** Two material findings on one pull request (M1, M2), both reached by mutations the author had not tried, costing one repair round.
+- **Expected:** Acceptance evidence for a new mechanism uses a mutation the *sibling* checks cannot already catch, so that it measures the mechanism under test rather than its neighbour.
+- **Observed:** Three instances in this lane, all the author's own and all checkable.
+  **(1)** The acceptance demonstration for the rebindable pin mutated a declared rule *fact*. A declared fact is part of the canonical manifest payload, so `generate-rules-corpus.sh --check` already refused it — the demonstration measured the sibling check. An independent critic mutated an algorithm *body* instead (`CombatRules.resolveCoverImpact`) and the `rules` gate passed while registered rule behaviour had moved (M1). The reason the class is invisible to that gate is narrow and checkable: 10 of the 16 corpus rules are `transition` kind, whose recorded `semantics` is invariant under an arithmetic change, so nothing *the `rules` gate consults* observes it. The conformance fixtures did observe it, which is what the repair now runs.
+  **(2)** A CI failure was diagnosed as a `--failed` re-run measuring across attempts — a story that fitted this item's own defect class — without checking `run_attempt`, the single fact that falsifies it. `route` had re-run.
+  **(3)** The critic's verdict marker was acted on without opening the critic's review. The sealed decision comment carries the verdict; the findings are in a separate comment posted three minutes later containing **two** findings. M1 was reproduced and repaired and the round reported as complete while M2 was neither read nor repaired — and the first M1 repair replaced one fixed build project with another, so it would not have fixed M2 either.
+  *Not counted:* the host self-reported a similar inference from green gate receipts to a sound diff. It appears nowhere on #264 or PR #276 and has no artifact, so it is excluded rather than relabelled — counting it would have been counting hearsay to reach a number.
+- **Evidence:** issue:EHotwagner/S.I.R.#264; command:gh api repos/EHotwagner/S.I.R./issues/276/comments --jq '.[] | select(.id==5383452179) | .body'; command:gh run view 32607930272 --repo EHotwagner/S.I.R. --json attempt --jq .attempt; command:git show --stat bf2b93afed5291a664baec0c36d60cb335660abf
+- **Version:** n/a
+- **Owner:** S.I.R. / gate-authoring convention (author-side); FS-GG / `independent-review` (critic-side)
+- **Recurrence:** new
+- **Avoidable cost:** One repair round, one refuted diagnosis relayed to the host, and one review round in which half the verdict went unread.
+- **Disposition:** skill fix — acceptance conditions in §11.5 and §11.6
+
+**No causal claim is made about mastery.** An earlier draft of this finding asserted that a defect class just mastered becomes the hypothesis that stops being tested. Instance (1) does not support it: nothing had been characterised when that mutation was chosen, and ordinary insufficient adversariality explains it. That framing was supplied by the host, adopted without the scrutiny a peer's claim would have received, and removed after an independent actionability critic judged the finding to convert one critic-caught defect into a general insight authored by the person who caused it. **The generalisation was accepted because it was flattering** — which is the property that makes a framing go unaudited, whoever offers it.
+
+The repair for M1 was validated by *attacking* it: the correspondence file was hand-edited to bypass the new writer guard, and the gate refused anyway. That distinction — **defence in depth versus defence in theatre** — is whether the protection survives the author's cooperation being withdrawn, and the writer's check is documented in-file as explicitly *not* the guard so a later reader does not stop at it. *The hand-edit bypass is self-reported: the guard's design is checkable in the committed script, but no artifact records that particular run.*
+
+A second rule fell out of the same repair: **a gate that owns an identity must be able to fail on its own.** Coverage that depends on a sibling gate being selected into the same CI route is coverage the gate does not control — the route classifier does. The conformance run was kept in the `rules` gate even though `cross-runtime` already performs it, for that reason.
+
+
 ## §5 Did not exercise
 
 - The SDD lifecycle: the route receipt records `sddWorkId: null`, so no `fsgg-sdd` stage ran.
@@ -197,6 +221,10 @@ The generalisation worth carrying: **a gate can be made unsatisfiable as a side 
 4. **Extract the rules-corpus source normalizer into a shared shell library.** Removes §7. Owner: S.I.R. / `scripts`. Acceptance: `verify-rules-corpus.sh` and `rebind-rules-corpus-sources.sh` reference one definition, and inversion 8 becomes redundant rather than load-bearing.
 5. **State a membership rule on every hand-maintained durable-identity artifact.** Prevents §4.3. Owner: S.I.R. Acceptance: each such artifact carries, in-file, the predicate deciding membership, and a reader can classify a candidate path without reading commit history.
 
+5. **An inversion must use a mutation the sibling checks cannot already catch.** Prevents §4.9 instance (1). Owner: S.I.R. / gate-authoring convention. **Acceptance:** for each gate a change adds or modifies, the inversion's mutation is shown to leave every *other* selected gate green — if a sibling also refuses it, the inversion has not exercised the gate under test and does not count as its evidence.
+6. **A critic asks what the author did not mutate.** Prevents §4.9 instance (1) from the other side. Owner: FS-GG / `independent-review`. **Acceptance:** the review records at least one mutation class the author's evidence did not cover, or states that the author's inversions exhaust the gate's observable surface and why. A review that only re-runs the author's inversions does not satisfy it.
+7. **Act on a review, not on its verdict marker.** Prevents §4.9 instance (3). Owner: FS-GG / `independent-review`. **Acceptance:** the repair round enumerates every finding id in the review body and dispositions each; a round that references the sealed decision without enumerating its findings is incomplete by construction.
+
 ## §12 Development-surface coverage
 
 | Surface | Status | Evidence and result |
@@ -208,7 +236,7 @@ The generalisation worth carrying: **a gate can be made unsatisfiable as a side 
 | implementation-apis | partial | `FS.GG.Coord.Core.dll` `ReviewWait` API driven directly through `dotnet fsi` (§4.8); no product API changed. |
 | dependencies-build | exercised | `dotnet build -c Release` for the domain tests and the simulation project; pinned SDK 10.0.302 resolved via `DOTNET_ROOT`; no version moved. |
 | testing | exercised | Eight inversions added inline to `verify-rules-corpus.sh` and checkable in the committed file; each production function was additionally mutated in a scratch copy and the suite observed red. The mutation runs were transient, so the durable evidence is the committed suite; the mutation results are recorded in the PR #276 body (§4.1). |
-| evidence | exercised | Both acceptance directions demonstrated end to end and recorded in the PR #276 body, including that rebinding correspondence does not launder a semantic change (rifle damage `fp 25 1` → `fp 26 1`, correspondence rebound, gate still red on `manifest.json` differing). The demonstration was a transient working-tree mutation, so the durable checkable residue is the committed inversion suite plus the PR body, not a stored artifact. |
+| evidence | exercised | Both acceptance directions demonstrated end to end and recorded in the PR #276 body. **The first version of the second direction was insufficiently adversarial** — it mutated a declared rule fact the regenerated-artifact check could already see (§4.9); an independent critic returned `changes-required` with **two** material findings — M1, the laundering escape, and M2, a build guard that covered 9 of the 19 declared paths while both the tool comment and the architecture doc claimed it covered a tree — and the repair is verified by hand-editing the correspondence file to bypass the new writer guard and confirming the gate still refuses, and by re-running the critic's own M2 probe. The demonstration is a transient working-tree mutation, so the durable residue is the committed inversion suite plus the PR body. |
 | runtime-playtest | not-exercised | No product behaviour changed; no gameplay path driven. |
 | performance | not-exercised | No performance-sensitive path touched; the `performance-first` planning gate did not apply to a gate and tooling repair. |
 | documentation | exercised | `docs/executable-rules-corpus-architecture.md` gained `sourceCommit` semantics, both membership rules, and the rebind procedure, none of which it previously carried (§6). |
