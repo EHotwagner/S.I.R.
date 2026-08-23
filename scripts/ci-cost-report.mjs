@@ -4,8 +4,32 @@ import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export const schema = "sir.ci-cost-report/v1";
-export const baselines = Object.freeze({ runnerMilliseconds: 1_518_000, artifactBytes: 351_337_554, verdictMilliseconds: 240_000 });
-const targets = Object.freeze({ runnerMilliseconds: Math.floor(baselines.runnerMilliseconds * 0.8), artifactBytes: Math.floor(baselines.artifactBytes * 0.8), verdictMilliseconds: baselines.verdictMilliseconds });
+// S.I.R.#295. There is NO verdict constant in this file, and its absence is the repair. The PR
+// feedback ceiling is graph-sized: `ci-route.mjs` derives it per classification as
+// max(feedbackBudget, overhead + waves * waveBudget) less a headroom fraction, so any figure
+// restated here is a second source of truth that goes stale the moment the graph moves. It did.
+// This file graded a `cross-cutting` route against a flat 240000 while `pr-verdict` applied 312000,
+// and on 2026-08-23 four of five sampled cross-cutting runs recorded `baselineComparison.result`
+// "fail" for runs the gate admitted (runs 32629941705, 32627284163, 32626778195, 32624951107 at
+// heads 9ef7bd7e, 06d4cdc9, 582e8d0e, 2de75573).
+//
+// Re-deriving the ceiling here would not fix that. The derivation is per-classification and this
+// file does not know the route's expected subject set, so it would have to reconstruct one -- and a
+// second derivation is a second source of truth wearing a different hat. Instead the report reads
+// the basis the gate ACTUALLY APPLIED to the run being described, out of the same join receipt it
+// already reads the measurement from. One artifact carries numerator and denominator, so there is
+// no second number left to disagree with.
+export const verdictBasisSchema = "sir.ci-join/v1";
+export const verdictObservedField = "timing.criticalPathMilliseconds";
+export const verdictBasisField = "timing.acceptanceTargetMilliseconds";
+export const baselines = Object.freeze({ runnerMilliseconds: 1_518_000, artifactBytes: 351_337_554 });
+const targets = Object.freeze({ runnerMilliseconds: Math.floor(baselines.runnerMilliseconds * 0.8), artifactBytes: Math.floor(baselines.artifactBytes * 0.8) });
+// A measurement or a basis is USABLE only when it is a positive safe integer. Missing key, null, a
+// string, a float, zero, a negative and NaN all reach the same answer -- this cannot be evaluated --
+// and not one of them is enumerated, so a shape nobody anticipated refuses rather than being graded.
+// The predicate rests on a positive fact rather than on the absence of a diagnostic, because
+// `null > ceiling` is false and would otherwise have let a non-measurement read as conforming.
+const usable = (value) => (Number.isSafeInteger(value) && value > 0 ? value : null);
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
 const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 const milliseconds = (started, completed) => {
@@ -111,19 +135,56 @@ export function summarize(run, jobsPayload, artifactsPayload, receiptInventory =
   const gateReceipts = candidateReceipts.filter(({ schema: receiptSchema }) => receiptSchema === "sir.ci-gate-result/v1");
   const protectedStages = candidateReceipts.filter(({ schema: receiptSchema }) => receiptSchema === "sir.protected-stage/v1");
   const joins = candidateReceipts.filter(({ schema: receiptSchema }) => ["sir.ci-join/v1", "sir.protected-join/v1"].includes(receiptSchema));
+  // The verdict comparison is defined over the PR feedback join ALONE, and it takes both of its
+  // numbers from that one receipt: the attributable critical path the gate measured, and the
+  // acceptance target the gate applied to it. The fields are read by name rather than through the
+  // inventory's `??` chain above, so a join that later grows a `timingMilliseconds.total` cannot
+  // silently change which quantity is graded.
+  const verdicts = receiptInventory
+    .filter(({ value }) => value.schema === verdictBasisSchema)
+    .map(({ path, value }) => {
+      const observedMilliseconds = usable(value.timing?.criticalPathMilliseconds);
+      const appliedTargetMilliseconds = usable(value.timing?.acceptanceTargetMilliseconds);
+      const appliedBudgetMilliseconds = usable(value.timing?.budgetMilliseconds);
+      return {
+        path,
+        observedMilliseconds,
+        appliedTargetMilliseconds,
+        appliedBudgetMilliseconds,
+        // Only a receipt supplying BOTH positive integers is graded. `within` stays null otherwise,
+        // because an ungraded receipt must never read as a passing one.
+        within: observedMilliseconds !== null && appliedTargetMilliseconds !== null ? observedMilliseconds <= appliedTargetMilliseconds : null,
+      };
+    })
+    .sort((left, right) => String(left.path).localeCompare(String(right.path)));
+  const unevaluableVerdicts = verdicts.filter(({ within }) => within === null);
+  const verdictResult = verdicts.length === 0
+    // No PR feedback join at all. On a pull_request run `expectedReceiptShape` already refuses that
+    // below, so this cannot become a silent pass; on a protected run there is no PR feedback verdict
+    // to grade, which is a property of the run rather than a measurement that went missing.
+    ? "not-applicable"
+    : unevaluableVerdicts.length > 0
+      ? "unevaluable"
+      : verdicts.every(({ within }) => within) ? "pass" : "fail";
   const pullRequest = run.event === "pull_request";
   const expectedReceiptShape = pullRequest
     ? gateReceipts.length > 0 && joins.some(({ schema: receiptSchema }) => receiptSchema === "sir.ci-join/v1")
     : protectedStages.length === 2 && joins.some(({ schema: receiptSchema }) => receiptSchema === "sir.protected-join/v1");
   const apiRunnerMilliseconds = jobs.reduce((sum, job) => sum + job.durationMilliseconds, 0);
   const receiptRunnerMilliseconds = [...gateReceipts, ...protectedStages].reduce((sum, receipt) => sum + (Number.isSafeInteger(receipt.durationMilliseconds) ? receipt.durationMilliseconds : 0), 0);
-  const verdictMilliseconds = joins.reduce((maximum, receipt) => Number.isSafeInteger(receipt.durationMilliseconds) ? Math.max(maximum, receipt.durationMilliseconds) : maximum, 0);
+  const verdictMilliseconds = verdicts.reduce((maximum, { observedMilliseconds }) => observedMilliseconds === null ? maximum : Math.max(maximum, observedMilliseconds), 0);
   const artifactBytes = artifacts.reduce((sum, artifact) => sum + artifact.sizeInBytes, 0);
   const started = Date.parse(run.created_at ?? "");
   const completed = Date.parse(run.updated_at ?? "");
+  // An unevaluable basis is a REFUSAL, and it is routed to the report's only exit-code path
+  // (`report.result !== "complete"` in `main`) so that it surfaces as a failing observer job rather
+  // than as a quietly-worded field nobody reads. Grading against a basis this code cannot evaluate
+  // is the defect being repaired; declining to grade is the repair.
+  const complete = expectedReceiptShape && mismatchedReceipts.length === 0 && verdictResult !== "unevaluable";
+  const resourcesWithinTarget = apiRunnerMilliseconds <= targets.runnerMilliseconds && artifactBytes <= targets.artifactBytes;
   const reportBody = {
     schema,
-    result: expectedReceiptShape && mismatchedReceipts.length === 0 ? "complete" : "incomplete",
+    result: complete ? "complete" : "incomplete",
     source: { repository: run.repository?.full_name ?? null, workflowRunId: run.id, attempt: run.run_attempt, event: run.event, headSha: run.head_sha, headBranch: run.head_branch, conclusion: run.conclusion },
     workflowWallMilliseconds: Number.isFinite(started) && Number.isFinite(completed) && completed >= started ? completed - started : null,
     jobs,
@@ -146,13 +207,27 @@ export function summarize(run, jobsPayload, artifactsPayload, receiptInventory =
       baselines,
       targets,
       observed: { runnerMilliseconds: apiRunnerMilliseconds, artifactBytes, verdictMilliseconds },
+      // Where the verdict figure came from, stated in the artifact itself, so a reader of the
+      // 90-day record can see WHICH ceiling this run was graded against without trusting that some
+      // constant elsewhere happened to be current on the day.
+      verdict: {
+        basis: "applied",
+        schema: verdictBasisSchema,
+        observedField: verdictObservedField,
+        basisField: verdictBasisField,
+        receipts: verdicts,
+        unevaluableCount: unevaluableVerdicts.length,
+        result: verdictResult,
+      },
       reductionsPercent: {
         runner: Number((((baselines.runnerMilliseconds - apiRunnerMilliseconds) / baselines.runnerMilliseconds) * 100).toFixed(3)),
         artifacts: Number((((baselines.artifactBytes - artifactBytes) / baselines.artifactBytes) * 100).toFixed(3)),
       },
-      result: apiRunnerMilliseconds <= targets.runnerMilliseconds && artifactBytes <= targets.artifactBytes && verdictMilliseconds > 0 && verdictMilliseconds <= targets.verdictMilliseconds ? "pass" : "fail",
+      // A definite overrun outranks a refusal, and a refusal outranks a pass: a run that really did
+      // exceed a resource target still reports `fail` even when its verdict basis is unreadable.
+      result: !resourcesWithinTarget || verdictResult === "fail" ? "fail" : verdictResult === "unevaluable" ? "unevaluable" : "pass",
     },
-    reconciliation: { expectedReceiptShape, mismatchedReceiptCount: mismatchedReceipts.length, status: expectedReceiptShape && mismatchedReceipts.length === 0 ? "complete" : "incomplete" },
+    reconciliation: { expectedReceiptShape, mismatchedReceiptCount: mismatchedReceipts.length, unevaluableVerdictCount: unevaluableVerdicts.length, status: complete ? "complete" : "incomplete" },
   };
   return { ...reportBody, digest: sha256(canonical(reportBody)) };
 }
