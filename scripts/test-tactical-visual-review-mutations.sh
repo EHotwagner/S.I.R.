@@ -90,9 +90,43 @@ if timing_diagnostic=$(node "$repo_root/scripts/test-tactical-visual-review.mjs"
   echo "Reproduced timing mutation survived the unchanged performance owner." >&2
   exit 1
 fi
-for expected in '"reproduction":"A"' '"reproduction":"B"' '"units":100' '"units":200' 'reproduced input-to-paint budget exceeded: reproduction=A units=100' 'Preserved tactical reproduction roots after failure:'; do
-  if ! grep -q "$expected" <<<"$timing_diagnostic"; then
-    echo "Reproduced timing mutation omitted required telemetry/diagnostic $expected: $timing_diagnostic" >&2
+# WHAT THIS MAY ASSERT ABOUT THE REFUSAL, AND WHERE THAT TEXT LIVES (S.I.R.#335).
+# The mutation above is a TIMING mutation -- it adds a fixed 1000 ms to the generator's telemetry -- so
+# the refusal it must provoke is the REPRODUCED input-to-paint budget refusal and nothing else. That
+# refusal's wording is owned by scripts/lib/performance-budget.mjs: S.I.R.#318 moved it there so the
+# budget is declared once and derived everywhere. This harness restated it as a hand-copied literal and
+# the copy was never updated, so `main` went red at 019abe6c and stayed red -- with no budget breached,
+# and the mutant caught by exactly the right assertion. A literal here is a second home for text the
+# declaration owns; ask the owner for it instead, and it cannot rot again.
+#
+# The measured milliseconds differ every run, so the owner is asked for its reason at a distinctive
+# sentinel measurement and that reason is split on the sentinel. What survives is the two
+# measurement-INDEPENDENT halves, and together they pin the refusal to: the reproduced pass (`reproduced `,
+# which the baseline pass at test-tactical-visual-review.mjs:116 does not emit), input-to-paint rather
+# than cadence or structure, the 100-unit workload, and reproduction A. A frame-cadence breach, a
+# structural breach, or a baseline breach satisfies NEITHER half, so a different red cannot stand in for
+# this one.
+mapfile -t derived_timing_expectations < <(node --input-type=module -e '
+  const root = process.argv[1];
+  const budgets = await import(`file://${root}/scripts/lib/performance-budget.mjs`);
+  const budget = budgets.tacticalWorkloadBudgetFor(100);
+  const sentinel = 987654.321;
+  const reason = budgets.tacticalInputToPaintBudgetReason(budget, sentinel);
+  if (!reason) throw new Error("the declared input-to-paint budget did not refuse its sentinel measurement");
+  const halves = reason.split(String(sentinel));
+  if (halves.length !== 2) throw new Error(`the declared refusal did not carry its measurement exactly once: ${reason}`);
+  process.stdout.write(`reproduced ${halves[0]}\n${halves[1]}: reproduction=A;\n`);
+' "$repo_root")
+if [[ ${#derived_timing_expectations[@]} -ne 2 ]]; then
+  echo "Reproduced timing mutation could not derive the declared input-to-paint refusal from scripts/lib/performance-budget.mjs." >&2
+  exit 1
+fi
+for expected in '"reproduction":"A"' '"reproduction":"B"' '"units":100' '"units":200' "${derived_timing_expectations[@]}" 'Preserved tactical reproduction roots after failure:'; do
+  if ! grep -qF -- "$expected" <<<"$timing_diagnostic"; then
+    # NOT "omitted required telemetry/diagnostic". Nothing in this harness omits telemetry, and that
+    # wording sent the first reader of this failure hunting a telemetry defect that does not exist
+    # (S.I.R.#335). Name the substring that was absent, and say that it was absent.
+    echo "Reproduced timing mutation diagnostic is missing a required substring [$expected]; full diagnostic: $timing_diagnostic" >&2
     exit 1
   fi
 done
