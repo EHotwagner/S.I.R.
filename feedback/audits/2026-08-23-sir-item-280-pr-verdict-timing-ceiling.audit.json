@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-280-pr-verdict-timing-ceiling.md",
-  "reportSha256": "fca5521305eac59dd2e2777570da84b479c21c432be14d15a2c1f234303c95f4",
+  "reportSha256": "ed83be126479b74f41e14e65ca155b64c330b02bcd8dcec72b3e626b4d0ce1b9",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [

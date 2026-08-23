@@ -20,8 +20,10 @@ commit: dcd6df709904e1c84deb42ce3fd20a4a58164c54
   with `sddWorkId: null`, so charter→analyze was correctly not run.
 - **Tool pins:** `fsgg-sdd` 1.0.1; `fs.gg.coord.cli` 0.71.0 pinned in `.config/dotnet-tools.json`
   while the resolved engine assembly on disk is 0.72.0.
-- **Checkpoints:** `feedback/checkpoints/item-280-pr-verdict-timing-ceiling.jsonl`, 5 events,
-  validated by `validate-checkpoint-state`.
+- **Checkpoints:** `feedback/checkpoints/item-280-pr-verdict-timing-ceiling.jsonl`, 6 events,
+  validated by `validate-checkpoint-state`. A sixth was appended after this report was finalized,
+  recording the review-wait deadlock described in the round-1 handoff; it belongs to this cycle but
+  postdates §4.8 and has no §4 finding of its own.
 - **Activation:** capture was active across implementation-test-evidence and verify-ship-pr.
   Scaffold/onboarding was not a phase of this cycle (existing repository, existing worktree flow).
 - **Confidence limits:** per-job durations come from the Actions REST API for run 32607930272
