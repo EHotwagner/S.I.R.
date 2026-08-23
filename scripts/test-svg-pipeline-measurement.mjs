@@ -138,6 +138,16 @@ assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [] }, "playba
   "a journey that is NOT declared exempt and produced no frames is a broken measurement, not an exemption");
 assert.equal(evaluateRunFrameVerdict(undefined, "pan", budget).result, "fail",
   "an entirely absent frameHealth must fail closed");
+// A duration the gate cannot read is not a duration under the ceiling: `null > ceiling` is false, so
+// without this an unreadable value counts as conforming -- this item's own defect class, in miniature.
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [12, null] }, "zoom", budget).result, "fail",
+  "a null frame duration cannot be evaluated and must not be counted as conforming");
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [12, Number.NaN] }, "zoom", budget).result, "fail",
+  "a NaN frame duration must fail closed");
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [12, "3"] }, "zoom", budget).result, "fail",
+  "a non-numeric frame duration must fail closed");
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [12, 13] }, "zoom", budget).result, "pass",
+  "and the all-finite control must still pass, so the guard is not simply reddening everything");
 
 // the artifact verdict answers a different question from a run verdict
 assert.equal(evaluateArtifactVerdict([{ frameBudget: { result: "pass" } }, { frameBudget: { result: "fail" } }]).result, "fail");
