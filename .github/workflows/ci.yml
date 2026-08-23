@@ -1052,7 +1052,15 @@ jobs:
             fi
           fi
           args=()
-          for gate in integrity prepare-native prepare-fable prepare-web prepare-docs spatial-mutations cancellation-mutations browser-general-helper browser-delivery rules spatial cancellation cross-runtime browser documentation evidence; do
+          # S.I.R.#263. This list must equal ci-route.mjs's `subjectOrder`, and until this row
+          # NOTHING joined them. A subject absent here is never passed to the join, so the join
+          # reports `missing-gate-result` for a gate whose job RAN AND PASSED -- measured on run
+          # 32656572583, where `collection-strategies` passed in 51s and pr-verdict called its
+          # receipt missing. That is the #304 defect one layer out: a hand-written list that has to
+          # agree with a declaration and had no check saying so. scripts/test-ci-route.mjs now reads
+          # this line out of this file and asserts set equality with `subjectOrder` in BOTH
+          # directions, so the next subject added cannot be dropped here silently.
+          for gate in integrity prepare-native prepare-fable prepare-web prepare-docs spatial-mutations cancellation-mutations browser-general-helper browser-delivery rules spatial cancellation cross-runtime browser documentation evidence collection-strategies; do
             if [[ -f "artifacts/ci/results/$gate.json" ]]; then args+=(--result "$gate=artifacts/ci/results/$gate.json"); fi
           done
           node scripts/ci-route.mjs join \

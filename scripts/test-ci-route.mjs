@@ -837,6 +837,42 @@ for (const [classification, paths] of Object.entries(sixRoutes)) {
   assert.deepEqual([...ran].sort(), [...expected].sort(),
     `${classification}: ci.yml runs [${ran}] but pr-verdict expects [${expected}] -- these must be one declaration`);
 }
+// --- S.I.R.#263: the JOIN's subject list and `subjectOrder` are the same set -----------------
+//
+// `pr-verdict` builds its `--result` arguments from a hand-written `for gate in ...` list in
+// ci.yml. Nothing joined that list to `subjectOrder`, and a subject missing from it is never
+// passed to the join at all -- so the join reports `missing-gate-result` for a gate whose job ran
+// and PASSED. Measured, not hypothesised: on run 32656572583 the `collection-strategies` job
+// passed in 51s and `pr-verdict` reported its receipt missing, because adding a gate to the router
+// and to ci.yml's job graph left this third list untouched.
+//
+// This is #304's defect one layer out. #304 made producer SELECTION one declaration; the join's
+// own INPUT list stayed hand-written. Both directions are asserted, because they fail differently:
+// a subject missing from the loop is a gate whose verdict is silently discarded, and a name in the
+// loop that is not a subject is a `--result` for a file that can never exist.
+const joinSubjectLoop = (() => {
+  const match = /^\s*for gate in ([a-z][a-z0-9 -]*); do$/mu.exec(jobBody("pr-verdict"));
+  assert.ok(match, "could not find pr-verdict's `for gate in ...; do` subject loop -- refusing rather than deciding over a list it may not have read");
+  return match[1].trim().split(/\s+/u);
+})();
+assert.equal(new Set(joinSubjectLoop).size, joinSubjectLoop.length,
+  `pr-verdict's join loop names a subject twice: ${joinSubjectLoop.join(" ")}`);
+assert.deepEqual(
+  [...joinSubjectLoop].sort(),
+  [...subjectOrder].sort(),
+  "pr-verdict's join loop and subjectOrder disagree.\n"
+    + `  a subject the join never receives (its gate's verdict is DISCARDED): ${subjectOrder.filter((id) => !joinSubjectLoop.includes(id)).join(", ") || "(none)"}\n`
+    + `  a name in the loop that is not a subject (a --result that can never exist): ${joinSubjectLoop.filter((id) => !subjectOrder.includes(id)).join(", ") || "(none)"}`,
+);
+// Self-test, the same discipline the #309 block below applies to itself: a comparison that has
+// never been red is equally consistent with "the lists agree" and "this cannot fire".
+{
+  const disagree = (loop, subjects) => subjects.filter((id) => !loop.includes(id)).concat(loop.filter((id) => !subjects.includes(id)));
+  assert.equal(disagree(["a", "b"], ["a", "b"]).length, 0, "join-loop self-test: agreement must read as agreement");
+  assert.deepEqual(disagree(["a"], ["a", "b"]), ["b"], "join-loop self-test: a subject missing from the loop must be detectable");
+  assert.deepEqual(disagree(["a", "b"], ["a"]), ["b"], "join-loop self-test: a loop name that is not a subject must be detectable");
+}
+
 // --- S.I.R.#309: every classification's job graph must be SATISFIABLE -----------------------
 // S.I.R.#304 made producer SELECTION one declaration. It did not, and could not, decide whether
 // the workflow's `needs:` GRAPH can be satisfied once that selection is correct -- and it is a
