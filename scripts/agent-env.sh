@@ -35,6 +35,21 @@
 # exported only in case 2, only to the root that was positively confirmed to carry the pinned SDK,
 # so the muxer that PATH now resolves and the root that apphosts consult agree.
 #
+# THAT LAST CLAUSE IS A MEASURED CLAIM, NOT A PLAUSIBLE ONE (S.I.R.#277). It used to be neither
+# evidenced nor protected: deleting the `export DOTNET_ROOT` below left the whole suite green,
+# because PATH alone satisfies every probe that reaches the SDK through the MUXER — and the muxer
+# resolves SDKs relative to its own location and ignores DOTNET_ROOT for that. What DOTNET_ROOT
+# decides is APPHOSTS, which do not go through the muxer at all: they read it to find hostfxr, and
+# fall back to the global install location only when it names no directory. This workspace runs
+# apphosts on two hot paths — the `dotnet tool install -g` shims in `$HOME/.dotnet/tools`, and the
+# built `fsgg-coord-engine` that `scripts/fsgg-coord` execs at its tier 2. Without the export they
+# keep working while loading from the root the session ARRIVED with, which on the reference
+# workspace carries a different Microsoft.NETCore.App than the one PATH now resolves. Measured with
+# COREHOST_TRACE=1: `/usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11` without the export
+# against `$HOME/.dotnet/shared/Microsoft.NETCore.App/10.0.10` with it. `scripts/test-agent-env.sh`
+# section I builds a real apphost and asserts the agreement, so deleting the export now reds a
+# check instead of nothing.
+#
 # IT MUST STAY SILENT. Anything written to stdout here would land inside every `$(...)` an agent
 # runs; anything on stderr would land in every log a gate parses. On any doubt this file returns
 # without touching the environment.
@@ -103,6 +118,7 @@ __fsgg_agent_env() {
     fi
 
     export PATH
+    # Apphosts only — the muxer ignores this. Deleting it reds section I of the suite (#277).
     export DOTNET_ROOT="$candidate"
     export FSGG_AGENT_ENV_APPLIED="$candidate"
     # Children no longer need the command substitution the hosts configured: name the resolved file

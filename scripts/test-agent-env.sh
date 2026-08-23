@@ -159,5 +159,58 @@ run fail "wired, but the shim is deleted: dotnet --version" "$H" "$FRESH_PATH" /
 mv "$TMP/agent-env.sh.bak" "$SHIM"
 run pass "shim restored: dotnet --version"                  "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" 'dotnet --version >/dev/null'
 
+section "I. DOTNET_ROOT — the exported root is what an APPHOST consults (S.I.R.#277)"
+# WHY THIS SECTION EXISTS. Before it did, `export DOTNET_ROOT="$candidate"` could be deleted from the
+# shim and all 36 checks above stayed green (measured as mutation S8 in PR #260 review round 1, and
+# reproduced at this head). That is not because the line does nothing — it is because every probe
+# above reaches the SDK through the MUXER, and the muxer resolves SDKs relative to its own location
+# and ignores DOTNET_ROOT for that. The file therefore asserted a purpose for that line which nothing
+# here could falsify. These two checks are that falsifier.
+#
+# WHAT DOTNET_ROOT ACTUALLY DECIDES. A framework-dependent APPHOST does not go through the muxer: it
+# reads DOTNET_ROOT to locate hostfxr, and falls back to the global install location only when that
+# directory does not exist. The workspace runs apphosts on both hot paths — every `dotnet tool
+# install -g` shim in `$HOME/.dotnet/tools`, and the built engine
+# `src/FS.GG.Coord.Cli/bin/Release/<tfm>/fsgg-coord-engine` that `scripts/fsgg-coord` execs at tier
+# 2. On the reference workspace the session arrives with DOTNET_ROOT=/usr/share/dotnet, which carries
+# a DIFFERENT Microsoft.NETCore.App than the $HOME/.dotnet that step 2 selects, so without the export
+# the muxer and every apphost load from two different installs. Measured with COREHOST_TRACE=1:
+#   export removed: Chose FX version [/usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11]
+#   export present: Chose FX version [$HOME/.dotnet/shared/Microsoft.NETCore.App/10.0.10]
+# That divergence is what "so the muxer that PATH now resolves and the root that apphosts consult
+# agree" means, and it is observable, so it is checked here rather than asserted in a comment.
+#
+# THE PROBE IS BUILT, NOT COMMITTED, AND IT IS A REAL APPHOST. Nothing else in this repository is
+# guaranteed to be built when this suite runs, and a fake cannot demonstrate host behaviour. It is
+# built by the wired session under test, so the build is also the direct `dotnet` call that retires
+# the function and re-heals PATH before `command -v dotnet` is asked for a real path.
+TFM="net${PINNED%%.*}.0"
+mkdir -p "$TMP/apphost"
+cat > "$TMP/apphost/apphost.csproj" <<EOF
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>$TFM</TargetFramework>
+    <AssemblyName>roots</AssemblyName>
+  </PropertyGroup>
+</Project>
+EOF
+# The location of System.Private.CoreLib IS the install the host resolved the runtime from.
+printf 'class R { static void Main() { System.Console.WriteLine(typeof(object).Assembly.Location); } }\n' > "$TMP/apphost/Program.cs"
+PROBE="$TMP/apphost/bin/Release/$TFM/roots"
+# Distinct non-1 exit codes so a setup failure is never mistaken for the assertion going red.
+BUILD='dotnet build "'"$TMP"'/apphost/apphost.csproj" -c Release -v q --nologo >/dev/null 2>&1 || exit 3; real="$(command -v dotnet)"; case "$real" in /*) ;; *) exit 4 ;; esac; muxroot="$(readlink -f "$real")"; muxroot="${muxroot%/*}";'
+
+run pass "the apphost loads its runtime from the SAME install the resolved muxer lives in" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    "$BUILD"' core="$("'"$PROBE"'")" || exit 5; case "$core" in "$muxroot"/shared/*) exit 0 ;; *) exit 1 ;; esac'
+# NON-VACUITY CONTROL. If this machine carries only one usable install, the check above passes no
+# matter what the shim exports and proves nothing — so require the probe to actually FOLLOW
+# DOTNET_ROOT here, on this machine, at this head. Its inputs are the two roots the shim chooses
+# between: the one the session arrived with and the one step 2 selected.
+run pass "control: that probe really does follow DOTNET_ROOT, so the check above can fail" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    "$BUILD"' a="$(DOTNET_ROOT=/usr/share/dotnet "'"$PROBE"'")" || exit 5; b="$(DOTNET_ROOT="$muxroot" "'"$PROBE"'")" || exit 5; test "$a" != "$b" && case "$b" in "$muxroot"/shared/*) exit 0 ;; *) exit 1 ;; esac'
+
 printf '\n==============================================================================\nRESULT: %s unexpected outcome(s)\n==============================================================================\n' "$FAILURES"
 exit "$FAILURES"
