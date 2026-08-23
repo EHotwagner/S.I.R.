@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-255-review-contract-divergence
 lane: none
 toolVersion: n/a
-commit: 251aa70f0fec4deba6656afd3af5eab0bb05fd1c
+commit: 3639355882f53565b902c96dffab08c221a9b482
 ---
 
 # S.I.R. item 255 — the packed review contract and the engine's review ledger
@@ -201,11 +201,25 @@ collision (§4.11).
   covered; the overwrites table was compared against a string literal inside the gate, three lines
   below the comment introducing the category it belonged in; and the authorization table's receipt-kind
   column was captured by the parser and discarded, in no category and checked by nothing.
-  All six are repaired; the gate now runs sixteen document mutations. **Every one of the six was filed
-  under `Derived`** — the category promising the most — while the `Transcribed` category added in round
-  one held up under review and the literal-only claims behaved exactly as documented. The transferable
-  lesson is recorded in the document: **a gate's inversion evidence is itself a claim that can be
-  vacuous, and over-claiming lands on whichever bucket promises the most.**
+  Round three then found a **seventh**, and it is the one that settles the pattern: the `timestamp`
+  vocabulary row was `Derived`, parsed, and checked by nothing — four independent falsifications left
+  the gate green, including deleting the row outright. The mechanism was a parser dropping any row
+  with no backticked value (`if vals:`) feeding a loop over a hardcoded list of five names.
+  **That list had been widened from three to five in the previous round, in the repair for round one's
+  identical finding, and the prose asserting it read "every row of the vocabulary table."** The critic's
+  verdict on it — *eloquence outran correctness* — is the most accurate sentence written about this
+  cycle. **The repair for an over-claim over-claimed.**
+
+  All seven are repaired; the gate now runs twenty-one document mutations over thirty-eight checks.
+  The round-three repair treats the mechanism rather than the instance: the checked set is now
+  **derived from the parsed table**, a row the gate does not probe is a failure rather than a silent
+  skip, and free-form rows are checked against the engine's own refusal tokens. Adding `timestamp` to
+  the hardcoded five would have made six and left the next reader one row from an eighth.
+
+  **Every one of the seven was filed under `Derived`** — the category promising the most — while
+  `Transcribed` held up under two subsequent reviews and the literal-only claims behaved exactly as
+  documented. The transferable lesson is in the document: **a gate's inversion evidence is itself a
+  claim that can be vacuous, and over-claiming lands on whichever bucket promises the most.**
 - **Evidence:** file:scripts/test-review-contract-coherence.sh; command:bash scripts/test-review-contract-coherence.sh
 - **Version:** n/a — this cycle's own artifact.
 - **Owner:** EHotwagner/S.I.R. — scripts/test-review-contract-coherence.sh
@@ -331,6 +345,33 @@ collision (§4.11).
   change together and three of those are outside this item's touch-set.
 - **Disposition:** product fix
 
+#### §4.14 The contract page presented a hand-picked subset as complete, and inverted one field
+
+- **Kind:** defect
+- **Impact:** A host authoring its first acceptance record from this page would have been refused. The
+  page told it `acceptedExceptions` "records exceptions the host is knowingly accepting"; the engine
+  refuses exactly that with `accepted exceptions belong to critic review records, not host acceptance`.
+  Separately, a successor critic could not obtain its `round` from the page at all — which is this
+  item's own AC1 ("an agent following only the packed skills can drive a reviewed PR to a landable
+  green verdict") failing on the artifact written to satisfy it.
+- **Expected:** A page that says the validator "names every invariant it enforces" carries them, or
+  does not say so.
+- **Observed:** The page listed **8 of roughly 40** invariants while asserting completeness, and both
+  skill mirrors repeated the claim. Two of the omissions are load-bearing: `confirmation round must be
+  contiguous within its generation` (first confirmation must be 1, second 2 — measured), and the
+  same-critic rule's exception permitting a *different* critic to confirm after a `changes-required`
+  verdict (measured: accepted after `changes-required`, refused after `pass`). **This PR's own review
+  chain used that exception twice.**
+- **Evidence:** file:docs/coordination-engine-contracts.md; command:bash scripts/test-review-contract-coherence.sh
+- **Version:** 0.71.0
+- **Owner:** EHotwagner/S.I.R. — docs/coordination-engine-contracts.md and both `pnext-item` mirrors.
+- **Recurrence:** new as a finding; the same over-claiming shape as §4.7, in the contract rather than
+  in the gate. A list presented as complete is what stopped the inverted field being noticed for two
+  rounds — completeness claims suppress the checking that would catch their own contents.
+- **Avoidable cost:** part of one review round; the acceptance draft it would have refused was the
+  host's next action.
+- **Disposition:** doc fix
+
 ## §5 Did not exercise
 
 - Host acceptance (`review record` of kind `acceptance`) and a green `landable` — the host's acts.
@@ -377,9 +418,10 @@ collision (§4.11).
 
 ## §8 Friction and avoidable cost
 
-- Two review rounds consumed by §4.7, §4.8 and §4.13, plus one report-critique round: the gate's own
-  repair carried six vacuous assertions across the two rounds, and a dispatch route was shipped that
-  could never report a pass.
+- Three review rounds consumed by §4.7, §4.8, §4.13 and §4.14, plus one report-critique round: the
+  gate's own repair carried seven vacuous assertions across the three rounds, a dispatch route was
+  shipped that could never report a pass, and the contract page presented a subset as complete while
+  one field was documented backwards.
 - A detached checkout inside the live worktree left the branch pointer relocated until the rebase, and
   cost re-applied edits (§4.10).
 - One duplicated critic review (§4.11).

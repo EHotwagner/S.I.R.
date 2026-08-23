@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-255-review-contract-divergence.md",
-  "reportSha256": "2dc3be238510b29770897478a6534eb5d84cdc2fa1823bb17524a04369936453",
+  "reportSha256": "664442e81c438abd750b9b440a164a77ae0df18156e9a150a28174f7af8df2ba",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -17,7 +17,7 @@
         {
           "locator": "file:.claude/skills/pnext-item/references/independent-review.md",
           "result": "verified",
-          "sha256": "e2be1f5a32413ffe937b2d50cc39e2c8f21cba7ea3b4e6a92a111e62142901be"
+          "sha256": "8c0c03e75643e664843fdd12d8194fdb1bba3deed00ddce719210f43e7557168"
         }
       ],
       "confidenceLimits": [
@@ -33,7 +33,7 @@
         {
           "locator": "file:docs/coordination-engine-contracts.md",
           "result": "verified",
-          "sha256": "6e9dc9c461094cffc89dc035c1a6d5a9121580f3170cff2058a3a3e9e9aee9f0"
+          "sha256": "1b13a18e05161c0a30b2c34993c0e088688be7b0177fd923480c75cb7e3a0b4f"
         },
         {
           "locator": "issue:EHotwagner/S.I.R.#255",
@@ -114,7 +114,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "3f0b4a71bb4ed0f17ad7f1fa70d2913c4e233f160afc6c820b0310ec062f5123"
+          "sha256": "6aeaadaf4fd71d95ac54e816ba22e9c240963fde0a01f75ab2f86d6dcfe7d57d"
         },
         {
           "locator": "command:bash scripts/test-review-contract-coherence.sh",
@@ -124,7 +124,8 @@
       "confidenceLimits": [
         "The critic ran ten mutations of its own, absent from the gate's own list, and all ten red, establishing that the gate genuinely derives its expectations from the document.",
         "The critic also found three vacuous assertions inside this finding's own repair: the acceptance row was never iterated, the wait-state column was compared against a constant equal to itself, and the literal-only inversion loop was a tautology. All three were repaired after the critique and are recorded in the finding; the gate now runs eleven document mutations. The digest above is the repaired script, so this evidence postdates the critique that produced it.",
-        "Round two of independent review found three further vacuous assertions in this finding's own repair -- two parsed-but-unlooped vocabulary rows, the overwrites table compared against an in-gate literal, and a parsed-and-discarded receipt-kind column -- all filed under Derived. All are repaired and the gate now runs sixteen document mutations. The digest above is the twice-repaired script, so this evidence postdates both critiques."
+        "Round two of independent review found three further vacuous assertions in this finding's own repair -- two parsed-but-unlooped vocabulary rows, the overwrites table compared against an in-gate literal, and a parsed-and-discarded receipt-kind column -- all filed under Derived. All are repaired and the gate now runs sixteen document mutations. The digest above is the twice-repaired script, so this evidence postdates both critiques.",
+        "Round three found a seventh vacuous Derived assertion -- the timestamp vocabulary row, unchecked despite the previous round's repair widening that loop from three names to five and asserting 'every row of the vocabulary table'. Repaired at the mechanism: the checked set is derived from the parsed table and an unprobed row now fails. The digest above is the thrice-repaired script, so this evidence postdates all three critiques."
       ]
     },
     {
@@ -135,7 +136,7 @@
         {
           "locator": "file:docs/coordination-engine-contracts.md",
           "result": "verified",
-          "sha256": "6e9dc9c461094cffc89dc035c1a6d5a9121580f3170cff2058a3a3e9e9aee9f0"
+          "sha256": "1b13a18e05161c0a30b2c34993c0e088688be7b0177fd923480c75cb7e3a0b4f"
         },
         {
           "locator": "command:bash scripts/test-review-contract-coherence.sh",
@@ -159,7 +160,7 @@
         {
           "locator": "file:docs/coordination-engine-contracts.md",
           "result": "verified",
-          "sha256": "6e9dc9c461094cffc89dc035c1a6d5a9121580f3170cff2058a3a3e9e9aee9f0"
+          "sha256": "1b13a18e05161c0a30b2c34993c0e088688be7b0177fd923480c75cb7e3a0b4f"
         },
         {
           "locator": "command:bash scripts/test-review-contract-coherence.sh",
@@ -239,6 +240,27 @@
       "confidenceLimits": [
         "Found by round-two independent review, which measured the route on both a correct and a falsified document and observed exit 1 in both cases, establishing that it could not distinguish them. Reproduced by the implementer before choosing the repair.",
         "This finding was added after that critique and was not itself independently critiqued; it is disclosed as such. The half-wiring it describes has been removed, so scripts/run-ci-gate.sh is now byte-identical to origin/main and the cited file evidences the absence of the route rather than its presence."
+      ]
+    },
+    {
+      "id": "§4.14",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:docs/coordination-engine-contracts.md",
+          "result": "verified",
+          "sha256": "1b13a18e05161c0a30b2c34993c0e088688be7b0177fd923480c75cb7e3a0b4f"
+        },
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Found by round-three independent review, which deduped against all 60 issues and all 39 reports under feedback/ before reporting and filed nothing.",
+        "The implementer re-measured all three claims against the pinned engine rather than accepting them: acceptedExceptions accepted on a critic record and refused on an acceptance record with the quoted message; first confirmation round 1 and second round 2, with 0 refused twice over; and a different critic accepted after changes-required but refused after pass.",
+        "Added after that critique and not itself independently critiqued; disclosed as such. All three corrections are now gate-checked with their own mutations (S13, S14, S15)."
       ]
     }
   ]
