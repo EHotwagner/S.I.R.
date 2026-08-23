@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-255-review-contract-divergence
 lane: none
 toolVersion: n/a
-commit: b6b1d36c66e142ccc43cca7601ada61922774495
+commit: 007ed83363aef7316c9a462b6bce154660bd4880
 ---
 
 # S.I.R. item 255, repair phase — what makes a documentation gate vacuous
@@ -38,15 +38,16 @@ It did not survive the test, and the replacement is the main result below.
 ## §1 Provenance and confidence
 
 - **Workspace:** `S.I.R`, branch `item/255-review-contract-repair-phase`, commit
-  `b6b1d36c66e142ccc43cca7601ada61922774495` — the round-1 repair head. Round 0's head was
+  `007ed83363aef7316c9a462b6bce154660bd4880` — the round-2 repair head. Round 0's head was
   `6e1ac3fad570c5802ebd2c9b03b07b7ecb4e965e`; §4.8 is the defect round 0 shipped and round 1 repaired.
 - **Cycle boundary:** the repair phase of `S.I.R.#255` — a fresh chain numbered from round 1 against
   `repair-phase-max-rounds: 10`, entered automatically after the validated three-round exhaustion of
   PR #259. The branch carries PR #259's ten commits rebased onto `origin/main` so that round 3's
-  verified repairs are preserved rather than redone. The work reported here is the **two** commits on
-  top of them — `6e1ac3fa` (round 0) and `b6b1d36` (round 1) — which is 12 commits ahead of
-  `origin/main`. §4.8 is the defect round 0 shipped and round 1 repaired, so the distinction is
-  load-bearing rather than bookkeeping.
+  verified repairs are preserved rather than redone. The work reported here is the commits on top of
+  them — `6e1ac3fa` (round 0), `b6b1d36` (round 1) and the round-2 repair this report is bound to.
+  §4.8 is the defect round 0 shipped and round 1 repaired; §4.9 is the defect round 1 shipped and
+  round 2 repaired. The distinction is load-bearing rather than bookkeeping: each round's repair was
+  incomplete in a way only the next round's inversion found.
 - **Engine under test:** `fs.gg.coord.cli` `0.71.0`, read from `.config/dotnet-tools.json` by the
   gate itself rather than hardcoded. All engine facts were established by loading
   `FS.GG.Coord.Core.dll` from that pinned package and calling it.
@@ -309,9 +310,10 @@ It did not survive the test, and the replacement is the main result below.
   this listed 11 checks that had never had an inversion, including one with no document input at all.
   *(That 11 is an intermediate-iteration figure: it was reported by a build that no longer exists, so
   it is not recoverable from anything committed. It is stated as history, not as evidence.)* After
-  round 1 the requirement is stronger than set-coverage — see §4.8 — and the sweep is **68 mutations,
-  30 widening and 38 narrowing, 22.9s**, with every derived check carrying both directions or a
-  printed reason why one cannot be constructed. (2b) **The coverage requirement covers `doc:*` only.** The 6 `engine:*` checks and
+  round 2 the sweep is **78 mutations — 39 widening, 38 narrowing and 1 `widen-attempt`, 22.7s** —
+  with every derived check carrying both directions, or an exemption that is itself proven by a
+  mutation (§4.9). The requirement grew twice under review: set-coverage (round 0), then direction
+  (round 1), then proof-of-exemption (round 2). (2b) **The coverage requirement covers `doc:*` only.** The 6 `engine:*` checks and
   the 1 `known-blind:*` check have no attributed inversion, because their predicates take no term from
   the document and no document mutation can red them — that is why `doc:wait-window-must-be-positive`
   was renamed rather than given a mutation. The gate's own summary says "every derived check named by
@@ -435,13 +437,75 @@ It did not survive the test, and the replacement is the main result below.
 - **Recurrence:** the same generator as §4.2, one level up. Coverage-by-any-mutation is itself a
   **presence**-shaped claim: it establishes that *a* mutation reds, not that the *dangerous* one does.
 - **Avoidable cost:** one full review round.
-- **Disposition:** product fix — repaired in round 1 of this chain. (1) Every cell parse is now total:
-  a set of literals or an exact string, never a first match — which is what makes `W1`–`W7` red at all.
+- **Disposition:** product fix — repaired in round 1, and **the round-1 repair was itself incomplete;
+  see §4.9.** (1) The six cells the round-0 critic measured were made total, which is what makes
+  `W1`–`W7` red. The sentence that stood here — *"Every cell parse is now total: a set of literals or
+  an exact string, never a first match"* — was **false when it was sealed**: nine first-match parses
+  survived, and round 1's critic found three more widenings through them.
   (2) Every mutation declares `widen` or `narrow`, and every derived check must carry **both**, or
   appear in a printed `NO_WIDENING`/`NO_NARROWING` registry with its reason. A check added later
   inherits neither, so the gate reds until someone supplies or declares one. Per `independent-review`
   step 7 the repaired gate was re-run against the critic's **exact** six escapes, plus `W5`: all seven
   now red, each attributed to the right check.
+
+#### §4.9 The repair was applied to the cells that were measured, not to the property — and the exemption registry became an unchecked escape hatch
+
+- **Kind:** defect
+- **Impact:** Round 1 shipped a gate asserting *"EVERY PARSE BELOW IS TOTAL OVER ITS CELL. NONE TAKES
+  THE FIRST MATCH"* while nine first-match parses survived beneath that banner, and a `NO_WIDENING`
+  registry of ten hand-written reasons that nothing checked. **Three reasons were false and three
+  widenings survived at exit 0.**
+- **Expected:** a check excused from the widening requirement genuinely cannot be widened.
+- **Observed:** critic `merlin-2693` constructed four widenings against cells the registry declared
+  un-widenable. `doc:initial-round` (+ *"except that in a repair-phase chain an `initial` record must
+  carry `"round": 1`"*), `doc:confirmation-round-contiguity` (+ *"the first must be `"round": 0`,
+  the second `5`"*) and `doc:wait-enter-value-types` (a **second** `enter` example typing
+  `claimGeneration` as the number `claim --json` emits) all **survive at exit 0**. Each states
+  something the engine refuses, and each is the exact false claim a repair-phase author would
+  plausibly write on that page. A fourth, `doc:not-meaningful-evidence-cardinality`, reds only as a
+  fixture abort — fail-closed, but not a detection.
+
+  **The sharpest observation, and it is the round-0 finding with `NO_WIDENING` substituted for
+  coverage.** On the first document the gate prints, in one run:
+
+  ```
+    ok      doc:initial-round
+    reds narrow doc:initial-round     S19 the initial record's round is falsified
+              doc:initial-round       no widening: the claim is a single integer in one sentence; an
+                                      added alternative is not a permitted-but-wrong member of a set
+                                      but a second sentence, which the parser refuses rather than
+                                      mis-parses
+  review-contract coherence passed:
+  ```
+
+  **It printed the reason the escape is impossible, in the run in which that escape succeeded.**
+- **Root cause:** the round-1 totalisation was applied to **the six cells round 0 measured, not to the
+  property**. The checks left un-totalised were then excused on the ground that their parser *refuses*
+  a second alternative. It does not — `re.search` cannot refuse and silently takes the first. The
+  file's own `sole()` helper does exactly the refusing the registry claimed, and was used **once**.
+  So the exemption was written for one mechanism (`doc:generation-token-shape`, where it is true) and
+  extended to checks that lack it, with nothing to tell which was which. **An exemption whose reason
+  is authored prose, inside a gate whose entire thesis is that authored prose rots, is that thesis
+  applied to everything except itself.**
+- **Evidence:** command:bash scripts/test-review-contract-coherence.sh; file:scripts/test-review-contract-coherence.sh
+- **Version:** `fs.gg.coord.cli` 0.71.0 (pinned).
+- **Owner:** EHotwagner/S.I.R. — `scripts/test-review-contract-coherence.sh`.
+- **Recurrence:** the same generator as §4.2 and §4.8, at a third level. §4.2: a claim's expectation
+  carried presence, not extension. §4.8: coverage established that *a* mutation reds, not that the
+  dangerous one does. §4.9: an *exemption* from that requirement was itself an unchecked assertion.
+  Each repair moved the unchecked claim up one layer rather than removing the layer.
+- **Avoidable cost:** one further review round.
+- **Disposition:** product fix — repaired in round 2. The four checks are totalised and now red by
+  name (`X1`→`doc:initial-round`, `X2`→`doc:confirmation-round-contiguity`,
+  `X3`→`doc:not-meaningful-evidence-cardinality`, `X4`→`doc:wait-enter-value-types`); nine of the ten
+  exemptions are deleted and replaced by real widenings. **The one that remains is proven rather than
+  asserted**: the gate emits a `widen-attempt` mutation for it and requires that mutation to red the
+  run *without naming any check*, which demonstrates the parse-refusal the reason claims. An exemption
+  may no longer cover both directions — a check excused one way must demonstrably carry the other, and
+  the gate reds if it does not. The banner, the success footer and this report's own §4.8 are corrected
+  to the property that actually holds, enumerated clause by clause, with the widening mutations rather
+  than the sentence as the proof. Per step 7, re-run against **both** critics' exact escapes: all of
+  `X1`–`X4` and all of `W1`–`W7` red by name.
 
 ## §5 Did not exercise
 
@@ -539,6 +603,7 @@ It did not survive the test, and the replacement is the main result below.
   | pre-repair sweep, `cb38462` | 21 | 22.5s |
   | round 0, `6e1ac3fa` | 47 | 13.5s |
   | round 1, `b6b1d36` | 68 — 30 widening, 38 narrowing | 22.9s |
+  | round 2 | 78 — 39 widening, 38 narrowing, 1 widen-attempt | 22.7s |
 
   **3.2x the mutations for the same wall clock as the sweep it replaces** — but that is parallelism,
   not efficiency, and the honest counterpart belongs in the same paragraph: **CPU went from ~26s user
@@ -600,10 +665,11 @@ It did not survive the test, and the replacement is the main result below.
 | Full gate at round 0, 47 mutations | 13.5s | `time ./scripts/test-review-contract-coherence.sh` |
 | Baseline it replaces, 21 mutations | 22.5s | same command at the branch point |
 | Checks emitted on a clean document | 39 `doc:*`, 6 `engine:*`, 1 `known-blind:*` | gate output at head |
-| Mutations after round 1 | 68 — 30 widening, 38 narrowing, 22.9s | gate output at head |
+| Mutations after round 2 | 78 — 39 widening, 38 narrowing, 1 widen-attempt, 22.7s | gate output at head |
 | `doc:*` checks with a NARROWING inversion | all, or a printed reason (2 rows) | enforced by the gate itself |
 | `doc:*` checks with a WIDENING inversion | all, or a printed reason (10 rows) | enforced by the gate itself |
-| Critic's six escapes, re-run per step 7 | all red, each attributed | §4.8 |
+| Round 0's seven escapes, re-run per step 7 | all red, each attributed | §4.8 |
+| Round 1's four escapes, re-run per step 7 | all red, each attributed | §4.9 |
 | `engine:*` / `known-blind:*` with an inversion | 0 of 7, by design | their predicates take no document term |
 | CI on the candidate | 15 pass, 5 skipping, 0 fail | `gh pr checks 285` |
 | Merge | not reached in this report | review in progress; `Blocked by: S.I.R.#280` is a live risk, not a current block |
@@ -656,7 +722,7 @@ It did not survive the test, and the replacement is the main result below.
 | sdd-authoring | not-exercised | `delivery-route show` reports `route: lightweight`; no lifecycle stage required. |
 | implementation-apis | exercised | `StructuredDecision.validateReviewLedger`, `Driver.decodeStructuredReview`, `ReviewWait.encode`, `ReviewWait.generationToken`, `ReviewWait.validate` driven directly from `dotnet fsi`. |
 | dependencies-build | partial | `dotnet tool restore` against the pinned `fs.gg.coord.cli` 0.71.0; no product build in scope. |
-| testing | exercised | The gate rebuilt twice and re-measured each time: 68 attributed mutations at round 1 (30 widening, 38 narrowing), every derived check carrying both directions or a printed reason, `22.9s`. Two vacuous checks and eleven uncovered ones found by measurement at round 0; six surviving widenings found by the item's critic at round 1 (§4.8). |
+| testing | exercised | The gate rebuilt three times and re-measured each time: 78 attributed mutations at round 2 (39 widening, 38 narrowing, 1 proof-of-exemption), `22.7s`. Two vacuous checks and eleven uncovered ones found by measurement at round 0; six surviving widenings found by round 0's critic (§4.8); three more, through an unchecked exemption registry, found by round 1's critic (§4.9). Every repair to this gate has been incomplete in a way only the next inversion found — which is the report's own subject happening to the report's own instrument. |
 | evidence | exercised | Every engine claim established by execution; §4.3 is a worked case of why message-reading is not evidence. |
 | runtime-playtest | not-exercised | No product runtime in this item's scope. |
 | performance | partial | Command duration measured at each round and held flat while the work tripled (21 mutations/22.5s → 68/22.9s), verified at `SIR_COHERENCE_JOBS=1` as well so correctness does not depend on parallelism; no typed performance intent applies — this is not interactive or simulation work, so the `performance-first` gate does not bind. |

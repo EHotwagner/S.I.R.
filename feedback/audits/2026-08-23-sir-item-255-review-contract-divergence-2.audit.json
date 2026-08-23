@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-255-review-contract-divergence-2.md",
-  "reportSha256": "0cb74d93733d269cebf9191dd1c0e0b808dd1075f700a351d12a0140b03b3acf",
+  "reportSha256": "12582e4443ce203f9f35028fd33d1df1f2880e45c5970375040c4d6b178b19d5",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -17,7 +17,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "7f34688585e335d10ef31594db74b71e0961db3dabaaf9d68b0f7d0075944e85"
+          "sha256": "d5eaa8a9b0d574c7f4dc10d8102919770a2e1814ad19df42515424dcaf8bea79"
         }
       ],
       "confidenceLimits": [
@@ -37,7 +37,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "7f34688585e335d10ef31594db74b71e0961db3dabaaf9d68b0f7d0075944e85"
+          "sha256": "d5eaa8a9b0d574c7f4dc10d8102919770a2e1814ad19df42515424dcaf8bea79"
         }
       ],
       "confidenceLimits": [
@@ -95,7 +95,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "7f34688585e335d10ef31594db74b71e0961db3dabaaf9d68b0f7d0075944e85"
+          "sha256": "d5eaa8a9b0d574c7f4dc10d8102919770a2e1814ad19df42515424dcaf8bea79"
         },
         {
           "locator": "command:bash scripts/test-review-contract-coherence.sh",
@@ -154,11 +154,32 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "7f34688585e335d10ef31594db74b71e0961db3dabaaf9d68b0f7d0075944e85"
+          "sha256": "d5eaa8a9b0d574c7f4dc10d8102919770a2e1814ad19df42515424dcaf8bea79"
         }
       ],
       "confidenceLimits": [
-        "'three checks parsed with re.search or [0]' understates the idiom's spread: six sites carry it; the understatement does not affect the disposition"
+        "'three checks parsed with re.search or [0]' understates the idiom's spread: six sites carry it; the understatement does not affect the disposition",
+        "this finding's Disposition sentence claimed every cell parse was total; that was false when sealed and is corrected in place \u2014 see \u00a74.9, which is the defect it concealed"
+      ]
+    },
+    {
+      "id": "\u00a74.9",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/test-review-contract-coherence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/test-review-contract-coherence.sh",
+          "result": "verified",
+          "sha256": "d5eaa8a9b0d574c7f4dc10d8102919770a2e1814ad19df42515424dcaf8bea79"
+        }
+      ],
+      "confidenceLimits": [
+        "written after the actionability critic's final pass and therefore not covered by it; the finding is instead evidenced by execution \u2014 round 1's critic `merlin-2693` independently constructed X1-X4 from the head document and measured three surviving at exit 0, and the implementer reproduced all four before repairing",
+        "the repaired gate was re-run against both critics' exact escapes (X1-X4 and W1-W7), all red by name, per independent-review step 7"
       ]
     }
   ]
