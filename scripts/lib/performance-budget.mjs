@@ -589,58 +589,77 @@ export function assertTacticalOverlayLayerRunNetArmed(config) {
 //
 // Excluding a COHORT is legitimate; a filter that matches the budget test's own title path is not.
 // Only the second is refused, and the comparison is against the string Playwright greps.
+// COMPARE AGAINST THE STRING PLAYWRIGHT COMPARES AGAINST, BUILT FROM THE DECLARED IDENTITY.
+//
+// Two earlier versions of this check were wrong in different ways, and the second was worse.
+//
+//   1. It tested the pattern against the BARE TAG. Playwright greps a test's full title path, so a
+//      title-substring `--grep-invert` removed the test and was NOT refused, while an anchored tag
+//      pattern did not remove it and WAS refused.
+//   2. The repair learned the join format from a SIBLING test in the same spec file -- and the sibling
+//      search matched any test from that file INCLUDING THE BUDGET TEST ITSELF. So when the invert
+//      removed the last such test, the sibling was null and the check returned null: the escape hatch
+//      opened on exactly the input it existed to catch. `--grep-invert "visible-workflows"` shipped a
+//      forced breach at exit 0. That arm is also taken legitimately in 4 of 8 shards, so it could not
+//      simply be turned into a refusal.
+//
+// THE SIBLING WAS NEVER NEEDED. The identity is fully declared here -- spec file, title, tag -- and
+// the only thing the sibling supplied was a join format those parts can be assembled into directly.
+// Playwright's title path is [project, root, file, ...describes, title], joined by spaces, with the
+// tags appended; the project name is read from the run's own config rather than assumed empty.
 export const tacticalOverlayLayerBudgetTitle =
   "View analysis overlays share pointer and keyboard commands and restore independently";
 
 export const tacticalOverlayLayerSpecFile = "visible-workflows.spec.js";
 
-// COMPARE AGAINST THE STRING PLAYWRIGHT COMPARES AGAINST -- AND LEARN ITS SHAPE FROM THE RUN.
-//
-// The previous version tested the filter pattern against the BARE TAG. Playwright greps a test's full
-// title path -- measurement shows a project prefix, the spec file, the title and the tags joined by
-// spaces. One expression, two defects in opposite directions: `--grep-invert "View analysis overlays"`
-// removed the test and was NOT refused, and a forced breach shipped reporting `1 passed`; while
-// `--grep-invert "^@tactical-overlay-budget$"` did NOT remove the test and WAS refused, a false red.
-// A knowingly narrow check printing an absolute claim is the worst of both.
-//
-// The join format is NOT hardcoded here. Hardcoding a Playwright internal would be the next thing to
-// drift; instead the reporter hands over a sibling test's title path from the budget test's own spec
-// file, and the budget test's match string is built by substituting the declared title into it. The
-// format therefore comes from the run itself, and only the TITLE is declared -- kept honest by the
-// constructor, which refuses a title that is not this one.
-export function tacticalOverlayLayerBudgetMatchString(siblingTitlePath) {
-  if (!Array.isArray(siblingTitlePath) || siblingTitlePath.length === 0) return null;
-  return [...siblingTitlePath.slice(0, -1), `${tacticalOverlayLayerBudgetTitle} ${tacticalOverlayLayerBudgetTag}`].join(" ");
+export function tacticalOverlayLayerBudgetTitlePaths(config) {
+  const projects = Array.isArray(config?.projects) && config.projects.length > 0 ? config.projects : [{ name: "" }];
+  return projects.map((project) => [
+    `${project?.name ?? ""}`,
+    "",
+    tacticalOverlayLayerSpecFile,
+    `${tacticalOverlayLayerBudgetTitle} ${tacticalOverlayLayerBudgetTag}`,
+  ].join(" "));
 }
 
-export function tacticalOverlayLayerFilterRefusal(config, argv = [], budgetMatchString = null) {
-  // BOTH CHANNELS, BECAUSE THE ONE THAT MATTERS IS NOT THE OBVIOUS ONE. A `grepInvert` written into
-  // the config file arrives on the resolved config; a `--grep-invert` passed on the COMMAND LINE does
-  // NOT -- Playwright applies it as a selection filter and `config.grepInvert` stays null. Measured,
-  // not assumed: an earlier version read only the config and could not fire on the CLI form at all,
-  // which is the form test-browser-shards.mjs actually uses.
+// EVERY SPELLING OF THE FILTER, BECAUSE "BOTH CHANNELS" WAS ONE OF FOUR.
+//
+// `grepInvert` is a RegExp OR an array of them, at the top level OR per project -- and Playwright
+// filters on the PER-PROJECT value. A CLI `--grep-invert` reaches none of them: it is applied as a
+// selection filter and the resolved config's field stays null. Each of these removed the budget test
+// with a sibling present and shipped a forced breach at exit 0 while the declaration said "BOTH
+// CHANNELS".
+const tacticalOverlayLayerFilterPatterns = (config, argv) => {
   const patterns = [];
-  if (config?.grepInvert instanceof RegExp) patterns.push({ source: "the config's grepInvert", value: config.grepInvert.source });
+  const collect = (source, value) => {
+    for (const candidate of Array.isArray(value) ? value : [value])
+      if (candidate instanceof RegExp) patterns.push({ source, value: candidate.source });
+  };
+  collect("the config's grepInvert", config?.grepInvert);
+  for (const project of Array.isArray(config?.projects) ? config.projects : [])
+    collect(`project ${JSON.stringify(project?.name ?? "")}'s grepInvert`, project?.grepInvert);
   for (let index = 0; index < argv.length; index += 1) {
     const argument = `${argv[index]}`;
     if (argument === "--grep-invert" && index + 1 < argv.length) patterns.push({ source: "--grep-invert", value: `${argv[index + 1]}` });
     else if (argument.startsWith("--grep-invert=")) patterns.push({ source: "--grep-invert", value: argument.slice("--grep-invert=".length) });
   }
+  return patterns;
+};
+
+export function tacticalOverlayLayerFilterRefusal(config, argv = []) {
+  const patterns = tacticalOverlayLayerFilterPatterns(config, argv);
   if (patterns.length === 0) return null;
-  // THE ONE ARM THAT PASSES WITHOUT COMPARING ANYTHING, stated rather than hidden: no sibling from the
-  // budget test's spec file was collected, so this run was never given that file and its absence is
-  // not a filter's doing. This check therefore does not claim to cover a budget test removed from a
-  // run that never carried its spec file.
-  if (!budgetMatchString) return null;
+  const titlePaths = tacticalOverlayLayerBudgetTitlePaths(config);
   for (const pattern of patterns) {
-    let excludes = false;
+    let expression;
     try {
-      excludes = new RegExp(pattern.value).test(budgetMatchString);
+      expression = new RegExp(pattern.value);
     } catch {
       return `this run was filtered with ${pattern.source} ${JSON.stringify(pattern.value)}, which is not a pattern this check can parse. Its effect on the overlay-layer budget test is therefore unknown, and an unknown effect on the budget's own test is refused rather than assumed harmless.`;
     }
-    if (excludes)
-      return `this run excludes the overlay-layer budget test via ${pattern.source} (${pattern.value}), which matches its full title path ${JSON.stringify(budgetMatchString)} and removes it from the run entirely. A run that filtered the budget out is not a run that met it, and afterwards it is indistinguishable from a shard that was never given the test -- which is why it is refused here, while every filter that does NOT match that title path stays available.`;
+    const excluded = titlePaths.find((titlePath) => expression.test(titlePath));
+    if (excluded)
+      return `this run excludes the overlay-layer budget test via ${pattern.source} (${pattern.value}), which matches its full title path ${JSON.stringify(excluded)} and removes it from the run entirely. A run that filtered the budget out is not a run that met it, so it is refused here, while every filter that does NOT match that title path stays available.`;
   }
   return null;
 }

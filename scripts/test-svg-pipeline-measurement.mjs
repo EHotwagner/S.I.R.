@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
-import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalOverlayLayerBudget, tacticalOverlayLayerBudgetReason, assertTacticalOverlayLayerBudget, assertTacticalOverlayLayerBudgetWasEvaluatedSince, tacticalOverlayLayerEvaluationMark, tacticalOverlayLayerSurface, tacticalOverlayLayerRunRefusal, tacticalOverlayLayerBudgetTag, assertTacticalOverlayLayerRunNetArmed, tacticalOverlayLayerFilterRefusal, tacticalOverlayLayerReporterModule, tacticalOverlayLayerBudgetMatchString, tacticalOverlayLayerBudgetTitle, tacticalOverlayLayerSpecFile, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
+import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalOverlayLayerBudget, tacticalOverlayLayerBudgetReason, assertTacticalOverlayLayerBudget, assertTacticalOverlayLayerBudgetWasEvaluatedSince, tacticalOverlayLayerEvaluationMark, tacticalOverlayLayerSurface, tacticalOverlayLayerRunRefusal, tacticalOverlayLayerBudgetTag, assertTacticalOverlayLayerRunNetArmed, tacticalOverlayLayerFilterRefusal, tacticalOverlayLayerReporterModule, tacticalOverlayLayerBudgetTitlePaths, tacticalOverlayLayerBudgetTitle, tacticalOverlayLayerSpecFile, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 // validateDefinitions COMPOSES the budget: workload policy from the fixture file, ceiling from the
@@ -1011,46 +1011,60 @@ for (const unreadable of [undefined, null, {}, { reporter: "list" }, { reporter:
 // AND A RUN THAT FILTERED THE BUDGET TAG OUT IS REFUSED, while ordinary cohort filtering is not --
 // test-browser-shards.mjs routinely passes --grep/--grep-invert, so refusing filtering outright would
 // red correct runs and the check would be removed.
-// THE FILTER REFUSAL COMPARES AGAINST THE STRING PLAYWRIGHT GREPS, NOT AGAINST THE BARE TAG.
+// THE FILTER REFUSAL, AND THE FIXTURE IT IS ALLOWED TO USE.
 //
-// The previous version tested the pattern against the tag alone, which is both leaky and over-eager
-// from one expression: a title-substring --grep-invert removed the test and was NOT refused (a forced
-// breach shipped reporting `1 passed`), while an ANCHORED tag pattern did not remove the test and WAS
-// refused. Both directions are enumerated below, and the match string is built the way the reporter
-// builds it -- by substituting the declared title into a sibling's title path, so the join format
-// comes from the run rather than from a constant here.
-const siblingPath = [" ", tacticalOverlayLayerSpecFile, "a curated sample exposes maintained playback"];
-const budgetMatch = tacticalOverlayLayerBudgetMatchString(siblingPath);
-assert.ok(budgetMatch.includes(tacticalOverlayLayerBudgetTitle) && budgetMatch.includes(tacticalOverlayLayerBudgetTag) && budgetMatch.includes(tacticalOverlayLayerSpecFile),
-  "the derived match string must carry the spec file, the declared title and the tag, or it is not what Playwright greps");
-assert.equal(tacticalOverlayLayerBudgetMatchString([]), null, "no sibling means no derivable match string");
-assert.equal(tacticalOverlayLayerBudgetMatchString(undefined), null, "and an unreadable sibling path is not guessed at");
+// This block previously fed the refusal a HAND-WRITTEN sibling title path and asserted that a spec-file
+// pattern was refused. Production could not supply that fixture for that pattern -- the sibling search
+// returned null exactly when the filter removed the last test from the file -- so the suite certified
+// as closed an escape that was open on the real route. A fixture the production route cannot produce
+// is not evidence about the production route.
+//
+// So the refusal is now driven by the same CONFIG SHAPE Playwright hands the reporter, and the title
+// path it compares against is built from the declared identity rather than discovered.
+const runConfig = (overrides = {}) => ({ projects: [{ name: "" }], grepInvert: null, ...overrides });
+const budgetTitlePaths = tacticalOverlayLayerBudgetTitlePaths(runConfig());
+assert.equal(budgetTitlePaths.length, 1, "one project means one title path to judge");
+for (const part of [tacticalOverlayLayerSpecFile, tacticalOverlayLayerBudgetTitle, tacticalOverlayLayerBudgetTag])
+  assert.ok(budgetTitlePaths[0].includes(part),
+    `the reconstructed title path must carry ${JSON.stringify(part)}, or it is not the string Playwright greps`);
+assert.deepEqual(tacticalOverlayLayerBudgetTitlePaths(runConfig({ projects: [{ name: "chromium" }, { name: "webkit" }] })).length, 2,
+  "every declared project gets its own title path, since the project name is part of what Playwright matches");
 
-assert.equal(tacticalOverlayLayerFilterRefusal({ grepInvert: null }, [], budgetMatch), null, "an unfiltered run is not refused");
-assert.equal(tacticalOverlayLayerFilterRefusal({}, [], budgetMatch), null, "and neither is a run with no filter at all");
-// THE ESCAPE THAT SHIPPED A BREACH: a filter naming the TITLE, not the tag.
-for (const pattern of [tacticalOverlayLayerBudgetTitle, "View analysis overlays", "restore independently", tacticalOverlayLayerSpecFile])
-  assert.match(`${tacticalOverlayLayerFilterRefusal({ grepInvert: null }, ["--grep-invert", pattern], budgetMatch)}`, /excludes the overlay-layer budget test/,
-    `--grep-invert ${JSON.stringify(pattern)} matches the budget test's title path and removes it, so it must be refused`);
-// THE FALSE RED: an anchored tag pattern does NOT remove the test, so it must NOT be refused.
-assert.equal(tacticalOverlayLayerFilterRefusal({ grepInvert: null }, ["--grep-invert", `^${tacticalOverlayLayerBudgetTag}$`], budgetMatch), null,
-  "an anchored tag pattern does not match the full title path and does not remove the test; refusing it was a false red");
-// AND NO OVER-REFUSAL on the flag CI actually passes, nor on unrelated cohorts.
-for (const cohort of ["@production-delivery", "@rules-explorer", "@tactical-scene", "live-session"])
-  assert.equal(tacticalOverlayLayerFilterRefusal({ grepInvert: null }, ["--grep-invert", cohort], budgetMatch), null,
-    `${cohort} does not match the budget test's title path, and refusing it would red the runs test-browser-shards.mjs actually makes`);
-assert.match(`${tacticalOverlayLayerFilterRefusal({ grepInvert: new RegExp(tacticalOverlayLayerBudgetTag) }, [], budgetMatch)}`, /via the config's grepInvert/,
-  "the config channel is still read");
+assert.equal(tacticalOverlayLayerFilterRefusal(runConfig(), []), null, "an unfiltered run is not refused");
+assert.equal(tacticalOverlayLayerFilterRefusal({}, []), null, "and neither is a run with no filter at all");
+
+// THE ESCAPES THAT SHIPPED A FORCED BREACH. Each of these removes the budget test on the real route.
+const removesBudget = [tacticalOverlayLayerBudgetTitle, "View analysis overlays", "restore independently",
+  tacticalOverlayLayerSpecFile, "visible-workflows", tacticalOverlayLayerBudgetTag];
+for (const pattern of removesBudget) {
+  assert.match(`${tacticalOverlayLayerFilterRefusal(runConfig(), ["--grep-invert", pattern])}`, /excludes the overlay-layer budget test/,
+    `--grep-invert ${JSON.stringify(pattern)} matches the budget test's title path and must be refused`);
+  // EVERY SPELLING, not just the one that was read. The per-project field is the one Playwright
+  // actually filters on, and the array forms are how a config expresses more than one pattern.
+  assert.match(`${tacticalOverlayLayerFilterRefusal(runConfig({ grepInvert: new RegExp(pattern) }), [])}`, /via the config's grepInvert/,
+    `a top-level grepInvert RegExp naming ${JSON.stringify(pattern)} must be refused`);
+  assert.match(`${tacticalOverlayLayerFilterRefusal(runConfig({ grepInvert: [new RegExp(pattern)] }), [])}`, /via the config's grepInvert/,
+    `a top-level grepInvert ARRAY naming ${JSON.stringify(pattern)} must be refused`);
+  assert.match(`${tacticalOverlayLayerFilterRefusal(runConfig({ projects: [{ name: "", grepInvert: new RegExp(pattern) }] }), [])}`, /project ""'s grepInvert/,
+    `a PER-PROJECT grepInvert naming ${JSON.stringify(pattern)} must be refused -- that is the field Playwright filters on`);
+  assert.match(`${tacticalOverlayLayerFilterRefusal(runConfig({ projects: [{ name: "", grepInvert: [new RegExp(pattern)] }] }), [])}`, /project ""'s grepInvert/,
+    `a per-project grepInvert ARRAY naming ${JSON.stringify(pattern)} must be refused`);
+}
 for (const argv of [["--grep-invert", tacticalOverlayLayerBudgetTag], [`--grep-invert=${tacticalOverlayLayerBudgetTag}`]])
-  assert.match(`${tacticalOverlayLayerFilterRefusal({ grepInvert: null }, argv, budgetMatch)}`, /via --grep-invert/,
-    `a command-line ${argv.join(" ")} must be refused, since config.grepInvert is null for it`);
-assert.match(`${tacticalOverlayLayerFilterRefusal({ grepInvert: null }, ["--grep-invert", "@("], budgetMatch)}`, /not a pattern this check can parse/,
+  assert.match(`${tacticalOverlayLayerFilterRefusal(runConfig(), argv)}`, /via --grep-invert/,
+    `a command-line ${argv.join(" ")} must be refused, since no config field carries it`);
+
+// AND NO OVER-REFUSAL. These do not remove the budget test, and refusing them would red the runs
+// test-browser-shards.mjs actually makes -- including the shards where the budget test is absent.
+for (const harmless of ["@production-delivery", "@rules-explorer", "@tactical-scene", "live-session",
+  `^${tacticalOverlayLayerBudgetTag}$`, "@tactical-overlay-budgetXYZ", `^${tacticalOverlayLayerSpecFile}`])
+  for (const shape of [{ argv: ["--grep-invert", harmless] }, { config: runConfig({ grepInvert: new RegExp(harmless) }) },
+    { config: runConfig({ projects: [{ name: "", grepInvert: [new RegExp(harmless)] }] }) }])
+    assert.equal(tacticalOverlayLayerFilterRefusal(shape.config ?? runConfig(), shape.argv ?? []), null,
+      `${harmless} does not match the budget test's title path and must not be refused`);
+assert.match(`${tacticalOverlayLayerFilterRefusal(runConfig(), ["--grep-invert", "@("])}`, /not a pattern this check can parse/,
   "an unparseable filter has an unknown effect and is refused rather than assumed harmless (#266)");
-// AND THE ONE ARM THAT PASSES WITHOUT COMPARING ANYTHING, stated rather than hidden: no sibling from
-// the budget test's spec file was collected, so this run was never given that file.
-assert.equal(tacticalOverlayLayerFilterRefusal({ grepInvert: null }, ["--grep-invert", tacticalOverlayLayerBudgetTitle], null), null,
-  "with no derivable match string the refusal compares nothing and must say so by passing, since that is a shard boundary rather than a suppression");
-console.log(`JUSTIFIED tactical-overlay-budget-net-installation: the run-level net's own installation is enumerated -- an armed run passes in two entry spellings, an unregistered reporter is refused, ${5} unreadable configurations are refused rather than assumed armed, and a filter that matches the budget test\u2019s FULL TITLE PATH -- tag, title or spec file, through the config or the command line -- is refused, while an anchored tag pattern that does not remove the test and the cohort filters CI actually passes are not. The bound: with no sibling collected from that spec file this compares nothing and passes, because that is a shard boundary`);
+console.log(`JUSTIFIED tactical-overlay-budget-net-installation: the run-level net's own installation is enumerated -- an armed run passes in two entry spellings, an unregistered reporter is refused, 5 unreadable configurations are refused rather than assumed armed; and a filter matching the budget test's reconstructed title path is refused through ALL FOUR channels (top-level grepInvert, its array form, the PER-PROJECT field Playwright filters on, and the command line), while ${7} patterns that do NOT remove it are not refused. SCOPE: this judges --grep-invert only. A positive --grep that selects a cohort without this test is deliberately not judged, because the production-delivery cohort runs without it legitimately.`);
 
 console.log(`JUSTIFIED tactical-overlay-budget-run-refusal: a declared-but-unexecuted ${tacticalOverlayLayerBudgetTag} test is refused in 3 suppression states, an executed or failed one is not, a shard that never carried it is not, and an unreadable run is refused rather than passed`);
 console.log(`JUSTIFIED tactical-overlay-budget-wiring: the browser spec is WIRED to the declared verdict -- it imports and references the throwing form, does not use the returning form, tags the budget-bearing test, and carries no copy of ${overlayCeiling}; ${tacticalOverlayLayerSurface.attribute} is still emitted by the product. This is a source check and says NOTHING about whether the verdict executes: that is the evaluation guard and the run-level refusal. Both are inverted above, and so is the run-level net\u2019s own INSTALLATION -- an earlier revision of this line said "both inverted above" while only the guard had its installation checked, which is the asymmetry round 3 found.`);

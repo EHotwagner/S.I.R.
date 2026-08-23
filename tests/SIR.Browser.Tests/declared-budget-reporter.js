@@ -1,4 +1,4 @@
-import { tacticalOverlayLayerBudgetMatchString, tacticalOverlayLayerFilterRefusal, tacticalOverlayLayerRunRefusal, tacticalOverlayLayerSpecFile } from "../../scripts/lib/performance-budget.mjs";
+import { tacticalOverlayLayerFilterRefusal, tacticalOverlayLayerRunRefusal } from "../../scripts/lib/performance-budget.mjs";
 
 // A RUN THAT DID NOT CHECK IS NOT A RUN THAT PASSED.
 //
@@ -34,21 +34,11 @@ export default class DeclaredBudgetExecutionReporter {
   // The run's own filter, read once it is resolved. `--grep-invert` on the budget tag removes the
   // test entirely, which afterwards is indistinguishable from a shard that never carried it -- the
   // allowance that makes this reporter shard-safe is the same allowance that hides this edit.
-  onBegin(config, suite) {
-    // The budget test's own full title path, learned from a SIBLING in the same spec file rather than
-    // rebuilt from a hardcoded join format. If the filter removed the budget test we cannot read its
-    // path from the collected suite -- but a sibling that survived carries the identical prefix, and
-    // substituting the declared title into it reproduces exactly what Playwright grepped.
-    //
-    // No sibling means this run was never given that spec file, which is a shard boundary and not a
-    // suppression: the refusal then compares nothing and says so.
-    const sibling = suite.allTests().map((test) => test.titlePath())
-      .find((path) => path.some((part) => `${part}`.includes(tacticalOverlayLayerSpecFile)));
-    this.#filterRefusal = tacticalOverlayLayerFilterRefusal(
-      config,
-      process.argv,
-      tacticalOverlayLayerBudgetMatchString(sibling),
-    );
+  onBegin(config) {
+    // No sibling is consulted. The budget test's identity is declared, so the filter check does not
+    // depend on any test surviving the very filter it is judging -- which is how the previous version
+    // opened an escape hatch on exactly the input it existed to catch.
+    this.#filterRefusal = tacticalOverlayLayerFilterRefusal(config, process.argv);
   }
 
   onTestEnd(test, result) {
