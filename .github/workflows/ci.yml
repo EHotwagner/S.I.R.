@@ -136,6 +136,12 @@ jobs:
             console.log("route-contract: satisfied -- this head's router publishes every output this workflow gates on.");
             process.exit(0);
           }
+          // Drift is annotated here but NOT failed here, deliberately. Job outputs of a failed job
+          // are not dependably readable from `needs:`, and `pr-verdict` must be able to read this
+          // verdict to report the cause instead of its consequences -- so failing this job would
+          // cost exactly the diagnosis this step exists to deliver. `pr-verdict` owns the failure;
+          // this annotation only makes the cause visible at the top of the run rather than at the
+          // end of it. The run as a whole still fails.
           if (missing.length > 0) {
             console.log(`::error title=stale-route-contract::This branch's scripts/ci-route.mjs does not publish`
               + ` ${missing.length} route output(s) this workflow gates on: ${missing.join(", ")}.`
@@ -857,7 +863,11 @@ jobs:
                 genuine.push(`${name} (unreadable -- not counted as passing)`);
                 continue;
               }
-              if (result?.status !== undefined && result.status !== "pass") {
+              if (result === null || typeof result !== "object" || result.status === undefined) {
+                // Parseable but not a gate receipt this workflow recognises. "I could not read
+                // this" is never "I read it and it passed", so it is surfaced rather than skipped.
+                genuine.push(`${name} (no recognisable status field -- not counted as passing)`);
+              } else if (result.status !== "pass") {
                 const stage = typeof result.failureStage === "string" ? `, failureStage: ${result.failureStage}` : "";
                 genuine.push(`${result.gate ?? name} (status: ${result.status}${stage})`);
               }
