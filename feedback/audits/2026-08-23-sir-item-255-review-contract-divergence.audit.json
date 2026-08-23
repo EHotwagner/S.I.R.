@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-255-review-contract-divergence.md",
-  "reportSha256": "8c9c42ca5d9c40eb1d9273b56a9db2ebdcd811b2500b30313ca2b6b09691a741",
+  "reportSha256": "2dc3be238510b29770897478a6534eb5d84cdc2fa1823bb17524a04369936453",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -17,7 +17,7 @@
         {
           "locator": "file:.claude/skills/pnext-item/references/independent-review.md",
           "result": "verified",
-          "sha256": "34a00df747a06b04efad5a0b16f58db10d0de5960bd04c1a8c3b23742614e630"
+          "sha256": "e2be1f5a32413ffe937b2d50cc39e2c8f21cba7ea3b4e6a92a111e62142901be"
         }
       ],
       "confidenceLimits": [
@@ -33,7 +33,7 @@
         {
           "locator": "file:docs/coordination-engine-contracts.md",
           "result": "verified",
-          "sha256": "ed4f7a0a64de3781e75f2dc25ab50558639ea2c22b7201a3174089dec0f4459d"
+          "sha256": "6e9dc9c461094cffc89dc035c1a6d5a9121580f3170cff2058a3a3e9e9aee9f0"
         },
         {
           "locator": "issue:EHotwagner/S.I.R.#255",
@@ -114,7 +114,7 @@
         {
           "locator": "file:scripts/test-review-contract-coherence.sh",
           "result": "verified",
-          "sha256": "6a6da24367e3c586856406adc2015a97edfcc039412174b2644d591698219280"
+          "sha256": "3f0b4a71bb4ed0f17ad7f1fa70d2913c4e233f160afc6c820b0310ec062f5123"
         },
         {
           "locator": "command:bash scripts/test-review-contract-coherence.sh",
@@ -123,7 +123,8 @@
       ],
       "confidenceLimits": [
         "The critic ran ten mutations of its own, absent from the gate's own list, and all ten red, establishing that the gate genuinely derives its expectations from the document.",
-        "The critic also found three vacuous assertions inside this finding's own repair: the acceptance row was never iterated, the wait-state column was compared against a constant equal to itself, and the literal-only inversion loop was a tautology. All three were repaired after the critique and are recorded in the finding; the gate now runs eleven document mutations. The digest above is the repaired script, so this evidence postdates the critique that produced it."
+        "The critic also found three vacuous assertions inside this finding's own repair: the acceptance row was never iterated, the wait-state column was compared against a constant equal to itself, and the literal-only inversion loop was a tautology. All three were repaired after the critique and are recorded in the finding; the gate now runs eleven document mutations. The digest above is the repaired script, so this evidence postdates the critique that produced it.",
+        "Round two of independent review found three further vacuous assertions in this finding's own repair -- two parsed-but-unlooped vocabulary rows, the overwrites table compared against an in-gate literal, and a parsed-and-discarded receipt-kind column -- all filed under Derived. All are repaired and the gate now runs sixteen document mutations. The digest above is the twice-repaired script, so this evidence postdates both critiques."
       ]
     },
     {
@@ -134,7 +135,7 @@
         {
           "locator": "file:docs/coordination-engine-contracts.md",
           "result": "verified",
-          "sha256": "ed4f7a0a64de3781e75f2dc25ab50558639ea2c22b7201a3174089dec0f4459d"
+          "sha256": "6e9dc9c461094cffc89dc035c1a6d5a9121580f3170cff2058a3a3e9e9aee9f0"
         },
         {
           "locator": "command:bash scripts/test-review-contract-coherence.sh",
@@ -158,7 +159,7 @@
         {
           "locator": "file:docs/coordination-engine-contracts.md",
           "result": "verified",
-          "sha256": "ed4f7a0a64de3781e75f2dc25ab50558639ea2c22b7201a3174089dec0f4459d"
+          "sha256": "6e9dc9c461094cffc89dc035c1a6d5a9121580f3170cff2058a3a3e9e9aee9f0"
         },
         {
           "locator": "command:bash scripts/test-review-contract-coherence.sh",
@@ -218,6 +219,26 @@
       "confidenceLimits": [
         "This finding was added AFTER the critique, in response to the critic's §4.5 result, and was therefore not itself independently critiqued. It is disclosed as such rather than presented as carrying the same review standing as §4.1 through §4.11.",
         "Both cited commands were run and their outputs are the finding's Observed values: 409 lines with zero intake occurrences in the repository mirror, 429 lines carrying the full intake template in the loaded Kit skill."
+      ]
+    },
+    {
+      "id": "§4.13",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:bash scripts/run-ci-gate.sh review-contract artifacts/ci/results/review-contract.json",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/run-ci-gate.sh",
+          "result": "verified",
+          "sha256": "ed185f934c46d17b3f0ee48afbb9f84cc57cf0465797299beb76e8bc1d2334a9"
+        }
+      ],
+      "confidenceLimits": [
+        "Found by round-two independent review, which measured the route on both a correct and a falsified document and observed exit 1 in both cases, establishing that it could not distinguish them. Reproduced by the implementer before choosing the repair.",
+        "This finding was added after that critique and was not itself independently critiqued; it is disclosed as such. The half-wiring it describes has been removed, so scripts/run-ci-gate.sh is now byte-identical to origin/main and the cited file evidences the absence of the route rather than its presence."
       ]
     }
   ]
