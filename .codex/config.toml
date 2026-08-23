@@ -4,3 +4,10 @@
 FSGG_COORD_OWNER_TYPE = "user"
 FSGG_COORD_OWNER = "EHotwagner"
 FSGG_COORD_PROJECT = "S.I.R."
+
+# .NET toolchain resolution (S.I.R.#256). `scripts/agent-env.sh` carries the order and the reason;
+# `docs/workspace-onboarding.md` explains it. This value is delivered to the process VERBATIM —
+# Codex does not expand it, which is measured and is exactly why the path is named this way rather
+# than as `${HOME}/.dotnet`: bash expands `BASH_ENV` itself before using it as a filename, so the
+# repository root is resolved at shell start with no absolute home directory written down anywhere.
+BASH_ENV = "$(git rev-parse --show-toplevel 2>/dev/null)/scripts/agent-env.sh"
