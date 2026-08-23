@@ -1,13 +1,16 @@
 import assert from "node:assert/strict";
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
+import { documentedFrameCeilingCell, tacticalFrameBudget, tacticalFrameBudgetDocumentation } from "./lib/performance-budget.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
-validateDefinitions(source);
+// validateDefinitions COMPOSES the budget: workload policy from the fixture file, ceiling from the
+// single declaration. `source.frameBudget` is the raw file and carries no ceiling at all.
+const definitions = validateDefinitions(source);
 assert.equal(digest(source).length, 64);
 assert.match(makeMap(source.fixtures[0]), /^SIR-MAP 2\nsize 30 30\n/);
 assert.equal(byteDigest(Buffer.from("abc")), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
@@ -35,8 +38,11 @@ const summary = summarize([{ stages }], source.materialShareThreshold);
 assert.equal(summary.nextBottleneck.stage, "paint");
 assert.equal(summary.dispositions.packedTransport, "unresolved");
 assert.match(summary.interpretation, /not a permanent supported-size ceiling/);
-assert.deepEqual(extractFrameHealth(journeyTrace).intervalsMilliseconds, [16, 31]);
-assert.equal(extractFrameHealth(journeyTrace).droppedFrames, 1);
+assert.deepEqual(extractFrameHealth(journeyTrace, definitions.frameBudget).intervalsMilliseconds, [16, 31]);
+assert.equal(extractFrameHealth(journeyTrace, definitions.frameBudget).droppedFrames, 1,
+  "of the 16/31/10 ms frames only the 31 ms one exceeds the declared ceiling; if this count moved, the drop threshold moved with the declaration, which is the intended derivation -- update the declaration deliberately, not this number");
+assert.throws(() => extractFrameHealth(journeyTrace), /undeclared threshold/,
+  "frame health must refuse to count dropped frames with no declared ceiling rather than fall back to a literal");
 assert.equal(extractInputToPaint(journeyTrace, "selection").milliseconds, 1);
 assert.equal(extractInputToPaint(journeyTrace, "idle").available, false);
 assert.throws(() => extractJourneyTrace({ traceEvents: [] }), /clock-sync window/, "missing journey window must fail closed");
@@ -119,15 +125,119 @@ console.log("JUSTIFIED evidence-binding: coordinated candidate and digest reseal
 // --- #268: the verdict must be derived from measurements, and must be able to say "fail" ---
 // These gates exist because `result` was a literal "pass" in the producer and the finalizer gated on it.
 // Each one is paired with a subject mutation recorded in PR #300; predicate inversion is not evidence here.
-const budget = source.frameBudget;
-assert.ok(budget, "the fixture contract must declare a frame budget");
-assert.equal(budget.callbackMillisecondsCeiling, 16.67);
+const rawBudget = source.frameBudget;          // what the fixture FILE says
+const budget = definitions.frameBudget;        // what validateDefinitions composed
+assert.ok(rawBudget, "the fixture contract must declare a frame budget block");
+
+// --- #299: ONE declaration, derived everywhere else -------------------------------------------
+// There is deliberately no numeric literal in this section. A literal here is what would let a
+// broken derivation stay green: the suite would pin the number it was supposed to be checking, and
+// a consumer that had stopped deriving would still agree with it by coincidence.
+assert.ok(!("callbackMillisecondsCeiling" in rawBudget),
+  "the fixture file must not restate the ceiling; it is derived from the single declaration");
+assert.equal(budget.callbackMillisecondsCeiling, tacticalFrameBudget.callbackMillisecondsCeiling,
+  "the composed budget's ceiling must BE the declared one, not a copy that agrees");
+assert.equal(budget.droppedFrameCeilingMilliseconds, tacticalFrameBudget.callbackMillisecondsCeiling,
+  "the dropped-frame threshold and the budget ceiling are one number, not two that agree");
+// and the fixture file may not smuggle it back in
+assert.throws(() => validateDefinitions({ ...source, frameBudget: { ...rawBudget, callbackMillisecondsCeiling: 12 } }),
+  /must not restate callbackMillisecondsCeiling/,
+  "a fixture file that restates the ceiling must be refused, not silently preferred or ignored");
+
+// The published prose table is a PROJECTION of the declaration, and this gate is what makes that
+// true rather than aspirational. It fails closed: a table it cannot find is a failure, not a pass.
+const budgetDoc = readFileSync(new URL(`../${tacticalFrameBudgetDocumentation.path}`, import.meta.url), "utf8");
+const headingIndex = budgetDoc.indexOf(`## ${tacticalFrameBudgetDocumentation.tableHeading}`);
+assert.ok(headingIndex >= 0, `${tacticalFrameBudgetDocumentation.path} has no "${tacticalFrameBudgetDocumentation.tableHeading}" section`);
+// Take the FIRST contiguous pipe-table under that heading. Filtering the whole remainder of the file
+// would silently sweep in every later table in the document and compare the wrong cells.
+const linesAfterHeading = budgetDoc.slice(headingIndex).split("\n");
+const tableStart = linesAfterHeading.findIndex((line) => line.trim().startsWith("|"));
+assert.ok(tableStart >= 0, `no table found under "${tacticalFrameBudgetDocumentation.tableHeading}"`);
+let tableEnd = tableStart;
+while (tableEnd < linesAfterHeading.length && linesAfterHeading[tableEnd].trim().startsWith("|")) tableEnd += 1;
+const budgetRows = linesAfterHeading.slice(tableStart, tableEnd);
+assert.ok(budgetRows.length >= 3, "the tactical visual-system budget table must have a header, a separator and at least one row");
+const headerCells = budgetRows[0].split("|").map((cell) => cell.trim());
+const ceilingColumn = headerCells.indexOf(tacticalFrameBudgetDocumentation.column);
+assert.ok(ceilingColumn > 0, `the budget table has no "${tacticalFrameBudgetDocumentation.column}" column`);
+const publishedCeilings = budgetRows.slice(2).map((row) => row.split("|").map((cell) => cell.trim())[ceilingColumn]);
+assert.ok(publishedCeilings.length > 0, "the budget table declares no workload rows");
+for (const cell of publishedCeilings)
+  assert.equal(cell, documentedFrameCeilingCell(),
+    `${tacticalFrameBudgetDocumentation.path} publishes "${cell}" for the declared ceiling; the declaration says "${documentedFrameCeilingCell()}". The document is a projection of scripts/lib/performance-budget.mjs and must follow it.`);
+
+// A dropped frame is the SAME quantity as a budget breach, so the two thresholds cannot diverge.
+// This is the case the old inline 25 ms literal got wrong, and the case the pre-existing trace
+// fixture could not see: with durations of 16/31/10 ms, the old and the declared threshold both
+// count exactly one frame, so it could not have discriminated them.
+const overCeiling = tacticalFrameBudget.callbackMillisecondsCeiling + 3.33;   // breaches; was NOT counted at 25 ms
+const underCeiling = tacticalFrameBudget.callbackMillisecondsCeiling - 0.67;  // conforms; must never be counted
+const discriminating = { traceEvents: [
+  { name: "thread_name", tid: 1, args: { name: "CrRendererMain" } },
+  { name: "clock_sync", ts: 500, args: { sync_id: "sir-journey-start" } },
+  { name: "AnimationFrame", ph: "b", tid: 1, ts: 3000, args: { animation_frame_timing_info: { duration_ms: underCeiling } } },
+  { name: "AnimationFrame", ph: "b", tid: 1, ts: 19000, args: { animation_frame_timing_info: { duration_ms: overCeiling } } },
+  { name: "clock_sync", ts: 60000, args: { sync_id: "sir-journey-end" } },
+] };
+const discriminatingHealth = extractFrameHealth(extractJourneyTrace(discriminating), budget);
+assert.equal(discriminatingHealth.droppedFrames, 1,
+  "a frame that breaches the declared ceiling must be counted as dropped; under the old undeclared 25 ms threshold this frame breached the budget and was reported as zero drops");
+assert.equal(evaluateRunFrameVerdict(discriminatingHealth, "zoom", budget).result, "fail",
+  "and the verdict must agree with the drop count on the very same frame -- one number, one answer");
+// No consumer may RESTATE the ceiling. This is what keeps sites the in-process assertions above
+// cannot reach -- the Chromium review generator and the Playwright spec, both of which need a browser
+// to execute -- from drifting back into their own copy of the number. A file that contains no literal
+// ceiling cannot hold a stale one, whatever it does at runtime.
+//
+// The consumer set is DERIVED from the tree, not enumerated. It was a hand-maintained list, and it
+// silently omitted finalize-svg-pipeline-evidence.mjs -- one of only two scripts that receive the
+// composed budget -- so a stale ceiling planted there was invisible to this scan (S.I.R.#299 F1). A
+// hand-maintained list of consumers, inside the gate that exists to stop hand-maintained copies of a
+// number, is the same disease one level up. Anything that imports the declaration or receives the
+// composed budget is scanned, whether or not anyone remembered to add it.
+const declaredCeilingLiteral = String(tacticalFrameBudget.callbackMillisecondsCeiling);
+const consumesBudget = /performance-budget\.mjs|definitions\.frameBudget|validateDefinitions\(/;
+const sourceRoots = [["./", ".mjs"], ["./lib/", ".mjs"], ["../tests/SIR.Browser.Tests/", ".spec.js"]];
+const budgetConsumers = sourceRoots.flatMap(([dir, extension]) => readdirSync(new URL(dir, import.meta.url))
+  .filter((name) => name.endsWith(extension))
+  .map((name) => `${dir}${name}`)
+  // the declaration itself is the ONE place the literal belongs
+  .filter((path) => path !== "./lib/performance-budget.mjs")
+  .filter((path) => consumesBudget.test(readFileSync(new URL(path, import.meta.url), "utf8"))));
+
+assert.ok(budgetConsumers.length >= 5, `the consumer sweep found only ${budgetConsumers.length} files; it is not reaching the tree and would pass vacuously`);
+for (const consumer of budgetConsumers) {
+  const text = readFileSync(new URL(consumer, import.meta.url), "utf8");
+  assert.ok(!text.includes(declaredCeilingLiteral),
+    `${consumer} restates the declared ceiling as the literal ${declaredCeilingLiteral}. Import it from lib/performance-budget.mjs instead; a second copy that agrees today is exactly the defect S.I.R.#299 removed.`);
+}
+// the fixture CONTRACT is data rather than code, so it is checked structurally instead: validateDefinitions
+// refuses a restated ceiling outright, and the raw-file assertion above proves the key is absent.
+assert.ok(!readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url), "utf8").includes(declaredCeilingLiteral),
+  "the fixture contract must not restate the declared ceiling");
+// the two that cannot be exercised in-process must actually READ the declaration
+for (const consumer of ["./generate-tactical-visual-review.mjs", "../tests/SIR.Browser.Tests/visible-workflows.spec.js"]) {
+  assert.ok(budgetConsumers.includes(consumer), `${consumer} must be reached by the consumer sweep`);
+  const text = readFileSync(new URL(consumer, import.meta.url), "utf8");
+  assert.match(text, /performance-budget\.mjs/, `${consumer} must import the single declaration`);
+  assert.match(text, /tacticalFrameBudget\.callbackMillisecondsCeiling/, `${consumer} must read the declared ceiling`);
+}
+// and the consumer this gate MISSED must now be reached by it, by derivation rather than by memory
+assert.ok(budgetConsumers.includes("./finalize-svg-pipeline-evidence.mjs"),
+  "the finalizer receives the composed budget and must be reached by the consumer sweep");
+console.log(`JUSTIFIED frame-budget-no-restatement: ${budgetConsumers.length} budget consumers DERIVED from the tree contain no literal ${declaredCeilingLiteral}, the fixture contract restates nothing, and the two browser-route consumers read the declaration by name`);
+console.log(`JUSTIFIED frame-budget-single-declaration: the fixture file, the composed budget, the drop threshold and ${publishedCeilings.length} published table cell(s) all resolve to the one declaration, a restated ceiling is refused, and a frame ${overCeiling} ms long -- uncounted under the old undeclared threshold -- is counted as dropped and fails its verdict`);
 
 // the declared ceiling discriminates, in BOTH directions -- a gate that only ever reds is as useless as
-// one that only ever greens, and 16 vs 17 ms is the boundary real runs actually sit on
-assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [16.0] }, "zoom", budget).result, "pass");
-assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [16.67] }, "zoom", budget).result, "pass");
-assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [17.0] }, "zoom", budget).result, "fail");
+// one that only ever greens, and just-below vs just-above is the boundary real runs actually sit on.
+// S.I.R.#299: these were literals pinning the ceiling. They are now taken FROM it, so they follow the
+// declaration instead of quietly becoming a fourth statement of it.
+const ceiling = tacticalFrameBudget.callbackMillisecondsCeiling;
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [ceiling - 0.67] }, "zoom", budget).result, "pass");
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [ceiling] }, "zoom", budget).result, "pass",
+  "the ceiling is inclusive: a frame exactly at it conforms");
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [ceiling + 0.33] }, "zoom", budget).result, "fail");
 
 // a non-answer must never be reported as a confident answer
 assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [] }, "idle", budget).result, "unevaluated",
@@ -157,12 +267,11 @@ assert.throws(() => evaluateArtifactVerdict([{}]), /derived frameBudget verdict/
 
 // the contract refuses to operate with no declared budget, rather than inventing one
 assert.throws(() => validateDefinitions({ ...source, frameBudget: undefined }), /declares no frameBudget/);
-assert.throws(() => validateDefinitions({ ...source, frameBudget: { ...budget, evaluatedPercentiles: [] } }), /evaluatedPercentiles/);
-assert.throws(() => validateDefinitions({ ...source, frameBudget: { ...budget, callbackMillisecondsCeiling: 0 } }), /callbackMillisecondsCeiling/);
+assert.throws(() => validateDefinitions({ ...source, frameBudget: { ...rawBudget, evaluatedPercentiles: [] } }), /evaluatedPercentiles/);
 
 // the workload binding must NOT move when only the budget changes, or historical evidence is falsely
 // reported as coming from different fixtures and can never be re-evaluated against a corrected budget
-assert.equal(fixtureIdentityDigest(source), fixtureIdentityDigest({ ...source, frameBudget: { ...budget, callbackMillisecondsCeiling: 99 } }),
+assert.equal(fixtureIdentityDigest(source), fixtureIdentityDigest({ ...source, frameBudget: { ...rawBudget, callbackMillisecondsCeiling: 99 } }),
   "the fixture identity binds the workload, not the budget applied to it");
 assert.notEqual(fixtureIdentityDigest(source), fixtureIdentityDigest({ ...source, warmupCycles: source.warmupCycles + 1 }),
   "a real workload change must still move the fixture identity");
@@ -205,7 +314,7 @@ assert.ok(budget.exemptJourneys.every((journey) => source.journeys.includes(jour
 const sandbox = mkdtempSync(resolve(tmpdir(), "sir-svg-finalizer-"));
 mkdirSync(resolve(sandbox, "scripts/lib"), { recursive: true });
 mkdirSync(resolve(sandbox, "work/231-svg-pipeline-measurement"), { recursive: true });
-for (const file of ["finalize-svg-pipeline-evidence.mjs", "svg-pipeline-fixtures.v1.json", "lib/svg-pipeline-measurement.mjs"])
+for (const file of ["finalize-svg-pipeline-evidence.mjs", "svg-pipeline-fixtures.v1.json", "lib/svg-pipeline-measurement.mjs", "lib/performance-budget.mjs"])
   copyFileSync(new URL(`./${file}`, import.meta.url), resolve(sandbox, "scripts", file));
 copyFileSync(new URL("../work/231-svg-pipeline-measurement/raw-trace-manifest.json", import.meta.url),
   resolve(sandbox, "work/231-svg-pipeline-measurement/raw-trace-manifest.json"));
@@ -231,6 +340,42 @@ for (const run of conforming.runs) {
 }
 const accepted = finalize(conforming);
 assert.equal(accepted.status, 0, `a conforming matrix must finalize, got: ${accepted.stderr}`);
+
+// F1: NEITHER fixture above can observe the threshold this refusal is NAMED for. `breaching` carries a
+// 231 ms frame that breaches EVERY candidate ceiling; `conforming` clamps to 12 ms, which conforms to
+// EVERY candidate. Both sit outside the discriminating band, so the pair returns the same verdict
+// whether the finalizer gates on the declared ceiling or on the undeclared 25 ms literal this item
+// removed -- the refusal was decorative with respect to its own number, while asserting it refused
+// "FOR the budget". That is the same defect this suite repaired for extractFrameHealth, one file over.
+//
+// The superseded literal is named ON PURPOSE: a band fixture is only meaningful relative to the
+// alternative it must exclude, and without it the band value is just another magic number.
+const supersededDropThresholdMilliseconds = 25;
+const bandMilliseconds = tacticalFrameBudget.callbackMillisecondsCeiling + 3.33;
+assert.ok(tacticalFrameBudget.callbackMillisecondsCeiling < bandMilliseconds && bandMilliseconds < supersededDropThresholdMilliseconds,
+  `the band fixture must lie strictly between the declared ceiling and the superseded ${supersededDropThresholdMilliseconds} ms literal, or it discriminates nothing`);
+
+const inBand = structuredClone(conforming);
+for (const run of inBand.runs) {
+  const durations = run.frameHealth?.frameDurationsMilliseconds;
+  if (Array.isArray(durations) && durations.length) run.frameHealth.frameDurationsMilliseconds = durations.map(() => bandMilliseconds);
+}
+// Prove the two sides CAN differ before trusting the refusal: the SAME matrix must be judged fail by the
+// declared budget and pass by the superseded one. Without this the refusal below could be firing for a
+// reason unrelated to the ceiling, and this gate would measure nothing.
+const bandUnderDeclared = evaluateArtifactVerdict(inBand.runs.map((run) => ({ frameBudget: evaluateRunFrameVerdict(run.frameHealth, run.journey, budget) })));
+const bandUnderSuperseded = evaluateArtifactVerdict(inBand.runs.map((run) => ({ frameBudget: evaluateRunFrameVerdict(run.frameHealth, run.journey, { ...budget, callbackMillisecondsCeiling: supersededDropThresholdMilliseconds }) })));
+assert.equal(bandUnderDeclared.result, "fail", "the band matrix must BREACH the declared ceiling");
+assert.equal(bandUnderSuperseded.result, "pass",
+  `the band matrix must CONFORM to the superseded ${supersededDropThresholdMilliseconds} ms literal -- if it failed under both, this fixture would discriminate nothing`);
+
+// and now the real consumer, as a process: it must refuse the band matrix, and refuse it FOR the budget
+const bandRefused = finalize(inBand);
+assert.notEqual(bandRefused.status, 0,
+  `the finalizer must refuse a matrix that breaches the DECLARED ceiling but would pass the superseded ${supersededDropThresholdMilliseconds} ms literal; accepting it means the finalizer is gating on a threshold no document declares`);
+assert.match(`${bandRefused.stderr}`, /breaches the declared frame budget/,
+  "and it must refuse the band matrix FOR the budget, not incidentally for some other reason");
+console.log(`JUSTIFIED frame-budget-finalizer-discriminates: the finalizer refuses a matrix at ${bandMilliseconds} ms, which breaches the declared ceiling and conforms to the superseded ${supersededDropThresholdMilliseconds} ms literal, so its refusal observes the declared number rather than agreeing with it by accident`);
 
 // and an artifact that CLAIMS a pass its own measurements do not support must be refused, because the
 // finalizer re-derives instead of trusting the field -- this is the route a bad merge reintroduces
@@ -264,7 +409,7 @@ console.log("JUSTIFIED frame-budget-verdict: derived per-run and artifact verdic
 // --- #268 F2: the surfaces an operator reads must carry the derived verdict, not a literal ---
 // The artifact said `fail` while the exit code, the printed line and the JUnit report all said pass
 // unconditionally. All three now read one derivation, so they are asserted here rather than in a browser.
-const failingRun = { fixture: "controlled-baseline", journey: "playback", result: "fail", frameBudget: { reason: "measured p95=124 ms against the declared ceiling of 16.67 ms" } };
+const failingRun = { fixture: "controlled-baseline", journey: "playback", result: "fail", frameBudget: { reason: `measured p95=124 ms against the declared ceiling of ${tacticalFrameBudget.callbackMillisecondsCeiling} ms` } };
 const passingRun = { fixture: "controlled-baseline", journey: "selection", result: "pass", frameBudget: { reason: "within ceiling" } };
 const exemptRun = { fixture: "controlled-baseline", journey: "idle", result: "unevaluated", frameBudget: { reason: "declared frame-exempt and produced no AnimationFrame records" } };
 

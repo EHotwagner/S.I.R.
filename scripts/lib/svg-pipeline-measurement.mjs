@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { tacticalFrameBudget } from "./performance-budget.mjs";
 
 export const schema = "sir.svg-pipeline-measurement/1";
 export const stageNames = [
@@ -26,7 +27,12 @@ export function validateDefinitions(definition) {
   if (!(definition.warmupCycles > 0 && definition.stabilizationCycles > definition.warmupCycles)) throw new Error("memory cycle contract is invalid");
   const budget = definition.frameBudget;
   if (!budget || typeof budget !== "object") throw new Error("fixture definition declares no frameBudget; a verdict cannot be derived without a declared budget");
-  if (!(budget.callbackMillisecondsCeiling > 0)) throw new Error("frameBudget.callbackMillisecondsCeiling must be a positive number of milliseconds");
+  // The ceiling is NOT read from this file. S.I.R.#299: a fixture file that restates the number is a
+  // second declaration that agrees only until someone edits one of them, which is the defect that put
+  // five disagreeing copies of this budget in the tree. Refuse the restatement rather than trust it.
+  if ("callbackMillisecondsCeiling" in budget)
+    throw new Error("frameBudget must not restate callbackMillisecondsCeiling; it is derived from the single declaration in scripts/lib/performance-budget.mjs");
+  if (!(tacticalFrameBudget.callbackMillisecondsCeiling > 0)) throw new Error("the declared frame budget carries no positive callbackMillisecondsCeiling");
   if (!Array.isArray(budget.evaluatedPercentiles) || budget.evaluatedPercentiles.length === 0
       || budget.evaluatedPercentiles.some((value) => !(value > 0 && value <= 1)))
     throw new Error("frameBudget.evaluatedPercentiles must be a non-empty list of proportions in (0, 1]");
@@ -59,7 +65,10 @@ export function validateDefinitions(definition) {
   const pair = (definition.globalScalePair || []).map((id) => byId.get(id));
   const area = (fixture) => fixture.mapExtent[0] * fixture.mapExtent[1];
   if (pair.length !== 2 || pair.some((fixture) => !fixture) || stableJson(pair[0].viewport) !== stableJson(pair[1].viewport) || pair[0].visibleDensity !== pair[1].visibleDensity || pair[0].globalUnitCount !== pair[1].globalUnitCount || pair[0].eventRateHz !== pair[1].eventRateHz || pair[0].routeOverlayComplexity !== pair[1].routeOverlayComplexity || area(pair[0]) >= area(pair[1]) || pair[0].supportingListSize >= pair[1].supportingListSize) throw new Error("large-project/small-viewport comparison is not controlled");
-  return definition;
+  // Compose the budget actually in force: workload policy from this file, the CEILING from the
+  // single declaration. Every consumer reads definitions.frameBudget, so every consumer moves
+  // when the declaration moves.
+  return { ...definition, frameBudget: { ...budget, ...tacticalFrameBudget } };
 }
 
 export function makeMap(fixture) {
@@ -233,13 +242,19 @@ export function extractJourneyTrace(trace, startSyncId = "sir-journey-start", en
   return { ...trace, traceEvents: events.filter((event) => event.name === "thread_name" || (traceTimestamp(event) >= traceTimestamp(start) && traceTimestamp(event) <= traceTimestamp(end))) };
 }
 
-export function extractFrameHealth(trace) {
+// `budget` is REQUIRED and is the declared budget composed by validateDefinitions. It is a parameter
+// rather than a module-level import so a test can drive this function at a ceiling other than the
+// declared one and observe the count move; there is no default, because a default is how the previous
+// undeclared 25 ms threshold survived four repairs to this file.
+export function extractFrameHealth(trace, budget) {
+  const droppedCeiling = budget?.droppedFrameCeilingMilliseconds;
+  if (!(droppedCeiling > 0)) throw new Error("extractFrameHealth requires a declared droppedFrameCeilingMilliseconds; frame health cannot be reported against an undeclared threshold");
   const events = Array.isArray(trace?.traceEvents) ? trace.traceEvents : [];
   const frames = events.filter((event) => event.name === "AnimationFrame" && event.ph === "b" && Number.isFinite(traceTimestamp(event)) && traceTimestamp(event) > 0).sort((a, b) => traceTimestamp(a) - traceTimestamp(b));
   const intervals = frames.slice(1).map((event, index) => (traceTimestamp(event) - traceTimestamp(frames[index])) / 1000);
   const durations = frames.map((event) => Number(event.args?.animation_frame_timing_info?.duration_ms)).filter(Number.isFinite);
   const longTasks = events.filter((event) => event.name === "RunTask" && Number(event.dur || 0) >= 50_000).map((event) => Number((event.dur / 1000).toFixed(3)));
-  return { samples: frames.length, droppedFrames: durations.filter((value) => value > 25).length, frameDurationsMilliseconds: durations.map((value) => Number(value.toFixed(3))), intervalsMilliseconds: intervals.map((value) => Number(value.toFixed(3))), longTasks, source: "Chromium AnimationFrame timing records and renderer RunTask slices; no injected frame observer", droppedFrameNote: "droppedFrames counts frames longer than an inline 25 ms threshold that NO budget document declares. It is a reported diagnostic and is deliberately not gated on; the declared frame budget is evaluated separately in each run's frameBudget block." };
+  return { samples: frames.length, droppedFrames: durations.filter((value) => value > droppedCeiling).length, droppedFrameCeilingMilliseconds: droppedCeiling, frameDurationsMilliseconds: durations.map((value) => Number(value.toFixed(3))), intervalsMilliseconds: intervals.map((value) => Number(value.toFixed(3))), longTasks, source: "Chromium AnimationFrame timing records and renderer RunTask slices; no injected frame observer", droppedFrameNote: `droppedFrames counts frames longer than ${droppedCeiling} ms, which is the DECLARED frame ceiling from scripts/lib/performance-budget.mjs and the same threshold the budget verdict is derived from -- the two cannot disagree. It remains a reported diagnostic and is not separately gated on; the verdict is in each run's frameBudget block.` };
 }
 
 // Nearest-rank percentile. This is the convention finalize-svg-pipeline-evidence.mjs already used;
