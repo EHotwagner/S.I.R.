@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
-import { documentedFrameCeilingCell, tacticalFrameBudget, tacticalFrameBudgetDocumentation } from "./lib/performance-budget.mjs";
+import { documentedFrameCeilingCell, documentedTacticalBudgetRows, tacticalBudgetTableDocumentation, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 // validateDefinitions COMPOSES the budget: workload policy from the fixture file, ceiling from the
@@ -216,12 +216,34 @@ for (const consumer of budgetConsumers) {
 // refuses a restated ceiling outright, and the raw-file assertion above proves the key is absent.
 assert.ok(!readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url), "utf8").includes(declaredCeilingLiteral),
   "the fixture contract must not restate the declared ceiling");
-// the two that cannot be exercised in-process must actually READ the declaration
+// the two that cannot be exercised in-process must actually READ the declaration.
+//
+// S.I.R.#318 REPLACED a by-name match on `tacticalFrameBudget.callbackMillisecondsCeiling` here. That
+// spelling asserted one route to the number and would have reported a consumer BROKEN for deriving it
+// through a different declared export -- which is what the review generator now does, receiving the
+// whole published budget block from the declaration and naming no field of it. Matching the spelling
+// was the weaker claim in both directions: it also passes on a consumer that MENTIONS the expression
+// in a comment and gates on something else. So the derivation is now RESOLVED rather than matched:
+// the bindings each consumer imports from the declaration are looked up in the module and at least one
+// must actually carry the declared ceiling.
+const declarationModule = await import("./lib/performance-budget.mjs");
+const carriesValue = (value, target, seen = new Set()) => {
+  if (value === target) return true;
+  if (typeof value !== "object" || value === null || seen.has(value)) return false;
+  seen.add(value);
+  return Object.values(value).some((nested) => carriesValue(nested, target, seen));
+};
 for (const consumer of ["./generate-tactical-visual-review.mjs", "../tests/SIR.Browser.Tests/visible-workflows.spec.js"]) {
   assert.ok(budgetConsumers.includes(consumer), `${consumer} must be reached by the consumer sweep`);
   const text = readFileSync(new URL(consumer, import.meta.url), "utf8");
-  assert.match(text, /performance-budget\.mjs/, `${consumer} must import the single declaration`);
-  assert.match(text, /tacticalFrameBudget\.callbackMillisecondsCeiling/, `${consumer} must read the declared ceiling`);
+  const importMatch = text.match(/import\s*\{([^}]*)\}\s*from\s*["'][^"']*performance-budget\.mjs["']/);
+  assert.ok(importMatch, `${consumer} must import the single declaration`);
+  const importedBindings = importMatch[1].split(",").map((binding) => binding.trim().split(/\s+as\s+/)[0]).filter(Boolean);
+  assert.ok(importedBindings.length > 0, `${consumer} imports the declaration module but binds nothing from it`);
+  for (const binding of importedBindings)
+    assert.ok(binding in declarationModule, `${consumer} imports ${binding} from the declaration, which exports no such binding`);
+  assert.ok(importedBindings.some((binding) => carriesValue(declarationModule[binding], tacticalFrameBudget.callbackMillisecondsCeiling)),
+    `${consumer} imports [${importedBindings.join(", ")}] from the declaration, and none of them carries the declared ceiling ${tacticalFrameBudget.callbackMillisecondsCeiling}. This consumer cannot be exercised in-process, so this resolution is the only evidence that it derives the number rather than restating it.`);
 }
 // and the consumer this gate MISSED must now be reached by it, by derivation rather than by memory
 assert.ok(budgetConsumers.includes("./finalize-svg-pipeline-evidence.mjs"),
@@ -436,11 +458,233 @@ assert.throws(() => measurementReport([passingRun], undefined), /derived artifac
 console.log("JUSTIFIED frame-budget-report-surfaces: exit status, printed line and JUnit report all derive from the one verdict");
 
 
+// --- #318: the rest of the tactical budget table, declared once and derived everywhere ----------
+// #299 brought ONE column of the published table here. These gates bring the rest, and the two
+// figures that had no row in it at all. As above, there is deliberately no numeric budget literal in
+// this section: a literal here would pin the number this section exists to check.
+
+// 1. THE PUBLISHED TABLE IS A PROJECTION OF THE DECLARATION, COLUMN BY COLUMN AND ROW BY ROW.
+// This reuses the table already located and bounded above (`budgetRows`, `headerCells`), so the two
+// gates cannot come to disagree about which table they are reading. It fails closed in BOTH
+// directions: a declared column the document does not publish, a declared row the document does not
+// carry, and a published cell the declaration does not say are each a failure.
+const documentedRows = documentedTacticalBudgetRows();
+assert.equal(tacticalBudgetTableDocumentation.tableHeading, tacticalFrameBudgetDocumentation.tableHeading,
+  "both declarations must name the same published table, or these gates read different documents");
+const publishedRows = budgetRows.slice(2).map((row) => row.split("|").map((cell) => cell.trim()));
+assert.equal(publishedRows.length, documentedRows.length,
+  `${tacticalBudgetTableDocumentation.path} publishes ${publishedRows.length} workload row(s); the declaration declares ${documentedRows.length}`);
+let boundCells = 0;
+for (const [rowIndex, declaredRow] of documentedRows.entries()) {
+  const workloadColumn = headerCells.indexOf(tacticalBudgetTableDocumentation.workloadColumn);
+  assert.ok(workloadColumn > 0, `the budget table has no "${tacticalBudgetTableDocumentation.workloadColumn}" column`);
+  assert.equal(publishedRows[rowIndex][workloadColumn], declaredRow[tacticalBudgetTableDocumentation.workloadColumn],
+    "the published rows must be the declared workloads, in the declared order");
+  for (const [column, declaredCell] of Object.entries(declaredRow)) {
+    const columnIndex = headerCells.indexOf(column);
+    assert.ok(columnIndex > 0, `${tacticalBudgetTableDocumentation.path} publishes no "${column}" column, but the declaration projects one into it`);
+    assert.equal(publishedRows[rowIndex][columnIndex], declaredCell,
+      `${tacticalBudgetTableDocumentation.path} publishes "${publishedRows[rowIndex][columnIndex]}" in "${column}" for ${declaredRow[tacticalBudgetTableDocumentation.workloadColumn]}; the declaration says "${declaredCell}". The document is a projection of scripts/lib/performance-budget.mjs and must follow it.`);
+    boundCells += 1;
+  }
+}
+console.log(`JUSTIFIED tactical-budget-document-binding: ${boundCells} published cell(s) across ${documentedRows.length} row(s) resolve to the declaration, and a column or row the declaration projects that the document does not publish is a failure rather than a skip`);
+
+// 2. THE RUNTIME EFFECT CAP IS THE SAME NUMBER, NOT ONE THAT AGREES.
+// F# cannot import the declaration, so the binding is a gate, exactly as for the prose table. It
+// fails closed on a source it cannot read or cannot find the binding in: an unanswerable question is
+// not agreement (#266).
+const projectionSource = readFileSync(new URL(`../${tacticalRuntimeEffectCap.path}`, import.meta.url), "utf8");
+const capMatches = [...projectionSource.matchAll(new RegExp(`let\\s+(?:private\\s+)?${tacticalRuntimeEffectCap.binding}\\s*=\\s*(\\d+)`, "g"))];
+assert.equal(capMatches.length, 1,
+  `${tacticalRuntimeEffectCap.path} must bind ${tacticalRuntimeEffectCap.binding} exactly once for this gate to read it; found ${capMatches.length}`);
+assert.equal(Number(capMatches[0][1]), tacticalRuntimeEffectCap.maximumEffectInstances,
+  `${tacticalRuntimeEffectCap.path} enforces ${tacticalRuntimeEffectCap.binding} = ${capMatches[0][1]}, and the declaration publishes ${tacticalRuntimeEffectCap.maximumEffectInstances} as the stress-row effect ceiling. These are ONE number -- the product truncates to it and surfaces it as ${tacticalRuntimeEffectCap.surfacedAs} -- so a divergence in either direction is a failure.`);
+assert.ok(projectionSource.includes(tacticalRuntimeEffectCap.surfacedAs) || readFileSync(new URL("../src/SIR.Client.Web/App.fs", import.meta.url), "utf8").includes(tacticalRuntimeEffectCap.surfacedAs),
+  `${tacticalRuntimeEffectCap.surfacedAs} must still be surfaced, or the browser spec's derivation reads an attribute nothing emits`);
+console.log(`JUSTIFIED tactical-budget-runtime-effect-cap: the declared stress-row effect ceiling IS ${tacticalRuntimeEffectCap.path}'s ${tacticalRuntimeEffectCap.binding}, re-read from the F# source, and ${tacticalRuntimeEffectCap.surfacedAs} is still emitted for the consumer that derives from the live DOM`);
+
+// 3. NO CONSUMER MAY RESTATE A TACTICAL BUDGET.
+// Two independent rules, because neither catches the other's case, and the LIMITS of each are stated
+// rather than implied.
+//
+// Rule A -- POSITION. A budget field name may appear in a consumer only as a READ. Assigning a
+// numeric literal to a declared budget key is a second declaration wherever it sits, and this is
+// checked on the KEY, so it catches a restated value that happens to agree.
+//
+// Rule B -- VALUE. A declared budget value may not appear as a standalone numeric token anywhere in
+// a consumer. This catches the shape Rule A cannot see: a keyless literal, which is exactly how the
+// browser spec restated the node cap, as a bare two-tier ternary over the two published caps.
+//
+// Rule B CANNOT carry every declared value, and that limit is declared here rather than left for a
+// reader to discover. The representative row's node cap and its input-to-paint ceiling each occur in
+// these consumers for reasons that have nothing to do with a budget -- a readiness timeout in the
+// review generator, a trace fixture duration in this suite, an unrelated overlay-layer
+// node bound, a Playwright wait, a percentile computation, a percentage assertion string -- so
+// sweeping them by value would red on correct code. They are covered by Rule A only, and a keyless
+// restatement of either ALONE would therefore escape both rules. A restatement of the node cap or of
+// the effect ceiling as a two-tier PAIR cannot escape, because the stress row's node cap and both
+// effect ceilings are swept -- and a single-tier copy of either quantity is not a statement of the
+// published budget, which has two tiers. That is the gate's exact bound; it is not claimed wider.
+const tacticalConsumersByName = ["./generate-tactical-visual-review.mjs", "./test-tactical-visual-review.mjs", "../tests/SIR.Browser.Tests/visible-workflows.spec.js"];
+for (const consumer of tacticalConsumersByName)
+  assert.ok(budgetConsumers.includes(consumer), `${consumer} must be reached by the DERIVED consumer sweep`);
+
+const declaredBudgetKeys = [...new Set(Object.values(tacticalReviewManifestBudgets).flatMap((row) => Object.keys(row)))];
+assert.ok(declaredBudgetKeys.length >= 4, `the declared budget key set is ${declaredBudgetKeys.length}; it is not reaching the declaration and Rule A would pass vacuously`);
+// The key S.I.R.#318 REMOVED. It named a millisecond nothing declared and was added to the ceiling at
+// the call site; a consumer that reintroduces it under any value has reintroduced the defect.
+// Spelled as a bare const rather than inside an array literal ON PURPOSE: readsKey below detects the
+// `budget["key"]` form, and a bracketed string literal here would make this line trip its own rule.
+const retiredBudgetKey = "measurementToleranceMilliseconds";
+const retiredBudgetKeys = [retiredBudgetKey];
+
+// Matched on CODE POSITION, never on the bare word. A gate that forbids a name outright also reds on
+// the comment that explains why the name was retired, and the fix for that is never to start
+// enumerating the shapes prose takes -- it is to match the structure of the thing being asserted,
+// which here is a definition (`key:` / `key =`) or a member read (`.key`).
+const definesKey = (text, key) => new RegExp(`${key}\\s*[:=](?!=)`).test(text);
+const readsKey = (text, key) => new RegExp(`\\.\\s*${key}\\b|\\[["'\`]${key}["'\`]\\]`).test(text);
+const restatesKey = (text) => [
+  ...declaredBudgetKeys.filter((key) => new RegExp(`${key}\\s*[:=]\\s*-?\\d`).test(text)),
+  ...retiredBudgetKeys.filter((key) => definesKey(text, key) || readsKey(text, key)),
+];
+// A budget WIDENED by arithmetic at a call site is a second, undeclared budget reached by addition
+// instead of by a literal -- the exact shape of the removed tolerance. No consumer needs to add to a
+// budget, so the operator is refused on a budget field outright.
+// Scoped to the MAXIMUM-bearing manifest fields -- the ones a consumer compares a measurement
+// against -- and deliberately NOT to the raw declared constants. Building a fixture relative to the
+// declared ceiling (`ceiling + 3.33`, as the band fixture above does) is how a discriminating
+// measurement gets constructed; widening the ceiling a consumer then GATES on is the defect. Those
+// are different structures and only the second is refused.
+const widensBudget = (text) => declaredBudgetKeys
+  .filter((key) => new RegExp(`\\.${key}\\s*\\+(?!\\+)|\\+\\s*[A-Za-z_$][\\w$.]*\\.${key}\\b`).test(text));
+
+const representativeWorkload = tacticalWorkloadBudgetList[0];
+const stressWorkload = tacticalWorkloadBudgetList[tacticalWorkloadBudgetList.length - 1];
+const sweptTacticalValues = [
+  stressWorkload.maximumDomNodes,
+  representativeWorkload.maximumEffects,
+  stressWorkload.maximumEffects,
+  stressWorkload.maximumInputToPaintMilliseconds,
+  tacticalFrameCadenceBudget.intervalCeilingMilliseconds,
+];
+const unsweepableTacticalValues = new Map([
+  [representativeWorkload.maximumDomNodes, "also a readiness timeout in the review generator, a trace-fixture duration in this suite, and an unrelated overlay-layer node bound in the browser spec"],
+  [representativeWorkload.maximumInputToPaintMilliseconds, "also a Playwright wait, a percentile computation, a declared workload's unit count, and a \"100%\" assertion string"],
+]);
+// EVERY declared value is accounted for: swept by Rule B, or named unsweepable WITH a reason. A new
+// budget figure added to the declaration and reachable by neither rule fails here rather than
+// silently joining the unswept set.
+const allDeclaredTacticalValues = [...new Set(tacticalWorkloadBudgetList.flatMap((workload) => [workload.maximumDomNodes, workload.maximumEffects, workload.maximumInputToPaintMilliseconds]).concat([tacticalFrameCadenceBudget.intervalCeilingMilliseconds]))];
+for (const value of allDeclaredTacticalValues)
+  assert.ok(sweptTacticalValues.includes(value) || unsweepableTacticalValues.has(value),
+    `the declared budget value ${value} is neither swept by value nor recorded as unsweepable with a reason; add it to one or the other rather than letting it join the unswept set silently`);
+for (const value of unsweepableTacticalValues.keys())
+  assert.ok(allDeclaredTacticalValues.includes(value), `${value} is recorded as an unsweepable budget value but is no longer declared; the exemption is stale`);
+assert.ok(sweptTacticalValues.length >= 4, `Rule B sweeps only ${sweptTacticalValues.length} value(s); it is not reaching the declaration`);
+
+const restatesValue = (text) => sweptTacticalValues.filter((value) => new RegExp(`(?<![\\d.\\w])${String(value).replace(".", "\\.")}(?![\\d.\\w])`).test(text));
+// The rules are self-tested against planted text before being trusted against the tree: a rule that
+// cannot fire is not a rule that found nothing.
+// The planted fixtures are BUILT from the declared names rather than typed out, so this file does not
+// itself carry the code positions it forbids -- a self-test that trips its own gate is a gate nobody
+// can keep.
+const [nodeKey, effectKey, inputKey, frameKey] = declaredBudgetKeys;
+const [retiredKey] = retiredBudgetKeys;
+assert.deepEqual(restatesKey(`const budgets = { ${nodeKey}: ${stressWorkload.maximumDomNodes} };`), [nodeKey], "Rule A must catch a budget key assigned a literal");
+assert.deepEqual(restatesKey(`const t = { ${retiredKey}: 1 };`), [retiredKey], "Rule A must catch the retired tolerance key being defined again");
+assert.deepEqual(restatesKey(`ceiling + budget.${retiredKey}`), [retiredKey], "Rule A must catch the retired tolerance key being read again");
+assert.deepEqual(restatesKey(`the ${retiredKey} key was removed by S.I.R.#318`), [], "Rule A must not fire on prose that merely names the retired key");
+assert.deepEqual(restatesKey(`if (measured > budget.${nodeKey}) fail();`), [], "Rule A must not fire on a READ of a budget field");
+assert.deepEqual(widensBudget(`budget.${frameKey} + budget.${retiredKey}`), [frameKey], "the arithmetic rule must catch a ceiling widened at the call site");
+assert.deepEqual(widensBudget(`if (measured < budget.${inputKey}) return null;`), [], "the arithmetic rule must not fire on a plain comparison");
+assert.ok([nodeKey, effectKey, inputKey, frameKey].every(Boolean), "the declared key set must supply every name these fixtures are built from");
+for (const value of sweptTacticalValues)
+  assert.deepEqual(restatesValue(`expect(nodeEstimate).toBeLessThanOrEqual(${value});`), [value], `Rule B must catch a planted ${value}`);
+assert.deepEqual(restatesValue(`const id = "sha256"; const ts = 1${sweptTacticalValues[0]};`), [], "Rule B must not fire on a digit run that merely contains a swept value");
+
+// THE ARITHMETIC RULE'S ONE EXEMPTION, AND ITS EXACT BOUND. This suite is where budgets are
+// deliberately probed off their boundary: every measurement it builds is `budget + 1` or
+// `ceiling + 3.33` BY CONSTRUCTION, and a text rule cannot tell a widened ceiling on the budget side
+// of a comparison from a measurement built one unit past it on the measured side. So this file is
+// exempt from THAT rule and from that rule only -- the key rule and the value rule still apply to it
+// in full, and it gates no production route. What proves the enforcement itself carries no slack is
+// not text at all but the semantic boundary assertions below, which red the moment a comparison
+// admits anything past the declared number.
+const arithmeticExemptConsumer = "./test-svg-pipeline-measurement.mjs";
+assert.ok(budgetConsumers.includes(arithmeticExemptConsumer), "the arithmetic-rule exemption names a file the sweep does not reach; it is stale");
+for (const consumer of budgetConsumers) {
+  const text = readFileSync(new URL(consumer, import.meta.url), "utf8");
+  assert.deepEqual(restatesKey(text), [], `${consumer} declares a tactical budget key instead of reading one. Import it from lib/performance-budget.mjs; a second declaration that agrees today is exactly the defect S.I.R.#318 removed.`);
+  if (consumer !== arithmeticExemptConsumer)
+    assert.deepEqual(widensBudget(text), [], `${consumer} widens a declared budget by arithmetic. A ceiling plus a slack is a SECOND budget, and it is the one CI would then enforce while naming the first.`);
+  assert.deepEqual(restatesValue(text), [], `${consumer} restates a declared tactical budget value as a literal. Import it instead.`);
+}
+// and the two that cannot be exercised in-process must actually READ the declaration
+for (const consumer of tacticalConsumersByName) {
+  const text = readFileSync(new URL(consumer, import.meta.url), "utf8");
+  assert.match(text, /performance-budget\.mjs/, `${consumer} must import the single declaration`);
+}
+console.log(`JUSTIFIED tactical-budget-no-restatement: ${budgetConsumers.length} DERIVED consumers declare none of the ${declaredBudgetKeys.length} budget keys, widen no budget by arithmetic, and carry none of the ${sweptTacticalValues.length} sweepable declared values; ${unsweepableTacticalValues.size} declared value(s) are covered by the key rule alone, each with a recorded reason`);
+
+// 4. THE THRESHOLDS CI ENFORCES CAN FAIL, AND THEY FAIL AT THE DECLARED NUMBER.
+// scripts/test-tactical-visual-review.mjs needs a built client and a browser, so its comparisons
+// live in the declaration and are inverted here instead. Boundaries are taken FROM the declaration:
+// a literal here would be a fourth statement of the number.
+const representative = representativeWorkload;
+const stress = stressWorkload;
+assert.equal(tacticalStructuralBudgetReason(representative, { domNodes: representative.maximumDomNodes, effects: representative.maximumEffects }), null,
+  "the structural ceilings are inclusive: a scene exactly at them conforms");
+assert.match(`${tacticalStructuralBudgetReason(representative, { domNodes: representative.maximumDomNodes + 1, effects: representative.maximumEffects })}`, /SVG node budget exceeded/);
+assert.match(`${tacticalStructuralBudgetReason(representative, { domNodes: representative.maximumDomNodes, effects: representative.maximumEffects + 1 })}`, /active-effect budget exceeded/);
+assert.equal(tacticalInputToPaintBudgetReason(stress, stress.maximumInputToPaintMilliseconds - 1), null);
+assert.match(`${tacticalInputToPaintBudgetReason(stress, stress.maximumInputToPaintMilliseconds)}`, /input-to-paint budget exceeded/,
+  "the input-to-paint ceiling is exclusive, as the published `< N ms` cell says");
+assert.equal(tacticalFrameCadenceBudgetReason(stress, tacticalFrameBudget.callbackMillisecondsCeiling), null);
+assert.match(`${tacticalFrameCadenceBudgetReason(stress, tacticalFrameCadenceBudget.intervalCeilingMilliseconds)}`, /frame cadence budget exceeded/,
+  "an interval that has reached two frame periods has dropped a vsync and must be refused");
+// a non-answer must never be reported as a confident answer
+for (const unmeasured of [undefined, null, Number.NaN, "17"]) {
+  assert.throws(() => tacticalInputToPaintBudgetReason(stress, unmeasured), /was not measured/,
+    "an unmeasured input-to-paint value must be refused, not passed");
+  assert.throws(() => tacticalFrameCadenceBudgetReason(stress, unmeasured), /was not measured/,
+    "an unmeasured cadence value must be refused, not passed");
+  assert.throws(() => tacticalStructuralBudgetReason(stress, { domNodes: unmeasured, effects: 1 }), /was not measured/);
+}
+assert.throws(() => tacticalWorkloadBudgetFor(stress.units + 1), /no declared tactical workload budget/,
+  "a workload the table does not declare must be refused, not bucketed into whichever row is nearest");
+assert.throws(() => tacticalWorkloadBudgetAtScale("many"), /unreadable scale is refused/);
+console.log("JUSTIFIED tactical-budget-enforcement: every threshold scripts/test-tactical-visual-review.mjs applies reds one unit past its declared boundary, greens at it, and refuses an unmeasured or undeclared input rather than deciding about it");
+
+// 5. THE REMOVED TOLERANCE WAS ADMITTING A REAL BREACH, MEASURED ON THE RETAINED ARTIFACT.
+// This is the discriminating case, and it is taken from the production telemetry this repo actually
+// ships rather than from a fixture invented to make the point. Prove the two sides CAN differ first:
+// the retained measurement must be judged differently by the declared frame ceiling and by the
+// superseded `ceiling + 1` composite, or this comparison measures nothing.
+const supersededToleranceMilliseconds = 1;
+const retainedTelemetry = JSON.parse(readFileSync(new URL("../docs/assets/tactical-visual-system-review/telemetry.json", import.meta.url), "utf8"));
+const retainedIntervals = retainedTelemetry.densityScenes.map(({ animationFrameIntervalMilliseconds }) => animationFrameIntervalMilliseconds);
+assert.ok(retainedIntervals.length > 0, "the retained telemetry declares no scenes; this comparison would be vacuous");
+for (const measured of retainedIntervals) {
+  assert.ok(measured > tacticalFrameBudget.callbackMillisecondsCeiling,
+    `the retained production measurement ${measured} ms must BREACH the declared frame ceiling of ${tacticalFrameBudget.callbackMillisecondsCeiling} ms, or this gate is asserting something the artifact does not show`);
+  assert.ok(measured <= tacticalFrameBudget.callbackMillisecondsCeiling + supersededToleranceMilliseconds,
+    `and it must CONFORM to the superseded ceiling+${supersededToleranceMilliseconds} composite -- if it failed under both, this pair would discriminate nothing and the removed tolerance would not have been load-bearing`);
+  assert.equal(tacticalFrameCadenceBudgetReason(stress, measured), null,
+    "under the declared cadence budget the same measurement conforms to a ceiling it does not breach, which is the whole repair: the gate no longer reports green about a number the measurement exceeded");
+}
+assert.ok(tacticalFrameCadenceBudget.intervalCeilingMilliseconds > tacticalFrameBudget.callbackMillisecondsCeiling + supersededToleranceMilliseconds,
+  "the declared cadence ceiling must sit above the superseded composite, or the two are indistinguishable on these measurements");
+assert.match(`${tacticalFrameCadenceBudgetReason(stress, tacticalFrameBudget.callbackMillisecondsCeiling * (tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame + 1))}`, /frame cadence budget exceeded/,
+  "and a dropped vsync -- the failure this budget exists to catch -- must still red");
+console.log(`JUSTIFIED tactical-cadence-discriminates: every retained production interval (${retainedIntervals.join(", ")} ms) breaches the declared ${tacticalFrameBudget.callbackMillisecondsCeiling} ms frame ceiling and conformed to the superseded ceiling+${supersededToleranceMilliseconds} composite, so the removed tolerance was the only reason CI reported green; the declared cadence budget of ${tacticalFrameCadenceBudget.intervalCeilingMilliseconds} ms judges the same measurement without claiming anything false, and still reds on a dropped vsync`);
+
 // The JUnit report and the PASS line are written HERE, after every assertion above, and nowhere earlier.
 // They used to be written mid-file: under a mutation the suite exited 1 having ALREADY published a green
 // record, which is worse than publishing none -- a green artifact that outlives a red run. Node exits on
 // the first failed assertion, so reaching this line is what makes the report true.
 const report = process.env.SIR_SVG_PIPELINE_JUNIT || "artifacts/test-results/svg-pipeline.junit.xml";
 mkdirSync(dirname(report), { recursive: true });
-writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="34" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="34" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="fixture-capacity"/><testcase name="axis-inventory"/><testcase name="trace-timing"/><testcase name="trace-window"/><testcase name="observed-run"/><testcase name="map-extent-control"/><testcase name="visible-density-control"/><testcase name="global-unit-control"/><testcase name="overlay-control"/><testcase name="event-rate-control"/><testcase name="supporting-list-control"/><testcase name="unique-unit-cells"/><testcase name="production-visible-observation"/><testcase name="production-global-observation"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/><testcase name="raw-trace-binding"/><testcase name="raw-trace-missing"/><testcase name="raw-trace-changed"/><testcase name="unreadable-input"/><testcase name="frame-budget-declaration"/><testcase name="frame-budget-boundary"/><testcase name="frame-budget-fail-closed"/><testcase name="frame-budget-closed-domain"/><testcase name="frame-budget-artifact-verdict"/><testcase name="frame-budget-workload-identity"/><testcase name="frame-budget-retained-matrix"/><testcase name="frame-budget-finalizer"/><testcase name="frame-budget-report-surfaces"/></testsuite></testsuites>\n');
+writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="39" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="39" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="fixture-capacity"/><testcase name="axis-inventory"/><testcase name="trace-timing"/><testcase name="trace-window"/><testcase name="observed-run"/><testcase name="map-extent-control"/><testcase name="visible-density-control"/><testcase name="global-unit-control"/><testcase name="overlay-control"/><testcase name="event-rate-control"/><testcase name="supporting-list-control"/><testcase name="unique-unit-cells"/><testcase name="production-visible-observation"/><testcase name="production-global-observation"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/><testcase name="raw-trace-binding"/><testcase name="raw-trace-missing"/><testcase name="raw-trace-changed"/><testcase name="unreadable-input"/><testcase name="frame-budget-declaration"/><testcase name="frame-budget-boundary"/><testcase name="frame-budget-fail-closed"/><testcase name="frame-budget-closed-domain"/><testcase name="frame-budget-artifact-verdict"/><testcase name="frame-budget-workload-identity"/><testcase name="frame-budget-retained-matrix"/><testcase name="frame-budget-finalizer"/><testcase name="frame-budget-report-surfaces"/><testcase name="tactical-budget-document-binding"/><testcase name="tactical-budget-runtime-effect-cap"/><testcase name="tactical-budget-no-restatement"/><testcase name="tactical-budget-enforcement"/><testcase name="tactical-cadence-discriminates"/></testsuite></testsuites>\n');
 console.log("svg-pipeline measurement unit gates: PASS");

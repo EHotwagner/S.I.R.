@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { auditPersistentWorkspaceBrowser } from "./lib/persistent-workspace-browser-audit.mjs";
-import { tacticalFrameBudget } from "./lib/performance-budget.mjs";
+import { tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
 
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 let clientRoot = "artifacts/client";
@@ -56,7 +56,7 @@ const audit = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, 
 captureInputs.browserUserAgent = audit.chromium;
 captureInputs.browserVersion = audit.chromiumVersion;
 const { workload: ignoredAfterWorkload, ...system } = audit.wide.visualSystem;
-if (system.identity !== "tactical-visual-system-v1" || system.effectLimit !== 256 || system.effectCount < 1) {
+if (system.identity !== "tactical-visual-system-v1" || system.effectLimit !== tacticalRuntimeEffectCap.maximumEffectInstances || system.effectCount < 1) {
   throw new Error(`Production visual registry/effects did not render: ${JSON.stringify(system)}`);
 }
 if (system.layerOrder !== system.paintedLayerOrder) {
@@ -117,7 +117,7 @@ const workloadExpression = (units) => `(async () => {
 
 const densityAudits = [];
 const telemetryScenes = [];
-for (const units of [100, 200]) {
+for (const { units } of tacticalWorkloadBudgetList) {
   const path = resolve(reviewOutput, `production-density-${units}.png`);
   const result = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: path, prepareExpression: workloadExpression(units), captureStyleText: reviewFontCss, reducedMotion: true });
   const workload = result.wide.visualSystem.workload;
@@ -129,21 +129,20 @@ for (const units of [100, 200]) {
 
 const afterBytes = await readFile(afterPath);
 const manifest = {
-  schema: "sir-tactical-visual-review-v2",
+  schema: "sir-tactical-visual-review-v3",
   captureInputs,
   productionBundleSha256: hash(bundleBytes), productionStylesSha256: hash(stylesBytes),
   before: { path: "../persistent-workspace-m9-review/field-focus.png", sha256: hash(baselineBytes) },
   after: { path: "after-production.png", sha256: hash(afterBytes), captureKind: "actual-production-shell-chromium-screenshot", semantic: system },
   densityScenes: densityAudits,
   visualSystem: system,
-  // targetAnimationFrameMilliseconds is DERIVED from the single declaration (S.I.R.#299); it was a
-  // bare numeric literal here, one of five independent copies of one number. The other figures on
-  // these rows are still literals: they are a different quantity, out of this item's scope, and
-  // carried by a follow-up rather than fixed silently here.
-  budgets: {
-    representative100: { maximumDomNodes: 5000, maximumEffects: 128, maximumInputToPaintMilliseconds: 100, targetAnimationFrameMilliseconds: tacticalFrameBudget.callbackMillisecondsCeiling, measurementToleranceMilliseconds: 1 },
-    stress200: { maximumDomNodes: 9000, maximumEffects: 256, maximumInputToPaintMilliseconds: 150, targetAnimationFrameMilliseconds: tacticalFrameBudget.callbackMillisecondsCeiling, measurementToleranceMilliseconds: 1 },
-  },
+  // EVERY budget figure is DERIVED (S.I.R.#299 for the frame ceiling, S.I.R.#318 for the rest).
+  // This file states no budget number and no budget key: the whole block is the declaration's own
+  // projection, so a stale copy cannot exist here to go stale. `measurementToleranceMilliseconds`
+  // is gone rather than re-homed -- it added an undeclared millisecond to the ceiling its consumer
+  // then named in its failure message -- and the schema is v3 because that key's removal changes
+  // the artifact's shape.
+  budgets: tacticalReviewManifestBudgets,
 };
 await writeFile(resolve(reviewOutput, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 await writeFile(resolve(reviewOutput, "telemetry.json"), `${JSON.stringify({ schema: "sir-tactical-visual-telemetry-v1", densityScenes: telemetryScenes }, null, 2)}\n`, "utf8");

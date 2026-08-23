@@ -26,18 +26,56 @@ as reviewable metadata. `TacticalSceneProjection` computes those costs beside
 the presentation projection so Editor, Plan, Simulate, and Review cannot hide
 growth behind component-local rendering estimates.
 
-| Production workload | Estimated SVG nodes | Active effects | Release projection p95 | Browser callback/main-thread inspection |
-|---|---:|---:|---:|---:|
-| Representative 100-unit replay | ≤ 5,000 | ≤ 128 | < 4 ms | < 16.67 ms |
-| Stress 200-unit replay | ≤ 9,000 | ≤ 256 | < 8 ms | < 16.67 ms |
+| Production workload | Estimated SVG nodes | Active effects | Release projection p95 | Browser callback/main-thread inspection | Input-to-paint p80 | Frame cadence p80 |
+|---|---:|---:|---:|---:|---:|---:|
+| Representative 100-unit replay | ≤ 5,000 | ≤ 128 | < 4 ms | < 16.67 ms | < 100 ms | < 33.34 ms |
+| Stress 200-unit replay | ≤ 9,000 | ≤ 256 | < 8 ms | < 16.67 ms | < 150 ms | < 33.34 ms |
 
-The `Browser callback/main-thread inspection` column is **not declared here.** It
-is a projection of the single declaration in
-`scripts/lib/performance-budget.mjs` (`tacticalFrameBudget`), which every
-consumer that gates on it imports. `scripts/test-svg-pipeline-measurement.mjs`
-re-reads the cells above and refuses any divergence between this table and that
-module, in either direction, so the prose and the code cannot drift into two
-numbers. Change the module; this table follows, and the gate proves it did.
+**No cell in this table is declared here**, apart from `Release projection p95`.
+Every other column is a projection of the single declaration in
+`scripts/lib/performance-budget.mjs`, which every consumer that gates on it
+imports. `scripts/test-svg-pipeline-measurement.mjs` re-reads the cells above and
+refuses any divergence between this table and that module, in either direction,
+so the prose and the code cannot drift into two numbers. Change the module; this
+table follows, and the gate proves it did.
+
+The `Browser callback/main-thread inspection` column projects `tacticalFrameBudget`
+(S.I.R.#299). The remaining three project `tacticalWorkloadBudgets` and
+`tacticalFrameCadenceBudget` (S.I.R.#318), which before that item were restated by
+hand in the review generator and the browser spec -- and, for the last two columns,
+were not written down anywhere at all while CI enforced them.
+
+`Active effects` for the stress row is not a budget that happens to equal the
+runtime cap: it **is** the runtime cap. `TacticalSceneProjection.MaximumEffectInstances`
+truncates the effect array to that length and the production SVG publishes it as
+`data-effect-limit`. F# cannot import the declaration module, so that binding is
+enforced the same way this table's is -- by a gate that re-reads
+`src/SIR.Client/TacticalSceneProjection.fs` and refuses divergence in either
+direction. `tests/SIR.Browser.Tests/visible-workflows.spec.js` reads
+`data-effect-limit` off the live DOM rather than any literal, which is why that
+assertion is correct as written and was deliberately left deriving.
+
+`Input-to-paint p80` is the p80 of five measured click-to-rendered-tick latencies
+on the production route. `Frame cadence p80` is the p80 of the deltas between
+successive `requestAnimationFrame` timestamps -- the interval **between** frames,
+which is a different quantity from the callback duration the column beside it
+declares. A rAF interval on a vsync-locked clock is an integer multiple of the
+display's frame period and is bounded below by one such period, so "no frame was
+dropped" is exactly "at most one vsync elapsed": strictly less than two frame
+periods. That ceiling is derived from the frame period, not authored separately.
+
+Before S.I.R.#318 neither of those two figures had a row here, and the cadence
+comparison read `measured <= targetAnimationFrameMilliseconds +
+measurementToleranceMilliseconds` with the tolerance hardcoded to one millisecond
+in the review generator. The route therefore enforced a ceiling one millisecond
+looser than the one its own failure message named, and every retained production
+measurement since 2026-08-20 sits inside that slack -- above the frame ceiling
+published in the column beside it, and reported green because of the addition.
+The tolerance entered with the rest of the budget block as a bare literal carrying
+no derivation, comment or cited source, so nothing was preserved by keeping it; it
+was removed rather than re-homed, and the cadence now has the declared budget it
+always needed. No figure in this paragraph is written out, deliberately: a number
+in the prose beside a projected table is a second statement of it.
 
 A **dropped frame** is a frame whose duration exceeds that same ceiling, and
 `frameHealth.droppedFrames` counts exactly those. This is the one threshold, not
@@ -56,7 +94,8 @@ annotations. They preserve the inherited 200/400-unit `Battlefield` structural
 guards as a second scale check. The browser number measures one animation-frame
 callback plus tactical DOM inspection on the production route; it is explicitly
 not a compositor, paint, GPU, or swapchain claim. Layout is bounded by one
-retained SVG root, effects are capped at 256 and pointer-inert, and reduced
+retained SVG root, effects are capped at the `Active effects` ceiling projected
+above and pointer-inert, and reduced
 motion substitutes short opacity emphasis for spatial animation. Any budget
 change requires an explicit rebaseline with exact-candidate evidence.
 
