@@ -67,6 +67,14 @@ cd "$repo_root"
 
 if [[ "$prepared_pr" == false ]]; then
   "$repo_root/scripts/test-spatial-subject-mutations.sh"
+  # S.I.R.#249's gates get the same treatment as the spatial subjects above: their
+  # inversion proof RUNS, rather than living in a pull-request body as a record of what
+  # someone once did. Serial and on the direct route only -- this harness mutates
+  # `Simulation.fs` and `SpatialQuery.fs` IN THE WORKING TREE, so it must never run
+  # concurrently with a gate reading those same sources (the prepared-PR route runs its
+  # gates in parallel; `test-spatial-subject-mutations.sh` may run there because it builds
+  # its mutants in an isolated directory, and this one does not).
+  "$repo_root/scripts/test-working-set-gate-mutations.sh"
 fi
 
 search_fixed_quiet() {
