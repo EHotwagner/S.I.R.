@@ -196,7 +196,7 @@ You author no digest and no generation: `review record` derives `revision`, `pre
 `scripts/fsgg-coord review <ref> --pr <n>` is the authoritative next-action oracle for this protocol.
 It needs a live claim marker to EXIST on the item, not for you to hold it — a critic that holds no
 claim can run it and can post its own `review record`. (The engine's holder check,
-`live claim belongs to worker '...', not '...'`, gates `delivery`, not review.) Every field, vocabulary and invariant is in
+`live claim belongs to worker '...', not '...'`, gates `delivery`, not review.) Every field and vocabulary, and the invariants an author hits first, are in
 [`docs/coordination-engine-contracts.md`](../../../docs/coordination-engine-contracts.md).
 
 ## 6. Merge and obligations

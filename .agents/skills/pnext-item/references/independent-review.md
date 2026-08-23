@@ -95,7 +95,8 @@ live claim, and it returns one typed state and one next action bound to a freshn
 head invalidates. Prefer it over inferring the protocol from prose, including this page.
 
 The complete contract — every required and optional draft key, both vocabularies, every ledger
-invariant in the validator's own words, the wait-window expiry trap, and how to settle a question this
+invariant an author hits while composing a first record — a selected subset, not the complete set of
+roughly forty, and the page says so — the wait-window expiry trap, and how to settle a question this
 prose does not answer — is [`docs/coordination-engine-contracts.md`](../../../../docs/coordination-engine-contracts.md),
 which `scripts/test-review-contract-coherence.sh` holds to the engine — it parses that document's
 own tables and key lists and compares them against the pinned engine, so falsifying a documented claim
