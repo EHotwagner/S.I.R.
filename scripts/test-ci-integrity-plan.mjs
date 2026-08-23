@@ -1,21 +1,29 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { planFor, subjectOrder, sweepEnvironmentVariable, sweepRequested } from "./ci-integrity-plan.mjs";
+import { costBoundedSubjects, planFor, subjectOrder, sweepEnvironmentVariable, sweepRequested } from "./ci-integrity-plan.mjs";
 import { routePaths } from "./ci-route.mjs";
 
 const route = (paths) => routePaths(paths, { commit: "a".repeat(40), tree: "b".repeat(40) });
 const byId = (plan) => new Map(plan.subjects.map((subject) => [subject.id, subject]));
 
+// S.I.R.#265. Two omission reasons now exist, and they mean different things: "the predicates did
+// not match" vs "the predicates did not match AND this subject does not take the conservative
+// fallbacks". Every assertion below that ranges over ALL subjects goes through this, so a subject
+// silently changing which kind of omission it reports cannot pass unnoticed.
+const omissionReason = (id) => (costBoundedSubjects.has(id) ? "cost-bounded-omission" : "measured-omission");
+const conservativeSubjects = subjectOrder.filter((id) => !costBoundedSubjects.has(id));
+assert.ok(costBoundedSubjects.size > 0 && conservativeSubjects.length > 0, "both partitions must be non-empty or the assertions below range over nothing");
+
 const browser = byId(planFor(route(["src/SIR.Client/App.fs"])));
 assert.ok(subjectOrder.every((id) => browser.has(id)));
-assert.ok([...browser.values()].every(({ run, reason }) => run === false && reason === "measured-omission"));
+assert.ok([...browser.values()].every(({ id, run, reason }) => run === false && reason === omissionReason(id)));
 
 const packagePlan = byId(planFor(route(["package-lock.json"])));
 assert.equal(packagePlan.get("npm-audit").run, true);
 assert.ok([...packagePlan.values()].filter(({ id }) => id !== "npm-audit").every(({ run }) => run === false));
-const topology = planFor(route([".github/workflows/ci.yml"]));
-assert.ok(topology.subjects.every(({ run, reason }) => run && reason === "topology-change"));
+const topology = byId(planFor(route([".github/workflows/ci.yml"])));
+assert.ok(conservativeSubjects.every((id) => topology.get(id).run && topology.get(id).reason === "topology-change"));
 const feedback = byId(planFor(route(["feedback/checkpoints/current.jsonl"])));
 assert.equal(feedback.get("feedback-audit").run, true);
 assert.equal(feedback.get("feedback-audit").reason, "relevant-path");
@@ -23,10 +31,10 @@ assert.ok([...feedback.values()].filter(({ id }) => id !== "feedback-audit").eve
 const project = byId(planFor(route(["src/SIR.Domain/SIR.Domain.fsproj"])));
 assert.equal(project.get("dependency-surface").run, true);
 assert.equal(project.get("npm-audit").run, false);
-const self = planFor(route(["scripts/ci-integrity-plan.mjs"]));
-assert.ok(self.subjects.every(({ run, reason }) => run && reason === "classifier-self-change"));
-const unknown = planFor(route(["unknown/new-topology.file"]));
-assert.ok(unknown.subjects.every(({ run, reason }) => run && reason === "unknown-conservative"));
+const self = byId(planFor(route(["scripts/ci-integrity-plan.mjs"])));
+assert.ok(conservativeSubjects.every((id) => self.get(id).run && self.get(id).reason === "classifier-self-change"));
+const unknown = byId(planFor(route(["unknown/new-topology.file"])));
+assert.ok(conservativeSubjects.every((id) => unknown.get(id).run && unknown.get(id).reason === "unknown-conservative"));
 assert.throws(() => planFor({ schema: "sir.ci-route/v2", paths: [] }), /malformed route/u);
 
 // ---------------------------------------------------------------------------
@@ -41,7 +49,7 @@ const omittedPaths = ["src/SIR.Client/App.fs", "docs/architecture.md"];
 const conditional = planFor(route(omittedPaths));
 assert.equal(conditional.mode, "pull-request");
 assert.ok(
-  conditional.subjects.every(({ run, reason }) => run === false && reason === "measured-omission"),
+  conditional.subjects.every(({ id, run, reason }) => run === false && reason === omissionReason(id)),
   "the sweep fixture must be paths that select no subject, or it proves nothing",
 );
 
@@ -79,17 +87,17 @@ assert.notEqual(swept.digest, conditional.digest);
 // Pinning selection absolutely — literal expected tuples, not a comparison against another call of
 // the same function — is what makes these assertions capable of failing.
 const conditionalSelection = (paths) => planFor(route(paths)).subjects.map(({ id, run, reason }) => [id, run, reason]);
-const allOmitted = (ids) => ids.map((id) => [id, false, "measured-omission"]);
+const allOmitted = (ids) => ids.map((id) => [id, false, omissionReason(id)]);
 
 assert.deepEqual(conditionalSelection(omittedPaths), allOmitted(declaredSubjects), "an inert route must select nothing");
 assert.deepEqual(
   conditionalSelection(["package-lock.json"]),
-  [["npm-audit", true, "relevant-path"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", false, "measured-omission"], ["review-contract", false, "measured-omission"]],
+  [["npm-audit", true, "relevant-path"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", false, "measured-omission"], ["review-contract", false, "cost-bounded-omission"]],
   "per-PR selection must stay path-conditional",
 );
 assert.deepEqual(
   conditionalSelection(["scripts/audit-binding-exceptions.json"]),
-  [["npm-audit", false, "measured-omission"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", true, "relevant-path"], ["review-contract", false, "measured-omission"]],
+  [["npm-audit", false, "measured-omission"], ["governance", false, "measured-omission"], ["dependency-surface", false, "measured-omission"], ["sdd-byte-stability", false, "measured-omission"], ["feedback-audit", true, "relevant-path"], ["review-contract", false, "cost-bounded-omission"]],
   "the subject this item repairs must still be selected by its own paths on a pull request",
 );
 
@@ -117,18 +125,15 @@ for (const path of [
   assert.deepEqual(selected.matchingPaths, [path], `${path} must be recorded as the reason it was selected`);
 }
 
-// NOT SELECTED BY THE PREDICATE. #309's defect was a job graph that could not be satisfied
-// because a gate was declared where nothing could run it; the mirror of that is a subject
-// selected where it cannot find anything.
+// NOT SELECTED. #309's defect was a job graph that could not be satisfied because a gate was
+// declared where nothing could run it; the mirror of that is a subject selected where it cannot
+// find anything. #265's Scope names the packed skill mirrors as selectors; they are not, and both
+// halves of the reason are asserted here rather than argued in prose.
 //
-// The claim here is about the PREDICATE, and it is stated that way because the run outcome does
-// not distinguish it: `.claude/` and `.agents/` are outside every classifier prefix, so the
-// router files them under RP-005-unknown-conservative and the plan runs EVERY subject anyway.
-// That is the measurement that settles #265's Scope wording ("the routes where packed skills …
-// can change"): adding the mirrors to the predicate would not select one additional run, because
-// a mirror-only change already runs the whole integrity set. It would only move the recorded
-// `reason` from a conservative fallback to a claim of relevance that the gate cannot support —
-// it does not read those files, and falsifying a load-bearing claim in one leaves it exit 0.
+// The gate never opens them (falsify a load-bearing claim in one and it still exits 0), and
+// `.claude/`/`.agents/` are outside every classifier prefix, so the router files them under
+// RP-005-unknown-conservative — the fallback this subject is exempt from. A mirror-only change
+// therefore runs the other five subjects and not this one.
 const mirrors = [".claude/skills/pnext-item/references/independent-review.md", ".agents/skills/pnext-item/references/independent-review.md"];
 const mirrorPlan = byId(planFor(route(mirrors)));
 assert.deepEqual(
@@ -136,12 +141,90 @@ assert.deepEqual(
   [],
   "no review-contract predicate may match a packed skill mirror: the gate never opens those files",
 );
-assert.equal(
-  mirrorPlan.get("review-contract").reason,
-  "unknown-conservative",
-  "a mirror-only change must still run review-contract, and must say it did so conservatively rather than claim relevance",
+assert.deepEqual(
+  [mirrorPlan.get("review-contract").run, mirrorPlan.get("review-contract").reason],
+  [false, "cost-bounded-omission"],
+  "a mirror-only change must not run review-contract, and must say WHY it was omitted",
 );
-assert.equal(mirrorPlan.get("review-contract").run, true);
+assert.ok(
+  conservativeSubjects.every((id) => mirrorPlan.get(id).run && mirrorPlan.get(id).reason === "unknown-conservative"),
+  "the exemption is per-subject: the other five must still take the conservative fallback on the same route",
+);
+
+// ---------------------------------------------------------------------------
+// S.I.R.#265 — the conservative exemption, from both sides.
+//
+// The exemption is the one change here that touches a decision the other five subjects share, so
+// it is pinned twice: the exempt subject must be omitted on every fallback route, and the
+// non-exempt subjects must be BIT-FOR-BIT what the pre-#265 expression produced. The second is
+// asserted against an independent re-implementation of that expression rather than against another
+// call of `planFor`, which would only prove the function agrees with itself.
+// ---------------------------------------------------------------------------
+const fallbackRoutes = {
+  "classifier-self-change": ["scripts/qualify-pr.sh"],
+  "topology-change": [".github/workflows/ci.yml"],
+  "unknown-conservative": ["unknown/new-topology.file"],
+};
+for (const [expected, paths] of Object.entries(fallbackRoutes)) {
+  const plan = byId(planFor(route(paths)));
+  assert.deepEqual(
+    [plan.get("review-contract").run, plan.get("review-contract").reason],
+    [false, "cost-bounded-omission"],
+    `${expected}: a cost-bounded subject must not be pulled in by a conservative fallback`,
+  );
+  for (const id of conservativeSubjects) {
+    assert.deepEqual(
+      [plan.get(id).run, plan.get(id).reason],
+      [true, expected],
+      `${expected}: ${id} must be unaffected by the exemption`,
+    );
+  }
+}
+
+// The pre-#265 selection expression, transcribed. If the refactor that introduced the exemption
+// changed anything for a non-exempt subject, these disagree.
+// `matchingPaths` is read back from the plan on purpose: the exemption changes only how a
+// fallback is APPLIED, never what a predicate matches, so re-deriving the predicates here would
+// duplicate the thing that did not change and miss the thing that did.
+const legacySelection = (paths) => {
+  const routed = route(paths);
+  const plan = byId(planFor(routed));
+  const selfChange = routed.paths.some((path) => ["scripts/ci-integrity-plan.mjs", "scripts/test-ci-integrity-plan.mjs", "scripts/qualify-pr.sh"].includes(path));
+  const topologyChange = routed.paths.some((path) => path === ".github/workflows" || path.startsWith(".github/workflows/"));
+  const unknown = routed.facts?.some(({ rule }) => rule === "RP-005-unknown-conservative") ?? true;
+  return conservativeSubjects.map((id) => {
+    const run = selfChange || topologyChange || unknown || plan.get(id).matchingPaths.length > 0;
+    return [id, run, selfChange ? "classifier-self-change"
+      : topologyChange ? "topology-change"
+      : unknown ? "unknown-conservative"
+      : run ? "relevant-path" : "measured-omission"];
+  });
+};
+for (const paths of [
+  ["scripts/qualify-pr.sh"],
+  [".github/workflows/ci.yml"],
+  ["unknown/new-topology.file"],
+  ["package-lock.json"],
+  ["scripts/audit-binding-exceptions.json"],
+  ["docs/coordination-engine-contracts.md"],
+  [".config/dotnet-tools.json"],
+  ["src/SIR.Client/App.fs", "docs/architecture.md"],
+  mirrors,
+]) {
+  const actual = byId(planFor(route(paths)));
+  assert.deepEqual(
+    conservativeSubjects.map((id) => [id, actual.get(id).run, actual.get(id).reason]),
+    legacySelection(paths),
+    `the exemption changed a non-exempt subject's selection on ${paths.join(", ")}`,
+  );
+}
+
+// Self-test: the transcription above must be capable of disagreeing, or the loop proves nothing.
+assert.notDeepEqual(
+  legacySelection(["package-lock.json"]),
+  legacySelection(["unknown/new-topology.file"]),
+  "legacy-selection self-test: the transcribed expression must distinguish two routes",
+);
 
 // The document is a `docs/` path, and `docs/` is the classification the sweep fixture uses for a
 // route that selects NOTHING. Pin that these two do not collapse into each other, or the

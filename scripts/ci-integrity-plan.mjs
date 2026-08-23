@@ -55,6 +55,33 @@ const predicates = {
 // so that ordinary per-PR cost is unchanged.
 export const sweepRequested = (environment = process.env) => environment[sweepEnvironmentVariable] === "true";
 
+// S.I.R.#265. THE CONSERVATIVE FALLBACKS DO NOT APPLY TO EVERY SUBJECT, AND THIS IS THE MEASURED
+// REASON — not a budget being bent to fit a slow gate.
+//
+// `selfChange`/`topologyChange`/`unknown` below run a subject when the predicates MIGHT have missed
+// something. That is right for a subject whose input set is OPEN: `npm-audit` depends on transitive
+// npm state, `governance` matches any path containing "governance", and neither can be enumerated.
+// `review-contract`'s input set is CLOSED and derivable by reading the script it dispatches — the
+// document, the engine pin, the SDK pin, `scripts/fsgg-coord`, and itself. That is exactly why its
+// predicate could be derived at all, and it is why "we cannot classify this path" carries no
+// information about it.
+//
+// AND THE COST IS NOT AFFORDABLE ON THE ROUTES THE FALLBACKS FIRE ON. The gate costs ~26s locally
+// and 105.6s on a CI runner (measured on run 32645759275: `feedback-audit` ends 14:35:00.47,
+// `review-contract` ends 14:36:46.08). The fallbacks fire on `.github/workflows` and unclassified
+// paths, which the router classifies `cross-cutting` — the widest route, and the one already
+// closest to `ci-route.mjs`'s acceptance target. Three recent GREEN cross-cutting runs measured
+// criticalPath 239677ms, 301802ms and 232055ms against an acceptanceTarget of 312000ms: a margin
+// between 10.2s and 80s. Adding 105.6s there does not erode the headroom, it deletes it — measured
+// as `feedback-headroom-eroded` 317295 > 312000 on run 32645759275.
+//
+// The other half of the #248/#252 bargain is what makes this safe rather than a hole: the off-PR
+// sweep below runs this subject UNCONDITIONALLY, so it still cannot sit red on the default branch
+// unobserved. What is given up is a conservative re-run on routes that changed none of its inputs.
+// The omission carries its OWN reason code so it is legible in an archived plan instead of being
+// indistinguishable from a subject whose predicates simply did not match.
+export const costBoundedSubjects = new Set(["review-contract"]);
+
 export function planFor(route, { sweep = false } = {}) {
   if (route?.schema !== "sir.ci-route/v2" || !Array.isArray(route.paths) || route.paths.length === 0 || !route.digest) throw new Error("ci-integrity-plan: malformed route");
   const selfChange = route.paths.some((path) => ["scripts/ci-integrity-plan.mjs", "scripts/test-ci-integrity-plan.mjs", "scripts/qualify-pr.sh"].includes(path));
@@ -65,8 +92,18 @@ export function planFor(route, { sweep = false } = {}) {
     // selected, so an archived sweep plan shows subjects running that no changed path selected.
     const matchingPaths = route.paths.filter((path) => predicates[id](path));
     if (sweep) return { id, run: true, reason: "scheduled-sweep", matchingPaths };
-    const run = selfChange || topologyChange || unknown || matchingPaths.length > 0;
-    return { id, run, reason: selfChange ? "classifier-self-change" : topologyChange ? "topology-change" : unknown ? "unknown-conservative" : run ? "relevant-path" : "measured-omission", matchingPaths };
+    // One expression for "which conservative fallback fired", so `run` and `reason` cannot disagree
+    // about it. `null` for a cost-bounded subject is what makes the exemption a single decision
+    // rather than two that must be kept in step. Every non-exempt subject is bit-for-bit unchanged.
+    const conservative = costBoundedSubjects.has(id) ? null
+      : selfChange ? "classifier-self-change"
+      : topologyChange ? "topology-change"
+      : unknown ? "unknown-conservative"
+      : null;
+    const run = conservative !== null || matchingPaths.length > 0;
+    const reason = conservative
+      ?? (run ? "relevant-path" : costBoundedSubjects.has(id) ? "cost-bounded-omission" : "measured-omission");
+    return { id, run, reason, matchingPaths };
   });
   const body = { schema, mode: sweep ? "sweep" : "pull-request", routeDigest: route.digest, source: route.source, alwaysOn: ["ci-contract-floor"], subjects };
   return { ...body, digest: sha256(canonical(body)) };
