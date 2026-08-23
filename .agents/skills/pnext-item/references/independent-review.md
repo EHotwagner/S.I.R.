@@ -102,6 +102,17 @@ which `scripts/test-review-contract-coherence.sh` holds to the engine — it par
 own tables and key lists and compares them against the pinned engine, so falsifying a documented claim
 reds the gate.
 
+**Read that page's `What actually separates a sound check from a vacuous one` before adding a claim
+to it.** Four review rounds each added a documented claim, gave it a check that called the engine, and
+produced a check that could not fail — because a claim stated as a *sentence* affords no expectation
+but its own presence, and a presence expectation is a constant by the time it is compared. The gate
+now refuses that shape structurally: every vocabulary row states what the engine refuses as well as
+what it accepts, rules with two outcomes are stated as outcomes and probed, every derived check must
+be reddened by a **named** mutation, and a mutant that reddens no check is reported as `NO DETECTION`
+rather than counted as one. A new claim without an inversion fails the gate instead of passing
+quietly. If you add a row, the gate derives its widening inversion for you; if you add a claim of some
+other shape, you must supply the mutation that reds it.
+
 **Run it directly: `bash scripts/test-review-contract-coherence.sh`. That is the only route that
 works today, and nothing runs it for you.** It is not wired into CI, and it is deliberately not
 half-wired: an earlier revision of this change added a `review-contract` case to
@@ -388,8 +399,24 @@ reviews each repaired head in a reply beginning with
 confirmation SHA, the 1-based `round` number, the preceding review or confirmation URL, and every
 remaining material finding. There is exactly one initial marker and at most three ordered confirmation
 markers. Each confirmation must advance the round by one and review the exact head produced by that
-repair; duplicate round numbers, skipped rounds, competing markers, a changed critic, or a fourth
-automated repair fail closed. When no repair is required, an initial `pass` whose reviewed SHA equals the
+repair; duplicate round numbers, skipped rounds, competing markers, or a fourth
+automated repair fail closed.
+
+**A changed critic does NOT fail closed, and this contract said it did for four review rounds.**
+Measured against the pinned engine, `validateReviewLedger` refuses a differently-bound critic only
+*within a settled generation*: a `confirmation` by a **different** critic is **accepted after a
+`changes-required` verdict**, and refused after a `pass` with `every record in one review generation
+must bind the same critic`. That exception is what makes the fresh-successor handoff legal at all —
+`scripts/fsgg-coord review <ref> --pr <n>` returns `dispatchSuccessor` on a repaired head precisely so
+a successor can take over, and observed chains have run four different critics across their rounds and
+recorded cleanly. A contract **stricter than the mechanism** is the dangerous direction: it is
+silently obeyed, it produces a state the engine will not accept, and it charges the reader who
+followed it most carefully — the refusal arrives at acceptance, after a full critic cycle, in a round
+that can no longer close. The four measured outcomes are the `successor-critic` rows of the
+`Rules with two outcomes` table in
+[`docs/coordination-engine-contracts.md`](../../../../docs/coordination-engine-contracts.md); each is
+probed against the validator, so this paragraph cannot drift back out of agreement without
+`scripts/test-review-contract-coherence.sh` reddening. When no repair is required, an initial `pass` whose reviewed SHA equals the
 candidate head is itself the confirmation; no repair round or second marker is required. Allow at most
 three repair-and-confirmation rounds. Every round addresses material findings only; do not iterate on
 minor observations. Before routing any repair, the host validates the current chain and permits it only

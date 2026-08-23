@@ -255,14 +255,40 @@ and `baseSha`) are required to be *present* and are then *ignored*.
 
 ### Vocabularies
 
-| key | accepted values |
-|---|---|
-| `schema` | `fsgg.coord.review-decision/v2` |
-| `policyVersion` | `structured-decisions/1` |
-| `verdict` | `pass`, `changes-required`, `accepted` |
-| `kind` | `initial`, `confirmation`, `escalation`, `repair-phase`, `acceptance` |
-| `routeApplicability` | `meaningful`, `not-meaningful` |
-| `timestamp` | any ISO-8601 instant |
+**Every row states its extension in both directions.** The left column is values the engine accepts;
+the right column is values it refuses. Both are parsed out of this table and probed against the
+validator, so a row cannot be *widened* — its text kept while a permitted-but-wrong alternative is
+added — without the gate reddening. A row that carries no backticked literal in either column is a
+**parse failure**, not a free-form row: prose in this table is a gloss with no normative force, and a
+claim that cannot state its extension does not belong in this table at all.
+
+| key | accepted values | must be refused |
+|---|---|---|
+| `schema` | `fsgg.coord.review-decision/v2` | `fsgg.coord.review-decision/v1`, `fsgg.coord.review-decision/v3`, `fsgg.coord.review-wait/v1` |
+| `policyVersion` | `structured-decisions/1` | `structured-decisions/2`, `structured-decisions` |
+| `verdict` | `pass`, `changes-required`, `accepted` | `rejected`, `fail`, `Pass` |
+| `kind` | `initial`, `confirmation`, `escalation`, `repair-phase`, `acceptance` | `repair`, `host-acceptance`, `Initial` |
+| `routeApplicability` | `meaningful`, `not-meaningful` | `none`, `n/a`, `unknown` |
+| `timestamp` | `2026-08-23T00:00:00Z`, `2026-08-23T00:00:00+00:00`, `2026-08-23 00:00:00`, `2026-08-23`, `August 23, 2026` | `1787434100552`, `banana`, `now`, `23/08/2026`, `2026-13-45T99:99:99Z` |
+
+An empty string is refused for every one of these keys, and the gate probes that separately rather
+than asking each row to spell it.
+
+> **`timestamp` does not mean what its refusal message says, and this page said the wrong thing for
+> four review rounds.** The validator's message is `timestamp must be an ISO-8601 instant`, and this
+> table used to read *"any ISO-8601 instant"* on the strength of it. **Measured against the pinned
+> engine, `2026-08-23 00:00:00`, `2026-08-23` and `August 23, 2026` are all ACCEPTED** — none of which
+> is an ISO-8601 instant. The field is parsed with .NET date parsing, not an ISO-8601 grammar, so the
+> accepted set is far wider than the refusal claims. Write an ISO-8601 instant anyway: the wide set is
+> an implementation fact, not a licence, and the narrow one is what every other record carries. The
+> engine-side defect — a refusal message that names a grammar the code does not enforce — is the same
+> class as the route-evidence overstatement below, and belongs to the Kit.
+>
+> Note *how* this survived: the row was previously checked by asking whether its prose contained the
+> distinctive token of the engine's refusal. That token was `ISO-8601`, so the check reduced to
+> `cell.Contains "ISO-8601"` — which the false claim satisfied, because the false claim was copied
+> from the message the token came from. **A check derived from a wrong oracle certifies the wrong
+> answer with full confidence.**
 
 ### Ledger invariants
 
@@ -314,6 +340,36 @@ complete stops a reader from checking.
 > terms, while three or five are refused whatever they say. Treat the four-part structure as a real
 > authoring obligation that no tool will enforce for you — a reader who believes the message is
 > being checked will record vacuous route evidence in good faith. Filed against the Kit.
+
+### Rules with two outcomes, stated as outcomes
+
+Two of the invariants above are rules about *when* the validator accepts, and **a sentence has no
+extension a gate can compare**. Stated as prose they were checked by asking whether a key phrase was
+still present in this file — which is satisfied by every rewrite that keeps the phrase, including one
+that says the opposite. Both were widened in review and both stayed green.
+
+So they are restated here as outcomes. Each row names a `case` and what
+`StructuredDecision.validateReviewLedger` does with it. **Every cell is probed against the engine**,
+in both directions: the `case` column must correspond one-to-one with the gate's probes, so adding a
+row without a probe reds and deleting a row reds; and the `outcome` column is compared to what the
+validator actually returns, so flipping `refused` to `accepted` reds. The control rows are not
+padding — a table of only-refusals passes trivially if the probe is broken, so each refusal is paired
+with the nearest case that must be accepted.
+
+| rule | case | outcome |
+|---|---|---|
+| `successor-critic` | `same-critic-after-changes-required` | `accepted` |
+| `successor-critic` | `different-critic-after-changes-required` | `accepted` |
+| `successor-critic` | `same-critic-after-pass` | `accepted` |
+| `successor-critic` | `different-critic-after-pass` | `refused` |
+| `accepted-exceptions` | `nonempty-on-initial` | `accepted` |
+| `accepted-exceptions` | `empty-on-acceptance` | `accepted` |
+| `accepted-exceptions` | `nonempty-on-acceptance` | `refused` |
+
+Read the `successor-critic` rows together, because the pair is the whole rule: a **different** critic
+may confirm a repaired head after a `changes-required` verdict, and may not after a `pass`. That is
+what makes the fresh-successor handoff legal, and it is why a blanket "a changed critic fails closed"
+is wrong in the strict direction — it forbids the handoff the engine relies on.
 
 ### Which wait entry authorizes which record
 
@@ -494,12 +550,12 @@ passes into it. You need both, and the second is the one people skip.
 `scripts/test-review-contract-coherence.sh` holds this page to that standard, and it is precise about
 how far that goes:
 
-- **Derived claims** — the required and optional draft-key lists, **every row** of the vocabulary
-  table, both wait examples' key sets, the route-evidence cardinalities, the initial-record round, the
-  `reviewGeneration` shape, the wait-window ceiling, the authorization table's **token** and
-  **receipt-kind** columns, and the two subject forms — are **parsed out of this document** and
-  compared against the live engine. Falsify one here and the gate reds, because its expectation is
-  this text.
+- **Derived claims** — the required and optional draft-key lists, **every row and both columns** of
+  the vocabulary table, the outcome table's every cell, both wait examples' key sets **and their value
+  types**, the route-evidence cardinalities, the initial-record round, the `reviewGeneration` shape,
+  the wait-window ceiling, the authorization table's **token** and **receipt-kind** columns, and the
+  two subject forms — are **parsed out of this document** and compared against the live engine.
+  Falsify one here and the gate reds, because its expectation is this text.
 - **Transcribed claims** — the authorization table's **wait-state** column, and the engine-overwrites
   table (both its field list and each row's description). These are CLI behaviour, decided by
   `authorizeReviewRecordWait` and `recordReview$cont@2412-3` behind a live GitHub transport, so nothing
@@ -515,23 +571,61 @@ An earlier revision claimed it "fails when any load-bearing claim here is invert
 documented claims were falsified and it stayed green. The distinction above is the repair, and stating
 it honestly is part of the repair rather than a caveat on it.
 
-**The repair reproduced the defect in miniature, twice over, across two review rounds.**
+### What actually separates a sound check from a vacuous one
 
-Round one's repair iterated only four of the authorization table's five rows, so the `acceptance` row
-could be falsified undetected; "checked" the wait-state column against
-`if kindName = "initial" then "Waiting" else "Waiting"`, a constant compared with itself; and "proved"
-the literal-only claims red-when-deleted with a loop whose mutation and assertion were the same
-`grep`.
+Four consecutive review rounds each found another vacuous assertion filed under **Derived**, and each
+round repaired the instance in front of it. The recurrence outlived three repairs because the category
+was the wrong cut. Measured across all twenty-one inversions and a widening sweep over the rows
+believed sound, the discriminator is not which bucket a claim sits in. It is:
 
-Round two's review then found three more, all filed under **Derived** while being nothing of the kind:
-two vocabulary rows were parsed into the expectation file and never looped over — parsed-but-unchecked,
-which is worse than unparsed because the expectation file makes it look covered; the overwrites table
-was compared against a string literal inside the gate, three lines below a comment introducing the
-Transcribed category it belonged in; and the authorization table's receipt-kind column was captured by
-the parser and thrown away, belonging to no category and checked by nothing.
+> **Does the expectation parsed out of this document carry the claim's EXTENSION, or only its
+> PRESENCE?**
 
-Note where the error concentrated: **the `Derived` bucket, every time.** The Transcribed category held
-up under review, with its one member confirmed against the decompiled switch, and the literal-only
-claims behaved exactly as this page says they will. Over-claiming is the failure mode, and it lands on
-whichever bucket promises the most. **A gate's inversion evidence is itself a claim that can be
-vacuous, and it needs the same scrutiny as the thing it defends.**
+- An **extension** — a set of literals, a number, a shape string, a type — is compared against the
+  engine, and the comparison moves when the document moves. Widening reds. Every claim of this shape
+  held up: the draft-key lists, the enumerated vocabulary rows, the cardinalities, the subject forms.
+- A **presence** — `"<phrase>" in doc`, or `cell.Contains "<token>"` — is already a **constant** by the
+  time it is compared, because STEP 1 aborts if the phrase is absent. So the check degenerates to an
+  engine self-test with a flag stapled to the front:
+
+  ```fsharp
+  check "doc:same-critic-exception"
+    (expected.GetProperty("sameCriticExceptionDocumented").GetBoolean()   // always true here
+     && differentCriticAfter ReviewVerdict.ChangesRequired                // pure engine fact
+     && not (differentCriticAfter ReviewVerdict.Pass))                    // pure engine fact
+  ```
+
+  The document contributes nothing to that comparison. It reds when the sentence is **deleted** and
+  never when it is **widened**, and it looks derived because it really does call the engine.
+
+That is why the error concentrated where it did, and it is a fact about what documentation *can* be
+verified rather than about how carefully anyone verified it. **A claim with a natural machine
+extension got a sound check; a claim stated as a sentence got a vacuous one**, because presence is the
+only expectation a sentence affords. The repair is not to check prose harder. It is to stop stating
+checkable rules as prose: the vocabulary rows gained a `must be refused` column and the two prose
+invariants became the outcome table above, so both now have extensions. **No presence-shaped
+expectation is permitted in the Derived bucket**, and the gate enforces that by construction — its
+free-form branch is deleted, not patched.
+
+### How the gate keeps itself honest
+
+Three properties, each of which failed at least once here:
+
+1. **Inversion evidence is attributed.** Every mutation declares the check id it must red, and the
+   gate asserts that exact id went `FAILED`. Three of the original twenty-one mutations reddened the
+   run while their check never fired at all — they tripped STEP 1's parser instead, and a parse abort
+   scored identically to a detection. A gate that counts its own breakage as a detection reports more
+   assurance than it delivers.
+2. **Derived coverage is required, not remembered.** Every `doc:*` check the gate emits must be
+   reddened by some declared mutation, or the run fails naming the uncovered ids. Adding a claim to
+   this page without an inversion now fails the gate instead of passing silently — which is the
+   default that produced every one of the recurrences.
+3. **Widening inversions are derived, not hand-written.** Every hand-authored mutation was a deletion
+   or a replacement, which is the one class a presence check does catch. The gate now constructs the
+   widening mutant itself, from each row's own documented-refused set, so a row added later gets its
+   widening for free and no hand-authored list can fall behind this table.
+
+**A gate's inversion evidence is itself a claim that can be vacuous, and it needs the same scrutiny as
+the thing it defends.** The previous three repairs were verified by a harness that could not tell a
+firing check from a parse abort, so the verification of each fix was subject to the defect being
+fixed.

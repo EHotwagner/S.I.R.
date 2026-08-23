@@ -27,6 +27,31 @@
 # (STEP 4). Both sets are enumerated, and the document says which is which. An honest partial gate
 # beats a total one that is not true; overclaiming here is what F1 was about.
 #
+# WHAT SEPARATES A SOUND DERIVED CHECK FROM A VACUOUS ONE (rounds 1-4, and the repair phase).
+#
+# Four consecutive review rounds each found another vacuous assertion filed under DERIVED, and each
+# round repaired the instance in front of it. The category was the wrong cut. Measured across all
+# twenty-one inversions and a widening sweep over the rows believed sound, the discriminator is:
+#
+#     does the expectation parsed out of the document carry the claim's EXTENSION, or only its
+#     PRESENCE?
+#
+# An EXTENSION — a set of literals, a number, a shape, a type — moves when the document moves, so the
+# comparison against the engine detects drift. Every claim of that shape held up.
+#
+# A PRESENCE — `"<phrase>" in doc`, `cell.Contains tok`, or a parser regex that spells out the one
+# correct answer — is already a CONSTANT by the time STEP 2 compares it, because STEP 1 aborted if it
+# were absent. The check degenerates into an engine self-test with a flag stapled to the front. It
+# reds when the sentence is DELETED and never when it is WIDENED, and it looks derived because it
+# really does call the engine. All of `timestamp`, the two prose invariants, and the generation-token
+# shape were this, and nothing in three rounds of review could see it, because the harness scored a
+# STEP 1 parse abort exactly as it scored a detection.
+#
+# So: no expectation in this gate may be presence-shaped. The vocabulary table states both columns of
+# every row, the two prose invariants became an outcome table, the wait example binds value TYPES as
+# well as key names, and the free-form branch is deleted rather than repaired. STEP 3 then enforces
+# the rest by construction — see its header.
+#
 # NO BOARD IO. Every check is pure: it loads FS.GG.Coord.Core.dll and calls it, and runs `facts`, which
 # the engine documents as touching no board and no network. It never claims, posts, or merges.
 #
@@ -109,22 +134,61 @@ m = re.search(r"\*\*Optional\*\*.*?:\s*\n\n(.+?)\n\n", draft, re.S)
 if m: out["optionalKeys"] = ticked(m.group(1))
 else: problems.append("could not parse the optional draft-key list")
 
-# EVERY row is kept, including rows whose value cell carries no backticked literal. An earlier
-# revision dropped those with `if vals:`, which silently excluded the `timestamp` row -- documented
-# as Derived, parsed, discarded, and checked by nothing. A parser that drops what it cannot classify
-# hands the gate a smaller world and tells it nothing was lost.
+# EVERY row is kept, and every row must state its EXTENSION in both directions. An earlier revision
+# dropped rows with no backticked literal via `if vals:`, silently excluding `timestamp`; the revision
+# after that kept the row but "checked" its free-form cell for the presence of one token, which
+# reduced to `cell.Contains "ISO-8601"` and passed every widening. Presence is not an extension. A row
+# that cannot name what the engine accepts AND what it refuses is a parse failure, so the free-form
+# branch has no way back in.
 vocab = {}
-for row in re.finditer(r"^\|\s*`([a-zA-Z]+)`\s*\|\s*(.+?)\s*\|\s*$", section("### Vocabularies"), re.M):
-    vocab[row.group(1)] = {"values": ticked(row.group(2)), "cell": row.group(2).strip()}
+for row in re.finditer(r"^\|\s*`([a-zA-Z]+)`\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$",
+                       section("### Vocabularies"), re.M):
+    key, accepted, refused = row.group(1), ticked(row.group(2)), ticked(row.group(3))
+    if not accepted:
+        problems.append("vocabulary row `%s` names no accepted literal" % key)
+    if not refused:
+        problems.append("vocabulary row `%s` names no refused literal -- a row with no counterexample "
+                        "cannot be widened-tested, which is the defect this column exists for" % key)
+    both = sorted(set(accepted) & set(refused))
+    if both:
+        problems.append("vocabulary row `%s` lists %s in both columns" % (key, ", ".join(both)))
+    vocab[key] = {"accepted": accepted, "refused": refused}
 out["vocabularies"] = vocab
 if not vocab:
     problems.append("the vocabularies table parsed to no rows at all")
 
+# The outcome table: rules whose claim is a PAIR of engine behaviours rather than a set of values.
+# Stated as prose these were checked by `"<phrase>" in doc`, which is a constant by the time it is
+# compared -- STEP 1 has already aborted if the phrase is absent -- so the check became an engine
+# self-test and every widening survived. A case id and an outcome literal give the claim an extension.
+outcomes = {}
+for row in re.finditer(r"^\|\s*`([a-z-]+)`\s*\|\s*`([a-z-]+)`\s*\|\s*`(accepted|refused)`\s*\|\s*$",
+                       section("### Rules with two outcomes"), re.M):
+    if row.group(2) in outcomes:
+        problems.append("the outcome table names case `%s` twice" % row.group(2))
+    outcomes[row.group(2)] = {"rule": row.group(1), "outcome": row.group(3)}
+out["outcomeRules"] = outcomes
+if not outcomes:
+    problems.append("the outcome table parsed to no rows at all")
+
 wait = section("## `review wait` — schema `fsgg.coord.review-wait/v1`", stop=("\n## ",))
 blocks = re.findall(r"```json\n(.*?)\n```", wait, re.S)
 if len(blocks) >= 2:
+    def jkind(v):
+        if v is None: return "Null"
+        if isinstance(v, bool): return "Boolean"
+        if isinstance(v, str): return "String"
+        if isinstance(v, (int, float)): return "Number"
+        if isinstance(v, list): return "Array"
+        return "Object"
     try:
-        out["waitEnterKeys"] = sorted(json.loads(blocks[0]).keys())
+        enter = json.loads(blocks[0])
+        out["waitEnterKeys"] = sorted(enter.keys())
+        # KEYS ALONE WERE THE WHOLE CHECK, and `sorted(json.loads(...).keys())` discards every value.
+        # `claimGeneration` is a STRING while `claim --json` emits a numeric `markerId`, so following
+        # the obvious idiom is refused -- and rewriting this example's "5382700300" to 5382700300 red
+        # nothing at all. Parsed-but-unchecked, one level below the row that had the same defect.
+        out["waitEnterTypes"] = {k: jkind(v) for k, v in enter.items()}
         out["waitTerminalKeys"] = sorted(json.loads(blocks[1]).keys())
     except Exception as e:
         problems.append("a wait example is not valid JSON: %s" % e)
@@ -157,21 +221,16 @@ m2 = re.search(r'must be `"round": (\d+)`, the second `(\d+)`', inv)
 if m2: out["confirmationRounds"] = [int(m2.group(1)), int(m2.group(2))]
 else: problems.append("could not parse the confirmation-round contiguity claim")
 
-out["acceptedExceptionsOwnedByCritic"] = (
-    "accepted exceptions belong to critic review records, not host acceptance" in doc)
-if not out["acceptedExceptionsOwnedByCritic"]:
-    problems.append("could not parse the acceptedExceptions ownership claim")
-
-out["sameCriticExceptionDocumented"] = (
-    "is accepted after a `changes-required` verdict" in inv)
-if not out["sameCriticExceptionDocumented"]:
-    problems.append("could not parse the same-critic exception claim")
-
 m = re.search(r'an `initial` record must carry `"round": (\d+)`', inv)
 if m: out["initialRound"] = int(m.group(1))
 else: problems.append("could not parse the initial-record round claim")
 
-m = re.search(r"```\n(<headSha>:<kind>:<round>)\n```", section("## The two generation fields"))
+# PARSE WHATEVER SHAPE IS WRITTEN, not the one shape that is correct. The previous pattern was
+# `(<headSha>:<kind>:<round>)` spelled out, so the only document that parsed was the document that was
+# already right: transposing the fields produced a parse failure rather than a comparison, and the
+# check it fed had therefore never once fired. That is the same defect as a presence test -- an
+# expectation that cannot take a wrong value cannot detect one.
+m = re.search(r"```\n(<[A-Za-z]+>(?::<[A-Za-z]+>)+)\n```", section("## The two generation fields"))
 out["generationTokenShape"] = m.group(1) if m else None
 if not m: problems.append("could not parse the reviewGeneration token shape")
 
@@ -297,79 +356,153 @@ check "doc:optional-draft-keys" (sortedEq (strs "optionalKeys") engineOptional)
 
 let vocab = expected.GetProperty "vocabularies"
 
-// THE CHECKED SET IS DERIVED FROM THE PARSED TABLE, NOT FROM A LIST TYPED HERE.
+// THE CHECKED SET IS DERIVED FROM THE PARSED TABLE, AND SO ARE THE PROBES.
 //
-// Three rounds of review found three separate vocabulary rows unchecked, each time because the loop
-// enumerated field names by hand: three rows became five to repair round one, and `timestamp` was
-// still missing. Adding a sixth name would leave the next reader one row from a seventh. So the loop
-// now walks whatever the document defines, and a row with no probe set is a FAILURE rather than a
-// silent skip -- which is the only shape of this check that cannot rot the same way again.
-let probeTable =
-  [ "verdict", [ "pass"; "changes-required"; "accepted"; "rejected"; "fail"; "Pass"; "" ]
-    "kind", [ "initial"; "confirmation"; "escalation"; "repair-phase"; "acceptance"
-              "repair"; "host-acceptance"; "Initial" ]
-    "routeApplicability", [ "meaningful"; "not-meaningful"; "none"; "n/a"; "unknown"; "" ]
-    "schema", [ "fsgg.coord.review-decision/v2"; "fsgg.coord.review-decision/v1"
-                "fsgg.coord.review-decision/v3"; "fsgg.coord.review-wait/v1"; "" ]
-    "policyVersion", [ "structured-decisions/1"; "structured-decisions/2"; "structured-decisions"; "" ]
-    "timestamp", [ "2026-08-23T00:00:00Z"; "2026-08-23T00:00:00+00:00"; "2026-08-23 00:00:00"
-                   "banana"; "1787434100552"; "" ] ]
+// Four rounds found four separate defects in this one loop. Rounds one and two: the loop enumerated
+// field names by hand, so rows it did not name went unchecked. Round three bound the row set to the
+// document in BOTH directions, which is preserved below and still the right shape. Round four is the
+// one that shows the pattern: `timestamp`'s cell was prose, so it took the FREE-FORM branch, whose
+// only document-dependent term was `cell.Contains tok` over the single token the engine's refusal
+// yielded -- `cell.Contains "ISO-8601"`. Every widening passed it, including the widening that made
+// the row FALSE, because the false claim was copied from the message the token came from.
+//
+// Presence is not an extension. The document now states, per row, what the engine accepts AND what it
+// refuses; both columns are probed; and the free-form branch is gone rather than repaired, so no
+// future row can reach a substring test by being written as prose.
+//
+// Which ROWS must exist is still a list here, because nothing in the engine enumerates "the fields
+// whose values are drawn from a fixed set" -- a junk-value probe cannot tell a vocabulary from a
+// format constraint like `headSha`. That list drifts in neither direction: a row the gate does not
+// require fails, and a required row the document drops fails.
+let requiredVocabularyRows =
+  [ "kind"; "policyVersion"; "routeApplicability"; "schema"; "timestamp"; "verdict" ]
 
 let parsedFields = vocab.EnumerateObject() |> Seq.map (fun p -> p.Name) |> Seq.sort |> List.ofSeq
-let probedFields = probeTable |> List.map fst |> List.sort
-check "doc:vocabulary-coverage" (parsedFields = probedFields)
-  (sprintf "the document defines rows [%s]; this gate probes [%s] -- a row the gate does not probe is unchecked, and a probe with no row means the row was deleted"
-     (j parsedFields) (j probedFields))
+check "doc:vocabulary-coverage" (parsedFields = List.sort requiredVocabularyRows)
+  (sprintf "the document defines rows [%s]; this gate requires rows [%s] -- a row the gate does not require is unchecked, and a required row the document drops means the row was deleted"
+     (j parsedFields) (j (List.sort requiredVocabularyRows)))
 
-for field, probes in probeTable do
+for field in requiredVocabularyRows do
   let mutable row = Unchecked.defaultof<JsonElement>
   if not (vocab.TryGetProperty(field, &row)) then
     failures <- failures + 1
     printfn "  FAILED  doc:vocabulary:%s\n            the document no longer defines this row" field
   else
-  let documented =
-    row.GetProperty("values").EnumerateArray() |> Seq.map (fun e -> e.GetString()) |> List.ofSeq
-  let cell = row.GetProperty("cell").GetString()
-  let engineLegal = probes |> List.filter (engineAcceptsVocab field)
-  if not (List.isEmpty documented) then
-    // Enumerated row: the documented set and the engine-legal set must agree, both directions.
-    check (sprintf "doc:vocabulary:%s" field) (sortedEq documented engineLegal)
-      (sprintf "document lists [%s]; engine accepts [%s]" (j documented) (j engineLegal))
+    let listOf (n: string) =
+      row.GetProperty(n).EnumerateArray() |> Seq.map (fun e -> e.GetString()) |> List.ofSeq
+    let accepted, refused = listOf "accepted", listOf "refused"
+    // Both directions. Widening the row -- keeping its text and adding a permitted-but-wrong
+    // alternative -- moves a literal into `accepted`, and the engine refusing it reds this check.
+    let wronglyDocumentedAccepted = accepted |> List.filter (fun v -> not (engineAcceptsVocab field v))
+    let wronglyDocumentedRefused = refused |> List.filter (engineAcceptsVocab field)
+    check (sprintf "doc:vocabulary:%s" field)
+      (List.isEmpty wronglyDocumentedAccepted && List.isEmpty wronglyDocumentedRefused)
+      (sprintf "documented as accepted but the engine REFUSES [%s]; documented as refused but the engine ACCEPTS [%s]"
+         (j wronglyDocumentedAccepted) (j wronglyDocumentedRefused))
+
+// The empty string is refused for every vocabulary field. It is checked once, here, rather than asked
+// of each row, because a backtick pair cannot spell it and a row that tried would parse to nothing.
+check "engine:empty-vocabulary-value-refused"
+  (requiredVocabularyRows |> List.forall (fun f -> not (engineAcceptsVocab f "")))
+  "some vocabulary field now accepts an empty string"
+
+// ---- THE OUTCOME TABLE: rules whose claim is a pair of engine behaviours, not a set of values ----
+//
+// `acceptedExceptions` ownership and the same-critic exception were both stated as sentences and both
+// "checked" by `"<phrase>" in doc`. STEP 1 aborts when such a phrase is absent, so by the time STEP 2
+// compared it the flag was a CONSTANT, and the check was an engine self-test with a flag stapled to
+// the front. Both were widened in review -- phrase kept, contradicting clause appended -- and both
+// stayed green. Giving each rule a case id and an outcome literal gives it an extension to compare.
+let confirmationBy (critic: string) (after: ReviewVerdict) =
+  let first = seal { baseRec with Verdict = after }
+  accepts [ first
+            seal { baseRec with Revision = 2; PreviousDigest = Some first.Digest
+                                Kind = ReviewKind.Confirmation; Verdict = ReviewVerdict.Pass
+                                Round = 1; Critic = critic
+                                InitialReview = Some "https://example/c"
+                                PrecedingReview = Some "https://example/c" } ]
+let exceptionsOn (kind: ReviewKind) (exs: string list) =
+  match kind with
+  | ReviewKind.Acceptance ->
+      let i = seal baseRec
+      accepts [ i; seal { baseRec with Revision = 2; PreviousDigest = Some i.Digest
+                                       Kind = ReviewKind.Acceptance; Verdict = ReviewVerdict.Accepted
+                                       AcceptedExceptions = exs
+                                       InitialReview = Some "https://example/c"
+                                       PrecedingReview = Some "https://example/c" } ]
+  | _ -> accepts [ seal { baseRec with AcceptedExceptions = exs } ]
+
+// What a case MEANS is irreducibly authored -- something must build the situation in F#. What it does
+// NOT do any more is drift silently: the case set is compared to the document's in both directions,
+// and the outcome each case asserts comes from the validator rather than from this file.
+let outcomeProbes : (string * (unit -> bool)) list =
+  [ "same-critic-after-changes-required",
+      fun () -> confirmationBy baseRec.Critic ReviewVerdict.ChangesRequired
+    "different-critic-after-changes-required",
+      fun () -> confirmationBy "a-successor-critic" ReviewVerdict.ChangesRequired
+    "same-critic-after-pass",
+      fun () -> confirmationBy baseRec.Critic ReviewVerdict.Pass
+    "different-critic-after-pass",
+      fun () -> confirmationBy "a-successor-critic" ReviewVerdict.Pass
+    "nonempty-on-initial",
+      fun () -> exceptionsOn ReviewKind.Initial [ "waived-x" ]
+    "empty-on-acceptance",
+      fun () -> exceptionsOn ReviewKind.Acceptance []
+    "nonempty-on-acceptance",
+      fun () -> exceptionsOn ReviewKind.Acceptance [ "waived-x" ] ]
+
+let outcomeRules = expected.GetProperty "outcomeRules"
+let documentedCases =
+  outcomeRules.EnumerateObject() |> Seq.map (fun p -> p.Name) |> Seq.sort |> List.ofSeq
+let probedCases = outcomeProbes |> List.map fst |> List.sort
+check "doc:outcome-coverage" (documentedCases = probedCases)
+  (sprintf "the document names cases [%s]; this gate probes [%s] -- a documented case with no probe is unchecked, and a probe with no row means the row was deleted"
+     (j documentedCases) (j probedCases))
+
+for case, probe in outcomeProbes do
+  let mutable row = Unchecked.defaultof<JsonElement>
+  if not (outcomeRules.TryGetProperty(case, &row)) then
+    failures <- failures + 1
+    printfn "  FAILED  doc:outcome:%s\n            the document has no row for this case" case
   else
-    // FREE-FORM row (`timestamp` is the only one today): the cell describes a constraint rather than
-    // enumerating values, so there is no set to compare. Two things are still checkable, and both are
-    // derived from the engine rather than from this file: the engine must actually partition the
-    // probes into accepted and refused, and the row's prose must carry the distinctive token of the
-    // engine's own refusal -- so rewriting `any ISO-8601 instant` to say something else reds.
-    let refusal =
-      probes
-      |> List.tryPick (fun v ->
-          let swap = draftKeys |> List.map (fun (n, x) -> if n = field then n, "\"" + v + "\"" else n, x)
-          match Driver.decodeStructuredReview (render swap) with
-          | Error e -> Some (string e)
-          | Ok r ->
-              match StructuredDecision.validateReviewLedger subject [ seal r ] with
-              | Error es -> es |> List.tryFind (fun m -> m.Contains field)
-              | Ok _ -> None)
-    let tokens =
-      match refusal with
-      | None -> []
-      | Some m ->
-          Text.RegularExpressions.Regex.Matches(m, "[A-Z0-9][A-Za-z0-9-]{3,}")
-          |> Seq.map (fun x -> x.Value)
-          |> Seq.filter (fun x -> x <> field)
-          |> List.ofSeq
-    let partitions = not (List.isEmpty engineLegal) && List.length engineLegal < List.length probes
-    let proseCarriesRefusal = tokens |> List.forall (fun tok -> cell.Contains tok)
-    check (sprintf "doc:vocabulary:%s (free-form)" field)
-      (cell <> "" && partitions && proseCarriesRefusal)
-      (sprintf "cell %s; engine accepts %d of %d probes; refusal tokens [%s] must all appear in the cell"
-         cell (List.length engineLegal) (List.length probes) (j tokens))
+    let documented = row.GetProperty("outcome").GetString()
+    let observed = if probe () then "accepted" else "refused"
+    check (sprintf "doc:outcome:%s" case) (documented = observed)
+      (sprintf "the document says the validator %s this case; it %s it" documented observed)
 
 check "doc:wait-enter-keys"
   (sortedEq (strs "waitEnterKeys") (keysOf (ReviewWait.encode (ReviewWait.Transition.Enter receipt))))
   (sprintf "document's enter example has [%s]; the encoder emits [%s]"
      (j (strs "waitEnterKeys")) (j (keysOf (ReviewWait.encode (ReviewWait.Transition.Enter receipt)))))
+// THE EXAMPLE'S VALUE TYPES, not only its key names. `sorted(json.loads(...).keys())` discarded every
+// value, so `"claimGeneration": "5382700300"` could become `5382700300` and nothing reddened -- while
+// the engine's field is a String and `claim --json` emits a NUMERIC markerId, so the obvious idiom is
+// refused and this page's example was the only thing that could have said so. A worker on another
+// item paid that cost against the CLI help. Parsed-but-unchecked, one level below the vocabulary row
+// that had the same shape.
+let kindsOf (encoded: string) =
+  let json = encoded.Substring(encoded.IndexOf '{')
+  use d = JsonDocument.Parse json
+  d.RootElement.EnumerateObject()
+  |> Seq.map (fun p ->
+      p.Name, (match p.Value.ValueKind with
+               | JsonValueKind.True | JsonValueKind.False -> "Boolean"
+               | k -> string k))
+  |> Map.ofSeq
+let documentedEnterTypes =
+  expected.GetProperty("waitEnterTypes").EnumerateObject()
+  |> Seq.map (fun p -> p.Name, p.Value.GetString()) |> Map.ofSeq
+let encoderEnterTypes = kindsOf (ReviewWait.encode (ReviewWait.Transition.Enter receipt))
+let typeMismatches =
+  documentedEnterTypes
+  |> Map.toList
+  |> List.choose (fun (k, documented) ->
+      match Map.tryFind k encoderEnterTypes with
+      | Some emitted when emitted = documented -> None
+      | Some emitted -> Some (sprintf "%s documented %s, encoder emits %s" k documented emitted)
+      | None -> Some (sprintf "%s is in the example but not in the encoder's output" k))
+check "doc:wait-enter-value-types" (List.isEmpty typeMismatches) (j typeMismatches)
+
 check "doc:wait-terminal-keys"
   (sortedEq (strs "waitTerminalKeys")
      (keysOf (ReviewWait.encode (ReviewWait.Transition.Complete("g", entered, "e")))))
@@ -499,7 +632,11 @@ let ceiling = float (num "waitWindowMaxHours")
 check "doc:wait-window-ceiling"
   (validWindow ceiling && not (validWindow (ceiling + 1.0)))
   (sprintf "document says the window is capped at %g hours; the validator disagrees" ceiling)
-check "doc:wait-window-must-be-positive"
+// ENGINE-SCOPED, and it was misnamed `doc:` until the coverage requirement asked what inverted it.
+// Nothing does: the predicate takes no term from the document, so no mutation of the document can
+// red it. A `doc:` name on a check with no document input is its own small over-claim -- it reports
+// the page as bound where only the engine is being probed.
+check "engine:wait-window-must-be-positive"
   (not (validWindow 0.0) && not (validWindow -1.0))
   "the validator no longer requires expiresAt to be later than enteredAt"
 
@@ -527,33 +664,6 @@ match confRounds with
 | _ ->
     failures <- failures + 1
     printfn "  FAILED  doc:confirmation-round-contiguity\n            expected two documented round numbers"
-
-// The same-critic exception: a different critic may confirm after changes-required, but not after pass.
-let differentCriticAfter (verdict: ReviewVerdict) =
-  let first = seal { baseRec with Verdict = verdict }
-  accepts [ first; confirmationAt 1 first 2 "a-different-critic" ]
-check "doc:same-critic-exception"
-  (expected.GetProperty("sameCriticExceptionDocumented").GetBoolean()
-   && differentCriticAfter ReviewVerdict.ChangesRequired
-   && not (differentCriticAfter ReviewVerdict.Pass))
-  "the document claims a successor may confirm after changes-required but not after pass; the validator disagrees"
-
-// acceptedExceptions belongs to the critic, not the host. The page said the opposite for two rounds.
-let exceptionsOn (kind: ReviewKind) =
-  match kind with
-  | ReviewKind.Acceptance ->
-      let i = seal baseRec
-      accepts [ i; seal { baseRec with Revision = 2; PreviousDigest = Some i.Digest
-                                       Kind = ReviewKind.Acceptance; Verdict = ReviewVerdict.Accepted
-                                       AcceptedExceptions = [ "waived-x" ]
-                                       InitialReview = Some "https://example/c"
-                                       PrecedingReview = Some "https://example/c" } ]
-  | _ -> accepts [ seal { baseRec with AcceptedExceptions = [ "waived-x" ] } ]
-check "doc:accepted-exceptions-owner"
-  (expected.GetProperty("acceptedExceptionsOwnedByCritic").GetBoolean()
-   && exceptionsOn ReviewKind.Initial
-   && not (exceptionsOn ReviewKind.Acceptance))
-  "the document claims acceptedExceptions belongs to critic records and must be empty on acceptance; the validator disagrees"
 
 // ---- engine facts the document does not parameterise ----
 check "engine:digest-ignores-its-own-field"
@@ -589,7 +699,7 @@ if [[ -n "$inner" ]]; then
 fi
 
 echo "engine conformance (pinned fs.gg.coord.cli $pinned) — expectations parsed from the document:"
-if ! dotnet fsi "$tmp/probe.fsx"; then
+if ! dotnet fsi "$tmp/probe.fsx" | tee "$tmp/clean.txt"; then
   echo "docs/coordination-engine-contracts.md disagrees with the engine it documents." >&2
   exit 1
 fi
@@ -602,78 +712,269 @@ grep -qF "$facts_schema" "$doc" || {
 echo "  ok      engine:facts-reviewPolicy-schema ($facts_schema)"
 
 # ---------------------------------------------------------------------------------------------------
-# STEP 3 — every DERIVED claim must red when the document is falsified.
+# STEP 3 — every DERIVED claim must red when the document is falsified, AND the gate must be able to
+# name the check that caught it.
 #
-# Each mutation edits a copy of the DOCUMENT, re-parses it, and re-runs the engine comparison. A
-# surviving mutation means that documented claim is not bound to the engine — which was finding F1.
-# D1-D7 are the critic's own round-0 mutations, which all survived the previous version.
+# WHAT WENT WRONG HERE, MEASURED. The previous revision ran 21 hand-written mutations and scored each
+# one on whether the inner run exited non-zero. Attributing each red to the check it actually
+# reddened showed that THREE of the 21 reddened no check at all: they tripped STEP 1's parser, and a
+# parse abort scored identically to a detection. `doc:record-subject-form`,
+# `doc:accepted-exceptions-owner` and `doc:same-critic-exception` therefore carried inversion evidence
+# while never having fired. Two of the three were then shown to be vacuous by a WIDENING mutation --
+# keep the sentence, append a contradicting clause -- which is precisely the class a hand-written
+# catalogue of deletions and replacements never contained.
+#
+# The anchor guard is the same defect one layer out: a widening that changes a row's text removes the
+# byte-exact anchor of the mutation meant to catch it, `sys.exit` fires, `set -e` aborts the run, and
+# the abort is scored a detection. A mechanism whose passing condition is satisfied by its own
+# breakage cannot distinguish "the check caught it" from "the fixture no longer applies".
+#
+# So three properties now hold, and each one failed at least once above:
+#
+#   1. ATTRIBUTED. Every mutation declares the check id it must red, and that exact id must appear as
+#      FAILED. A parse abort reddens nothing and is reported as NO DETECTION, not as evidence.
+#   2. COVERED. Every `doc:*` check the clean run emits must be reddened by some mutation, or this
+#      step fails naming the uncovered ids. A claim added to the document without an inversion now
+#      fails the gate instead of passing silently -- that default is what produced four recurrences.
+#   3. DERIVED. The widening mutations are constructed from the document's own `must be refused`
+#      column, so a row added later gets its widening for free and no hand-written list can fall
+#      behind the table it is supposed to defend.
+#
+# A missing anchor is a FIXTURE failure and is reported as one. It is never a detection.
 # ---------------------------------------------------------------------------------------------------
 
-echo "document inversion (the critic's D1-D7, plus the subject regression):"
-status=0
-mutate_and_expect_red() {
-  local name="$1" old="$2" new="$3"
-  python3 - "$doc" "$tmp/mutant.md" "$old" "$new" <<'PY'
-import pathlib, sys
-src, dst, old, new = sys.argv[1:5]
-t = pathlib.Path(src).read_text(encoding="utf-8")
-if old not in t: sys.exit("mutation anchor not present: " + old[:90])
-pathlib.Path(dst).write_text(t.replace(old, new, 1), encoding="utf-8")
+echo
+echo "document inversion — each mutation names the check it must red:"
+
+mutants="$tmp/mutants"; mkdir -p "$mutants"
+
+python3 - "$doc" "$mutants" <<'PY'
+import os, pathlib, re, sys
+
+doc_path, outdir = sys.argv[1], sys.argv[2]
+text = pathlib.Path(doc_path).read_text(encoding="utf-8")
+ticked = lambda s: re.findall(r"`([^`]+)`", s)
+VOCAB_ROWS = ("kind", "policyVersion", "routeApplicability", "schema", "timestamp", "verdict")
+# A value no row lists in either column, so substituting it can never collide with the document's own
+# literals. Every one of these fields is a closed vocabulary or a parsed instant, so it is refused.
+NOT_A_VALUE = "not-a-value"
+
+manifest, problems = [], []
+
+def emit(check_id, name, mutated):
+    slug = re.sub(r"[^a-z0-9]+", "-", ("%s %s" % (check_id, name)).lower()).strip("-")[:100]
+    path = os.path.join(outdir, slug + ".md")
+    pathlib.Path(path).write_text(mutated, encoding="utf-8")
+    manifest.append((check_id, name, path))
+
+exact = []
+def edit(check_id, name, old, new):
+    """An exact (old -> new) edit. A missing anchor is a fixture failure, never a detection."""
+    exact.append(check_id)
+    if old not in text:
+        problems.append("%s (%s): mutation anchor not present: %r" % (check_id, name, old[:70]))
+        return
+    emit(check_id, name, text.replace(old, new, 1))
+
+def section(header, stop=("\n## ", "\n### ")):
+    i = text.find(header)
+    if i < 0:
+        problems.append("section not found: %r" % header)
+        return "", 0
+    j = len(text)
+    for s in stop:
+        k = text.find(s, i + len(header))
+        if k >= 0:
+            j = min(j, k)
+    return text[i:j], i
+
+# --- DERIVED: the vocabulary table mutates itself -------------------------------------------------
+vocab_text, vocab_at = section("### Vocabularies")
+rows = [m for m in re.finditer(r"^\|\s*`([a-zA-Z]+)`\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$", vocab_text, re.M)
+        if m.group(1) in VOCAB_ROWS]
+if len(rows) != len(VOCAB_ROWS):
+    problems.append("expected %d vocabulary rows to mutate, found %d" % (len(VOCAB_ROWS), len(rows)))
+for m in rows:
+    key, acc, ref = m.group(1), m.group(2).strip(), m.group(3).strip()
+    accepted, refused = ticked(acc), ticked(ref)
+    if not accepted or not refused:
+        problems.append("row `%s` cannot be mutated: it names no accepted or no refused literal" % key)
+        continue
+    s, e = vocab_at + m.start(), vocab_at + m.end()
+    # WIDENING. Every word of the row is kept and a permitted-but-wrong alternative is added. This is
+    # the class that survived three review rounds, so it is the one the gate derives rather than
+    # trusts an author to remember.
+    if len(refused) < 2:
+        problems.append("row `%s` names only one refused literal, so it cannot be widened without "
+                        "emptying its refused column" % key)
+        continue
+    # The literal MOVES: accepted gains it and refused loses it, which is exactly what an author
+    # widening this row would write. Leaving it in both columns is a self-contradiction the parser
+    # refuses, and a mutant that cannot be parsed reddens the run without reaching its check.
+    ref_without_first = re.sub(r"^`[^`]+`,\s*", "", ref)
+    emit("doc:vocabulary:%s" % key, "row %s WIDENED with the refused value %s" % (key, refused[0]),
+         text[:s] + "| `%s` | %s, `%s` | %s |" % (key, acc, refused[0], ref_without_first) + text[e:])
+    # NARROWING. Substitution, not deletion, so a single-literal row still parses -- a row mutated
+    # into an unparseable state would red the run without ever reaching its check.
+    emit("doc:vocabulary:%s" % key, "row %s narrowed by substituting %s" % (key, NOT_A_VALUE),
+         text[:s] + "| `%s` | %s | %s |" % (key, acc.replace("`%s`" % accepted[0], "`%s`" % NOT_A_VALUE, 1), ref) + text[e:])
+if rows:
+    m = rows[-1]
+    s, e = vocab_at + m.start(), vocab_at + m.end()
+    emit("doc:vocabulary-coverage", "the %s row is deleted outright" % m.group(1),
+         text[:s].rstrip("\n") + "\n" + text[e:].lstrip("\n"))
+
+# --- DERIVED: the draft-key lists widen with each other's members ---------------------------------
+req = re.search(r"\*\*Required\*\*.*?:\s*\n\n(.+?)\n\n", text, re.S)
+opt = re.search(r"\*\*Optional\*\*.*?:\s*\n\n(.+?)\n\n", text, re.S)
+if req and opt:
+    required_keys, optional_keys = ticked(req.group(1)), ticked(opt.group(1))
+    if required_keys and optional_keys:
+        emit("doc:required-draft-keys",
+             "required list WIDENED with the optional key %s" % optional_keys[0],
+             text[:req.end(1)] + ", `%s`" % optional_keys[0] + text[req.end(1):])
+        emit("doc:optional-draft-keys",
+             "optional list WIDENED with the required key %s" % required_keys[0],
+             text[:opt.end(1)] + ", `%s`" % required_keys[0] + text[opt.end(1):])
+    else:
+        problems.append("a draft-key list parsed to no literals")
+else:
+    problems.append("could not locate the draft-key lists to mutate")
+
+# --- DERIVED: every outcome cell flips ------------------------------------------------------------
+oc_text, oc_at = section("### Rules with two outcomes")
+oc_rows = list(re.finditer(r"^\|\s*`([a-z-]+)`\s*\|\s*`([a-z-]+)`\s*\|\s*`(accepted|refused)`\s*\|\s*$",
+                           oc_text, re.M))
+if not oc_rows:
+    problems.append("the outcome table has no rows to mutate")
+for m in oc_rows:
+    rule, case, outcome = m.group(1), m.group(2), m.group(3)
+    flipped = "refused" if outcome == "accepted" else "accepted"
+    s, e = oc_at + m.start(), oc_at + m.end()
+    # Flipping `refused` to `accepted` is the widening direction for a rule: it claims the validator
+    # permits something it does not. That is the shape the two prose versions of these rules survived.
+    emit("doc:outcome:%s" % case,
+         "outcome for %s %s to %s" % (case, "WIDENED" if flipped == "accepted" else "narrowed", flipped),
+         text[:s] + "| `%s` | `%s` | `%s` |" % (rule, case, flipped) + text[e:])
+if oc_rows:
+    m = oc_rows[-1]
+    s, e = oc_at + m.start(), oc_at + m.end()
+    emit("doc:outcome-coverage", "the %s row is deleted outright" % m.group(2),
+         text[:s].rstrip("\n") + "\n" + text[e:].lstrip("\n"))
+
+# --- EXACT: claims with no derivable mutation form ------------------------------------------------
+edit("doc:required-draft-keys", "D1 required key list silently drops digest",
+     "`kind`, `round`, `timestamp`, `digest`", "`kind`, `round`, `timestamp`")
+edit("doc:overwritten-fields", "D4 overwrite table loses a field",
+     "| `previousDigest` |", "| `previousDigestXX` |")
+edit("doc:wait-enter-keys", "D5 the enter example drops a required key",
+     '  "kind": "initial-review",\n', "")
+edit("doc:wait-enter-value-types", "S17 claimGeneration becomes the number claim --json emits",
+     '"claimGeneration": "5382700300"', '"claimGeneration": 5382700300')
+edit("doc:authorization:initial", "D7 authorization table gives initial the wrong token",
+     "| `initial` | `Waiting` | `initial-review` | `<headSha>:initial-review:0` |",
+     "| `initial` | `Waiting` | `repair-confirmation` | `<headSha>:repair-confirmation:0` |")
+edit("doc:authorization:initial", "S10 the authorization receipt-kind column is falsified",
+     "| `initial` | `Waiting` | `initial-review` |", "| `initial` | `Waiting` | `repair-confirmation` |")
+edit("doc:authorization:acceptance", "S4 the acceptance row wait state is falsified",
+     "| `acceptance` | `Completed` |", "| `acceptance` | `Waiting` |")
+edit("doc:authorization:confirmation", "S5 an ordinary row wait state is falsified",
+     "| `confirmation` | `Waiting` |", "| `confirmation` | `Completed` |")
+# S1 ALTERS the subject rather than deleting it. The deleting form reddened the run through STEP 1's
+# parser while `doc:record-subject-form` never fired -- inversion evidence for a check that had never
+# been executed, which is the exact shape this step now refuses to accept.
+edit("doc:record-subject-form", "S1 the record subject names the wrong PR",
+     "EHotwagner/S.I.R.#255/pr/259` |", "EHotwagner/S.I.R.#255/pr/999` |")
+edit("doc:confirmation-round-contiguity", "S13 the confirmation contiguity numbers are falsified",
+     'must be `"round": 1`, the second `2`', 'must be `"round": 0`, the second `5`')
+edit("doc:overwrite-description:revision", "S8 the revision substitution loses its off-by-one",
+     "`existing.Length + 1` — the count of records", "`existing.Length` — the count of records")
+edit("doc:overwrite-description:claimGeneration", "S9 an overwrite row is rescoped to the wrong record kind",
+     "the live winning claim marker's comment id (acceptance records only)",
+     "the live winning claim marker's comment id (initial records only)")
+edit("doc:wait-window-ceiling", "S3 the wait-window ceiling is overstated",
+     "must be at most 24 hours", "must be at most 48 hours")
+edit("doc:meaningful-evidence-cardinality", "S2 route-evidence cardinality weakened",
+     "requires **exactly four** `routeEvidence` entries", "requires **exactly five** `routeEvidence` entries")
+
+edit("doc:wait-terminal-keys", "S18 the terminal example drops a required key",
+     '  "at": "2026-08-22T22:10:00.0000000+00:00",\n', "")
+edit("doc:initial-round", "S19 the initial record's round is falsified",
+     'an `initial` record must carry `"round": 0`', 'an `initial` record must carry `"round": 1`')
+edit("doc:not-meaningful-evidence-cardinality", "S20 not-meaningful cardinality weakened",
+     '`"not-meaningful"` requires **exactly one**', '`"not-meaningful"` requires **exactly two**')
+edit("doc:generation-token-shape", "S21 the generation token's field order is transposed",
+     "<headSha>:<kind>:<round>", "<kind>:<headSha>:<round>")
+edit("doc:authorization:escalation", "S22 the escalation row wait state is falsified",
+     "| `escalation` | `Waiting` |", "| `escalation` | `Completed` |")
+edit("doc:authorization:repair-phase", "S23 the repair-phase row wait state is falsified",
+     "| `repair-phase` | `Waiting` |", "| `repair-phase` | `Completed` |")
+edit("doc:wait-item-form", "S24 the wait item example names the wrong item",
+     "| `review wait` | `item` | the canonical item ref | `EHotwagner/S.I.R.#255` |",
+     "| `review wait` | `item` | the canonical item ref | `EHotwagner/S.I.R.#254` |")
+edit("doc:overwrite-description:previousDigest", "S25 the previousDigest substitution points the wrong way",
+     "| `previousDigest` | the preceding record's digest |",
+     "| `previousDigest` | the following record's digest |")
+edit("doc:overwrite-description:baseSha", "S26 the baseSha row is rescoped to the wrong record kind",
+     "the PR's live base tip SHA (acceptance records only)",
+     "the PR's live base tip SHA (initial records only)")
+edit("doc:overwrite-description:digest", "S27 the digest substitution names the wrong function",
+     "`StructuredDecision.reviewDigest(record)`, computed over the rebuilt record",
+     "`StructuredDecision.recordDigest(record)`, computed over the rebuilt record")
+
+if problems:
+    print("the mutation catalogue could not be built — a FIXTURE failure, not a detection:", file=sys.stderr)
+    for p in problems:
+        print("  " + p, file=sys.stderr)
+    sys.exit(1)
+
+with open(os.path.join(outdir, "manifest.tsv"), "w", encoding="utf-8") as fh:
+    for check_id, name, path in manifest:
+        fh.write("%s\t%s\t%s\n" % (check_id, name, path))
+print("  %d mutations (%d derived from the document, %d exact)"
+      % (len(manifest), len(manifest) - len(exact), len(exact)))
 PY
-  if "$repo_root/scripts/test-review-contract-coherence.sh" --inner "$tmp/mutant.md" >/dev/null 2>&1; then
-    echo "  SURVIVED INVERSION  $name — the document can drift here undetected." >&2
+
+# The mutants are independent, so run them concurrently. Parallelism is bounded rather than `nproc`:
+# each run starts a `dotnet fsi` host, and the memory ceiling binds well before the core count does.
+jobs=${SIR_COHERENCE_JOBS:-6}
+find "$mutants" -name '*.md' -print0 | xargs -0 -P "$jobs" -I{} bash -c '
+  out=$("$0" --inner "$1" 2>&1) || true
+  printf "%s\n" "$out" | sed -n "s/^  FAILED  \(.*\)$/\1/p" > "$1.failed"
+' "$repo_root/scripts/test-review-contract-coherence.sh" {}
+
+status=0
+covered="$tmp/covered.txt"; : > "$covered"
+while IFS=$'\t' read -r check_id name path; do
+  reddened=$(cat "$path.failed" 2>/dev/null || true)
+  if [[ -z "$reddened" ]]; then
+    printf '  NO DETECTION  %-58s  the run reddened no check at all — a parse abort is not a detection\n' "$name" >&2
+    status=1
+  elif ! printf '%s\n' "$reddened" | grep -qxF "$check_id"; then
+    printf '  WRONG CHECK   %-58s  expected %s; reddened %s\n' \
+      "$name" "$check_id" "$(printf '%s' "$reddened" | tr '\n' ' ')" >&2
     status=1
   else
-    echo "  reds when inverted  $name"
+    printf '  reds %-42s  %s\n' "$check_id" "$name"
+    printf '%s\n' "$check_id" >> "$covered"
   fi
-}
+done < "$mutants/manifest.tsv"
 
-mutate_and_expect_red "D1 required key list silently drops \`digest\`" \
-  '`kind`, `round`, `timestamp`, `digest`' '`kind`, `round`, `timestamp`'
-mutate_and_expect_red "D2 verdict vocabulary drops \`accepted\`" \
-  '`pass`, `changes-required`, `accepted`' '`pass`, `changes-required`'
-mutate_and_expect_red "D3 kind vocabulary becomes a set the engine refuses" \
-  '`initial`, `confirmation`, `escalation`, `repair-phase`, `acceptance`' \
-  '`initial`, `confirmation`, `escalation`, `repair`, `host-acceptance`'
-mutate_and_expect_red "D4 overwrite table loses a field" \
-  '| `previousDigest` |' '| `previousDigestXX` |'
-mutate_and_expect_red "D5 the enter example drops a required key" \
-  '  "kind": "initial-review",
-' ''
-mutate_and_expect_red "D7 authorization table gives \`initial\` the wrong token" \
-  '| `initial` | `Waiting` | `initial-review` | `<headSha>:initial-review:0` |' \
-  '| `initial` | `Waiting` | `repair-confirmation` | `<headSha>:repair-confirmation:0` |'
-mutate_and_expect_red "S1 the record subject reverts to the canonical item ref" \
-  'EHotwagner/S.I.R.#255/pr/259` |' 'EHotwagner/S.I.R.#255` |'
-mutate_and_expect_red "S15 the acceptedExceptions ownership refusal is dropped" \
-  'accepted exceptions belong to critic review records, not host acceptance' 'accepted exceptions are recorded by whoever waives them'
-mutate_and_expect_red "S13 the confirmation contiguity numbers are falsified" \
-  'must be `"round": 1`, the second `2`' 'must be `"round": 0`, the second `5`'
-mutate_and_expect_red "S14 the same-critic exception is inverted" \
-  'is accepted after a `changes-required` verdict' 'is refused after a `changes-required` verdict'
-mutate_and_expect_red "S11 the timestamp vocabulary row is deleted outright" \
-  '| `timestamp` | any ISO-8601 instant |' ''
-mutate_and_expect_red "S12 the timestamp row prose is falsified" \
-  '| `timestamp` | any ISO-8601 instant |' '| `timestamp` | any integer of milliseconds |'
-mutate_and_expect_red "S6 the schema vocabulary row is falsified" \
-  '| `schema` | `fsgg.coord.review-decision/v2` |' '| `schema` | `fsgg.coord.review-decision/v1` |'
-mutate_and_expect_red "S7 the policyVersion vocabulary row is falsified" \
-  '| `policyVersion` | `structured-decisions/1` |' '| `policyVersion` | `structured-decisions/2` |'
-mutate_and_expect_red "S8 the revision substitution loses its off-by-one" \
-  '`existing.Length + 1` — the count of records' '`existing.Length` — the count of records'
-mutate_and_expect_red "S9 an overwrite row is rescoped to the wrong record kind" \
-  "the live winning claim marker's comment id (acceptance records only)" "the live winning claim marker's comment id (initial records only)"
-mutate_and_expect_red "S10 the authorization receipt-kind column is falsified" \
-  '| `initial` | `Waiting` | `initial-review` |' '| `initial` | `Waiting` | `repair-confirmation` |'
-mutate_and_expect_red "S4 the acceptance row wait state is falsified" \
-  '| `acceptance` | `Completed` |' '| `acceptance` | `Waiting` |'
-mutate_and_expect_red "S5 an ordinary row wait state is falsified" \
-  '| `confirmation` | `Waiting` |' '| `confirmation` | `Completed` |'
-mutate_and_expect_red "S3 the wait-window ceiling is overstated" \
-  'must be at most 24 hours' 'must be at most 48 hours'
-mutate_and_expect_red "S2 route-evidence cardinality weakened" \
-  'requires **exactly four** `routeEvidence` entries' \
-  'requires **exactly five** `routeEvidence` entries'
+# COVERAGE. Every derived check the clean run emitted must have been reddened by something above.
+# This is the property whose absence produced four consecutive recurrences: a claim could be added to
+# the document, given a check, and never given an inversion, and nothing anywhere noticed.
+uncovered=()
+while read -r id; do
+  grep -qxF "$id" "$covered" || uncovered+=("$id")
+done < <(sed -n 's/^  ok      \(doc:.*\)$/\1/p' "$tmp/clean.txt")
+if (( ${#uncovered[@]} )); then
+  echo "  these DERIVED checks have no attributed inversion — each is consistent with 'nothing was" >&2
+  echo "  ever wrong' and with 'it cannot fire', and reading cannot separate those:" >&2
+  printf '      %s\n' "${uncovered[@]}" >&2
+  status=1
+else
+  echo "  ok      every derived check named by the clean run is reddened by a named mutation"
+fi
 
 [[ $status -eq 0 ]] || { echo "at least one documented claim is not bound to the engine." >&2; exit 1; }
 
@@ -721,6 +1022,12 @@ echo "  ok      all ${#literals[@]} literal-only claims present"
 # change that. Presence is what can be checked, so presence is what is claimed.
 
 echo
-echo "review-contract coherence passed: every DERIVED claim in docs/coordination-engine-contracts.md is"
-echo "parsed from the document, matches the pinned engine, and reds when the document is falsified;"
-echo "every LITERAL-ONLY claim is present."
+echo "review-contract coherence passed:"
+echo "  - every DERIVED claim is parsed out of docs/coordination-engine-contracts.md and compared"
+echo "    against the pinned engine. No expectation is presence-shaped: every vocabulary row states"
+echo "    both columns of its extension, and the free-form branch does not exist."
+echo "  - every derived check is reddened by a NAMED mutation, and a mutant that reddens no check is"
+echo "    reported as NO DETECTION rather than counted as one. A parse abort is not evidence."
+echo "  - every vocabulary row, draft-key list and outcome cell is inverted by a mutation this gate"
+echo "    DERIVED from the document itself, in the widening direction as well as the narrowing one."
+echo "  - every LITERAL-ONLY claim is present, and no inversion is claimed over them."

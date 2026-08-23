@@ -70,8 +70,13 @@ supports slash-based skill selection.
 
 At each worker's review handoff, spawn a fresh critic under the `independent-review` contract loaded
 by `$pnext-item`, route
-up to three numbered repairs back to the still-live worker, and require the same critic's confirmation
-after each repair. Before merge, verify PR state/head/checks, the durable review marker, the ordered
+up to three numbered repairs back to the still-live worker, and require a confirmation for each
+repair — from the same critic while it is available, or from a **fresh successor** when it is not.
+A successor is legal: the engine accepts a `confirmation` bound to a different critic after a
+`changes-required` verdict, and `review <ref> --pr <n>` actively returns `dispatchSuccessor` on a
+repaired head. It is refused only after a `pass`, with `every record in one review generation must
+bind the same critic`. Do not read "the same critic" as a hard requirement — a rule stricter than the
+engine is obeyed silently and produces a chain the ledger will not accept. Before merge, verify PR state/head/checks, the durable review marker, the ordered
 round/URL/SHA chain, critic independence, each material finding's disposition, and newly filed work.
 Validate the chain and confirm its latest round is less than three before routing each repair.
 A critic may file review-discovered work only when
