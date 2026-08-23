@@ -578,11 +578,31 @@ const sweptTacticalValues = [
 const unsweepableTacticalValues = new Map([
   [representativeWorkload.maximumDomNodes, "also a readiness timeout in the review generator, a trace-fixture duration in this suite, and an unrelated overlay-layer node bound in the browser spec"],
   [representativeWorkload.maximumInputToPaintMilliseconds, "also a Playwright wait, a percentile computation, a declared workload's unit count, and a \"100%\" assertion string"],
+  [tacticalFrameCadenceBudget.maximumElapsedVsyncsPerFrame, "a small integer COUNT of vsyncs rather than a millisecond figure; it is the commonest literal in any source and sweeping it by value would red on every increment"],
 ]);
 // EVERY declared value is accounted for: swept by Rule B, or named unsweepable WITH a reason. A new
 // budget figure added to the declaration and reachable by neither rule fails here rather than
 // silently joining the unswept set.
-const allDeclaredTacticalValues = [...new Set(tacticalWorkloadBudgetList.flatMap((workload) => [workload.maximumDomNodes, workload.maximumEffects, workload.maximumInputToPaintMilliseconds]).concat([tacticalFrameCadenceBudget.intervalCeilingMilliseconds]))];
+// DERIVED FROM THE DECLARED OBJECTS, NOT LISTED HERE. This was three named fields, and adding a
+// fourth budget to a workload row walked straight past it: a hand-maintained list of budget values,
+// inside the gate that exists to stop hand-maintained copies of budget values, is the same disease
+// one level up -- the finding S.I.R.#299's critic already made about its consumer list.
+//
+// Every numeric field of a declared budget object is a budget unless it is a declared workload
+// IDENTITY. The two are told apart by name, and a field that is neither is a failure rather than a
+// silent omission, so a budget added under an unrecognised name cannot join the unchecked set.
+const workloadIdentityFields = ["units"];
+const budgetFieldName = (key) => /^maximum|Milliseconds$|Ceiling$/.test(key);
+const declaredBudgetObjects = [...tacticalWorkloadBudgetList, tacticalFrameCadenceBudget];
+for (const declared of declaredBudgetObjects)
+  for (const [key, value] of Object.entries(declared)) {
+    if (typeof value !== "number") continue;
+    assert.ok(budgetFieldName(key) || workloadIdentityFields.includes(key),
+      `the declaration carries a numeric field ${key} that is neither a recognised budget name nor a declared workload identity, so no rule here would check it. Name it as a budget or record it as an identity.`);
+  }
+const allDeclaredTacticalValues = [...new Set(declaredBudgetObjects.flatMap((declared) => Object.entries(declared)
+  .filter(([key, value]) => typeof value === "number" && budgetFieldName(key))
+  .map(([, value]) => value)))];
 for (const value of allDeclaredTacticalValues)
   assert.ok(sweptTacticalValues.includes(value) || unsweepableTacticalValues.has(value),
     `the declared budget value ${value} is neither swept by value nor recorded as unsweepable with a reason; add it to one or the other rather than letting it join the unswept set silently`);
