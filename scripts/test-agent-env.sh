@@ -285,5 +285,66 @@ run pass "control: that probe really does follow DOTNET_ROOT, so the check above
     "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
     "$BUILD"' a="$(DOTNET_ROOT=/usr/share/dotnet "'"$PROBE"'")" || exit 5; b="$(DOTNET_ROOT="$muxroot" "'"$PROBE"'")" || exit 5; test "$a" != "$b" && case "$b" in "$muxroot"/shared/*) exit 0 ;; *) exit 1 ;; esac'
 
+# THE FIXTURE COPY MUST NOT RUN THIS SECTION. The fixture is a copy of THIS script, so an
+# unguarded section J would build its own fixture and invoke it, without bound. That is not
+# hypothetical: it was hit while inverting J1, because disabling the lock is exactly what lets the
+# nested run get past the refusal and reach its own section J. The flag is set only on the fixture
+# invocations below, so a normal run always executes this section.
+if [ -z "${FSGG_AGENT_ENV_SUITE_FIXTURE:-}" ]; then
+section "J. THE GUARD ITSELF — the refusal and the trap must be assertable, not just asserted"
+# WHY THIS SECTION EXISTS, AND IT IS THE SAME LESSON AS SECTION I (S.I.R.#277). The concurrency
+# refusal and the stale-lock reclaim were verified when they were written, in a worker's transcript
+# and an independent reviewer's — and NOWHERE ELSE. The commit message said "ships with evidence it
+# can fail" and the repository contained no check that could fail. A guard whose evidence lives only
+# in a transcript is exactly the "unfalsifiable at rest" condition section I exists to end, one frame
+# up: it is unfalsifiable BY THIS SUITE, which is the only reader that outlives the session.
+#
+# The fixture is a throwaway git root under $TMP carrying a copy of `global.json`, the shim, and this
+# script. The startup guard refuses BEFORE any dotnet work, so each check costs a process, not a
+# suite run. The fixture also keeps these checks off the real repository's lock, which the outer run
+# is holding right now — that is why they cannot simply re-invoke the suite in place.
+FX="$TMP/lockfx"
+mkdir -p "$FX/scripts"
+command git init -q "$FX" >/dev/null 2>&1
+cp "$ROOT/global.json" "$FX/global.json"
+cp "$SHIM" "$FX/scripts/agent-env.sh"
+cp "$ROOT/scripts/test-agent-env.sh" "$FX/scripts/test-agent-env.sh"
+chmod +x "$FX/scripts/test-agent-env.sh"
+FXGIT="$(command git -C "$FX" rev-parse --absolute-git-dir 2>/dev/null)"
+FXLOCK="$FXGIT/fsgg-agent-env-suite.lock"
+
+# A LIVE holder must refuse, and must say so as a LOCK refusal. `$$` is this suite's own pid, which
+# is by definition alive, so no sleeper process is needed and nothing can outlive the run.
+run pass "J1: a live lock holder is REFUSED at exit 99, naming the lock" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'rm -rf "'"$FXLOCK"'"; mkdir -p "'"$FXLOCK"'"; printf "%s" "$$" > "'"$FXLOCK"'/pid";
+     out="$(FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" 2>&1)"; rc=$?;
+     test "$rc" -eq 99 && printf "%s" "$out" | grep -q "run holds"'
+# A REFUSING run must not delete the holder's lock. Getting this wrong would turn the guard into a
+# race amplifier: the second run would clear the first run's lock and both would proceed.
+run pass "J2: a refused run leaves the holder's lock in place" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'test -d "'"$FXLOCK"'" && test -f "'"$FXLOCK"'/pid"'
+# A DEAD holder must be reclaimed. Proved by CONTRAST rather than by inspecting the lock: with the
+# fixture's shim also removed, a reclaimed lock reaches the shim check and refuses with the SHIM
+# message, whereas a lock that was NOT reclaimed would still refuse with J1's lock message. Same exit
+# code, different cause — which is the distinction this whole section exists to keep legible.
+run pass "J3: a dead lock holder is reclaimed, so the refusal comes from the next guard instead" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'rm -rf "'"$FXLOCK"'"; mkdir -p "'"$FXLOCK"'"; printf "%s" 999999 > "'"$FXLOCK"'/pid";
+     mv "'"$FX"'/scripts/agent-env.sh" "'"$FX"'/scripts/ae.hold";
+     out="$(FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" 2>&1)"; rc=$?;
+     mv "'"$FX"'/scripts/ae.hold" "'"$FX"'/scripts/agent-env.sh";
+     test "$rc" -eq 99 && printf "%s" "$out" | grep -q "missing before the suite started"'
+# A missing shim must refuse rather than be mistaken for the section H mutation.
+run pass "J4: a shim absent at startup is REFUSED at exit 99, not treated as the mutation" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'rm -rf "'"$FXLOCK"'"; mv "'"$FX"'/scripts/agent-env.sh" "'"$FX"'/scripts/ae.hold";
+     out="$(FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" 2>&1)"; rc=$?;
+     mv "'"$FX"'/scripts/ae.hold" "'"$FX"'/scripts/agent-env.sh";
+     test "$rc" -eq 99 && printf "%s" "$out" | grep -q "missing before the suite started"'
+rm -rf "$FXLOCK"
+fi
+
 printf '\n==============================================================================\nRESULT: %s unexpected outcome(s)\n==============================================================================\n' "$FAILURES"
 exit "$FAILURES"
