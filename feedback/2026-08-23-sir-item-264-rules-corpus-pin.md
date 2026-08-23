@@ -5,7 +5,7 @@ workspace: agent-a262fbe43be42b495
 cycle: item-264-rules-corpus-pin
 lane: none
 toolVersion: 1.0.1
-commit: 7d0961bcc95cd9a3bb72dba78dcf70ce17a44b71
+commit: aa0908144a924242e53f14a69df1acc041e6ff3f
 ---
 
 ## §1 Provenance and confidence

@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-264-rules-corpus-pin.md",
-  "reportSha256": "a1dd8561eac2fecec20a2efd6a9b3b1b4bea77b5cbd3dec96bda57875d7c577d",
+  "reportSha256": "1cc24d478ce2e806bd2532f751ec9fa1c1023104967c01d3df609f4d197b1bfe",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
