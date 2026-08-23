@@ -26,8 +26,10 @@ the base commit and reproduces only there.
 Checkpoint path `feedback/checkpoints/item-277-agent-env-dotnet-root.jsonl`, 22 events, validated
 with `validate-checkpoint-state`. Three are `implementation-test-evidence` and 19 are
 `verify-ship-pr`. **The ledger is frozen and no further checkpoint is
-appended after this report is written** (22 events as of `be39619`, unchanged by the two commits
-that follow it, neither of which touches `feedback/checkpoints/`) — a count in a document about a file that document keeps
+appended after this report is written** (22 events as of `be39619`; no commit after it on this
+branch touches `feedback/checkpoints/` at all, so the ledger file is byte-identical at every later
+head — an invariant rather than a count of the commits above it, because a count of those is itself a
+figure that stales on the next commit) — a count in a document about a file that document keeps
 appending to is a figure that stales itself, which is exactly how this cycle produced its fourth
 staleness instance.
 
@@ -355,7 +357,16 @@ useful content.***
   the assertion fail — while `1` means the assertion fired) and the control (green under a genuine
   inversion, red under a collision, because a collision breaks both probes and a real inversion breaks
   only the asserted one). **The 3/4/5 exit-code discipline that §2 praises had already done its job;
-  this finding claimed it had not.** What survives is narrower and still sufficient: a concurrent run
+  this finding claimed it had not.**
+  **This retraction is scoped to the concurrent-collision scenario measured directly above, and to
+  nothing else.** It establishes that the exit code and the non-vacuity control separate a *collision*
+  red from a genuine inversion. It does **not** establish that every red this suite can emit is
+  separable from a genuine one, and it must not be carried to another scenario on the strength of the
+  shared word *indistinguishable*. §4.13's scenario — a run that survives a signal and completes — is
+  a different one, and there the separation genuinely fails: the run terminates normally, so
+  `exit "$FAILURES"` reports the unexpected-outcome count in both directions and nothing in the output
+  distinguishes them. That scenario is re-measured in §4.13 rather than inferred from this paragraph.
+  What survives here is narrower and still sufficient: a concurrent run
   produces an untrustworthy result and burns a reviewer's run, so the suite should refuse rather than
   emit one. Only the *count* is timing-dependent and unreproducible — one narrowly-timed collision
   gives `RESULT: 1 unexpected`, matching the reviewer's summary line, but with the **control** red at
@@ -573,10 +584,9 @@ useful content.***
 - **Kind:** defect
 - **Impact:** A regression this cycle introduced. At base a signal kills the suite; at the round-0
   head it **survived**, released its lock mid-run while section H still had the real tracked shim
-  moved aside, and kept emitting check failures. (An earlier revision called those failures
-  *indistinguishable* from real ones; that is the §4.7(a) claim and it is retracted there — the
-  exit-code discipline separates them. What survives is that the run continued at all.) — the
-  one-signal-two-meanings confusion `exit 99` was chosen to prevent, reintroduced by the handler
+  moved aside, and kept emitting check failures — and **those spurious failures are indistinguishable
+  from real ones**, which is the strongest argument for the `on_signal` re-raise that shipped. That is
+  the one-signal-two-meanings confusion `exit 99` was chosen to prevent, reintroduced by the handler
   meant to make interruption safe.
 - **Expected:** `SIGINT`/`SIGTERM` terminate the suite.
 - **Observed:** A bash trap handler that does not exit **returns to the interrupted line**.
@@ -586,6 +596,33 @@ useful content.***
   checks after the signal. **The spurious-`WRONG` count is a sample, not a property** — this run
   measured 2, an independent run measured 3, and the difference is which checks were in flight when
   the signal landed. Recorded as a range rather than a figure.
+- **Why those failures are indistinguishable — measured, not reasoned:** this script's contract is
+  *"exit code is the number of unexpected outcomes"* (`exit "$FAILURES"` is its last line), so a
+  signal-surviving run reaches that line exactly as a clean run does and its status carries the check
+  count, never the signal. Re-measured in the repair phase with the F2 trap reintroduced in a detached
+  scratch worktree at `6d895cb8c124f7e2c92bf726345fb85226b7a043` — the four `on_signal` traps replaced
+  by the original bare `trap cleanup EXIT INT TERM HUP` — and `SIGTERM` delivered once 16 checks had
+  been emitted: the suite **ran to completion**, emitted all 49 checks, printed
+  `RESULT: 5 unexpected outcome(s)` and **exited `5`, the unexpected-outcome count, not `143`**. Among
+  those five it emitted, character for character,
+  `WRONG (expected fail got rc=0  ) wired, but the shim is deleted: dotnet --version` — the exact
+  signature of §4.9's genuine defect, produced here by nothing but a signal, because both arrive at
+  the same section-H `run fail` assertion returning `rc=0`. Neither the exit code nor the emitted line
+  separates the two conditions in this scenario.
+- **How this section came to assert the opposite, which is the more useful finding.** An earlier
+  revision said the exit-code discipline *did* separate them, citing §4.7(a)'s retraction. §4.7(a)'s
+  retraction is correct and is correctly scoped to **collisions**, where `rc=3` with a red control
+  genuinely separates from `rc=1` with a green one. §4.13 is a **different scenario**, and it
+  inherited that retraction by **textual resemblance** — the shared word *indistinguishable* — rather
+  than by re-measurement. `scripts/test-agent-env.sh:164-166` states the signal case correctly and was
+  never wrong, so the report contradicted the artifact and the artifact was right. The generalisable
+  lesson, and this cycle's sharpest: §4.7(a)'s retraction and its over-application here entered the
+  tree in the **same commit**, `83e054c5021f022584ec2831367fe9faddf5cce7` — the act of correcting one
+  false claim produced a second one in the same breath, because the correction was carried to a
+  neighbouring scenario on the strength of a shared word instead of being re-measured there. Every
+  other claim in this report was re-derived at least once by an independent critic; this one was not,
+  because a retraction reads as the *result* of measurement rather than as a claim awaiting it.
+  **A retraction is a claim too, and it is the one nobody re-measures.**
 - **A residual race, documented rather than denied:** `mkdir` and the assignment after it are
   separate commands and bash dispatches traps between commands, so a signal can land with the lock
   created but unclaimed — reproduced 5 times in 5 by polling on the directory. Shell cannot close it.
@@ -596,8 +633,10 @@ useful content.***
 - **Version:** described commit.
 - **Owner:** S.I.R. / `scripts/test-agent-env.sh`
 - **Recurrence:** new
-- **Avoidable cost:** one critic round.
-- **Disposition:** product fix — round 1.
+- **Avoidable cost:** one critic round for the defect itself. The mischaracterisation above cost
+  considerably more: it was introduced by a repair, was not caught by the rounds that followed it, and
+  was corrected only after the ordinary review chain had been exhausted.
+- **Disposition:** product fix — round 1. The characterisation above corrected in the repair phase.
 
 #### §4.14 Three defects that only inverting the checks revealed, one of them in a check written this cycle
 
@@ -760,6 +799,10 @@ surface.
   **6 after, by independent review** (§4.7 ×2, §4.8(b), §4.12, §4.13, §4.14).
 - Overstated claims retracted against measurement: **1** (§4.7(a)) — counted separately from the 10,
   because a retraction is not a defect in the artifact but a defect in the report about it.
+- Retractions found on measurement to have been over-applied: **1** — §4.7(a)'s, carried to §4.13 in
+  the same commit that made it, and corrected in the repair phase. Counted separately again and for
+  the same reason: it is a defect in the report, not in the artifact. It is also the only claim in
+  this report that no independent critic re-derived before it landed.
 - Ship readiness and merge: recorded in the PR, not estimated here.
 - Test count delta: 36 to 49. Command duration is reported in §8 and is not offered as a substitute
   for elapsed time, which was not instrumented this cycle.
