@@ -52,47 +52,141 @@ CLOBBER='export PATH='"$FRESH_PATH"';'
 GITDIR="$(command git -C "$ROOT" rev-parse --absolute-git-dir 2>/dev/null)" || GITDIR=""
 [ -n "$GITDIR" ] || GITDIR="$ROOT"
 LOCKDIR="$GITDIR/fsgg-agent-env-suite.lock"
+# ONE PREDICATE ANSWERS ONE QUESTION, AND REFUSES TO ANSWER FROM INPUT IT CANNOT READ
+# (S.I.R.#277 round 1, finding F1). The previous guard asked
+# `kill -0 "$(cat "$LOCKDIR/pid")"` directly. On an EMPTY or NON-NUMERIC pid file that expands to
+# `kill -0 ""`, which fails, which the guard read as "the holder is dead" — so it deleted a LIVE
+# holder's lock and ran anyway. Measured, both shapes. And with NO pid file the `[ -f ]` test failed
+# and nothing was ever reclaimable, which falsified this file's own claim two comments up that a
+# crashed run cannot wedge the suite forever.
+#
+# Both are the same bug and neither is fixed by special-casing empty and non-numeric: a predicate
+# that returns a confident answer about input it could not evaluate will have a third input shape.
+# So the predicate is typed. It reports `live`, `dead`, or `unreadable`, and `unreadable` is a real
+# answer — not a synonym for dead.
+lock_holder_state() { # lock_holder_state <lockdir> -> live | dead | unreadable
+  local pid
+  pid="$(cat "$1/pid" 2>/dev/null)" || { printf 'unreadable'; return 0; }
+  # Absent, empty, non-numeric, or leading-zero (which includes "0", whose kill(2) target is the
+  # whole process group rather than one process) — liveness is UNKNOWN, and says so.
+  case "$pid" in
+    ''|*[!0-9]*|0*) printf 'unreadable'; return 0 ;;
+  esac
+  if kill -0 "$pid" 2>/dev/null; then printf 'live'; else printf 'dead'; fi
+}
+
+# AN UNREADABLE LOCK IS BOUNDED BY AGE, NOT GUESSED AT. It is not evidence the holder lives and not
+# evidence it died. Refusing forever wedges the suite; reclaiming at once deletes a live holder's
+# lock. Age is the only honest discriminator available, so only an unreadable lock older than the
+# window is reclaimed, and the window is nameable by a caller that knows its own runtime.
+LOCK_STALE_MINUTES="${FSGG_AGENT_ENV_LOCK_STALE_MINUTES:-30}"
+lock_older_than_window() { [ -n "$(find "$1" -maxdepth 0 -mmin "+$LOCK_STALE_MINUTES" 2>/dev/null)" ]; }
+
 # `acquired` is tracked explicitly. Testing "does the directory exist?" after a failed `mkdir`
-# reports the HOLDER's lock as if it were ours and never refuses — the first version of this guard
-# did exactly that and passed its own concurrency test, which is the same could-not-fail defect
-# this suite exists to catch. Only the process whose `mkdir` won may proceed.
+# reports the HOLDER's lock as if it were ours and never refuses — an earlier version of this guard
+# did exactly that and passed its own concurrency test. Only the process whose `mkdir` won proceeds.
+# THE HANDLERS ARE INSTALLED BEFORE THE LOCK IS TAKEN, NOT AFTER (S.I.R.#277 round 1). Installing
+# them afterwards leaves a window between the winning `mkdir` and the `trap`, and a signal landing in
+# it kills the process under the DEFAULT disposition — orphaning the lock this suite just created, so
+# the next run refuses against a holder that no longer exists. Measured directly: signalling as soon
+# as the pid file appeared left `lock=KEPT`. Ordering them first shrinks that window to one variable
+# assignment, which is as far as shell can close it; `LOCK_OWNED` is what makes installing them early
+# safe, because cleanup will not remove a lock this process has not claimed.
+#
+# cleanup is written defensively because it can now run before TMP/BAK exist.
+LOCK_OWNED=0
+cleanup() {
+  if [ -n "${BAK:-}" ] && [ -f "$BAK" ] && [ ! -f "$SHIM" ]; then
+    mv "$BAK" "$SHIM"
+  fi
+  [ -n "${TMP:-}" ] && rm -rf "$TMP"
+  [ "${LOCK_OWNED:-0}" -eq 1 ] && rm -rf "$LOCKDIR"
+  return 0
+}
+# A SIGNAL MUST STILL KILL THIS SUITE (finding F2). `trap cleanup INT TERM` ran cleanup and then
+# RESUMED, because a bash trap handler that does not exit returns to the interrupted line. The suite
+# therefore survived SIGINT/SIGTERM and ran to completion — releasing its lock mid-run while section
+# H still had the real tracked shim moved aside, and emitting spurious WRONGs indistinguishable from
+# real failures. That is the same one-signal-two-meanings confusion exit 99 exists to prevent,
+# reintroduced by the handler meant to make interruption safe. Restoring the default disposition and
+# re-raising is what makes the process die with the signal's own status (130/143), not a check count.
+on_signal() {
+  cleanup
+  trap - EXIT INT TERM HUP
+  kill -s "$1" "$$"
+}
+trap cleanup EXIT
+trap 'on_signal INT'  INT
+trap 'on_signal TERM' TERM
+trap 'on_signal HUP'  HUP
+
+# ACQUISITION IS ONE HELPER SO THE THREE CALL SITES CANNOT DRIFT APART, and so the gap between
+# creating the lock, claiming it, and stamping it is as short as shell allows.
+#
+# A RESIDUAL RACE REMAINS AND IS DOCUMENTED RATHER THAN DENIED. `mkdir` and the assignment after it
+# are separate commands, and bash dispatches a pending trap between commands, so a signal can land
+# with the lock created but not yet claimed or stamped. Measured: polling for the directory and
+# signalling instantly reproduces it 5 times out of 5. Shell cannot close that window.
+#
+# What CAN be controlled is the failure mode, and it is bounded by construction: a lock abandoned in
+# that window has no pid file, `lock_holder_state` classifies it `unreadable` rather than guessing,
+# and the staleness window reclaims it. So the race costs a bounded delay, never a wedge and never a
+# deleted live holder's lock. J7 and J8 are the checks that hold that bound.
+claim_lock() {
+  mkdir "$LOCKDIR" 2>/dev/null || return 1
+  LOCK_OWNED=1
+  printf '%s' "$$" > "$LOCKDIR/pid"
+  return 0
+}
+
 acquired=0
-if mkdir "$LOCKDIR" 2>/dev/null; then
-  acquired=1
-elif [ -f "$LOCKDIR/pid" ] && ! kill -0 "$(cat "$LOCKDIR/pid" 2>/dev/null)" 2>/dev/null; then
-  # The holder is gone; reclaim so a crashed run cannot wedge the suite forever.
-  rm -rf "$LOCKDIR"
-  if mkdir "$LOCKDIR" 2>/dev/null; then acquired=1; fi
+refusal=''
+if claim_lock; then acquired=1
+else
+  case "$(lock_holder_state "$LOCKDIR")" in
+    dead)
+      rm -rf "$LOCKDIR"
+      if claim_lock; then acquired=1; fi
+      ;;
+    unreadable)
+      if lock_older_than_window "$LOCKDIR"; then
+        rm -rf "$LOCKDIR"
+        if claim_lock; then acquired=1; fi
+      else
+        refusal='unreadable'
+      fi
+      ;;
+    *) refusal='live' ;;
+  esac
 fi
 if [ "$acquired" -ne 1 ]; then
-  echo "REFUSED: another $0 run holds $LOCKDIR."
-  echo "  Section H moves the real tracked scripts/agent-env.sh; a concurrent run cannot produce a"
-  echo "  trustworthy result in EITHER direction, so this refuses instead of guessing (S.I.R.#277)."
+  if [ "$refusal" = unreadable ]; then
+    echo "REFUSED: $LOCKDIR exists but its holder cannot be identified."
+    echo "  An unreadable pid is not evidence the holder died, so this will not delete a lock it"
+    echo "  cannot account for. It is reclaimed automatically once older than"
+    echo "  ${LOCK_STALE_MINUTES}m (FSGG_AGENT_ENV_LOCK_STALE_MINUTES) (S.I.R.#277)."
+  else
+    echo "REFUSED: another $0 run holds $LOCKDIR."
+    echo "  Section H moves the real tracked scripts/agent-env.sh; a concurrent run cannot produce a"
+    echo "  trustworthy result in EITHER direction, so this refuses instead of guessing (S.I.R.#277)."
+  fi
   exit 99
 fi
-printf '%s' "$$" > "$LOCKDIR/pid"
+FAILURES=0
+TMP="$(mktemp -d)"
+BAK="$TMP/agent-env.sh.bak"
+
+# THE SHIM MUST BE PRESENT BEFORE THE SUITE STARTS, and this check lives AFTER the traps on purpose:
+# from here on every exit path runs `cleanup`, so the lock is released by one owner in one place
+# rather than by each early return remembering to. (Dropping this guard during the round-1 generator
+# rewrite is precisely what J3, J4 and J8 caught — the checks that assert it went red while the
+# behaviour they describe had silently left the file.)
 if [ ! -f "$SHIM" ]; then
   echo "REFUSED: $SHIM is missing before the suite started."
   echo "  An earlier interrupted run may have left it moved aside. Restore it with"
   echo "  'git checkout -- scripts/agent-env.sh' before re-running (S.I.R.#277)."
-  rm -rf "$LOCKDIR"
   exit 99
 fi
-
-FAILURES=0
-TMP="$(mktemp -d)"
-BAK="$TMP/agent-env.sh.bak"
-# RESTORE THE SHIM BEFORE DELETING THE DIRECTORY THE BACKUP LIVES IN. The previous trap was
-# `rm -rf "$TMP"` alone, so a run interrupted inside section H removed the working tree's copy of
-# `scripts/agent-env.sh` and its only backup in the same command.
-cleanup() {
-  if [ -f "$BAK" ] && [ ! -f "$SHIM" ]; then
-    mv "$BAK" "$SHIM"
-  fi
-  rm -rf "$TMP"
-  rm -rf "$LOCKDIR"
-}
-trap cleanup EXIT INT TERM
 
 fresh() { # fresh <HOME> <PATH> <DOTNET_ROOT> <BASH_ENV> <script>
   # THE `cd` MUST HAPPEN BEFORE bash STARTS, NOT INSIDE IT (S.I.R.#277). BASH_ENV's value is
@@ -308,7 +402,16 @@ mkdir -p "$FX/scripts"
 command git init -q "$FX" >/dev/null 2>&1
 cp "$ROOT/global.json" "$FX/global.json"
 cp "$SHIM" "$FX/scripts/agent-env.sh"
-cp "$ROOT/scripts/test-agent-env.sh" "$FX/scripts/test-agent-env.sh"
+# THE FIXTURE'S SECTION-H WINDOW IS WIDENED ON PURPOSE, IN THE COPY ONLY. J10 has to interrupt a
+# run at the instant the shim is moved aside, and in an unmodified run that window is whatever one
+# `run fail` happens to take. Racing it made J10 both FLAKY and unable to fail: when the poll missed
+# the window it signalled an already-finished process, found the shim restored by section H's own
+# `mv`, and passed — green even with the restore deleted from `cleanup`. Widening the window in the
+# throwaway copy makes the interrupt land where it must, so the check tests the trap instead of the
+# scheduler. The real script is untouched, and `cleanup` still comes from $ROOT, so an inversion
+# there still propagates here.
+sed 's|^mv "$SHIM" "$BAK"$|mv "$SHIM" "$BAK"; sleep 3|' \
+    "$ROOT/scripts/test-agent-env.sh" > "$FX/scripts/test-agent-env.sh"
 chmod +x "$FX/scripts/test-agent-env.sh"
 FXGIT="$(command git -C "$FX" rev-parse --absolute-git-dir 2>/dev/null)"
 FXLOCK="$FXGIT/fsgg-agent-env-suite.lock"
@@ -343,6 +446,89 @@ run pass "J4: a shim absent at startup is REFUSED at exit 99, not treated as the
      out="$(FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" 2>&1)"; rc=$?;
      mv "'"$FX"'/scripts/ae.hold" "'"$FX"'/scripts/agent-env.sh";
      test "$rc" -eq 99 && printf "%s" "$out" | grep -q "missing before the suite started"'
+
+# --- F1: the predicate must refuse to decide from input it cannot read -----------------------
+# Each of these seeds a lock whose holder IS ALIVE ($$ is this suite) but whose pid file cannot be
+# evaluated. The old guard read every one of them as "holder is dead", deleted the live holder's
+# lock, and ran. The assertion is therefore two-part every time: refuse at 99, AND leave the lock.
+run pass "J5: an EMPTY pid file is unreadable, not dead — refuse and keep the lock" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'rm -rf "'"$FXLOCK"'"; mkdir -p "'"$FXLOCK"'"; : > "'"$FXLOCK"'/pid";
+     out="$(FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" 2>&1)"; rc=$?;
+     test "$rc" -eq 99 && test -d "'"$FXLOCK"'" && printf "%s" "$out" | grep -q "cannot be identified"'
+run pass "J6: a NON-NUMERIC pid file is unreadable, not dead — refuse and keep the lock" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'rm -rf "'"$FXLOCK"'"; mkdir -p "'"$FXLOCK"'"; printf "not-a-pid" > "'"$FXLOCK"'/pid";
+     out="$(FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" 2>&1)"; rc=$?;
+     test "$rc" -eq 99 && test -d "'"$FXLOCK"'" && printf "%s" "$out" | grep -q "cannot be identified"'
+run pass "J7: a MISSING pid file inside the window is unreadable, not dead — refuse and keep it" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'rm -rf "'"$FXLOCK"'"; mkdir -p "'"$FXLOCK"'";
+     out="$(FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" 2>&1)"; rc=$?;
+     test "$rc" -eq 99 && test -d "'"$FXLOCK"'" && printf "%s" "$out" | grep -q "cannot be identified"'
+# ...but it must NOT refuse forever, which is the half of F1 that made the old guard incoherent:
+# too permissive on unreadable content and too strict on absent content, from the same root. Proved
+# by CONTRAST, like J3: aged past the window with the fixture shim also absent, a reclaimed lock
+# reaches the next guard and refuses with the SHIM message instead of the lock message.
+run pass "J8: an unreadable lock AGED past the window is reclaimed, so it cannot wedge the suite" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'rm -rf "'"$FXLOCK"'"; mkdir -p "'"$FXLOCK"'"; touch -d "2 hours ago" "'"$FXLOCK"'";
+     mv "'"$FX"'/scripts/agent-env.sh" "'"$FX"'/scripts/ae.hold";
+     out="$(FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" 2>&1)"; rc=$?;
+     mv "'"$FX"'/scripts/ae.hold" "'"$FX"'/scripts/agent-env.sh";
+     test "$rc" -eq 99 && printf "%s" "$out" | grep -q "missing before the suite started"'
+
+# --- F2: THE TRAP. This section's heading names two obligations and used to discharge one. -----
+# A bash trap handler that does not exit RESUMES the interrupted script. So `trap cleanup INT TERM`
+# made the suite SURVIVE a signal that kills it at base: it released its lock mid-run while section
+# H still had the real tracked shim moved aside, and went on emitting check results whose failures
+# are indistinguishable from real ones.
+run pass "J9: SIGTERM terminates the suite with the signal's own status and releases the lock" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'rm -rf "'"$FXLOCK"'";
+     FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" >/dev/null 2>&1 &
+     p=$!; while [ ! -s "'"$FXLOCK"'/pid" ]; do kill -0 "$p" 2>/dev/null || break; sleep 0.02; done;
+     kill -TERM "$p" 2>/dev/null; wait "$p"; rc=$?;
+     test "$rc" -eq 143 && test ! -d "'"$FXLOCK"'"'
+# SIGINT IS ASSERTED SEPARATELY FROM SIGTERM, and that is not redundancy. Reverting only the INT
+# handler to the non-exiting form leaves every other check green — measured — so a TERM-only
+# assertion would let the interactive Ctrl-C path regress silently. Each trapped signal the repair
+# claims to handle needs its own witness.
+#
+# `set -m` IS LOAD-BEARING HERE, and finding out why cost a red check. A shell starts an ASYNC job
+# with SIGINT ignored, and POSIX says a signal ignored on entry cannot be trapped — so without job
+# control the fixture physically cannot install the INT handler this check exists to test, and the
+# check fails for a reason that has nothing to do with the handler. Job control puts the child in
+# its own process group with default dispositions, which is also the shape a real Ctrl-C arrives
+# in.
+run pass "J11: SIGINT terminates the suite with the signal's own status and releases the lock" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'set -m; rm -rf "'"$FXLOCK"'";
+     FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" >/dev/null 2>&1 &
+     p=$!; while [ ! -s "'"$FXLOCK"'/pid" ]; do kill -0 "$p" 2>/dev/null || break; sleep 0.02; done;
+     kill -INT "$p" 2>/dev/null; wait "$p"; rc=$?;
+     test "$rc" -eq 130 && test ! -d "'"$FXLOCK"'"'
+# And the restore half: interrupted INSIDE section H, the shim must come back. This is the check
+# whose absence made the heading a claim rather than an assertion.
+#
+# `saw` IS THE DIFFERENCE BETWEEN A CHECK AND A COINCIDENCE. The first version polled for the shim
+# to vanish and then asserted it was present again — so when it MISSED the window it signalled a
+# process that had already finished, found the shim restored by section H's own `mv`, and passed.
+# Deleting the restore from `cleanup` left it green: measured, and it is a could-not-fail check of
+# exactly the kind this item exists to eliminate. It now records that it actually observed the shim
+# missing, and REDS when it did not — an assertion that cannot confirm its own precondition must
+# fail loudly rather than pass quietly.
+run pass "J10: a run interrupted while the shim is moved aside restores it" \
+    "$H" "$FRESH_PATH" /usr/share/dotnet "$BASH_ENV_VALUE" \
+    'set -m; rm -rf "'"$FXLOCK"'";
+     FSGG_AGENT_ENV_SUITE_FIXTURE=1 "'"$FX"'/scripts/test-agent-env.sh" "'"$FX"'" >/dev/null 2>&1 &
+     p=$!; saw=0;
+     while kill -0 "$p" 2>/dev/null; do
+       if [ ! -f "'"$FX"'/scripts/agent-env.sh" ]; then saw=1; kill -TERM "$p" 2>/dev/null; break; fi;
+       sleep 0.01;
+     done;
+     wait "$p" 2>/dev/null;
+     test "$saw" -eq 1 && test -f "'"$FX"'/scripts/agent-env.sh" && test ! -d "'"$FXLOCK"'"'
 rm -rf "$FXLOCK"
 fi
 
