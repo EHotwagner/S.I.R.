@@ -28,8 +28,16 @@ restore() {
   touch "$simulation" "$spatial"
 }
 
+# Restoring the SOURCES is not enough: the last mutant this harness built is still sitting in
+# `bin/`, and any later step that runs with `--no-build` will happily execute it. That is not
+# hypothetical - `verify-spatial-query.sh` runs `--print-spatial-performance --no-build` after
+# calling this script, and is safe today only because an unrelated `dotnet build` happens to sit
+# between them. A harness that leaves a booby-trapped binary behind for the next step to trip over
+# is not self-contained, so rebuild the restored sources before handing control back.
 cleanup() {
   restore
+  dotnet build "$conformance" -c Release >/dev/null 2>&1 || true
+  dotnet build "$match" -c Release >/dev/null 2>&1 || true
   rm -rf -- "$temporary_dir"
 }
 trap cleanup EXIT
@@ -53,8 +61,9 @@ require_mutated() {
 
 expect_failure() {
   local name=$1 project=$2 expected=$3
+  shift 3
   local log="$temporary_dir/$name.log"
-  if dotnet run --project "$project" -c Release -- >"$log" 2>&1; then
+  if dotnet run --project "$project" -c Release -- "$@" >"$log" 2>&1; then
     echo "working-set gate mutation unexpectedly passed: $name" >&2
     exit 1
   fi
@@ -100,4 +109,34 @@ require_mutated dynamic-cache-bound "$spatial"
 expect_failure dynamic-cache-bound "$match" "The dynamic spatial cache tier was not bounded"
 restore
 
-echo "Working-set gate mutations failed closed: world-construction count, boundary first-wins, dynamic cache bound."
+# AC 4 - F4: `neighbours` is evaluated ONCE per expansion in `boundedPath`'s fallback loop. This
+# property has NO result-level signature. `neighbours` is deterministic and side-effect free, so
+# evaluating it twice leaves the path, the cost, the expansion count and the canonical bytes
+# byte-identical - every existing conformance assertion stays green. ALLOCATION is the signature it
+# does have, which is why the gate is a byte budget rather than an equality.
+#
+# The mutation below is the exact regression the budget exists to catch: restore the second full
+# `neighbours` evaluation that F4 removed, in the `nextBest` fold. Measured, this moves the workload
+# from 15,656,832 bytes to 26,831,424 (+71%) while boundaries=184, expansions=545, path-cells=35,
+# cost=34 and outcome=Found ALL stay identical - so this case is also the standing proof that the
+# structural counters cannot see it and the budget can.
+python3 - "$spatial" <<'PYTHON'
+import sys
+path = sys.argv[1]
+with open(path, encoding="utf-8") as handle:
+    text = handle.read()
+old = """                    let nextBest =
+                        expanded"""
+if text.count(old) != 1:
+    sys.exit("neighbours-once-per-expansion mutation could not locate its subject")
+new = """                    let nextBest =
+                        neighbours observeCell observeBoundary resolveBoundary world request footprint current"""
+with open(path, "w", encoding="utf-8") as handle:
+    handle.write(text.replace(old, new))
+PYTHON
+require_mutated neighbours-once-per-expansion "$spatial"
+expect_failure neighbours-once-per-expansion "$conformance" \
+  "Spatial bounded-path allocation budget exceeded" --print-spatial-performance
+restore
+
+echo "Working-set gate mutations failed closed: world-construction count, boundary first-wins, dynamic cache bound, neighbours once per expansion."

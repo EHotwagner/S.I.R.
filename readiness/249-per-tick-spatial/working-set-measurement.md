@@ -6,67 +6,89 @@ it is contended by #232, #235 and #236.
 ## How to reproduce
 
 ```sh
-scripts/measure-working-set.sh origin/main 3
+scripts/measure-working-set.sh e1185714734d5a4942c60e84ca31e371b7c50f80 3
 ```
 
-That is the whole measurement, committed: it builds both sides, swaps only `SIR.Simulation.dll`
-between runs so each side executes an identical harness binary, runs one workload per process, and
-interleaves the two sides so machine load falls on both equally. A single workload can be run alone
-with `--working-set <f2f5|f4|f3|f1f6>` against the performance project directly.
+`e118571` is this branch's rebase base — the commit the `before` side is built from. **The base is a
+required argument.** It used to default to `origin/main`, resolved at read time, which was a latent
+falsehood with a fuse on it: the moment this branch merges, `origin/main` *contains* the change,
+`before` becomes the same code as `after`, every workload reports ~1.00x, and the harness exits 0. A
+harness that compares something to itself does not fail — it silently succeeds, and the absence of a
+difference reads as a result.
 
-The gates this evidence supports have their own committed inversion harness:
+The harness now refuses that, and records its own provenance so the figures below are re-derivable:
 
-```sh
-scripts/test-working-set-gate-mutations.sh
+```
+working-set-measurement base-ref=e118571… base-sha=e118571… head-sha=… rounds=3
+working-set-measurement swapped-source=src/SIR.Simulation/SpatialQuery.fs base-blob=772d34c5… tree-blob=f01db540…
+working-set-measurement swapped-source=src/SIR.Simulation/Simulation.fs   base-blob=01d2a118… tree-blob=c29f4269…
+working-set-measurement before-assembly=<sha256> after-assembly=<sha256> assemblies-differ=yes
 ```
 
-It mutates one source line per gate, requires the suite to fail WITH THE EXPECTED MESSAGE, and
-refuses a mutation that did not modify its subject — a pattern that has drifted away from the source
-reports itself invalid rather than passing quietly.
+Two independent guards, and they catch different things:
 
-## ONE WORKLOAD PER PROCESS — this is not a detail
+- **On source blobs, not on commits.** Two different commits routinely carry identical text for these
+  two files, so "the refs differ" does not imply "the sides differ". Refuses when every swapped
+  source is byte-identical between the base and the working tree.
+- **On the built assemblies.** The source check proves the two *checkouts* differ; it cannot prove
+  the two *builds* differ. This one was found the hard way — see below.
 
-The four workloads originally ran one after another in a single process, and in that shape the
-harness **manufactured two reproducible ~2x regressions in code the affected workloads never
-executed**. The trace and path workloads allocate a boundary index per evaluation; the heap state
-they left behind slowed the cache and tick workloads that ran after them. `GC.Collect` between
-workloads did not settle it — only process isolation did. Four interleaved rounds agreed with each
-other and were still wrong. Do not re-merge these into one process.
+## The harness produced ~1.00x on repeated runs, and that was a real defect
 
-## Results — 3 interleaved rounds, one workload per process, medians
+Running the harness three times in succession gave F4 = 3.56x, then **0.99x, then 1.01x** — with a
+perfectly valid base and genuinely differing sources. Cause: `restore()` used `cp -p`, so the working
+tree was restored with its *original* mtimes, older than the build outputs already on disk. The next
+incremental build therefore considered the sources up to date and handed back the previous side's
+assembly. Both sides then measured the same code.
 
-**Re-measured after rebasing onto current `main`.** The figures below replace an earlier set taken
-against a `main` that was 62 commits older; they are not the same numbers, and F4's ratio moved
-materially (3.5x -> 2.9x), so the earlier table is not carried forward. `before` is `origin/main` at
-the rebase base.
+Fixed by touching the sources on restore and before each side's build, and backstopped by the
+assembly-identity guard above, which refuses when the two sides build to the same bytes. This class
+is exactly why the guard is on the artifact actually executed rather than only on the inputs.
+
+## Results — 3 independent runs, 3 interleaved rounds each, one workload per process
 
 | Finding | Workload | Before | After | Change |
 |---|---|---|---|---|
-| F2 + F5 | exact LOS, 4x4 footprint (256 pairs), 1344 boundaries | 14.97 ms | 5.58 ms | **2.7x faster** |
-| F4 | bounded path, fallback loop, 184 boundaries | 37.21 ms | 12.70 ms | **2.9x faster** |
-| F3 | cache lookup against 512 dynamic entries | 13.11 us | 13.84 us | **no win — 5% slower** |
-| F1 + F6 | authoritative tick, 331 board edges, 20 observations | 12.18 ms | 8.96 ms | **1.36x faster** |
+| F2 + F5 | exact LOS, 4x4 footprint (256 pairs), 1344 boundaries | 12.25 ms | 4.48 ms | **2.73x faster** |
+| F4 | bounded path, fallback loop, 184 boundaries | 37.46 ms | 10.39 ms | **3.60x faster** |
+| F3 | cache lookup against 512 dynamic entries | 11.34 us | 11.78 us | **no win — 4% slower** |
+| F1 + F6 | authoritative tick, 331 board edges, 20 observations | 10.35 ms | 7.57 ms | **1.37x faster** |
 
-Per-round figures, ascending (ms, or us for F3). These are medians of three; the spread is visible
-and the timings are NOT stable to better than a few percent, which is why F3's 5% is read as noise
-rather than as a regression:
+Per-run ratios, and the spread that matters — **across** runs, not within one:
 
-| Finding | Before | After |
-|---|---|---|
-| F2 + F5 | 13.12, 14.97, 15.73 | 5.43, 5.58, 5.59 |
-| F4      | 36.87, 37.21, 37.68 | 12.35, 12.70, 12.74 |
-| F3      | 12.83, 13.11, 13.65 | 13.76, 13.84, 14.19 |
-| F1 + F6 | 12.16, 12.18, 13.40 | 8.71, 8.96, 9.24 |
+| Finding | run 1 | run 2 | run 3 | across-run swing |
+|---|---|---|---|---|
+| F2 + F5 | 2.72x | 2.73x | 2.73x | 1% |
+| F4 | 3.67x | 3.60x | 3.56x | 3% |
+| F3 | 0.96x | 0.97x | 0.93x | 4% |
+| F1 + F6 | 1.37x | 1.34x | 1.39x | 4% |
+
+### A correction, and the wrong lesson it nearly sealed
+
+An earlier revision of this file reported F4 as **2.9x** and attributed the drop from 3.5x to the
+rebase onto current `main`. **That causal story was false and is retracted.** The rebase cannot have
+moved this number: `measure-working-set.sh` swaps exactly two files, and both have identical blob
+ids at the old and new bases — they were last touched 190 commits earlier. The baseline did not move.
+
+The 2.9x was a **load artifact**. That measurement was run in the background while other work
+occupied the machine; its *before* side matched, only its *after* side was inflated. Re-run serially
+on a quiet machine, the figure is 3.60x with a 3% across-run swing, and the original 3.5x was
+substantially correct.
+
+The earlier "not stable to better than a few percent" bound was also derived incorrectly — from
+spread *within* a single run, where all rounds share the same machine load and therefore agree with
+each other while being jointly wrong. Within-run agreement is not evidence of reproducibility. The
+across-run figures above are the honest bound, and they are only meaningful because the runs were
+serialized.
 
 ## F3's predicted win did not materialise, and that is reported rather than assumed
 
 Removing `DynamicEntries @ StaticEntries` from every lookup is a real allocation removal, but it does
 not show in this workload, whose static tier is empty — and F# `List.append` already returns the
 first list unchanged when the second is empty, so the concatenation this item removed was **already
-free in exactly the shape the workload exercises**. Re-measured against current `main` the after side
-is 5% SLOWER, which is inside this harness's round-to-round spread (the before side itself varies by
-6% across rounds); it is reported as no win, and specifically NOT as a win. The change still matters
-for a cache with a populated static tier, which this workload does not construct.
+free in exactly the shape the workload exercises**. The after side measures 4% slower, inside the 4%
+across-run swing. Reported as no win, and specifically not as a win. The change still matters for a
+cache with a populated static tier, which this workload does not construct.
 
 The other half of F3 as filed — "re-evaluating an existing key appends an unreachable duplicate" — is
 not reachable at all: `evaluateCached` returns before insertion on a hit, and
@@ -76,47 +98,71 @@ hit for as long as it has existed. The reachable half was the unbounded dynamic 
 ## Structural counters — identical on both sides
 
 These do not move with machine load, and they are the evidence that behaviour is unchanged. Each was
-identical on the before and after side in ALL THREE rounds — they are stable, unlike the timings:
+identical on the before and after side in every round of every run — they are stable, unlike the
+timings:
 
 - `expansions=545`, `path-cells=35`, `cost=34` for the bounded path
 - `crossed-cells=86`, `crossed-edges=86`, `visible=true` for the exact LOS
 - `observed=20`, `events=276` for the authoritative tick
 - `dynamic-entries=512` for the cache
 
-Canonical conformance output is byte-identical to `origin/main` across the full 211,029-byte corpus.
+Canonical conformance output is byte-identical to the base across the full 211,029-byte corpus.
 
-## What is continuously gated, and what is not
+## What is continuously gated
 
-Three of this item's properties are enforced by fixtures that run in CI, and each ships a committed
-inversion proving the fixture can fail (`scripts/test-working-set-gate-mutations.sh`):
+Four properties, each enforced by a gate that runs in CI, and each with a committed inversion in
+`scripts/test-working-set-gate-mutations.sh` proving the gate can fail:
 
-| AC | Property | Fixture | Inversion case |
+| AC | Property | Gate | Inversion case |
 |---|---|---|---|
 | 1 (F1) | world built at most once per observation phase | `SimulationFixtures` | `world-construction-count` |
 | 2 (F2/F6) | boundary index answers first-declaration-wins | `SpatialQueryFixtures` | `boundary-index-first-wins` |
 | 3 (F3) | dynamic cache tier is bounded | `SIR.Match.Tests` | `dynamic-cache-bound` |
+| 4 (F4) | `neighbours` evaluated once per expansion | `--print-spatial-performance` | `neighbours-once-per-expansion` |
 
-That harness previously was referenced by nothing — unlike `scripts/test-spatial-subject-mutations.sh`,
-which has three call sites — so the proof existed but never ran. It is now invoked by
-`scripts/verify-spatial-query.sh` on the direct route. It is deliberately NOT on the prepared-PR/CI
-route: it mutates `Simulation.fs` and `SpatialQuery.fs` **in the working tree**, and that route runs
-its domain gates concurrently against those same sources, so it would be unsafe there without the
-isolated-mutant-directory treatment `test-spatial-subject-mutations.sh` uses. Wiring the CI route
-additionally requires `scripts/qualify-pr.sh`, which is owned by S.I.R.#272; its holder has been
-notified rather than raced.
+### F4 is gated on allocation, because that is the only signature it has
 
-**F4 and F5 have no continuous gate, and this is a property of the findings, not an omission.**
-"`neighbours` is evaluated once per expansion" and "`lineCells` is evaluated once per origin/target
-pair" are pure-function call-count properties: both functions are deterministic and side-effect free,
-so evaluating either twice produces byte-identical output, identical `expansions`, identical
-`crossed-cells`/`crossed-edges`, and identical canonical bytes. There is no behavioural signature to
-assert, and no injectable seam — `resolveBoundary` and the observers are constructed inside
-`evaluate`. The available evidence for F4/F5 is therefore:
+`neighbours` is deterministic and side-effect free, so evaluating it twice per expansion leaves the
+path, the cost, `expansions`, the crossed sets and the canonical bytes **byte-identical**. No
+result-level assertion can see it. Allocation can:
 
-- the measured before/after above (F4 2.9x; F5 is folded into the F2+F5 workload), and
-- the structural counters being identical on both sides, which proves the rewritten frontier
-  selection explores the *same* search rather than a cheaper different one.
+| | allocated bytes | boundaries | expansions | path-cells | cost | outcome |
+|---|---|---|---|---|---|---|
+| correct | **15,656,832** (byte-exact, 3 of 3 runs) | 184 | 545 | 35 | 34 | Found |
+| `nextBest` re-evaluates `neighbours` | **26,831,424** (+71%) | 184 | 545 | 35 | 34 | Found |
 
-A source-text assertion that the call appears once was considered and rejected: it would restate the
-diff rather than test behaviour, and would pass vacuously the moment the expression were reshaped.
-Recorded as measured-but-ungated rather than claimed as gated.
+Every counter is unmoved; only the budget moves. The ceiling is 20,000,000 bytes — between the
+measured correct cost and the measured cost of the regression it exists to catch, rather than at a
+round number, and far enough above the true figure to absorb runtime-version drift that a byte-exact
+assertion would turn into a flake. The gate also asserts it actually reached the fallback loop
+(`outcome=Found`, `expansions > 0`), so the budget cannot pass vacuously on a query that never ran.
+
+This gate lives in `--print-spatial-performance`, which `scripts/verify-spatial-query.sh` invokes
+unconditionally — on both the direct route and the `--prepared-pr` CI route. **It therefore needed no
+change to `scripts/qualify-pr.sh`**, which is owned by S.I.R.#272.
+
+**F5 remains measured but ungated.** Its signal is small (+5–16%) and it is folded into the F2+F5
+workload; a budget that narrow would be a flake rather than a gate.
+
+## Gate-inversion harness wiring
+
+`scripts/test-working-set-gate-mutations.sh` was previously referenced by nothing, while the
+repository's equivalent for the pre-existing spatial subjects has three call sites — so the proof
+existed but never ran, and would not have re-run when a later refactor reshaped the literals its
+mutations match. It is now invoked by `scripts/verify-spatial-query.sh` on the serial direct route,
+which also reaches `qualify-protected-preflight.sh` and `qualify-production.sh`, and through
+`ci.yml`'s `protected-preflight` on every push to `main` plus nightly.
+
+It is deliberately NOT on the concurrent prepared-PR route: it mutates `Simulation.fs` and
+`SpatialQuery.fs` **in the working tree**, and that route runs its domain gates in parallel against
+those same sources. `test-spatial-subject-mutations.sh` may run there because it builds its mutants
+in an isolated directory; this one does not.
+
+It also no longer leaves a mutant binary behind. Restoring the sources is not enough — the last
+mutant it built is still in `bin/`, and any later step running with `--no-build` will execute it.
+That is not hypothetical: `verify-spatial-query.sh` runs `--print-spatial-performance --no-build`
+after calling this harness, and was safe only because an unrelated `dotnet build` happened to sit
+between them. The harness now rebuilds the restored sources before returning, so it is self-contained
+rather than ordering-dependent. Verified by running the suites with `--no-build` immediately after it,
+which reproduced a spurious `dynamic spatial cache tier was not bounded` failure before the fix and
+passes after.

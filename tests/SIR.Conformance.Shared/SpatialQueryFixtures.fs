@@ -202,6 +202,59 @@ module SpatialQueryFixtures =
         else canonical
 
 #if !FABLE_COMPILER
+    /// S.I.R.#249 F4 - `neighbours` must be evaluated ONCE per expansion in `boundedPath`'s
+    /// fallback loop. That property has no result-level signature: `neighbours` is deterministic and
+    /// side-effect free, so evaluating it twice leaves the path, the cost, the expansion count and
+    /// the canonical bytes byte-identical. ALLOCATION is the signature it does have - the duplicate
+    /// evaluation rebuilds a candidate list, and every boundary and terrain probe inside it, for
+    /// every expansion.
+    ///
+    /// The world is wall-dense ON PURPOSE. `anchorPassable` does not consult boundaries while
+    /// `transitionPassable` does, so the package A* candidate is REJECTED and the fallback loop -
+    /// the subject of F4 - becomes the path actually taken. On an open map the loop never runs and
+    /// this measurement would be vacuous.
+    let private wallDensePathWorkload () =
+        let boundaries =
+            [ for row in 0 .. 23 do
+                for col in 0 .. 22 do
+                    if (col + row) % 3 = 0 then
+                        match Edges.edgeBetween (cell col row) (cell (col + 1) row) with
+                        | Some value ->
+                            yield
+                                { Edge = value
+                                  Permeability = { Ground = false; Vision = true; Projectile = true }
+                                  RevisionToken = sprintf "edge:%d:%d" col row }
+                        | None -> () ]
+        let pathWorld =
+            { Identity = identity 1L 1L
+              Minimum = cell 0 0
+              Maximum = cell 23 23
+              Terrain = Map.empty
+              Boundaries = boundaries
+              Occupancy = Map.empty
+              DisclosedRevisionTokens = Set.empty }
+        let pathRequest =
+            request "allocation-path" SpatialQueryKind.BoundedPath SpatialModality.GroundMovement (cell 0 0) (cell 20 20) [ cell 0 0 ] SpatialQuery.defaultBounds
+        pathWorld, pathRequest
+
+    /// Allocated bytes for ONE such evaluation, measured on this thread with the heap settled.
+    /// Reported alongside the structural counters so a number that moved because the query did
+    /// something different is distinguishable from one that moved because it did the same thing
+    /// more wastefully.
+    let pathAllocationWorkload () =
+        let pathWorld, pathRequest = wallDensePathWorkload ()
+        // Warm every JIT path the measured call will take, or the measurement bills first-call
+        // compilation to the implementation.
+        for _ in 1 .. 3 do
+            SpatialQuery.evaluate pathWorld pathRequest |> ignore
+        System.GC.Collect()
+        System.GC.WaitForPendingFinalizers()
+        System.GC.Collect()
+        let before = System.GC.GetAllocatedBytesForCurrentThread()
+        let result, _ = SpatialQuery.evaluate pathWorld pathRequest
+        let allocated = System.GC.GetAllocatedBytesForCurrentThread() - before
+        allocated, result.Explanation.Expansions, result.Path.Length, result.MovementCost, result.Outcome, pathWorld.Boundaries.Length
+
     let performanceWorkload () =
         let bounds = SpatialQuery.defaultBounds
         let identity = identity 101L 17L

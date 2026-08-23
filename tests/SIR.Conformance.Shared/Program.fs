@@ -179,6 +179,21 @@ let main arguments =
             failwith "Spatial query structural performance budget exceeded."
         if losMs > 20L || routeMs > 50L || invalidationMs > 10L || demand100Ms > 250L || demand200Ms > 500L then
             failwith "Spatial query latency performance budget exceeded on the qualification host."
+        // S.I.R.#249 F4 - `neighbours` evaluated once per expansion. Gated on ALLOCATION because
+        // that is the only signature the property has: the duplicate evaluation this catches leaves
+        // the path, cost, expansions and canonical bytes byte-identical, so no result-level
+        // assertion can see it. The counters are printed with it so a change in WHAT the query did
+        // is never mistaken for a change in how wastefully it did it.
+        let allocated, pathExpansions, pathCells, pathCost, pathOutcome, pathBoundaries = SpatialQueryFixtures.pathAllocationWorkload ()
+        printfn "path-allocated-bytes=%d/%d boundaries=%d expansions=%d path-cells=%d cost=%d outcome=%A" allocated 20_000_000L pathBoundaries pathExpansions pathCells pathCost pathOutcome
+        // The ceiling sits between the measured correct cost and the measured cost of the specific
+        // regression it exists to catch, not at a round number: re-evaluating `neighbours` in the
+        // `nextBest` fold raises this by >50%. A bound this far above the true figure also absorbs
+        // runtime-version drift, which a byte-exact assertion would turn into a flake.
+        if allocated > 20_000_000L then
+            failwithf "Spatial bounded-path allocation budget exceeded: %d bytes. `neighbours` is evaluated more than once per expansion in boundedPath's fallback loop." allocated
+        if pathOutcome <> SpatialOutcome.Found || pathExpansions <= 0 then
+            failwith "Spatial bounded-path allocation gate did not exercise the fallback loop, so its budget proves nothing."
         0
     | [ "--print-rules-performance" ] ->
         let stopwatch = System.Diagnostics.Stopwatch.StartNew()
