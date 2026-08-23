@@ -26,7 +26,6 @@ expect_red() {
 
 expect_red scripts/ci-route.mjs 's/return { classification: "cross-cutting", rule: "RP-005-unknown-conservative" };/return { classification: "browser", rule: "RP-005-unknown-conservative" };/;'
 expect_red scripts/ci-route.mjs 's/const computedRouteDigest = routeDigest(route);/const computedRouteDigest = route?.digest;/;'
-expect_red scripts/ci-route.mjs 's/\["cross-cutting", "performance"\]/["cross-cutting"]/;'
 expect_red scripts/ci-route.mjs 's/  "scripts\/finalize-svg-pipeline-evidence.mjs",/  "scripts\/ci-route.mjs",\n  "scripts\/finalize-svg-pipeline-evidence.mjs",/;'
 expect_red scripts/ci-route.mjs 's/ || (productionReviewRequired && gate === "documentation")//;'
 expect_red scripts/ci-route.mjs 's/ || classification === "cross-cutting"//;'
@@ -48,4 +47,35 @@ expect_red .github/workflows/ci.yml "/^  browser:/,/^  browser-general-helper:/ 
 expect_red scripts/qualify-pr.sh '/SIR_BROWSER_SHARD_INDEX="$second_index"/d;'
 expect_red scripts/qualify-pr.sh '/wait "$second_pid"/d;'
 
-echo "CI route policy, production-review freshness/preparer wiring, performance scope/headroom, prepared Playwright runtime reuse, co-scheduled rules/spatial receipts, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."
+
+# --- S.I.R.#280: the feedback-timing ceiling must stay a live gate. -----------------------
+# Every way of "fixing" the unsatisfiable cross-cutting deadline by widening or removing the
+# check turns this repair into a disablement, and each one below would leave the PR that made
+# it green. They must all fail red.
+
+# Delete the outer budget refusal.
+expect_red scripts/ci-route.mjs '/code: "feedback-budget-exceeded",/,+2d;'
+# Delete the acceptance-target refusal.
+expect_red scripts/ci-route.mjs 's/if (enforceBudget \&\& attributableCriticalPathMilliseconds > acceptanceTargetMilliseconds) failures.push({/if (false) failures.push({/;'
+# Disarm the whole check by defaulting enforcement off.
+expect_red scripts/ci-route.mjs 's/enforceBudget = true/enforceBudget = false/;'
+# Buy headroom by inflating the per-wave allowance.
+expect_red scripts/ci-route.mjs 's/export const feedbackWaveBudgetMilliseconds = 180_000;/export const feedbackWaveBudgetMilliseconds = 600_000;/;'
+# Buy headroom by inflating the fixed end-job overhead.
+expect_red scripts/ci-route.mjs 's/export const feedbackPipelineOverheadMilliseconds = 30_000;/export const feedbackPipelineOverheadMilliseconds = 300_000;/;'
+# Give the reserve back, which is what left the widest route on the shortest deadline.
+expect_red scripts/ci-route.mjs 's/export const feedbackHeadroomBasisPoints = 2_000;/export const feedbackHeadroomBasisPoints = 0;/;'
+# Score Math.max over every gate instead of summing the per-wave maxima. This is the specific
+# loosening that looks principled, cites an existing field, and flattens the dependency graph
+# into its single longest node -- roughly a 2.3x weaker ceiling on the measured run.
+expect_red scripts/ci-route.mjs 's/return totals.length === 0 ? 0 : Math.max(...totals);/return 0;/;'
+# Collapse the wave partition so second-wave work stops adding to the path.
+expect_red scripts/ci-route.mjs 's/((gateParts\[subject\] ?? \[\]).length > 0 ? 2 : 1)/1/;'
+# Restore wall-clock scoring, which is what let fleet saturation decide the verdict.
+expect_red scripts/ci-route.mjs 's/const attributableCriticalPathMilliseconds = feedbackPipelineOverheadMilliseconds/const attributableCriticalPathMilliseconds = 0 * feedbackPipelineOverheadMilliseconds/;'
+# Let a receipt with no usable duration silently drop out of the measurement.
+expect_red scripts/ci-route.mjs 's/if (byGate.has(subject) \&\& usableTotal(subject) === null) failures.push({ code: "missing-feedback-timing", subject });/void subject;/;'
+# Let the documented contract drift from the enforced one.
+expect_red tests/fixtures/ci-qualification/v1/contracts.json 's/"feedbackWaveBudgetMilliseconds": 180000/"feedbackWaveBudgetMilliseconds": 900000/;'
+
+echo "CI route policy, feedback-timing ceiling inversions, production-review freshness/preparer wiring, performance scope/headroom, prepared Playwright runtime reuse, co-scheduled rules/spatial receipts, recomputed digest, scheduled/protected edge, and full-workflow topology mutations failed red in isolated fixtures."

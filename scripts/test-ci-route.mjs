@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { canonicalArtifactBindings, expectedBuildInvocations, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, feedbackAcceptanceTargetMilliseconds, feedbackHeadroomMilliseconds, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
+import { canonicalArtifactBindings, expectedBuildInvocations, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, feedbackAcceptanceTargetMilliseconds, feedbackHeadroomMilliseconds, feedbackBudgetFor, feedbackWaveCount, feedbackPipelineOverheadMilliseconds, feedbackWaveBudgetMilliseconds, feedbackHeadroomBasisPoints, subjectWave, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
 import { browserShardCapacityFor } from "./browser-shard-capacity.mjs";
 import { mergeBrowserShardCases, parseBrowserShardJUnit } from "./browser-junit.mjs";
 
@@ -85,12 +85,36 @@ assert.equal(joined.timing.receiptReuses, domain.selectedGates.length - 1);
 assert.equal(joined.gateResults[0].timingMilliseconds.queue, null);
 assert.equal(joined.gateResults[0].timingMilliseconds.transport, 0);
 assert.equal(joined.timing.runnerMilliseconds, expectedSubjects.length * 1_000);
-assert.equal(joined.timing.acceptanceTargetMilliseconds, feedbackBudgetMilliseconds);
-assert.equal(joined.timing.requiredHeadroomMilliseconds, 0);
-assert.equal(joined.timing.actualHeadroomMilliseconds, 62_000);
-const nonCrossCuttingReserve = joinRoute(domain, passing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds + 1 });
-assert.equal(nonCrossCuttingReserve.result, "pass");
-assert.ok(!nonCrossCuttingReserve.failures.some(({ code }) => code === "feedback-headroom-eroded"));
+// S.I.R.#280: the ceiling is derived from the route's own dependency-wave depth, so the
+// classification that selects the most gates is no longer the one held to the shortest
+// deadline. `domain` spans two waves, so it earns the two-wave budget and no reserve.
+const twoWaveBudget = feedbackPipelineOverheadMilliseconds + 2 * feedbackWaveBudgetMilliseconds;
+assert.equal(feedbackWaveCount(expectedSubjects), 2);
+assert.equal(feedbackBudgetFor(expectedSubjects), twoWaveBudget);
+assert.equal(joined.timing.budgetMilliseconds, twoWaveBudget);
+assert.equal(joined.timing.requiredHeadroomMilliseconds, Math.round((twoWaveBudget * feedbackHeadroomBasisPoints) / 10_000));
+assert.equal(joined.timing.acceptanceTargetMilliseconds, twoWaveBudget - joined.timing.requiredHeadroomMilliseconds);
+// Every fixture receipt totals 1s, so the attributable path is overhead + one wave-1 max
+// + one wave-2 max. It is NOT the 238s of wall clock, and it is NOT Math.max over gates.
+assert.equal(joined.timing.criticalPathMilliseconds, feedbackPipelineOverheadMilliseconds + 2_000);
+assert.deepEqual(joined.timing.waveCriticalPathMilliseconds, [1_000, 1_000]);
+assert.equal(joined.timing.totalMilliseconds, 238_000);
+assert.equal(joined.timing.queuedMilliseconds, 238_000 - (feedbackPipelineOverheadMilliseconds + 2_000));
+assert.equal(joined.timing.actualHeadroomMilliseconds, twoWaveBudget - (feedbackPipelineOverheadMilliseconds + 2_000));
+assert.equal(joined.timing.acceptanceTargetMilliseconds, 312_000);
+// Drive the attributable path by the gate work itself, which is the quantity now enforced.
+const withTotal = (results, gate, total) => results.map((result) => result.gate === gate
+  ? { ...result, timingMilliseconds: { ...result.timingMilliseconds, total } }
+  : result);
+const pathOf = (waveTwoTotal) => feedbackPipelineOverheadMilliseconds + 1_000 + waveTwoTotal;
+const representativeTarget = twoWaveBudget - Math.round((twoWaveBudget * feedbackHeadroomBasisPoints) / 10_000);
+// Every classification now reserves the same fraction of its own budget, so no route can be
+// held to a tighter deadline than another that selects fewer gates at the same wave depth.
+// This is the invariant that replaced the `["cross-cutting", "performance"]` special case.
+const erodesAtTarget = joinRoute(domain, withTotal(passing, "spatial", representativeTarget - feedbackPipelineOverheadMilliseconds - 1_000 + 1), { startedAtMilliseconds: 0, completedAtMilliseconds: 1 });
+assert.equal(erodesAtTarget.result, "fail");
+assert.ok(erodesAtTarget.failures.some(({ code }) => code === "feedback-headroom-eroded"));
+assert.ok(!erodesAtTarget.failures.some(({ code }) => code === "feedback-budget-exceeded"));
 const performanceResultFor = (gate) => gateResult(gate, "pass", { setup: 100, restore: 200, build: 300, test: 400, total: 1_000 }, {
   source: performance.source,
   routeDigest: performance.digest,
@@ -100,10 +124,12 @@ const performanceResultFor = (gate) => gateResult(gate, "pass", { setup: 100, re
   buildInvocations: expectedBuildInvocations[gate],
 });
 const performancePassing = ["integrity", "prepare-web", "prepare-docs", "documentation", "evidence"].map(performanceResultFor);
-assert.equal(joinRoute(performance, performancePassing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds }).result, "pass");
-const performanceHeadroomEroded = joinRoute(performance, performancePassing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds + 1 });
+const performanceReserve = Math.round((twoWaveBudget * feedbackHeadroomBasisPoints) / 10_000);
+const performanceAtTarget = withTotal(performancePassing, "documentation", representativeTarget - feedbackPipelineOverheadMilliseconds - 1_000);
+assert.equal(joinRoute(performance, performanceAtTarget, { startedAtMilliseconds: 0, completedAtMilliseconds: 1 }).result, "pass");
+const performanceHeadroomEroded = joinRoute(performance, withTotal(performancePassing, "documentation", representativeTarget - feedbackPipelineOverheadMilliseconds - 1_000 + 1), { startedAtMilliseconds: 0, completedAtMilliseconds: 1 });
 assert.equal(performanceHeadroomEroded.result, "fail");
-assert.ok(performanceHeadroomEroded.failures.some(({ code, target, requiredHeadroom }) => code === "feedback-headroom-eroded" && target === feedbackAcceptanceTargetMilliseconds && requiredHeadroom === feedbackHeadroomMilliseconds));
+assert.ok(performanceHeadroomEroded.failures.some(({ code, target, requiredHeadroom }) => code === "feedback-headroom-eroded" && target === representativeTarget && requiredHeadroom === performanceReserve));
 const crossCutting = route(["src/SIR.Domain/Rules.fs", "docs/index.md"]);
 const crossSubjects = ["integrity", ...producerOrder, "spatial-mutations", "cancellation-mutations", "browser-general-helper", "browser-delivery", ...crossCutting.selectedGates];
 const crossResultFor = (gate) => gateResult(gate, "pass", { setup: 100, restore: 200, build: 300, test: 400, total: 1_000 }, {
@@ -121,13 +147,21 @@ for (const helper of ["spatial-mutations", "cancellation-mutations", "browser-ge
   const failedHelper = joinRoute(crossCutting, crossPassing.map((result) => result.gate === helper ? { ...result, status: "fail", failureStage: "test" } : result), { completedAtMilliseconds: 1 });
   assert.ok(failedHelper.failures.some(({ code, subject }) => code === "required-gate-fail" && subject === helper));
 }
-const erodedHeadroom = joinRoute(crossCutting, crossPassing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds + 1 });
+const erodedHeadroom = joinRoute(crossCutting, withTotal(crossPassing, "browser", representativeTarget - feedbackPipelineOverheadMilliseconds - 1_000 + 1), { startedAtMilliseconds: 0, completedAtMilliseconds: 1 });
 assert.equal(erodedHeadroom.result, "fail");
-assert.ok(erodedHeadroom.failures.some(({ code, target, requiredHeadroom }) => code === "feedback-headroom-eroded" && target === feedbackAcceptanceTargetMilliseconds && requiredHeadroom === feedbackHeadroomMilliseconds));
+assert.ok(erodedHeadroom.failures.some(({ code, target, requiredHeadroom }) => code === "feedback-headroom-eroded" && target === representativeTarget && requiredHeadroom === Math.round((twoWaveBudget * feedbackHeadroomBasisPoints) / 10_000)));
 assert.ok(!erodedHeadroom.failures.some(({ code }) => code === "feedback-budget-exceeded"));
-const overBudget = joinRoute(domain, passing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackBudgetMilliseconds + 1 });
+const overBudget = joinRoute(domain, withTotal(passing, "spatial", twoWaveBudget - feedbackPipelineOverheadMilliseconds - 1_000 + 1), { startedAtMilliseconds: 0, completedAtMilliseconds: 1 });
 assert.equal(overBudget.result, "fail");
-assert.ok(overBudget.failures.some(({ code }) => code === "feedback-budget-exceeded"));
+assert.ok(overBudget.failures.some(({ code, actual, budget }) => code === "feedback-budget-exceeded" && actual === twoWaveBudget + 1 && budget === twoWaveBudget));
+// The enforced quantity must be the gate work, never the wall clock: a run whose gates all
+// finished quickly is admitted no matter how long the fleet made it wait, and a run whose
+// gates genuinely overran is refused even when the wall clock is small.
+assert.equal(joinRoute(domain, passing, { startedAtMilliseconds: 0, completedAtMilliseconds: 86_400_000 }).result, "pass");
+assert.equal(pathOf(twoWaveBudget), twoWaveBudget + feedbackPipelineOverheadMilliseconds + 1_000);
+// A receipt that carries no usable duration cannot silently neutralise the timing gate.
+const blindTiming = joinRoute(domain, withTotal(passing, "spatial", 0), { startedAtMilliseconds: 0, completedAtMilliseconds: 1 });
+assert.ok(blindTiming.failures.some(({ code, subject }) => code === "missing-feedback-timing" && subject === "spatial"));
 const aggregate = joinRoute(domain, [passing[0], passing[1], resultFor("spatial", "fail", { routeDigest: "e".repeat(64), artifactBindings: { native: "f".repeat(64), fable: producerDigests.fable } }), resultFor("browser")], { completedAtMilliseconds: 1 });
 assert.equal(aggregate.result, "fail");
 for (const code of ["missing-gate-result", "required-gate-fail", "route-binding-mismatch", "unexpected-gate-result", "artifact-binding-mismatch"]) assert.ok(aggregate.failures.some((failure) => failure.code === code), code);
@@ -169,6 +203,13 @@ const contracts = JSON.parse(readFileSync(new URL("../tests/fixtures/ci-qualific
 assert.equal(contracts.feedbackBudgetMilliseconds, feedbackBudgetMilliseconds);
 assert.equal(contracts.feedbackAcceptanceTargetMilliseconds, feedbackAcceptanceTargetMilliseconds);
 assert.equal(contracts.feedbackHeadroomMilliseconds, feedbackHeadroomMilliseconds);
+assert.equal(contracts.feedbackPipelineOverheadMilliseconds, feedbackPipelineOverheadMilliseconds);
+assert.equal(contracts.feedbackWaveBudgetMilliseconds, feedbackWaveBudgetMilliseconds);
+assert.equal(contracts.feedbackHeadroomBasisPoints, feedbackHeadroomBasisPoints);
+assert.equal(contracts.feedbackWaveCount, feedbackWaveCount(subjectOrder));
+// The flat constants remain the single-wave reference the shaped budget floors at.
+assert.equal(feedbackAcceptanceTargetMilliseconds, feedbackBudgetMilliseconds - feedbackHeadroomMilliseconds);
+assert.equal(Math.round((feedbackBudgetMilliseconds * feedbackHeadroomBasisPoints) / 10_000), feedbackHeadroomMilliseconds);
 assert.deepEqual(contracts.gateOrder, gateOrder);
 assert.deepEqual(contracts.subjectOrder, subjectOrder);
 assert.deepEqual(expectedBuildInvocations["cancellation-mutations"], [
@@ -426,6 +467,103 @@ assert.match(fullQualification, /src\/SIR\.Replay\.Web\/SIR\.Replay\.Web\.fsproj
 assert.match(fullQualification, /src\/SIR\.Client\.Web\/SIR\.RulesExplorer\.Web\.fsproj="\$protected_main_fable_builds"/u);
 for (const subject of ["rules", "spatial", "cancellation", "cross-runtime", "historical-compatibility", "governance", "production-browser", "documentation", "performance", "sdd-verify"]) assert.match(fullQualification, new RegExp(`"${subject}"`, "u"));
 assert.equal(gateOrder.length, 7);
+
+
+// ---------------------------------------------------------------------------------------
+// S.I.R.#280: the feedback-timing ceiling, against the run the defect was measured on.
+// ---------------------------------------------------------------------------------------
+
+// The wave model must be a fact about ci.yml, not an assertion about it. A subject is
+// second-wave exactly when the job that emits its receipt consumes a prepared producer.
+const emittingJob = {
+  integrity: "integrity", evidence: "integrity",
+  "spatial-mutations": "spatial-mutations", "cancellation-mutations": "cancellation-mutations",
+  "prepare-native": "prepare-native", "prepare-fable": "prepare-fable",
+  "prepare-web": "prepare-web", "prepare-docs": "prepare-docs",
+  rules: "domain-conformance", spatial: "domain-conformance", cancellation: "domain-conformance",
+  "browser-delivery": "browser-delivery", "cross-runtime": "cross-runtime",
+  browser: "browser", "browser-general-helper": "browser-general-helper",
+  documentation: "documentation",
+};
+for (const subject of subjectOrder) {
+  const needsLine = /^\s*needs: (.+)$/mu.exec(jobBody(emittingJob[subject]))?.[1] ?? "";
+  assert.ok(needsLine.length > 0, `${subject}: no needs: line for job ${emittingJob[subject]}`);
+  const consumesProducer = needsLine.includes("prepare-");
+  assert.equal(subjectWave(subject) === 2, consumesProducer,
+    `${subject}: wave model disagrees with ci.yml needs: ${needsLine}`);
+}
+// pr-verdict closes the graph, so the pipeline really is overhead + two waves.
+assert.equal(feedbackWaveCount(subjectOrder), 2);
+assert.match(jobBody("pr-verdict"), /needs: \[route,/u);
+assert.match(jobBody("route"), /Capture runner start/u);
+
+// The inversion itself: the widest classification must never carry the shortest deadline.
+const ceilingFor = (paths) => {
+  const candidate = route(paths);
+  const subjects = ["integrity", ...candidate.selectedGates];
+  const budget = feedbackBudgetFor(subjects);
+  const reserve = Math.round((budget * feedbackHeadroomBasisPoints) / 10_000);
+  return { classification: candidate.classification, gates: candidate.selectedGates.length, target: budget - reserve };
+};
+const crossCeiling = ceilingFor(["scripts/ci-route.mjs"]);
+assert.equal(crossCeiling.classification, "cross-cutting");
+for (const paths of [["docs/index.md"], ["src/SIR.Domain/Rules.fs"], ["tests/SIR.Browser.Tests/journey.js"], ["work/x/spec.md"]]) {
+  const other = ceilingFor(paths);
+  assert.ok(other.gates <= crossCeiling.gates, `${other.classification} selects more gates than cross-cutting`);
+  assert.equal(crossCeiling.target >= other.target, true,
+    `cross-cutting (${crossCeiling.gates} gates, ${crossCeiling.target}ms) is held tighter than ${other.classification} (${other.gates} gates, ${other.target}ms)`);
+}
+
+// Measured per-job durations of run 32607930272 attempt 2 -- the run the issue cites, whose
+// sixteen gate receipts all passed and which pr-verdict refused anyway. Queue is excluded
+// because run-ci-gate.sh anchors total_ms at the job's own first step.
+const measuredTotals = {
+  integrity: 108_000, evidence: 118_000, "spatial-mutations": 129_000, "cancellation-mutations": 111_000,
+  "prepare-native": 104_000, "prepare-fable": 98_000, "prepare-web": 120_000, "prepare-docs": 102_000,
+  rules: 120_000, spatial: 120_000, cancellation: 120_000, "browser-delivery": 120_000,
+  "cross-runtime": 70_000, browser: 89_000, "browser-general-helper": 78_000, documentation: 49_000,
+};
+const measuredReceipt = (gate, override) => {
+  const total = override ?? measuredTotals[gate];
+  const setup = Math.round(total * 0.25);
+  const build = Math.round(total * 0.35);
+  const parts = gateParts[gate] ?? [];
+  return gateResult(gate, "pass", { setup, restore: 0, build, transport: 0, test: total - setup - build, total }, {
+    source: crossCutting.source,
+    routeDigest: crossCutting.digest,
+    artifactBindings: Object.fromEntries(parts.map((part) => [part, producerDigests[part] ?? "e".repeat(64)])),
+    artifactDigest: gate.startsWith("prepare-") ? (producerDigests[gate.slice("prepare-".length)] ?? "e".repeat(64))
+      : parts.length > 0 ? bindingDigest(canonicalArtifactBindings(Object.fromEntries(parts.map((part) => [part, producerDigests[part] ?? "e".repeat(64)])))) : null,
+    receiptReused: parts.length > 0,
+    buildInvocations: expectedBuildInvocations[gate],
+  });
+};
+const measuredRun = (overrides = {}) => crossSubjects.map((gate) => measuredReceipt(gate, overrides[gate]));
+// 00:33:06 -> 00:41:00. ~191s of that was one job (domain-conformance) in the runner queue.
+const measuredWallClock = { startedAtMilliseconds: 0, completedAtMilliseconds: 469_739 };
+
+const realistic = joinRoute(crossCutting, measuredRun(), measuredWallClock);
+// The wave maxima are 129s (spatial-mutations) and 120s (domain-conformance), NOT the 129s
+// Math.max over every gate, and NOT the 469.7s of wall clock.
+assert.deepEqual(realistic.timing.waveCriticalPathMilliseconds, [129_000, 120_000]);
+assert.equal(realistic.timing.criticalPathMilliseconds, feedbackPipelineOverheadMilliseconds + 249_000);
+assert.equal(realistic.timing.totalMilliseconds, 469_739);
+assert.equal(realistic.timing.queuedMilliseconds, 469_739 - (feedbackPipelineOverheadMilliseconds + 249_000));
+assert.deepEqual(realistic.failures, [], "a fully green cross-cutting run within a realistic critical path must be admitted");
+assert.equal(realistic.result, "pass");
+
+// ...and the gate is still live. A run that GENUINELY overruns is still refused, on its own
+// work, at the same wall clock. This is the assertion that separates a repair from a
+// disablement: widening or deleting the ceiling turns these green.
+const genuineErosion = joinRoute(crossCutting, measuredRun({ browser: 250_000 }), measuredWallClock);
+assert.equal(genuineErosion.result, "fail");
+assert.ok(genuineErosion.failures.some(({ code, actual }) => code === "feedback-headroom-eroded" && actual === feedbackPipelineOverheadMilliseconds + 129_000 + 250_000));
+const genuineOverrun = joinRoute(crossCutting, measuredRun({ browser: 330_000 }), measuredWallClock);
+assert.equal(genuineOverrun.result, "fail");
+assert.ok(genuineOverrun.failures.some(({ code }) => code === "feedback-budget-exceeded"));
+// A wave-1 regression is caught the same way, so the ceiling is not blind to either wave.
+assert.ok(joinRoute(crossCutting, measuredRun({ "prepare-native": 400_000 }), measuredWallClock)
+  .failures.some(({ code }) => code === "feedback-budget-exceeded"));
 
 console.log("CI route matrix, conservative fallback, deterministic join mutations, budget boundary, and workflow DAG contract passed.");
 
