@@ -33,6 +33,49 @@ append_traced_builds() {
   done < <(sort "$trace_log")
 }
 
+# S.I.R.#272 — whether a work package still owes evidence is a THREE-valued question: owed, not
+# owed, or impossible to determine. Answering it with two values is how this gate was silenced
+# twice. The original defect pre-conditioned the check on `work/<id>/evidence.yml` existing, so
+# deleting that file removed the check. The first repair moved the load-bearing existence condition
+# one file to the left, onto `work/<id>/tasks.yml` — `rm work/<id>/tasks.yml` restored the escape in
+# one extra command — and its text match (`$2 == "done"`) disagreed with the tool it claimed parity
+# with on `status: "done"`, a legal and identical YAML scalar. Both are one class: a mechanism
+# returning a confident answer about an input it never evaluated.
+#
+# So this function does not read tasks.yml. It asks the tool that owns the format and reads the count
+# that tool reports. The answer rests on a POSITIVE fact — an integer `tasks.doneCount` in fsgg-sdd's
+# own report — and never on the absence of a diagnostic. Anything that stops the tool producing that
+# integer (tasks.yml deleted, unreadable, unparseable, a report schema that changes under us, output
+# that is not JSON, a toolchain that is not installed at all) therefore arrives here as "cannot
+# determine" WITHOUT this code enumerating those shapes — which is the property the enumeration it
+# replaced could not have, because a fourth shape always exists. `--dry-run` keeps the question
+# read-only. The tool's exit code is deliberately NOT consulted: it is a verdict about lifecycle
+# readiness, not a statement about whether tasks.yml could be parsed, and conflating those two is
+# the confusion this gate exists to prevent.
+#
+#   0 = evidence is owed   ·   1 = evidence is not owed   ·   2 = cannot determine (fails closed)
+work_declares_completed_implementation() {
+  local work_id=$1 report_path status=0
+  report_path=$(mktemp "${TMPDIR:-/tmp}/sir-evidence-owed.XXXXXX")
+  dotnet fsgg-sdd verify --work "$work_id" --root . --json --dry-run >"$report_path" 2>/dev/null || true
+  node - "$report_path" <<'NODE' || status=$?
+const { readFileSync } = require("node:fs");
+let report;
+try {
+  report = JSON.parse(readFileSync(process.argv[2], "utf8"));
+} catch {
+  process.exit(2);
+}
+const tasks = report !== null && typeof report === "object" ? report.tasks : null;
+if (tasks === null || typeof tasks !== "object") process.exit(2);
+const done = tasks.doneCount;
+if (!Number.isSafeInteger(done) || done < 0) process.exit(2);
+process.exit(done > 0 ? 0 : 1);
+NODE
+  rm -f -- "$report_path"
+  return "$status"
+}
+
 run_browser_shard_pair() {
   local first_index=$1
   local second_index=$2
@@ -408,6 +451,36 @@ NODE
         ./scripts/build-docs.sh --reuse-build-receipt "$receipt" --reuse-build-owner scripts/qualify-pr.sh --prepared-pr --reuse-site-build
         ;;
       evidence)
+        # Every routed work item gets exactly one recorded outcome, whether or not it was checked, so
+        # that "checked and passed" and "not checked" can never again be the same CI result (#272).
+        evidence_coverage_path="$ci_root/results/evidence-coverage.json"
+        evidence_coverage_reached=false
+        evidence_coverage_rows=()
+        rm -f -- "$evidence_coverage_path"
+        record_evidence_coverage() {
+          evidence_coverage_rows+=("$1"$'\t'"$2"$'\t'"$3"$'\t'"$4"$'\t'"$5")
+          echo "qualify-pr: evidence coverage $2: work/$1 — $5"
+        }
+        write_evidence_coverage() {
+          mkdir -p "$(dirname "$evidence_coverage_path")"
+          node - "$evidence_coverage_path" "$evidence_coverage_reached" \
+            ${evidence_coverage_rows[@]+"${evidence_coverage_rows[@]}"} <<'NODE'
+const { writeFileSync } = require("node:fs");
+const [path, reached, ...rows] = process.argv.slice(2);
+const items = rows.map((row) => {
+  const [workId, outcome, checked, fatal, detail] = row.split("\t");
+  return { workId, outcome, checked: checked === "true", fatal: fatal === "true", detail };
+});
+writeFileSync(path, `${JSON.stringify({
+  schema: "sir.ci.evidence-coverage/v1",
+  reachedWorkItems: reached === "true",
+  routedWorkItems: items.length,
+  checked: items.filter((item) => item.checked).length,
+  notChecked: items.filter((item) => !item.checked).length,
+  items
+}, null, 2)}\n`);
+NODE
+        }
         restore_started=$(date +%s%3N)
         set +e
         dotnet restore SIR.slnx --locked-mode
@@ -440,38 +513,96 @@ NODE
             for work_id in "${routed_hosted_verification_ids[@]}"; do
               routed_hosted_verification["$work_id"]=true
             done
+            evidence_coverage_reached=true
+            # A routed work item is never skipped in silence. Absence is classified, reported on the
+            # gate's output, and recorded in artifacts/ci/results/evidence-coverage.json. Absence is
+            # fatal when the package still declares completed implementation, which is the state
+            # `fsgg-sdd verify` itself blocks on, AND when whether it does so cannot be determined at
+            # all; a package that has genuinely not reached the evidence stage passes with its
+            # non-coverage recorded rather than failed outright. Those three outcomes are distinct
+            # rows in the coverage artifact, so "not checked", "checked and passed" and "could not be
+            # evaluated" are never the same CI result (#272).
             for work_id in "${work_ids[@]}"; do
-              [[ -f "work/$work_id/evidence.yml" ]] || continue
+              if [[ $evidence_status -ne 0 ]]; then
+                record_evidence_coverage "$work_id" not-reached false false \
+                  "an earlier routed work item failed, so this item was never checked"
+                continue
+              fi
+              if [[ ! -d "work/$work_id" ]]; then
+                record_evidence_coverage "$work_id" work-package-removed false false \
+                  "the routed work package directory is absent in this tree"
+                continue
+              fi
+              if [[ ! -f "work/$work_id/evidence.yml" ]]; then
+                evidence_owed=0
+                work_declares_completed_implementation "$work_id" || evidence_owed=$?
+                case $evidence_owed in
+                  0)
+                    echo "qualify-pr: routed evidence declaration is missing while tasks still declare completed implementation: work/$work_id/evidence.yml" >&2
+                    record_evidence_coverage "$work_id" not-evidenced false true \
+                      "evidence.yml is absent while work/$work_id/tasks.yml still declares completed implementation"
+                    evidence_status=1
+                    ;;
+                  1)
+                    record_evidence_coverage "$work_id" not-evidenced false false \
+                      "evidence.yml is absent and work/$work_id/tasks.yml declares no completed implementation, so evidence is not yet owed"
+                    ;;
+                  *)
+                    echo "qualify-pr: cannot determine whether work/$work_id owes evidence: fsgg-sdd reported no task count for work/$work_id/tasks.yml" >&2
+                    record_evidence_coverage "$work_id" evidence-owed-indeterminate false true \
+                      "evidence.yml is absent and whether work/$work_id/tasks.yml declares completed implementation could not be determined, so the gate refuses rather than reporting that evidence is not owed"
+                    evidence_status=1
+                    ;;
+                esac
+                continue
+              fi
               dotnet fsgg-sdd verify --work "$work_id" --root . --text
               evidence_status=$?
-              [[ $evidence_status -eq 0 ]] || break
+              if [[ $evidence_status -ne 0 ]]; then
+                record_evidence_coverage "$work_id" failed true true \
+                  "fsgg-sdd verify exited $evidence_status"
+                continue
+              fi
               hosted_verification="work/$work_id/hosted-verification.sh"
               if [[ -e "$hosted_verification" || -L "$hosted_verification" || ${routed_hosted_verification[$work_id]:-false} == true ]]; then
                 if [[ ! -f "$hosted_verification" ]]; then
                   echo "qualify-pr: routed hosted verification is missing or not a regular file: $hosted_verification" >&2
                   evidence_status=1
-                  break
+                  record_evidence_coverage "$work_id" failed true true \
+                    "routed hosted verification is missing or not a regular file"
+                  continue
                 fi
                 if [[ ! -r "$hosted_verification" ]]; then
                   echo "qualify-pr: routed hosted verification is not readable: $hosted_verification" >&2
                   evidence_status=1
-                  break
+                  record_evidence_coverage "$work_id" failed true true \
+                    "routed hosted verification is not readable"
+                  continue
                 fi
                 if [[ ! -x "$hosted_verification" ]]; then
                   echo "qualify-pr: routed hosted verification is not executable: $hosted_verification" >&2
                   evidence_status=1
-                  break
+                  record_evidence_coverage "$work_id" failed true true \
+                    "routed hosted verification is not executable"
+                  continue
                 fi
                 "$hosted_verification"
                 evidence_status=$?
-                [[ $evidence_status -eq 0 ]] || break
+                if [[ $evidence_status -ne 0 ]]; then
+                  record_evidence_coverage "$work_id" failed true true \
+                    "hosted verification exited $evidence_status"
+                  continue
+                fi
               fi
+              record_evidence_coverage "$work_id" verified true false \
+                "fsgg-sdd verify passed and every routed hosted verification ran"
             done
           fi
           set -e
         fi
         test_completed=$(date +%s%3N)
         [[ $evidence_status -eq 0 ]] && failure_stage=null
+        write_evidence_coverage
         node - "$phase_path" "$restore_started" "$restore_completed" "$test_started" "$test_completed" "$failure_stage" <<'NODE'
 const { writeFileSync } = require("node:fs");
 const [path, restoreStarted, restoreCompleted, testStarted, testCompleted, failureStage] = process.argv.slice(2);

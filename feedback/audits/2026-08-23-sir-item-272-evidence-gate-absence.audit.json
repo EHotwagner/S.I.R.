@@ -1,0 +1,83 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-23-sir-item-272-evidence-gate-absence.md",
+  "reportSha256": "42ad9acdd399f8d1208da34bce1770de9404032278a9eda77d079826c64c0f3a",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/qualify-pr.sh",
+          "result": "verified",
+          "sha256": "87f8111c9201f74b4825ea535ee610a1118cde6fba5cb5fee2a2748ecf100dff"
+        },
+        {
+          "locator": "command:./scripts/test-ci-evidence-mutation.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Mutation 4 runs cmp -s over a checked run's log against an unchecked run's log and again against the mid-lifecycle run's log, failing if either pair matches, which pins the property going forward but cannot demonstrate the pre-repair byte identity because it can only run against the repaired gate.",
+        "The 0-bytes and byte-identical figures in Observed remain uncited author measurements taken by hand at base commit f69f1e6cdc203121bd908a3a1bd025545e0aff56.",
+        "The pre-repair guard quoted in Observed is not present in scripts/qualify-pr.sh at the described commit, where that file carries the repair; the critic read the quoted line at f69f1e6:scripts/qualify-pr.sh:444 and confirmed it, and a reader must follow the base commit the report names to see the quoted text."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/qualify-pr.sh",
+          "result": "verified",
+          "sha256": "87f8111c9201f74b4825ea535ee610a1118cde6fba5cb5fee2a2748ecf100dff"
+        },
+        {
+          "locator": "command:./scripts/test-ci-evidence-mutation.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The restoring-the-bare-break mutant run has no committed locator and the critic did not reconstruct it; disclosed in the report's §1 and §10.",
+        "In the critic's first pass, against superseded commit ba9867df6ee50e91b475e31eced8d4625c29ffa4, this finding was incomplete and command:./scripts/test-ci-evidence-mutation.sh was recorded non-reproducing for it, because the harness at that commit used a single work item in all three of its new mutations and the not-reached token appeared zero times in both the harness source and the run log. The status changed only after the deliverable gained mutation 5, which routes two work items and asserts both halves of the claim, and after the critic re-resolved every locator at the described commit."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:.github/workflows/ci.yml",
+          "result": "verified",
+          "sha256": "0f8ab5d9f577acb460b30e5a588b4ca3d4cbfcc411c44eddc8f8f45b698ec181"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#282",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:scripts/fsgg-coord show S.I.R.#272",
+          "result": "verified"
+        },
+        {
+          "locator": "command:scripts/fsgg-coord widen S.I.R.#272 --path scripts/qualify-pr.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    }
+  ]
+}
