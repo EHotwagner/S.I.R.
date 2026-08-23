@@ -442,6 +442,36 @@ for element in root.iter():
 ' "$1" "${2:-Include}" "${3-}"
 }
 
+# The MSBuild files that reach a project with NO `<Import>` element naming them.
+#
+# MSBuild does not read one file at a fixed place. For `Directory.Build.props` and
+# `Directory.Build.targets` it starts in the PROJECT's own directory and walks UP, taking the FIRST
+# file of that name it finds and stopping there. So a file nearer the project SHADOWS the one at the
+# tree root, and reading the tree root alone is not a check of where the items are -- it is a guess
+# about where an author would have put them, which is exactly the guess an extraction gets to break.
+#
+# Emits repo-relative paths, one per line, nearest-first per name. Walking stops AT `tree_root`: a
+# `Directory.Build.props` ABOVE the repository would also apply to a real build, but it is not in
+# the tree, not in the diff, and not something this arm can describe -- the same boundary the
+# out-of-repository `ProjectReference` refusal already draws.
+msbuild_auto_import_files() {  # tree_root, project_dir
+  local tree_root=$1
+  local dir=$2
+  local name
+  local current
+  for name in Directory.Build.props Directory.Build.targets; do
+    current=$dir
+    while :; do
+      if test -f "$tree_root/$current/$name"; then
+        if test "$current" = "."; then printf '%s\n' "$name"; else printf '%s\n' "$current/$name"; fi
+        break
+      fi
+      test "$current" != "." || break
+      current=$(dirname "$current")
+    done
+  done
+}
+
 project_elements() {
   local tree_root=$1
   local project=$2
@@ -465,26 +495,28 @@ project_elements() {
   # (domain-conformance 147s -> 242s, `feedback-headroom-eroded`).
   #
   # A cache is a silent-wrong-answer risk, which is the exact class this gate exists to refuse, so
-  # neither key can go stale. At a REVISION the key names a commit SHA, a path, an element and an
-  # attribute -- git objects are immutable, so nothing it names can change underneath it. In the
-  # WORKING TREE the key additionally carries the file's mtime and size, so an edited fixture
-  # misses rather than hits; probe 40 breaks a project between two reads and requires the second to
-  # see the change. The value is now tree-root-independent, because resolution moved into the
-  # reader and was already lexical.
+  # the key is the CONTENT, not a description of it. The value this function returns is a pure
+  # function of (content, element, attribute, project directory) -- resolution moved into the reader
+  # and was already lexical -- so hashing exactly those cannot serve a stale answer for any reason,
+  # and needs no argument about clocks or filesystems to say so.
+  #
+  # It replaces a key built from mtime and size, which was measured DECORATIVE: `stat -c %Y` is
+  # WHOLE-SECOND, so a same-second same-size rewrite hit the cache and the reader returned the
+  # previous file's items (S.I.R.#290 round 2, F6). Raising the clock resolution would have made
+  # that harder to hit rather than impossible, and "harder to hit" is what the previous key already
+  # claimed. The digest also costs nothing over the `stat` it replaces and hits far more often:
+  # the probe fixtures below are copies of the same project files under ~20 different tree roots,
+  # which a path-keyed cache re-parsed every time and a content-keyed one reads once.
   local cache_file=""
   if test -n "${msbuild_read_cache:-}"; then
-    local cache_key
-    local cache_stamp
-    if test -n "$rev"; then
-      cache_key="rev.$rev.$tag.$attribute.$project"
-    else
-      cache_stamp=$(stat -c '%Y.%s' "$tree_root/$project" 2>/dev/null) || cache_stamp=nostat
-      cache_key="wt.$cache_stamp.$tag.$attribute.$tree_root.$project"
-    fi
-    cache_file="$msbuild_read_cache/${cache_key//\//%}"
-    if test -f "$cache_file"; then
-      command cat "$cache_file"
-      return 0
+    local cache_digest
+    cache_digest=$(printf '%s' "$content" | sha256sum) || cache_digest=""
+    if test -n "$cache_digest"; then
+      cache_file="$msbuild_read_cache/${cache_digest%% *}.$tag.$attribute.${project_dir//\//%}"
+      if test -f "$cache_file"; then
+        command cat "$cache_file"
+        return 0
+      fi
     fi
   fi
   # No output is an ordinary answer here -- most projects declare no ProjectReference at all -- so
@@ -755,33 +787,59 @@ check_identity_closure_containment() {
     return 1
   done
 
-  # `Directory.Build.props` and `Directory.Build.targets` are imported by MSBuild with no `<Import>`
-  # element anywhere to see, so the guard above cannot reach them. An item declared there applies to
-  # EVERY project, the closure included. Refusing only the explicit form while leaving this one open
-  # would be an overclaimed limit -- the shape that makes a real gap invisible.
+  # `Directory.Build.props` and `Directory.Build.targets` reach a project with no `<Import>` element
+  # anywhere to see, so the guard above cannot reach them. The files that apply are RESOLVED by the
+  # walk MSBuild performs -- see `msbuild_auto_import_files` -- and not read off two fixed paths.
+  #
+  # The first cut of this guard did read two fixed paths, `$tree_root/Directory.Build.props` and
+  # `.targets`, and said in this very comment that doing otherwise "would be an overclaimed limit".
+  # That sentence was itself the overclaim (S.I.R.#290 round 2, F5): a file NEARER the project
+  # shadows the tree root, so declaring the extracted file only in
+  # `src/SIR.Domain/Directory.Build.props` -- with the project file AND the root props both
+  # byte-identical to pristine -- built, emitted `SIR.Domain.FixedPointArithmetic.saturate` into the
+  # assembly, and passed all four production steps. The controlled pair was one variable: the same
+  # declaration at the tree root refused, nested passed.
+  #
+  # `<Import>` is refused here for the same reason it is refused in a project: this arm reads files
+  # and does not evaluate MSBuild, so it cannot follow one -- and an `<Import>` inside the root
+  # props was the second demonstrated variant of the same escape.
   local auto_import
   local auto_tag
+  local auto_attribute
   local auto_items
   local auto_status
-  for auto_import in "$tree_root/Directory.Build.props" "$tree_root/Directory.Build.targets"; do
-    test -f "$auto_import" || continue
-    for auto_tag in Compile ProjectReference; do
+  local auto_imports=""
+  for project in "${owning[@]}"; do
+    auto_imports+=$(msbuild_auto_import_files "$tree_root" "$(dirname "$project")")$'\n'
+  done
+  auto_imports=$(printf '%s' "$auto_imports" | grep -v '^$' | sort -u) || auto_imports=""
+  while IFS= read -r auto_import; do
+    test -n "$auto_import" || continue
+    for auto_tag in Compile ProjectReference Import; do
+      if test "$auto_tag" = Import; then auto_attribute=Project; else auto_attribute=Include; fi
       auto_status=0
-      auto_items=$(msbuild_include_values "$auto_tag" < "$auto_import") || auto_status=$?
+      auto_items=$(msbuild_include_values "$auto_tag" "$auto_attribute" < "$tree_root/$auto_import") || auto_status=$?
       if test "$auto_status" -ne 0; then
         echo "an automatically imported MSBuild file did not parse: $auto_import" >&2
         echo "  refusing rather than reporting that it declares no $auto_tag items" >&2
         return 1
       fi
       test -n "$auto_items" || continue
-      echo "an automatically imported MSBuild file declares $auto_tag items: $auto_import" >&2
-      printf '%s\n' "$auto_items" | sed 's/^/  /' >&2
-      echo "  MSBuild applies these to EVERY project, the rules implementation closure included," >&2
-      echo "  and no <Import> element names this file, so nothing else here can see them." >&2
-      echo "  Declare compile items and project references in the project files themselves." >&2
+      if test "$auto_tag" = Import; then
+        echo "an automatically imported MSBuild file carries an <Import> this check cannot follow: $auto_import" >&2
+        printf '%s\n' "$auto_items" | sed 's/^/  imports: /' >&2
+        echo "  MSBuild compiles the items an imported file declares, and this arm reads files rather" >&2
+        echo "  than evaluating MSBuild, so whatever the import brings in is invisible to it." >&2
+      else
+        echo "an automatically imported MSBuild file declares $auto_tag items: $auto_import" >&2
+        printf '%s\n' "$auto_items" | sed 's/^/  /' >&2
+        echo "  MSBuild applies these to every project this file governs, the rules implementation" >&2
+        echo "  closure included, and no <Import> element names this file, so nothing else here can" >&2
+        echo "  see them. Declare compile items and project references in the project files." >&2
+      fi
       return 1
     done
-  done
+  done <<< "$auto_imports"
 
   local current_items=""
   local baseline_items=""
@@ -1465,7 +1523,7 @@ if timeout 120 bash -c "
   set -euo pipefail
   repo_root='$repo_root'
   arm_invocations=\$(mktemp)
-  $(declare -f msbuild_include_values project_elements project_compile_items project_inventory closure_projects check_identity_closure_containment)
+  $(declare -f msbuild_include_values msbuild_auto_import_files project_elements project_compile_items project_inventory closure_projects check_identity_closure_containment)
   check_identity_closure_containment '$source_manifest' '$correspondence_manifest' '$source_commit' '$graph_cycle'
 " >"$pin_probe_log" 2>&1; then
   pin_probe_fail "a reference cycle unexpectedly passed the identity-closure arm"
@@ -1629,28 +1687,101 @@ search_quiet 'carries an <Import> this check cannot follow' "$pin_probe_log" || 
 
 # 35. And the route with NO `<Import>` element to catch. MSBuild imports `Directory.Build.props`
 #     automatically, so an item declared there reaches every project in the closure while probe 34
-#     has nothing to see. Refusing only the explicit form would be an overclaimed limit.
-graph_autoimport="$pin_probe_dir/graph-autoimport"
-mkdir -p "$graph_autoimport"
-graph_probe_tree "$graph_autoimport"
-printf '<Project>\n  <ItemGroup><Compile Include="FixedPointArithmetic.fs" /></ItemGroup>\n</Project>\n' \
-  > "$graph_autoimport/Directory.Build.props"
-if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_autoimport" >"$pin_probe_log" 2>&1; then
-  pin_probe_fail "a Directory.Build.props declaring Compile items unexpectedly passed: it applies to every closure project"
-fi
-search_quiet 'automatically imported MSBuild file declares Compile items' "$pin_probe_log" || {
-  pin_probe_fail "an item-declaring Directory.Build.props failed without the actionable auto-import diagnostic"
+#     has nothing to see.
+#
+#     EVERY fixture below carries the repository's own root `Directory.Build.props`, because that is
+#     what production has and the first version of this probe did not. A fixture whose tree root was
+#     EMPTY could not express the thing that actually breaks the guard -- one file shadowing
+#     another -- so it demonstrated a refusal at the only path the guard looked at and reported the
+#     class closed. That is the fixture-simpler-than-production shape, and it is what let F5 through
+#     (S.I.R.#290 round 2). The nested cases are the ones with teeth; the root case is kept as the
+#     shallow member of the same family.
+graph_autoimport_root_props="$repo_root/Directory.Build.props"
+graph_autoimport_case() {  # label, relative-file, xml, expected-diagnostic
+  local label=$1
+  local relative=$2
+  local xml=$3
+  local expected=$4
+  local tree="$pin_probe_dir/graph-autoimport-${label//\//-}"
+  rm -rf "$tree"; mkdir -p "$tree"
+  graph_probe_tree "$tree"
+  cp "$graph_autoimport_root_props" "$tree/Directory.Build.props"
+  mkdir -p "$tree/$(dirname "$relative")"
+  printf '%s\n' "$xml" > "$tree/$relative"
+  if check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$tree" >"$pin_probe_log" 2>&1; then
+    pin_probe_fail "$label: an automatically imported MSBuild file at $relative unexpectedly passed"
+  fi
+  search_quiet "$expected" "$pin_probe_log" || {
+    pin_probe_fail "$label: $relative was refused, but not for its own reason (expected: $expected)"
+  }
+  search_quiet "$relative" "$pin_probe_log" || {
+    pin_probe_fail "$label: the refusal did not name the file it was about ($relative)"
+  }
 }
 
-# 36. CONTROL for 34 and 35 together. The repository's own `Directory.Build.props` -- properties and
-#     a `PackageReference`, which is neither of the item kinds that can carry an extraction -- must
-#     pass, so those two refusals are attributable to the items and not to the file existing.
+# The root case: the shallow member, and the only one the first version of this guard could see.
+graph_autoimport_case root-props Directory.Build.props \
+  '<Project><ItemGroup><Compile Include="FixedPointArithmetic.fs" /></ItemGroup></Project>' \
+  'automatically imported MSBuild file declares Compile items'
+
+# 35a. NESTED, and this is F5 itself. MSBuild starts in the PROJECT's directory and walks UP, taking
+#      the FIRST file of that name -- so this one SHADOWS the pristine root props beside it and never
+#      reaches the path the old guard read. Measured at f765415: extracting `saturate` into a file
+#      declared only here built, put SIR.Domain.FixedPointArithmetic.saturate in the assembly, and
+#      passed all four production steps with the project file and root props byte-identical.
+graph_autoimport_case nested-props src/SIR.Domain/Directory.Build.props \
+  '<Project><ItemGroup><Compile Include="FixedPointArithmetic.fs" /></ItemGroup></Project>' \
+  'automatically imported MSBuild file declares Compile items'
+
+# 35b. The same walk applies to `Directory.Build.targets`, which is a separate name with its own
+#      independent search -- so a guard fixed only for props would still be half open.
+graph_autoimport_case nested-targets src/SIR.Domain/Directory.Build.targets \
+  '<Project><ItemGroup><Compile Include="FixedPointArithmetic.fs" /></ItemGroup></Project>' \
+  'automatically imported MSBuild file declares Compile items'
+
+# 35c. A nested file can also carry a ProjectReference, which grows the closure rather than a
+#      project's item list -- the same escape through the other item kind.
+graph_autoimport_case nested-reference src/SIR.Domain/Directory.Build.props \
+  '<Project><ItemGroup><ProjectReference Include="../SIR.Tools/SIR.Tools.fsproj" /></ItemGroup></Project>' \
+  'automatically imported MSBuild file declares ProjectReference items'
+
+# 35d. And the second demonstrated variant: an `<Import>` INSIDE an automatically imported file.
+#      Parsing that file correctly does not help, for the same reason it does not help in a project
+#      -- the items are not in it. This arm reads files rather than evaluating MSBuild, so it
+#      refuses rather than following.
+graph_autoimport_case root-props-import Directory.Build.props \
+  '<Project><Import Project="Extra.props" /></Project>' \
+  'automatically imported MSBuild file carries an <Import> this check cannot follow'
+
+# 35e. Nested, imported, one level further out: the walk selects the nested file and the refusal
+#      must come from THAT file, not from the root one.
+graph_autoimport_case nested-props-import src/SIR.Domain/Directory.Build.props \
+  '<Project><Import Project="Extra.props" /></Project>' \
+  'automatically imported MSBuild file carries an <Import> this check cannot follow'
+
+# 36. CONTROL for 34 and 35. The repository's own `Directory.Build.props` -- properties and a
+#     `PackageReference`, which is neither of the item kinds that can carry an extraction -- must
+#     pass at the tree root, so every refusal above is attributable to what the file DECLARES and
+#     not to a file existing, or to one existing in a subdirectory.
 graph_autoimport_ok="$pin_probe_dir/graph-autoimport-ok"
 mkdir -p "$graph_autoimport_ok"
 graph_probe_tree "$graph_autoimport_ok"
-cp "$repo_root/Directory.Build.props" "$graph_autoimport_ok/Directory.Build.props"
+cp "$graph_autoimport_root_props" "$graph_autoimport_ok/Directory.Build.props"
 check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_autoimport_ok" >"$pin_probe_log" 2>&1 || {
   pin_probe_fail "the repository's own Directory.Build.props was refused: probes 34 and 35 red for the wrong reason"
+}
+
+# 36a. And the same file NESTED beside a project, declaring nothing that can carry an extraction,
+#      must also pass -- otherwise probes 35a-35e would be indistinguishable from "any nested
+#      Directory.Build.props is refused", which would be a guard nobody could work with.
+graph_autoimport_nested_ok="$pin_probe_dir/graph-autoimport-nested-ok"
+mkdir -p "$graph_autoimport_nested_ok"
+graph_probe_tree "$graph_autoimport_nested_ok"
+cp "$graph_autoimport_root_props" "$graph_autoimport_nested_ok/Directory.Build.props"
+printf '<Project><PropertyGroup><SomeHarmlessProperty>1</SomeHarmlessProperty></PropertyGroup></Project>\n' \
+  > "$graph_autoimport_nested_ok/src/SIR.Domain/Directory.Build.props"
+check_identity_closure_containment "$source_manifest" "$correspondence_manifest" "$source_commit" "$graph_autoimport_nested_ok" >"$pin_probe_log" 2>&1 || {
+  pin_probe_fail "a nested Directory.Build.props declaring only a property was refused: the walk refuses files rather than items"
 }
 
 # 37. The writer's ITEM READER agrees with this verifier's, for the same reason probe 8 requires
@@ -1759,27 +1890,39 @@ test "$writer_unparseable_status" -ne 0 || {
   pin_probe_fail "the rebind writer read an unparseable project as 'this project compiles nothing': an unresolvable owner would be reported as an absent one"
 }
 
-# 40. The read cache cannot serve a stale answer. The cache exists for feedback time, but a cache
-#     that returns yesterday's items is a silent wrong answer from the one check that is supposed
-#     to refuse them -- strictly worse than the slow version. So it is measured, not reasoned
-#     about: read a project, CHANGE it, read it again, and require the second read to differ.
-#     Revision reads need no such probe (a commit SHA names an immutable object) and get none;
-#     working-tree reads carry mtime and size in the key and get this one.
+# 40. The read cache cannot serve a stale answer -- and this probe now tests THAT, rather than a
+#     weaker claim it was named for. Its first version rewrote the project to a DIFFERENT LENGTH,
+#     saying so in its own comment ("so change the length too"), which meant it passed on the size
+#     half of a key whose mtime half was measured to carry nothing: `stat -c %Y` is whole-second, so
+#     a same-second same-size rewrite hit the cache and the reader returned the previous file's
+#     items. Dropping the mtime from that key left the entire suite green (S.I.R.#290 round 2, F6).
+#
+#     So the rewrite below is deliberately the hard case: SAME SECOND, SAME BYTE LENGTH, different
+#     content. The key is now the content digest, which is why this can be the assertion rather than
+#     something the probe steers around. Revision reads need no probe of their own -- a commit SHA
+#     names an immutable object -- and get none.
 cache_probe_tree="$pin_probe_dir/cache-staleness"
 mkdir -p "$cache_probe_tree/src/SIR.Domain"
+cache_probe_project="$cache_probe_tree/src/SIR.Domain/SIR.Domain.fsproj"
 printf '<Project Sdk="Microsoft.NET.Sdk">\n  <ItemGroup>\n    <Compile Include="Before.fs" />\n  </ItemGroup>\n</Project>\n' \
-  > "$cache_probe_tree/src/SIR.Domain/SIR.Domain.fsproj"
+  > "$cache_probe_project"
+cache_probe_size_before=$(command wc -c < "$cache_probe_project")
 cache_first=$(project_elements "$cache_probe_tree" src/SIR.Domain/SIR.Domain.fsproj Compile)
 test "$cache_first" = "src/SIR.Domain/Before.fs" || {
   pin_probe_fail "the cache staleness probe did not read its own fixture (got: $cache_first)"
 }
-# A same-second rewrite of the same length is the case a coarse key would miss, so change the
-# length too -- and then prove the guard is the KEY and not the clock by checking the value.
-printf '<Project Sdk="Microsoft.NET.Sdk">\n  <ItemGroup>\n    <Compile Include="AfterExtraction.fs" />\n  </ItemGroup>\n</Project>\n' \
-  > "$cache_probe_tree/src/SIR.Domain/SIR.Domain.fsproj"
+# `Aftero.fs` is the same eight characters as `Before.fs`, so the file length does not move.
+printf '<Project Sdk="Microsoft.NET.Sdk">\n  <ItemGroup>\n    <Compile Include="Aftero.fs" />\n  </ItemGroup>\n</Project>\n' \
+  > "$cache_probe_project"
+cache_probe_size_after=$(command wc -c < "$cache_probe_project")
+# The probe is only the hard case if the rewrite really was same-size and same-second. Assert both,
+# so a future edit that makes the fixture easier fails here instead of quietly weakening the gate.
+test "$cache_probe_size_before" = "$cache_probe_size_after" || {
+  pin_probe_fail "the cache staleness fixture changed length ($cache_probe_size_before -> $cache_probe_size_after): it no longer tests the case a size-keyed cache misses"
+}
 cache_second=$(project_elements "$cache_probe_tree" src/SIR.Domain/SIR.Domain.fsproj Compile)
-test "$cache_second" = "src/SIR.Domain/AfterExtraction.fs" || {
-  pin_probe_fail "the read cache served a STALE answer after the project changed (got: $cache_second): a cached compile-item set is a silent wrong answer from the arm that exists to refuse one"
+test "$cache_second" = "src/SIR.Domain/Aftero.fs" || {
+  pin_probe_fail "the read cache served a STALE answer after a same-second same-size rewrite (got: $cache_second): a cached compile-item set is a silent wrong answer from the arm that exists to refuse one"
 }
 
 # 18. WIRING. Both S.I.R.#290 arms must have run against the REAL tree and the REAL manifests

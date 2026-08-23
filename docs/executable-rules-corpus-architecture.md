@@ -759,6 +759,32 @@ mistaken for accidents:
   attribute name is matched exactly; a semicolon-separated item list is legal and
   compiles every member, so it is split rather than treated as one path.
 
+  **An item can also reach a project from a file the project never names**, and
+  that is resolved rather than guessed at. `Directory.Build.props` and
+  `Directory.Build.targets` are imported with no `<Import>` element anywhere to
+  see, and MSBuild finds them by starting in the **project's own directory** and
+  walking **up**, taking the first file of each name and stopping — so a file
+  nearer the project *shadows* the one at the tree root. The check performs that
+  same walk for every project in the closure and refuses `Compile` or
+  `ProjectReference` items in whichever file MSBuild would actually select, and
+  refuses an `<Import>` inside it as unfollowable.
+
+  This replaced a guard that read two fixed paths at the tree root and said, in
+  its own comment, that doing otherwise "would be an overclaimed limit". That
+  sentence was itself the overclaim: declaring the extracted file only in
+  `src/SIR.Domain/Directory.Build.props`, with the project file *and* the root
+  props byte-identical to pristine, built, emitted the extracted type into the
+  assembly, and passed all four steps — and removing only that one file failed the
+  build with `FS0039`, so it was the sole supplier. The nearest-wins semantics
+  were confirmed by **building**, not by reading the documentation: with a nested
+  file present, items declared at the root are ignored.
+
+  **The stated boundary**: the walk stops at the tree root. A
+  `Directory.Build.props` *above* the repository would also apply to a real build,
+  but it is not in the tree, not in the diff, and not something this arm can
+  describe — the same boundary the out-of-repository `ProjectReference` refusal
+  already draws.
+
 `source-correspondence.json` is the **mutable half**. It records, per declared
 source, the SHA-256 of that file's text after the normalization
 `scripts/verify-rules-corpus.sh` applies, and the verifier requires the current
