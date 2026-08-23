@@ -5,17 +5,17 @@ workspace: agent-a262fbe43be42b495
 cycle: item-264-rules-corpus-pin
 lane: none
 toolVersion: 1.0.1
-commit: d62234b81e69681d47820b3a4157f00b030158ca
+commit: 7d0961bcc95cd9a3bb72dba78dcf70ce17a44b71
 ---
 
 ## §1 Provenance and confidence
 
 - **activation:** active
 - **phases:** lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 10
+- **material events:** 11
 - **zero-event reason:** not applicable
 
-This report covers one board item worker lane: EHotwagner/S.I.R.#264, claimed by minted worker `swift-10be` through `fsgg-coord take` and carried from claim to review handoff on PR #276. The stable checkpoint file is `feedback/checkpoints/item-264-rules-corpus-pin.jsonl` with ten events.
+This report covers one board item worker lane: EHotwagner/S.I.R.#264, claimed by minted worker `swift-10be` through `fsgg-coord take` and carried from claim to review handoff on PR #276. The stable checkpoint file is `feedback/checkpoints/item-264-rules-corpus-pin.jsonl` with eleven events.
 
 Pinned inputs exercised: .NET SDK 10.0.302 (`global.json`, `rollForward: disable`), `fs.gg.coord.cli` 0.71.0, `fsgg-sdd` 1.0.1, bash 5.3.15.
 
@@ -158,6 +158,7 @@ The generalisation worth carrying: **a gate can be made unsatisfiable as a side 
   **(1)** The acceptance demonstration for the rebindable pin mutated a declared rule *fact*. A declared fact is part of the canonical manifest payload, so `generate-rules-corpus.sh --check` already refused it — the demonstration measured the sibling check. An independent critic mutated an algorithm *body* instead (`CombatRules.resolveCoverImpact`) and the `rules` gate passed while registered rule behaviour had moved (M1). The reason the class is invisible to that gate is narrow and checkable: 10 of the 16 corpus rules are `transition` kind, whose recorded `semantics` is invariant under an arithmetic change, so nothing *the `rules` gate consults* observes it. The conformance fixtures did observe it, which is what the repair now runs.
   **(2)** A CI failure was diagnosed as a `--failed` re-run measuring across attempts — a story that fitted this item's own defect class — without checking `run_attempt`, the single fact that falsifies it. `route` had re-run.
   **(3)** The critic's verdict marker was acted on without opening the critic's review. The sealed decision comment carries the verdict; the findings are in a separate comment posted three minutes later containing **two** findings. M1 was reproduced and repaired and the round reported as complete while M2 was neither read nor repaired — and the first M1 repair replaced one fixed build project with another, so it would not have fixed M2 either.
+  **(4)** After writing this finding, a non-vacuity guard was added *to prove the new conformance check could fail* — and it could not fail, because it asserted only an exit code from an arm that aborts whether or not a divergence is found. It sat twelve lines above a correct sibling that asserts the diagnostic. **(5)** The build guard from instance (3)'s repair was itself fixed by adopting a second naming convention rather than by reading the build graph, and was wrong for three of the four paths probed. Instances (4) and (5) are the strongest evidence for this finding precisely because they postdate it: stating the rule did not prevent the author from breaking it twice more.
   *Not counted:* the host self-reported a similar inference from green gate receipts to a sound diff. It appears nowhere on #264 or PR #276 and has no artifact, so it is excluded rather than relabelled — counting it would have been counting hearsay to reach a number.
 - **Evidence:** issue:EHotwagner/S.I.R.#264; command:gh api repos/EHotwagner/S.I.R./issues/276/comments --jq '.[] | select(.id==5383452179) | .body'; command:gh run view 32607930272 --repo EHotwagner/S.I.R. --json attempt --jq .attempt; command:git show --stat bf2b93afed5291a664baec0c36d60cb335660abf
 - **Version:** n/a
@@ -224,6 +225,9 @@ A second rule fell out of the same repair: **a gate that owns an identity must b
 5. **An inversion must use a mutation the sibling checks cannot already catch.** Prevents §4.9 instance (1). Owner: S.I.R. / gate-authoring convention. **Acceptance:** for each gate a change adds or modifies, the inversion's mutation is shown to leave every *other* selected gate green — if a sibling also refuses it, the inversion has not exercised the gate under test and does not count as its evidence.
 6. **A critic asks what the author did not mutate.** Prevents §4.9 instance (1) from the other side. Owner: FS-GG / `independent-review`. **Acceptance:** the review records at least one mutation class the author's evidence did not cover, or states that the author's inversions exhaust the gate's observable surface and why. A review that only re-runs the author's inversions does not satisfy it.
 7. **Act on a review, not on its verdict marker.** Prevents §4.9 instance (3). Owner: FS-GG / `independent-review`. **Acceptance:** the repair round enumerates every finding id in the review body and dispositions each; a round that references the sealed decision without enumerating its findings is incomplete by construction.
+
+8. **Break the guard's own subject and watch the guard go red.** Prevents the round-1 confirmation finding, in which a non-vacuity guard added *to prove the new check could fail* could not itself fail: `--inject-combat-divergence` computes its offset with `Array.findIndex`, which throws when the two evaluations agree, and then `failwith`s regardless, so the process aborts either way and an exit-code-only assertion passes in both worlds. Owner: S.I.R. / gate-authoring convention. **Acceptance:** for every inversion, the author records the guard observed **failing** with its subject deliberately broken — not merely passing with the subject intact. An inversion never seen red is a hypothesis, not evidence.
+9. **Resolve ownership by reading the build graph, not by naming convention.** Prevents the round-1 confirmation finding that a build guard resolved `src/<Project>/<Project>.fsproj` for every declared path, which exists and builds for all of them but *compiles* only some: `RulesExplorer.fs` belongs to `SIR.RulesExplorer.Web.fsproj`, and `Lab.fs` and `EngineCatalog.fs` are compiled by `src/SIR.Replay.Core/SIR.Replay.Core.fsproj` from a different directory. Owner: S.I.R. / `scripts`. **Acceptance:** the guard resolves each path through `Compile Include` entries and refuses any path no project compiles; verified by appending invalid syntax to one file per owning project and observing a refusal naming that project.
 
 ## §12 Development-surface coverage
 

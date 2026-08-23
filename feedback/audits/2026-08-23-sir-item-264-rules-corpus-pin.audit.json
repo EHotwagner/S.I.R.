@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-23-sir-item-264-rules-corpus-pin.md",
-  "reportSha256": "287b3e5ae33ea84a9624de9c61c02589ce2893bd023b024611a234e79e1df7b1",
+  "reportSha256": "a1dd8561eac2fecec20a2efd6a9b3b1b4bea77b5cbd3dec96bda57875d7c577d",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -21,7 +21,7 @@
         {
           "locator": "file:scripts/verify-rules-corpus.sh",
           "result": "verified",
-          "sha256": "a0949483f206c8cff934acdd7d117a89257719d9deb98ce649e7b62defaeb689"
+          "sha256": "24887667b0ff037ff2639d03d1a538d99052da356c80b64f50df1fa5c6428359"
         },
         {
           "locator": "file:work/239-durable-rules-identity/spec.md",
@@ -102,7 +102,7 @@
         {
           "locator": "file:scripts/verify-rules-corpus.sh",
           "result": "verified",
-          "sha256": "a0949483f206c8cff934acdd7d117a89257719d9deb98ce649e7b62defaeb689"
+          "sha256": "24887667b0ff037ff2639d03d1a538d99052da356c80b64f50df1fa5c6428359"
         },
         {
           "locator": "file:src/SIR.Simulation/CombatRules.fs",
