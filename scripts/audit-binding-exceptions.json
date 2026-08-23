@@ -137,7 +137,7 @@
       "locator": "file:scripts/test-svg-pipeline-measurement.mjs",
       "path": "scripts/test-svg-pipeline-measurement.mjs",
       "previousSha256": "781bfa980922a717843c9a9f75495c46eb253fec74b2268e77f6d42556b491b4",
-      "replacementSha256": "5f44d4f691a83384754f679949364bf50534ce26190007ffd8096aec038c05f8",
+      "replacementSha256": "71d69376e2e690a09d6fcf6c35510e045b8ea641d9373bda50ed938d0040f512",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The repaired-cycle audit is authored with its focused gate; executing it proves the sampler, axis, retained-byte, and binding inversions remain live. S.I.R.#268 then appended frame-budget verdict coverage to this gate and extended its import; it removed nothing. The finding this entry attests to is unaffected: the sampler, axis, retained-byte and binding inversions it names are all still present and still executed. Measured rather than asserted -- the JUSTIFIED subject lines go 8 to 9 with every original subject still emitted and none removed, and the assertion count goes 30 to 50, so the added cases extend the gate rather than displace it. Executing it remains the declared replacement evidence and it passes."
     },

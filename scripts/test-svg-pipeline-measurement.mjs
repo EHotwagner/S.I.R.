@@ -177,4 +177,25 @@ assert.equal(evaluateArtifactVerdict(budgetVerdicts).result, "fail",
 assert.equal(budgetVerdicts.filter((run) => run.frameBudget.result === "fail").length, 36);
 assert.equal(budgetVerdicts.filter((run) => run.frameBudget.result === "pass").length, 12,
   "genuinely conforming runs must still pass, so the gate is not merely inverted");
+// Closed domain, not a sample. The declared journey set is finite and lives in the fixture contract, so
+// every member is exercised rather than the four that happened to be interesting. A repair that
+// enumerated only the journeys someone had observed would pass a sampled suite and fail this one.
+const verdictStates = new Set(["pass", "fail", "unevaluated"]);
+for (const journey of source.journeys) {
+  const exempt = budget.exemptJourneys.includes(journey);
+  const starved = evaluateRunFrameVerdict({ frameDurationsMilliseconds: [] }, journey, budget);
+  assert.equal(starved.result, exempt ? "unevaluated" : "fail",
+    `${journey}: a journey with no frames must be ${exempt ? "unevaluated because it is declared exempt" : "a failure because it is not"}`);
+  // exemption is about ABSENT frames, not about the journey being unmeasurable: give it frames and it
+  // is judged like any other, so an exempt journey can never launder a real breach.
+  assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [17.0] }, journey, budget).result, "fail",
+    `${journey}: a breaching frame must fail even for a declared-exempt journey`);
+  assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [12.0] }, journey, budget).result, "pass",
+    `${journey}: a conforming frame must pass`);
+  assert.ok(verdictStates.has(starved.result), `${journey}: verdict must be one of the three declared states`);
+}
+assert.equal(source.journeys.length, 7, "the closed journey domain this loop asserts over must not silently shrink");
+assert.ok(budget.exemptJourneys.every((journey) => source.journeys.includes(journey)),
+  "an exempt journey that is not a declared journey would exempt nothing");
+
 console.log("JUSTIFIED frame-budget-verdict: derived per-run and artifact verdicts red on the retained breaching matrix, green on its conforming runs, and fail closed on unmeasured input");
