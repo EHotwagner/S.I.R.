@@ -11,8 +11,8 @@
 // module exists to remove. A consumer needs the value: import it.
 
 // The ceiling, in milliseconds, for one animation-frame callback plus tactical DOM inspection on the
-// production route. 16.67 ms is one frame period at 60 Hz. It is explicitly NOT a compositor, paint,
-// GPU or swapchain claim.
+// production route. It is one frame period at 60 Hz, and is explicitly NOT a compositor, paint, GPU
+// or swapchain claim.
 const callbackMillisecondsCeiling = 16.67;
 
 export const tacticalFrameBudget = Object.freeze({

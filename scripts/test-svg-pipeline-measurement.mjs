@@ -168,7 +168,8 @@ for (const cell of publishedCeilings)
 
 // A dropped frame is the SAME quantity as a budget breach, so the two thresholds cannot diverge.
 // This is the case the old inline 25 ms literal got wrong, and the case the pre-existing trace
-// fixture could not see: with durations of 16/31/10 ms, 25 and 16.67 both count exactly one frame.
+// fixture could not see: with durations of 16/31/10 ms, the old and the declared threshold both
+// count exactly one frame, so it could not have discriminated them.
 const overCeiling = tacticalFrameBudget.callbackMillisecondsCeiling + 3.33;   // breaches; was NOT counted at 25 ms
 const underCeiling = tacticalFrameBudget.callbackMillisecondsCeiling - 0.67;  // conforms; must never be counted
 const discriminating = { traceEvents: [
@@ -183,13 +184,39 @@ assert.equal(discriminatingHealth.droppedFrames, 1,
   "a frame that breaches the declared ceiling must be counted as dropped; under the old undeclared 25 ms threshold this frame breached the budget and was reported as zero drops");
 assert.equal(evaluateRunFrameVerdict(discriminatingHealth, "zoom", budget).result, "fail",
   "and the verdict must agree with the drop count on the very same frame -- one number, one answer");
+// No consumer may RESTATE the ceiling. This is what keeps sites the in-process assertions above
+// cannot reach -- the Chromium review generator and the Playwright spec, both of which need a browser
+// to execute -- from drifting back into their own copy of the number. A file that contains no literal
+// ceiling cannot hold a stale one, whatever it does at runtime.
+const declaredCeilingLiteral = String(tacticalFrameBudget.callbackMillisecondsCeiling);
+const derivedConsumers = [
+  "lib/svg-pipeline-measurement.mjs", "svg-pipeline-fixtures.v1.json", "measure-svg-pipeline.mjs",
+  "generate-tactical-visual-review.mjs", "test-svg-pipeline-measurement.mjs",
+  "../tests/SIR.Browser.Tests/visible-workflows.spec.js",
+];
+for (const consumer of derivedConsumers) {
+  const text = readFileSync(new URL(`./${consumer}`, import.meta.url), "utf8");
+  assert.ok(!text.includes(declaredCeilingLiteral),
+    `${consumer} restates the declared ceiling as the literal ${declaredCeilingLiteral}. Import it from lib/performance-budget.mjs instead; a second copy that agrees today is exactly the defect S.I.R.#299 removed.`);
+}
+// and the two that cannot be exercised in-process must actually READ the declaration
+for (const consumer of ["generate-tactical-visual-review.mjs", "../tests/SIR.Browser.Tests/visible-workflows.spec.js"]) {
+  const text = readFileSync(new URL(`./${consumer}`, import.meta.url), "utf8");
+  assert.match(text, /performance-budget\.mjs/, `${consumer} must import the single declaration`);
+  assert.match(text, /tacticalFrameBudget\.callbackMillisecondsCeiling/, `${consumer} must read the declared ceiling`);
+}
+console.log(`JUSTIFIED frame-budget-no-restatement: ${derivedConsumers.length} consumers contain no literal ${declaredCeilingLiteral}, and the two browser-route consumers read the declaration by name`);
 console.log(`JUSTIFIED frame-budget-single-declaration: the fixture file, the composed budget, the drop threshold and ${publishedCeilings.length} published table cell(s) all resolve to the one declaration, a restated ceiling is refused, and a frame ${overCeiling} ms long -- uncounted under the old undeclared threshold -- is counted as dropped and fails its verdict`);
 
 // the declared ceiling discriminates, in BOTH directions -- a gate that only ever reds is as useless as
-// one that only ever greens, and 16 vs 17 ms is the boundary real runs actually sit on
-assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [16.0] }, "zoom", budget).result, "pass");
-assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [16.67] }, "zoom", budget).result, "pass");
-assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [17.0] }, "zoom", budget).result, "fail");
+// one that only ever greens, and just-below vs just-above is the boundary real runs actually sit on.
+// S.I.R.#299: these were literals pinning the ceiling. They are now taken FROM it, so they follow the
+// declaration instead of quietly becoming a fourth statement of it.
+const ceiling = tacticalFrameBudget.callbackMillisecondsCeiling;
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [ceiling - 0.67] }, "zoom", budget).result, "pass");
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [ceiling] }, "zoom", budget).result, "pass",
+  "the ceiling is inclusive: a frame exactly at it conforms");
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [ceiling + 0.33] }, "zoom", budget).result, "fail");
 
 // a non-answer must never be reported as a confident answer
 assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [] }, "idle", budget).result, "unevaluated",
@@ -325,7 +352,7 @@ console.log("JUSTIFIED frame-budget-verdict: derived per-run and artifact verdic
 // --- #268 F2: the surfaces an operator reads must carry the derived verdict, not a literal ---
 // The artifact said `fail` while the exit code, the printed line and the JUnit report all said pass
 // unconditionally. All three now read one derivation, so they are asserted here rather than in a browser.
-const failingRun = { fixture: "controlled-baseline", journey: "playback", result: "fail", frameBudget: { reason: "measured p95=124 ms against the declared ceiling of 16.67 ms" } };
+const failingRun = { fixture: "controlled-baseline", journey: "playback", result: "fail", frameBudget: { reason: `measured p95=124 ms against the declared ceiling of ${tacticalFrameBudget.callbackMillisecondsCeiling} ms` } };
 const passingRun = { fixture: "controlled-baseline", journey: "selection", result: "pass", frameBudget: { reason: "within ceiling" } };
 const exemptRun = { fixture: "controlled-baseline", journey: "idle", result: "unevaluated", frameBudget: { reason: "declared frame-exempt and produced no AnimationFrame records" } };
 
