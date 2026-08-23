@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { gunzipSync } from "node:zlib";
-import { byteDigest, digest, extractFrameHealth, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
+import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 validateDefinitions(source);
@@ -117,3 +117,54 @@ const report = process.env.SIR_SVG_PIPELINE_JUNIT || "artifacts/test-results/svg
 mkdirSync(dirname(report), { recursive: true });
 writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="25" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="25" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="fixture-capacity"/><testcase name="axis-inventory"/><testcase name="trace-timing"/><testcase name="trace-window"/><testcase name="observed-run"/><testcase name="map-extent-control"/><testcase name="visible-density-control"/><testcase name="global-unit-control"/><testcase name="overlay-control"/><testcase name="event-rate-control"/><testcase name="supporting-list-control"/><testcase name="unique-unit-cells"/><testcase name="production-visible-observation"/><testcase name="production-global-observation"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/><testcase name="raw-trace-binding"/><testcase name="raw-trace-missing"/><testcase name="raw-trace-changed"/><testcase name="unreadable-input"/></testsuite></testsuites>\n');
 console.log("svg-pipeline measurement unit gates: PASS");
+
+// --- #268: the verdict must be derived from measurements, and must be able to say "fail" ---
+// These gates exist because `result` was a literal "pass" in the producer and the finalizer gated on it.
+// Each one is paired with a subject mutation recorded in PR #300; predicate inversion is not evidence here.
+const budget = source.frameBudget;
+assert.ok(budget, "the fixture contract must declare a frame budget");
+assert.equal(budget.callbackMillisecondsCeiling, 16.67);
+
+// the declared ceiling discriminates, in BOTH directions -- a gate that only ever reds is as useless as
+// one that only ever greens, and 16 vs 17 ms is the boundary real runs actually sit on
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [16.0] }, "zoom", budget).result, "pass");
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [16.67] }, "zoom", budget).result, "pass");
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [17.0] }, "zoom", budget).result, "fail");
+
+// a non-answer must never be reported as a confident answer
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [] }, "idle", budget).result, "unevaluated",
+  "idle emits no AnimationFrame records; it must not claim a verdict it did not measure");
+assert.equal(evaluateRunFrameVerdict({ frameDurationsMilliseconds: [] }, "playback", budget).result, "fail",
+  "a journey that is NOT declared exempt and produced no frames is a broken measurement, not an exemption");
+assert.equal(evaluateRunFrameVerdict(undefined, "pan", budget).result, "fail",
+  "an entirely absent frameHealth must fail closed");
+
+// the artifact verdict answers a different question from a run verdict
+assert.equal(evaluateArtifactVerdict([{ frameBudget: { result: "pass" } }, { frameBudget: { result: "fail" } }]).result, "fail");
+assert.equal(evaluateArtifactVerdict([{ frameBudget: { result: "pass" } }, { frameBudget: { result: "unevaluated" } }]).result, "pass");
+assert.equal(evaluateArtifactVerdict([{ frameBudget: { result: "unevaluated" } }]).result, "fail",
+  "a matrix of nothing but exemptions is not a pass");
+assert.throws(() => evaluateArtifactVerdict([{}]), /derived frameBudget verdict/,
+  "a run with no derived verdict must fail closed rather than be counted as passing");
+
+// the contract refuses to operate with no declared budget, rather than inventing one
+assert.throws(() => validateDefinitions({ ...source, frameBudget: undefined }), /declares no frameBudget/);
+assert.throws(() => validateDefinitions({ ...source, frameBudget: { ...budget, evaluatedPercentiles: [] } }), /evaluatedPercentiles/);
+assert.throws(() => validateDefinitions({ ...source, frameBudget: { ...budget, callbackMillisecondsCeiling: 0 } }), /callbackMillisecondsCeiling/);
+
+// the workload binding must NOT move when only the budget changes, or historical evidence is falsely
+// reported as coming from different fixtures and can never be re-evaluated against a corrected budget
+assert.equal(fixtureIdentityDigest(source), fixtureIdentityDigest({ ...source, frameBudget: { ...budget, callbackMillisecondsCeiling: 99 } }),
+  "the fixture identity binds the workload, not the budget applied to it");
+assert.notEqual(fixtureIdentityDigest(source), fixtureIdentityDigest({ ...source, warmupCycles: source.warmupCycles + 1 }),
+  "a real workload change must still move the fixture identity");
+
+// the real production matrix in the tree breaches the declared budget and must say so
+const budgetMatrix = JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-summary.json", import.meta.url)));
+const budgetVerdicts = budgetMatrix.runs.map((run) => ({ frameBudget: evaluateRunFrameVerdict(run.frameHealth, run.journey, budget) }));
+assert.equal(evaluateArtifactVerdict(budgetVerdicts).result, "fail",
+  "the retained 231 ms / 123-dropped-frame matrix must not finalize as a passing matrix");
+assert.equal(budgetVerdicts.filter((run) => run.frameBudget.result === "fail").length, 36);
+assert.equal(budgetVerdicts.filter((run) => run.frameBudget.result === "pass").length, 12,
+  "genuinely conforming runs must still pass, so the gate is not merely inverted");
+console.log("JUSTIFIED frame-budget-verdict: derived per-run and artifact verdicts red on the retained breaching matrix, green on its conforming runs, and fail closed on unmeasured input");
