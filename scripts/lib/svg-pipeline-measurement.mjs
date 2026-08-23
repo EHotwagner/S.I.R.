@@ -271,8 +271,14 @@ export function percentile(values, proportion) {
 export function evaluateRunFrameVerdict(frameHealth, journey, budget) {
   if (!budget) throw new Error("a declared frameBudget is required to derive a run verdict");
   const ceiling = budget.callbackMillisecondsCeiling;
-  const durations = Array.isArray(frameHealth?.frameDurationsMilliseconds) ? frameHealth.frameDurationsMilliseconds : [];
+  const raw = Array.isArray(frameHealth?.frameDurationsMilliseconds) ? frameHealth.frameDurationsMilliseconds : [];
+  const durations = raw.filter((value) => Number.isFinite(value));
   const exempt = (budget.exemptJourneys || []).includes(journey);
+  // A duration this cannot read is not a duration under the ceiling. `null > ceiling` is false, so an
+  // unreadable value would otherwise be counted as conforming -- the precise shape of reporting a
+  // non-answer as a confident pass.
+  if (durations.length !== raw.length)
+    return { ceilingMilliseconds: ceiling, sampleCount: raw.length, percentiles: {}, maximumMilliseconds: null, budgetSource: budget.source, result: "fail", reason: `${raw.length - durations.length} of ${raw.length} frame durations are not finite numbers and cannot be evaluated against the declared ceiling` };
   const percentiles = Object.fromEntries((budget.evaluatedPercentiles || []).map((proportion) => [`p${Math.round(proportion * 100)}`, percentile(durations, proportion)]));
   const base = { ceilingMilliseconds: ceiling, sampleCount: durations.length, percentiles, maximumMilliseconds: durations.length ? Math.max(...durations) : null, budgetSource: budget.source };
   if (exempt && durations.length === 0)
