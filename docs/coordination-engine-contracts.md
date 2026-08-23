@@ -266,9 +266,30 @@ and `baseSha`) are required to be *present* and are then *ignored*.
 
 ### Ledger invariants
 
-These come from `StructuredDecision.validateReviewLedger`, quoted in its own words:
+**This is a selected subset, not the complete set.** `StructuredDecision.validateReviewLedger` enforces
+on the order of forty invariants; the ones below are those an author hits while composing a first
+record, quoted in the validator's own words. **Do not read a silence here as permission.** When you
+need certainty about a rule this page does not state, run the validator against your own draft — it
+names what it refuses, which is the whole reason it is the oracle rather than this page:
+
+```fsharp
+StructuredDecision.validateReviewLedger subject [ yourRecord ]   // Error carries the exact refusals
+```
+
+An earlier revision of this page said the validator "names every invariant it enforces" and then listed
+eight. That sentence is why the `acceptedExceptions` reversal above went unnoticed: a list presented as
+complete stops a reader from checking.
 
 - `initial review round must be zero` — an `initial` record must carry `"round": 0`.
+- **`confirmation round must be contiguous within its generation`** — the first `confirmation` record
+  must be `"round": 1`, the second `2`, and so on; the validator names the number it expected. Round
+  `0` is refused twice over, also as `confirmation round must be positive`. **A successor critic
+  cannot pick its round freely**, and this is the rule it needs — ask the review oracle, which reports
+  the round it is waiting for.
+- **The same-critic rule has an exception, and the successor handoff depends on it.** `every record in
+  one review generation must bind the same critic` holds after a `pass`, but a `confirmation` by a
+  *different* critic **is accepted after a `changes-required` verdict**. That is what makes the
+  fresh-successor handoff legal at all — and this PR's own chain used it twice.
 - **An `acceptance` record's `round` is inert.** No production path reads it: the wait gate's acceptance
   arm never calls `generationMatches`, and the chain projection SYNTHESISES `ReviewChain.Rounds` by
   counting `confirmation` records and emitting `1..N` rather than reading any record's field. Write
@@ -376,8 +397,12 @@ Field by field, because three of these are not guessable:
 - `revision` and `digest` — present because the parser requires the keys; the values are discarded.
   `1` and `""` are correct placeholders whatever the real revision turns out to be.
 - `critic` — **the critic's worker id, not yours.** Copy it from the record you are accepting.
-- `acceptedExceptions` — required, and almost always `[]`. It records exceptions the host is
-  knowingly accepting; an empty list means none, which is the normal case.
+- `acceptedExceptions` — required, and on a host acceptance record it must be **`[]`**. This field
+  belongs to the **critic**, not to you: a non-empty list on an acceptance record is refused with
+  `accepted exceptions belong to critic review records, not host acceptance`, while the same list on
+  a critic's record is accepted. An earlier revision of this page described it as "exceptions the host
+  is knowingly accepting", which is exactly backwards and would have refused the first acceptance
+  draft written from it.
 - `routeApplicability` / `routeEvidence` — required on every record, including acceptance. **The host
   did not execute a route comparison; the critic did.** Attesting to a comparison you did not run
   would be false, so use `not-meaningful` with exactly one entry saying what the acceptance actually
@@ -446,14 +471,15 @@ ilspycmd -r ~/.nuget/packages/fs.gg.coord.cli/0.71.0/tools/net10.0/any \
 
 For document shapes, call the engine's own encoder rather than reading its output and copying by eye —
 `ReviewWait.encode` and `Driver.encodeStructuredReview` emit the exact wire form, and
-`StructuredDecision.validateReviewLedger` names every invariant it enforces:
+`StructuredDecision.validateReviewLedger` names each invariant it refuses on, which is why it answers
+questions this page does not:
 
 ```fsharp
 #r "/home/developer/.nuget/packages/fs.gg.coord.cli/0.71.0/tools/net10.0/any/FS.GG.Coord.Core.dll"
 open FS.GG.Coord
 ReviewWait.encode (ReviewWait.Transition.Enter receipt)   // the exact wait document
 Driver.encodeStructuredReview record                       // the exact record document
-StructuredDecision.validateReviewLedger subject records    // every invariant, in its own words
+StructuredDecision.validateReviewLedger subject records    // the refusals, in its own words
 ```
 
 Converging against the validator is how the invariants on this page were established. It is cheaper

@@ -109,13 +109,16 @@ m = re.search(r"\*\*Optional\*\*.*?:\s*\n\n(.+?)\n\n", draft, re.S)
 if m: out["optionalKeys"] = ticked(m.group(1))
 else: problems.append("could not parse the optional draft-key list")
 
+# EVERY row is kept, including rows whose value cell carries no backticked literal. An earlier
+# revision dropped those with `if vals:`, which silently excluded the `timestamp` row -- documented
+# as Derived, parsed, discarded, and checked by nothing. A parser that drops what it cannot classify
+# hands the gate a smaller world and tells it nothing was lost.
 vocab = {}
 for row in re.finditer(r"^\|\s*`([a-zA-Z]+)`\s*\|\s*(.+?)\s*\|\s*$", section("### Vocabularies"), re.M):
-    vals = ticked(row.group(2))
-    if vals: vocab[row.group(1)] = vals
+    vocab[row.group(1)] = {"values": ticked(row.group(2)), "cell": row.group(2).strip()}
 out["vocabularies"] = vocab
-for need in ("verdict", "kind", "routeApplicability"):
-    if need not in vocab: problems.append("vocabulary row missing from the document: " + need)
+if not vocab:
+    problems.append("the vocabularies table parsed to no rows at all")
 
 wait = section("## `review wait` — schema `fsgg.coord.review-wait/v1`", stop=("\n## ",))
 blocks = re.findall(r"```json\n(.*?)\n```", wait, re.S)
@@ -149,6 +152,20 @@ else: problems.append("could not parse the not-meaningful route-evidence cardina
 m = re.search(r"must be at most (\d+) hours", doc)
 if m: out["waitWindowMaxHours"] = int(m.group(1))
 else: problems.append("could not parse the review-wait window ceiling")
+
+m2 = re.search(r'must be `"round": (\d+)`, the second `(\d+)`', inv)
+if m2: out["confirmationRounds"] = [int(m2.group(1)), int(m2.group(2))]
+else: problems.append("could not parse the confirmation-round contiguity claim")
+
+out["acceptedExceptionsOwnedByCritic"] = (
+    "accepted exceptions belong to critic review records, not host acceptance" in doc)
+if not out["acceptedExceptionsOwnedByCritic"]:
+    problems.append("could not parse the acceptedExceptions ownership claim")
+
+out["sameCriticExceptionDocumented"] = (
+    "is accepted after a `changes-required` verdict" in inv)
+if not out["sameCriticExceptionDocumented"]:
+    problems.append("could not parse the same-critic exception claim")
 
 m = re.search(r'an `initial` record must carry `"round": (\d+)`', inv)
 if m: out["initialRound"] = int(m.group(1))
@@ -279,27 +296,75 @@ check "doc:optional-draft-keys" (sortedEq (strs "optionalKeys") engineOptional)
   (sprintf "document says [%s]; engine treats as optional [%s]" (j (strs "optionalKeys")) (j engineOptional))
 
 let vocab = expected.GetProperty "vocabularies"
-// EVERY parsed vocabulary row is checked. An earlier revision parsed five rows into expected.json
-// and looped over three, so the `schema` and `policyVersion` rows could be falsified while the gate
-// stayed green -- parsed-but-unchecked is indistinguishable from unparsed, and worse, because the
-// expectation file makes it look covered.
-for field in [ "verdict"; "kind"; "routeApplicability"; "schema"; "policyVersion" ] do
+
+// THE CHECKED SET IS DERIVED FROM THE PARSED TABLE, NOT FROM A LIST TYPED HERE.
+//
+// Three rounds of review found three separate vocabulary rows unchecked, each time because the loop
+// enumerated field names by hand: three rows became five to repair round one, and `timestamp` was
+// still missing. Adding a sixth name would leave the next reader one row from a seventh. So the loop
+// now walks whatever the document defines, and a row with no probe set is a FAILURE rather than a
+// silent skip -- which is the only shape of this check that cannot rot the same way again.
+let probeTable =
+  [ "verdict", [ "pass"; "changes-required"; "accepted"; "rejected"; "fail"; "Pass"; "" ]
+    "kind", [ "initial"; "confirmation"; "escalation"; "repair-phase"; "acceptance"
+              "repair"; "host-acceptance"; "Initial" ]
+    "routeApplicability", [ "meaningful"; "not-meaningful"; "none"; "n/a"; "unknown"; "" ]
+    "schema", [ "fsgg.coord.review-decision/v2"; "fsgg.coord.review-decision/v1"
+                "fsgg.coord.review-decision/v3"; "fsgg.coord.review-wait/v1"; "" ]
+    "policyVersion", [ "structured-decisions/1"; "structured-decisions/2"; "structured-decisions"; "" ]
+    "timestamp", [ "2026-08-23T00:00:00Z"; "2026-08-23T00:00:00+00:00"; "2026-08-23 00:00:00"
+                   "banana"; "1787434100552"; "" ] ]
+
+let parsedFields = vocab.EnumerateObject() |> Seq.map (fun p -> p.Name) |> Seq.sort |> List.ofSeq
+let probedFields = probeTable |> List.map fst |> List.sort
+check "doc:vocabulary-coverage" (parsedFields = probedFields)
+  (sprintf "the document defines rows [%s]; this gate probes [%s] -- a row the gate does not probe is unchecked, and a probe with no row means the row was deleted"
+     (j parsedFields) (j probedFields))
+
+for field, probes in probeTable do
+  let mutable row = Unchecked.defaultof<JsonElement>
+  if not (vocab.TryGetProperty(field, &row)) then
+    failures <- failures + 1
+    printfn "  FAILED  doc:vocabulary:%s\n            the document no longer defines this row" field
+  else
   let documented =
-    vocab.GetProperty(field).EnumerateArray() |> Seq.map (fun e -> e.GetString()) |> List.ofSeq
-  let probes =
-    match field with
-    | "verdict" -> [ "pass"; "changes-required"; "accepted"; "rejected"; "fail"; "Pass"; "" ]
-    | "kind" -> [ "initial"; "confirmation"; "escalation"; "repair-phase"; "acceptance"
-                  "repair"; "host-acceptance"; "Initial" ]
-    | "routeApplicability" -> [ "meaningful"; "not-meaningful"; "none"; "n/a"; "unknown"; "" ]
-    | "schema" -> [ "fsgg.coord.review-decision/v2"; "fsgg.coord.review-decision/v1"
-                    "fsgg.coord.review-decision/v3"; "fsgg.coord.review-wait/v1"; "" ]
-    | _ -> [ "structured-decisions/1"; "structured-decisions/2"; "structured-decisions"; "" ]
+    row.GetProperty("values").EnumerateArray() |> Seq.map (fun e -> e.GetString()) |> List.ofSeq
+  let cell = row.GetProperty("cell").GetString()
   let engineLegal = probes |> List.filter (engineAcceptsVocab field)
-  // One check, both directions: a documented value the engine refuses, or an engine value the
-  // document omits, are the same kind of drift.
-  check (sprintf "doc:vocabulary:%s" field) (sortedEq documented engineLegal)
-    (sprintf "document lists [%s]; engine accepts [%s]" (j documented) (j engineLegal))
+  if not (List.isEmpty documented) then
+    // Enumerated row: the documented set and the engine-legal set must agree, both directions.
+    check (sprintf "doc:vocabulary:%s" field) (sortedEq documented engineLegal)
+      (sprintf "document lists [%s]; engine accepts [%s]" (j documented) (j engineLegal))
+  else
+    // FREE-FORM row (`timestamp` is the only one today): the cell describes a constraint rather than
+    // enumerating values, so there is no set to compare. Two things are still checkable, and both are
+    // derived from the engine rather than from this file: the engine must actually partition the
+    // probes into accepted and refused, and the row's prose must carry the distinctive token of the
+    // engine's own refusal -- so rewriting `any ISO-8601 instant` to say something else reds.
+    let refusal =
+      probes
+      |> List.tryPick (fun v ->
+          let swap = draftKeys |> List.map (fun (n, x) -> if n = field then n, "\"" + v + "\"" else n, x)
+          match Driver.decodeStructuredReview (render swap) with
+          | Error e -> Some (string e)
+          | Ok r ->
+              match StructuredDecision.validateReviewLedger subject [ seal r ] with
+              | Error es -> es |> List.tryFind (fun m -> m.Contains field)
+              | Ok _ -> None)
+    let tokens =
+      match refusal with
+      | None -> []
+      | Some m ->
+          Text.RegularExpressions.Regex.Matches(m, "[A-Z0-9][A-Za-z0-9-]{3,}")
+          |> Seq.map (fun x -> x.Value)
+          |> Seq.filter (fun x -> x <> field)
+          |> List.ofSeq
+    let partitions = not (List.isEmpty engineLegal) && List.length engineLegal < List.length probes
+    let proseCarriesRefusal = tokens |> List.forall (fun tok -> cell.Contains tok)
+    check (sprintf "doc:vocabulary:%s (free-form)" field)
+      (cell <> "" && partitions && proseCarriesRefusal)
+      (sprintf "cell %s; engine accepts %d of %d probes; refusal tokens [%s] must all appear in the cell"
+         cell (List.length engineLegal) (List.length probes) (j tokens))
 
 check "doc:wait-enter-keys"
   (sortedEq (strs "waitEnterKeys") (keysOf (ReviewWait.encode (ReviewWait.Transition.Enter receipt))))
@@ -438,6 +503,58 @@ check "doc:wait-window-must-be-positive"
   (not (validWindow 0.0) && not (validWindow -1.0))
   "the validator no longer requires expiresAt to be later than enteredAt"
 
+// The two invariants this page adds for a successor critic are Derived, so they are checked. Adding
+// a documented claim without adding its check is how the previous three rounds each produced an
+// unchecked Derived row; a new claim arrives with its probe or it does not arrive.
+let confRounds =
+  expected.GetProperty("confirmationRounds").EnumerateArray() |> Seq.map (fun e -> e.GetInt32()) |> List.ofSeq
+let crInitial = seal { baseRec with Verdict = ReviewVerdict.ChangesRequired }
+let confirmationAt (round: int) (prev: ReviewRecord) (rev: int) (critic: string) =
+  seal { baseRec with Revision = rev; PreviousDigest = Some prev.Digest
+                      Kind = ReviewKind.Confirmation; Verdict = ReviewVerdict.Pass; Round = round
+                      Critic = critic
+                      InitialReview = Some "https://example/c"; PrecedingReview = Some "https://example/c" }
+let firstConfOk n = accepts [ crInitial; confirmationAt n crInitial 2 baseRec.Critic ]
+match confRounds with
+| [ first; second ] ->
+    let c1 = seal { (confirmationAt first crInitial 2 baseRec.Critic) with Verdict = ReviewVerdict.ChangesRequired }
+    let secondConfOk n = accepts [ crInitial; c1; confirmationAt n c1 3 baseRec.Critic ]
+    check "doc:confirmation-round-contiguity"
+      (firstConfOk first && not (firstConfOk (first + 1)) && not (firstConfOk 0)
+       && secondConfOk second && not (secondConfOk first))
+      (sprintf "document says the first confirmation is round %d and the second %d; the validator disagrees"
+         first second)
+| _ ->
+    failures <- failures + 1
+    printfn "  FAILED  doc:confirmation-round-contiguity\n            expected two documented round numbers"
+
+// The same-critic exception: a different critic may confirm after changes-required, but not after pass.
+let differentCriticAfter (verdict: ReviewVerdict) =
+  let first = seal { baseRec with Verdict = verdict }
+  accepts [ first; confirmationAt 1 first 2 "a-different-critic" ]
+check "doc:same-critic-exception"
+  (expected.GetProperty("sameCriticExceptionDocumented").GetBoolean()
+   && differentCriticAfter ReviewVerdict.ChangesRequired
+   && not (differentCriticAfter ReviewVerdict.Pass))
+  "the document claims a successor may confirm after changes-required but not after pass; the validator disagrees"
+
+// acceptedExceptions belongs to the critic, not the host. The page said the opposite for two rounds.
+let exceptionsOn (kind: ReviewKind) =
+  match kind with
+  | ReviewKind.Acceptance ->
+      let i = seal baseRec
+      accepts [ i; seal { baseRec with Revision = 2; PreviousDigest = Some i.Digest
+                                       Kind = ReviewKind.Acceptance; Verdict = ReviewVerdict.Accepted
+                                       AcceptedExceptions = [ "waived-x" ]
+                                       InitialReview = Some "https://example/c"
+                                       PrecedingReview = Some "https://example/c" } ]
+  | _ -> accepts [ seal { baseRec with AcceptedExceptions = [ "waived-x" ] } ]
+check "doc:accepted-exceptions-owner"
+  (expected.GetProperty("acceptedExceptionsOwnedByCritic").GetBoolean()
+   && exceptionsOn ReviewKind.Initial
+   && not (exceptionsOn ReviewKind.Acceptance))
+  "the document claims acceptedExceptions belongs to critic records and must be empty on acceptance; the validator disagrees"
+
 // ---- engine facts the document does not parameterise ----
 check "engine:digest-ignores-its-own-field"
   (StructuredDecision.reviewDigest { baseRec with Digest = "" }
@@ -528,6 +645,16 @@ mutate_and_expect_red "D7 authorization table gives \`initial\` the wrong token"
   '| `initial` | `Waiting` | `repair-confirmation` | `<headSha>:repair-confirmation:0` |'
 mutate_and_expect_red "S1 the record subject reverts to the canonical item ref" \
   'EHotwagner/S.I.R.#255/pr/259` |' 'EHotwagner/S.I.R.#255` |'
+mutate_and_expect_red "S15 the acceptedExceptions ownership refusal is dropped" \
+  'accepted exceptions belong to critic review records, not host acceptance' 'accepted exceptions are recorded by whoever waives them'
+mutate_and_expect_red "S13 the confirmation contiguity numbers are falsified" \
+  'must be `"round": 1`, the second `2`' 'must be `"round": 0`, the second `5`'
+mutate_and_expect_red "S14 the same-critic exception is inverted" \
+  'is accepted after a `changes-required` verdict' 'is refused after a `changes-required` verdict'
+mutate_and_expect_red "S11 the timestamp vocabulary row is deleted outright" \
+  '| `timestamp` | any ISO-8601 instant |' ''
+mutate_and_expect_red "S12 the timestamp row prose is falsified" \
+  '| `timestamp` | any ISO-8601 instant |' '| `timestamp` | any integer of milliseconds |'
 mutate_and_expect_red "S6 the schema vocabulary row is falsified" \
   '| `schema` | `fsgg.coord.review-decision/v2` |' '| `schema` | `fsgg.coord.review-decision/v1` |'
 mutate_and_expect_red "S7 the policyVersion vocabulary row is falsified" \
