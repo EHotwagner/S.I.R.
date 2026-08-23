@@ -40,10 +40,12 @@
 # because PATH alone satisfies every probe that reaches the SDK through the MUXER — and the muxer
 # resolves SDKs relative to its own location and ignores DOTNET_ROOT for that. What DOTNET_ROOT
 # decides is APPHOSTS, which do not go through the muxer at all: they read it to find hostfxr, and
-# fall back to the global install location only when it names no directory. This workspace runs
-# apphosts on two hot paths — the `dotnet tool install -g` shims in `$HOME/.dotnet/tools`, and the
-# built `fsgg-coord-engine` that `scripts/fsgg-coord` execs at its tier 2. Without the export they
-# keep working while loading from the root the session ARRIVED with, which on the reference
+# fall back to the global install location only when it names no directory. The apphosts on THIS
+# workspace's hot path are the `dotnet tool install -g` shims in `$HOME/.dotnet/tools` — the very
+# directory step 2 keeps on PATH. (A built `fsgg-coord-engine` is an apphost too, but it is NOT an
+# example here: only the repository that owns coord's source can resolve `scripts/fsgg-coord` at
+# tier 2, and this one is a receiver that resolves at tier 4 through the muxer.) Without the export
+# the shims keep working while loading from the root the session ARRIVED with, which on the reference
 # workspace carries a different Microsoft.NETCore.App than the one PATH now resolves. Measured with
 # COREHOST_TRACE=1: `/usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11` without the export
 # against `$HOME/.dotnet/shared/Microsoft.NETCore.App/10.0.10` with it. `scripts/test-agent-env.sh`

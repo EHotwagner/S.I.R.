@@ -169,10 +169,12 @@ section "I. DOTNET_ROOT — the exported root is what an APPHOST consults (S.I.R
 #
 # WHAT DOTNET_ROOT ACTUALLY DECIDES. A framework-dependent APPHOST does not go through the muxer: it
 # reads DOTNET_ROOT to locate hostfxr, and falls back to the global install location only when that
-# directory does not exist. The workspace runs apphosts on both hot paths — every `dotnet tool
-# install -g` shim in `$HOME/.dotnet/tools`, and the built engine
-# `src/FS.GG.Coord.Cli/bin/Release/<tfm>/fsgg-coord-engine` that `scripts/fsgg-coord` execs at tier
-# 2. On the reference workspace the session arrives with DOTNET_ROOT=/usr/share/dotnet, which carries
+# directory does not exist. The apphosts on THIS workspace's hot path are the `dotnet tool install
+# -g` shims in `$HOME/.dotnet/tools`, which step 2 of the shim deliberately keeps on PATH. A built
+# `fsgg-coord-engine` would be one as well, but not in this repository: only the repo owning coord's
+# source resolves `scripts/fsgg-coord` at tier 2, and this one is a receiver whose engine comes from
+# `.config/dotnet-tools.json` at tier 4, through the muxer.
+# On the reference workspace the session arrives with DOTNET_ROOT=/usr/share/dotnet, which carries
 # a DIFFERENT Microsoft.NETCore.App than the $HOME/.dotnet that step 2 selects, so without the export
 # the muxer and every apphost load from two different installs. Measured with COREHOST_TRACE=1:
 #   export removed: Chose FX version [/usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11]
