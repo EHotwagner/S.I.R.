@@ -455,24 +455,68 @@ export function tacticalOverlayLayerBudgetReason(measured) {
   return null;
 }
 
-// AND THE FORM THE BROWSER CONSUMER CALLS, WHICH THROWS RATHER THAN RETURNING.
+// AND THE FORM THE BROWSER CONSUMER CALLS: IT MEASURES, IT THROWS, AND IT RECORDS THAT IT RAN.
 //
-// The reason function above is the pure core and is inverted exhaustively in-process. But a function
-// that RETURNS null-or-reason leaves one obligation at the call site -- the caller must assert on the
-// return value, and assert on it correctly. That obligation is a call site the same failure class can
-// live in, and it is not hypothetical: with the reason form called directly,
-// `.toBeDefined()`, `.toBeTruthy()` and simply discarding the result all left this suite green while
-// a breach returned a reason nobody read. That is the sixth spelling of the same defect, found by
-// inverting rather than by review.
+// Three obligations used to sit at the call site, and each one was a place this item's defect class
+// could live. They are removed in order.
 //
-// So the consumer calls a form with NO RETURN VALUE. There is nothing to assert weakly and nothing to
-// discard; a breach throws, and a browser test fails on a thrown error exactly as it fails on an
-// assertion. The remaining way to defeat it is to not call it at all -- which is a single, visible
-// fact that scripts/test-svg-pipeline-measurement.mjs checks directly -- or to wrap the call in a
-// deliberate `try`/`catch`, which this does not prevent and does not pretend to.
-export function assertTacticalOverlayLayerBudget(measured) {
-  const reason = tacticalOverlayLayerBudgetReason(measured);
+//   1. THE COMPARISON. Handled by the reason function above: the spec no longer writes one.
+//   2. ASSERTING ON THE RESULT. A function returning null-or-reason still requires the caller to
+//      assert correctly, and `.toBeDefined()`, `.toBeTruthy()` and discarding the result all passed
+//      while a breach returned a reason nobody read. So this throws and returns nothing.
+//   3. SUPPLYING THE MEASUREMENTS -- and this is the one review round 1 of the fresh chain found.
+//      Taking two numbers meant the call site chose them, so `{ countedNodes: 0, reportedEstimate: 0 }`
+//      satisfied the budget while the real layer held 5001 elements, and a repointed locator measured
+//      a subtree that does not exist. This takes the LIVE PAGE and measures the subject itself, from
+//      selectors declared here. There is nothing for a call site to fabricate.
+//
+// AND WHETHER IT RAN IS ANSWERED BY EXECUTION, NOT BY READING THE SPEC. Every earlier attempt to
+// answer "was this called?" was a regex over the consumer's source, and each spelling closed opened
+// another -- commenting the call out, `if (false)`, and `test.skip()` all left the gate printing
+// JUSTIFIED while a real 5001-element breach shipped and the browser suite reported 1 passed. A
+// counter that only a real invocation can move cannot be satisfied by any way of writing the call,
+// because it is not looking at the writing.
+export const tacticalOverlayLayerSurface = Object.freeze({
+  root: "#persistent-tactical-svg",
+  layer: "#persistent-tactical-overlay-layer",
+  attribute: "data-overlay-node-estimate",
+});
+
+let tacticalOverlayLayerEvaluations = 0;
+
+// An opaque mark, so a caller compares two marks rather than reasoning about a count.
+export function tacticalOverlayLayerEvaluationMark() {
+  return tacticalOverlayLayerEvaluations;
+}
+
+export async function assertTacticalOverlayLayerBudget(page) {
+  if (!page || typeof page.locator !== "function")
+    throw new Error("the overlay-layer budget assertion measures the live page and must be given one; it does not accept measurements chosen by the caller");
+  const root = page.locator(tacticalOverlayLayerSurface.root);
+  const layer = root.locator(tacticalOverlayLayerSurface.layer);
+  const countedNodes = await layer.locator("*").count();
+  // NOT `Number(await ...)` DIRECTLY: `Number(null)` is 0, so an attribute the product has stopped
+  // emitting would read as a confident zero and sail under the ceiling instead of being refused.
+  // "I could not read this" is never "I read it and it was fine" (#266).
+  const reported = await root.getAttribute(tacticalOverlayLayerSurface.attribute);
+  if (reported === null || `${reported}`.trim() === "")
+    throw new Error(`${tacticalOverlayLayerSurface.attribute} is absent from ${tacticalOverlayLayerSurface.root}, so the overlay layer's reported cost could not be read at all. An absent report is refused, not read as zero.`);
+  const reportedEstimate = Number(reported);
+  // Recorded BEFORE the throw: a breach is an evaluation that happened and failed, not one that never
+  // ran, and the two must never be confused by the guard below.
+  tacticalOverlayLayerEvaluations += 1;
+  const reason = tacticalOverlayLayerBudgetReason({ countedNodes, reportedEstimate });
   if (reason) throw new Error(reason);
+}
+
+// THE REFUSAL THE BROWSER SUITE PERFORMS. A run in which the verdict was never evaluated is refused,
+// and it is refused on an observed counter rather than on the shape of the source that should have
+// moved it.
+export function assertTacticalOverlayLayerBudgetWasEvaluatedSince(mark) {
+  if (!Number.isInteger(mark))
+    throw new Error("the overlay-layer evaluation guard needs a mark taken before the work ran; without one it cannot tell a fresh evaluation from an older one");
+  if (tacticalOverlayLayerEvaluations === mark)
+    throw new Error(`the overlay-layer node budget was never evaluated during this test. ${tacticalOverlayLayerSurface.layer} may have grown past its declared ceiling of ${tacticalOverlayLayerBudget.maximumOverlayDomNodes} without anything noticing. A skipped, commented-out, or short-circuited call reaches this the same way a deleted one does -- the guard observes whether the verdict RAN, not how the call was written.`);
 }
 
 export function tacticalInputToPaintBudgetReason(budget, measuredMilliseconds) {

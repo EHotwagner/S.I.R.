@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
-import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalOverlayLayerBudget, tacticalOverlayLayerBudgetReason, assertTacticalOverlayLayerBudget, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
+import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalOverlayLayerBudget, tacticalOverlayLayerBudgetReason, assertTacticalOverlayLayerBudget, assertTacticalOverlayLayerBudgetWasEvaluatedSince, tacticalOverlayLayerEvaluationMark, tacticalOverlayLayerSurface, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 // validateDefinitions COMPOSES the budget: workload policy from the fixture file, ceiling from the
@@ -887,13 +887,59 @@ assert.match(overlaySpec, /\bassertTacticalOverlayLayerBudget\s*\(/,
 // each left this suite green while a breach returned a reason nobody read.
 assert.doesNotMatch(overlaySpec, /\btacticalOverlayLayerBudgetReason\b/,
   "the browser spec calls the returning reason form, which requires the call site to assert on the result correctly -- the obligation the throwing form exists to remove. Call assertTacticalOverlayLayerBudget instead.");
-// the throwing form must actually THROW on a breach -- the property the consumer now relies on
-assert.throws(() => assertTacticalOverlayLayerBudget({ countedNodes: overlayCeiling + 1, reportedEstimate: overlayCeiling + 1 }), /overlay-layer node budget exceeded/,
-  "the throwing assertion must throw on a breach; if it returned, the consumer would pass silently");
-assert.throws(() => assertTacticalOverlayLayerBudget({ countedNodes: 13, reportedEstimate: 12 }), /telemetry disagrees/,
-  "the throwing assertion must throw on a telemetry disagreement");
-assert.doesNotThrow(() => assertTacticalOverlayLayerBudget({ countedNodes: overlayCeiling, reportedEstimate: overlayCeiling }),
-  "and must not throw at the declared ceiling, or it would red every conforming run");
+// THE MEASURING FORM: it takes a PAGE and measures the subject itself, so a call site cannot choose
+// the numbers. Driven here against a stub page, which is legitimate because what is under test is the
+// plumbing -- which selectors it reads and what it does with them -- not the browser.
+const stubPage = ({ elements, reported }) => ({
+  locator: (root) => {
+    assert.equal(root, tacticalOverlayLayerSurface.root, "the assertion must resolve the declared root selector");
+    return {
+      locator: (layer) => {
+        assert.equal(layer, tacticalOverlayLayerSurface.layer, "and the declared overlay-layer selector beneath it");
+        return { locator: (all) => { assert.equal(all, "*", "counting the layer's element descendants"); return { count: async () => elements }; } };
+      },
+      getAttribute: async (attribute) => {
+        assert.equal(attribute, tacticalOverlayLayerSurface.attribute, "and it must read the declared surfaced attribute");
+        return reported === null ? null : String(reported);
+      },
+    };
+  },
+});
+await assert.rejects(() => assertTacticalOverlayLayerBudget(stubPage({ elements: overlayCeiling + 1, reported: overlayCeiling + 1 })), /overlay-layer node budget exceeded/,
+  "the measuring assertion must throw on a breach; if it returned, the consumer would pass silently");
+await assert.rejects(() => assertTacticalOverlayLayerBudget(stubPage({ elements: 13, reported: 12 })), /telemetry disagrees/,
+  "and must throw when the product's report disagrees with the live count it measured");
+// `Number(null)` is 0, so an absent attribute would otherwise read as a confident zero and pass under
+// the ceiling. Found by inverting this gate, not by reading the code.
+await assert.rejects(() => assertTacticalOverlayLayerBudget(stubPage({ elements: 12, reported: null })), /absent from/,
+  "an attribute the product has stopped emitting must be refused, never read as zero");
+await assert.rejects(() => assertTacticalOverlayLayerBudget(stubPage({ elements: 0, reported: null })), /absent from/,
+  "and refused even when the counted total is itself zero, which is the case a zero default would hide");
+await assert.rejects(() => assertTacticalOverlayLayerBudget(stubPage({ elements: 12, reported: "not-a-number" })), /was not measured/,
+  "and an unparseable report is refused rather than compared as NaN");
+await assertTacticalOverlayLayerBudget(stubPage({ elements: overlayCeiling, reported: overlayCeiling }));
+// IT REFUSES MEASUREMENTS CHOSEN BY THE CALLER. This is the round-1 finding of the fresh chain: with
+// a two-number signature, `{ countedNodes: 0, reportedEstimate: 0 }` satisfied the budget while the
+// real layer held 5001 elements.
+for (const notAPage of [undefined, null, {}, { countedNodes: 0, reportedEstimate: 0 }])
+  await assert.rejects(() => assertTacticalOverlayLayerBudget(notAPage), /measures the live page/,
+    `${JSON.stringify(notAPage)} is not a page, and supplying measurements instead of a page must be refused`);
+
+// AND THE EVALUATION GUARD ANSWERS "DID IT RUN?" FROM AN OBSERVED COUNTER.
+const markBefore = tacticalOverlayLayerEvaluationMark();
+assert.throws(() => assertTacticalOverlayLayerBudgetWasEvaluatedSince(markBefore), /never evaluated during this test/,
+  "a mark with no evaluation after it must be refused; that is the whole mechanism");
+await assertTacticalOverlayLayerBudget(stubPage({ elements: 1, reported: 1 }));
+assert.doesNotThrow(() => assertTacticalOverlayLayerBudgetWasEvaluatedSince(markBefore),
+  "and an evaluation after the mark must satisfy it, or the guard would red every correct run");
+// a FAILED evaluation still counts as having run: the run reds through the throw, and confusing the
+// two would report "never evaluated" for a genuine breach
+const markBeforeBreach = tacticalOverlayLayerEvaluationMark();
+await assert.rejects(() => assertTacticalOverlayLayerBudget(stubPage({ elements: overlayCeiling + 1, reported: overlayCeiling + 1 })), /budget exceeded/);
+assert.doesNotThrow(() => assertTacticalOverlayLayerBudgetWasEvaluatedSince(markBeforeBreach),
+  "a breach is an evaluation that ran and failed, not one that never ran");
+assert.throws(() => assertTacticalOverlayLayerBudgetWasEvaluatedSince(undefined), /needs a mark/,
+  "and an unreadable mark is refused rather than treated as satisfied (#266)");
 // and it must carry no copy of the declared value. Scoped to ONE file in which that number provably
 // occurs for no other reason, so this is a restatement check rather than a rule about how to write a
 // comparison -- the S.I.R.#299 shape, which has held.
