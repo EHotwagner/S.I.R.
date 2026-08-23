@@ -112,11 +112,13 @@ derive_options() {  # derive_options <script>
 # ---------------------------------------------------------------------------------------------------
 # STEP 2's measurement, as a function, so an inversion can be held to it too.
 #
-# It counts OCCURRENCES, not matching lines. `grep -c` answers "how many lines matched", which reads a
-# relapse written as `--old) …; shift 2 ;; --new) …; shift 2 ;;` on one line as a single shift. That was
-# this check's own blind spot, measured before it shipped: on such a line `grep -c` returned 1 and
-# `grep -o | wc -l` returned 2. Inversion D below is that exact shape, and it is deliberately a
-# behaviourally CORRECT parser, so nothing but this count can catch it.
+# It counts OCCURRENCES, not matching lines. `grep -c` answers "how many lines matched", so a relapse
+# written as `--old) …; shift 2 ;; --new) …; shift 2 ;; …` all on ONE line reads as a single shift —
+# which is exactly the value STEP 2 expects, so the relapse passes. That was this check's own blind
+# spot, and it was measured on inversion D's block before the counting was changed: `grep -c` returned
+# 1, occurrences returned 5. (Two arms per line returns 3, which reds under either counting; the
+# single-line shape is the one that escapes, which is why D is written that way.) D is also
+# deliberately a behaviourally CORRECT parser, so nothing but this count can catch it.
 # ---------------------------------------------------------------------------------------------------
 count_shifts() {  # count_shifts <script>
   local s=$1 span start end
