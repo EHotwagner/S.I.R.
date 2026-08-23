@@ -224,7 +224,35 @@ check_correspondence_coverage() {
     comm -13 <(printf '%s\n' "$identity") <(printf '%s\n' "$recorded") | sed 's/^/  recorded correspondence for a path that is not a declared implementation source: /' >&2
     return 1
   fi
-  malformed=$(jq -r '.paths | to_entries[] | select(.value | test("^[0-9a-f]{64}$") | not) | .key' "$correspondence_json")
+  # Digest well-formedness is the ONLY arm here whose empty result means "pass"; for the two arms
+  # above an empty result still reaches a `return 1`, so they already fail closed. That asymmetry is
+  # why this arm -- and only this arm -- has to prove it actually evaluated its input.
+  #
+  # Two distinct failures are guarded, because fixing either alone leaves the other live:
+  #
+  #   1. `test/1` RAISES on any non-string (number, null, boolean, array, object) rather than
+  #      returning false. Typing the predicate keeps `test/1` unreachable for a non-string, so a
+  #      non-string is CLASSIFIED as malformed instead of aborting the filter.
+  #   2. This function is only ever called on the LEFT of `||`, which suspends `set -e` for its whole
+  #      body. So ANY jq failure -- the raise above, unreadable JSON, a jq crash -- would otherwise
+  #      leave `malformed` empty and fall through to a confident `return 0` on input that was never
+  #      evaluated. Checking jq's exit status makes an unevaluated input a refusal, which is what
+  #      keeps this closed against a failure mode not enumerated above.
+  local malformed_status=0
+  malformed=$(jq -r '
+    .paths
+    | to_entries[]
+    | select(if (.value | type) == "string"
+             then (.value | test("^[0-9a-f]{64}$") | not)
+             else true
+             end)
+    | "\(.key)\t\(.value | type)"' "$correspondence_json") || malformed_status=$?
+  if test "$malformed_status" -ne 0; then
+    echo "recorded source correspondence could not be evaluated for digest well-formedness" >&2
+    echo "  jq exited $malformed_status over: $correspondence_json" >&2
+    echo "  refusing rather than reporting a pass on input this check did not evaluate" >&2
+    return 1
+  fi
   if test -n "$malformed"; then
     echo "recorded source correspondence carries malformed digests:" >&2
     printf '%s\n' "$malformed" | sed 's/^/  /' >&2
@@ -363,13 +391,62 @@ search_quiet 'recorded source correspondence is empty' "$pin_probe_log" || {
   pin_probe_fail "emptied source correspondence failed without the actionable vacuity diagnostic"
 }
 
+# A malformed digest is refused for EVERY JSON type a digest can be, not merely for a string that
+# does not look like a digest. `test/1` raises on any non-string, and this function is called on the
+# left of `||`, so before S.I.R.#264's repair phase a non-string digest aborted the filter and the
+# arm returned 0 -- a confident pass on input it had not evaluated. Only the string case below was
+# ever exercised, which is why that survived four rounds of review.
+#
+# The six cases enumerated here are the COMPLETE set of JSON value types, so this inversion cannot
+# be defeated by "a further value" the way an enumeration of observed literals could be.
 malformed_correspondence="$pin_probe_dir/malformed-correspondence.json"
-jq '.paths["src/SIR.Domain/Rules.fs"] = "not-a-sha256"' "$correspondence_manifest" > "$malformed_correspondence"
-if check_correspondence_coverage "$source_manifest" "$malformed_correspondence" >"$pin_probe_log" 2>&1; then
-  pin_probe_fail "malformed source correspondence digest unexpectedly passed"
+while IFS='|' read -r probe_label probe_value probe_type; do
+  test -n "$probe_label" || continue
+  jq --argjson injected "$probe_value" \
+     '.paths["src/SIR.Domain/Rules.fs"] = $injected' \
+     "$correspondence_manifest" > "$malformed_correspondence"
+
+  # Guard the probe itself: assert the fixture really carries the type under test, so a probe that
+  # silently stopped injecting could not pass by testing nothing.
+  actual_type=$(jq -r '.paths["src/SIR.Domain/Rules.fs"] | type' "$malformed_correspondence")
+  test "$actual_type" = "$probe_type" || {
+    pin_probe_fail "malformed-digest probe '$probe_label' injected $actual_type, expected $probe_type"
+  }
+
+  if check_correspondence_coverage "$source_manifest" "$malformed_correspondence" >"$pin_probe_log" 2>&1; then
+    pin_probe_fail "malformed source correspondence digest ($probe_label) unexpectedly passed"
+  fi
+  search_quiet 'recorded source correspondence carries malformed digests' "$pin_probe_log" || {
+    pin_probe_fail "malformed source correspondence digest ($probe_label) failed without the actionable format diagnostic"
+  }
+  search_quiet "src/SIR.Domain/Rules.fs.*$probe_type" "$pin_probe_log" || {
+    pin_probe_fail "malformed source correspondence digest ($probe_label) did not name the offending path and its type"
+  }
+done <<'MALFORMED_DIGEST_DOMAIN'
+non-digest string|"not-a-sha256"|string
+number|12345|number
+null|null|null
+boolean|true|boolean
+array|["deadbeef"]|array
+object|{"a":1}|object
+MALFORMED_DIGEST_DOMAIN
+
+# Unparseable correspondence is refused -- and this probe records WHICH check refuses it, because
+# "the property is provided, but by a different check than the one named for it" is precisely the
+# defect S.I.R.#264's repair phase exists to remove. Naming the wrong arm here would reproduce it.
+#
+# The refusal comes from the EMPTINESS arm above, not from the evaluability guard: `.paths | keys[]`
+# fails first on unparseable input, leaving `recorded` empty. Every file-level jq failure is caught
+# there before the digest arm is ever reached. The evaluability guard is therefore defence in depth
+# against a FUTURE edit reintroducing a raising filter -- unreachable through this function's own
+# interface today, and deliberately not claimed as the arm under test here.
+unreadable_correspondence="$pin_probe_dir/unreadable-correspondence.json"
+printf '{"paths": {"src/SIR.Domain/Rules.fs": ' > "$unreadable_correspondence"
+if check_correspondence_coverage "$source_manifest" "$unreadable_correspondence" >"$pin_probe_log" 2>&1; then
+  pin_probe_fail "unreadable source correspondence unexpectedly passed"
 fi
-search_quiet 'recorded source correspondence carries malformed digests' "$pin_probe_log" || {
-  pin_probe_fail "malformed source correspondence digest failed without the actionable format diagnostic"
+search_quiet 'recorded source correspondence is empty' "$pin_probe_log" || {
+  pin_probe_fail "unreadable source correspondence failed, but not through the emptiness arm this probe names"
 }
 
 # 6. A LEGITIMATE rebind succeeds. A genuinely changed implementation source, with its
