@@ -757,97 +757,16 @@ jobs:
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         continue-on-error: true
         with: { pattern: gate-*, path: artifacts/ci/gates }
-      - name: Verify every produced gate result was collected
-        shell: bash
-        run: |
-          node - <<'NODE'
-          const fs = require("node:fs");
-          const path = require("node:path");
-          const root = "artifacts/ci/gates";
-
-          // Which files a record claims were produced but are absent from the same artifact.
-          const missingFrom = (produced, present) => produced.filter((f) => !present.includes(f));
-
-          // Self-test: prove on every run that this comparison can still report a drop. A check that
-          // has never been red is equally consistent with "nothing was wrong" and "it cannot fire".
-          if (missingFrom(["a.json"], ["a.json"]).length !== 0
-              || missingFrom(["a.json", "b.json"], ["a.json"]).join() !== "b.json") {
-            console.error("collection-coverage: self-test failed; the comparison cannot detect a dropped result.");
-            process.exit(1);
-          }
-
-          if (!fs.existsSync(root)) {
-            console.error(`collection-coverage: ${root} is absent, so no gate artifact was collected at all.`);
-            console.error("This is a refusal, not a pass: an unobservable gate is not a passing gate.");
-            process.exit(1);
-          }
-
-          // download-artifact gives each artifact its own directory -- EXCEPT when exactly one artifact
-          // matches the pattern, which it extracts flat into the path (src/download-artifact.ts:
-          // `isSingleArtifactDownload || inputs.mergeMultiple || artifacts.length === 1`). That third
-          // clause is not in the action's README. A one-gate route (evidence-only runs only integrity)
-          // therefore lands flat, and reading only subdirectories would refuse a legitimate run.
-          const entries = fs.readdirSync(root, { withFileTypes: true });
-          const dirs = entries.filter((e) => e.isDirectory()).map((e) => e.name).sort();
-          const loose = entries.filter((e) => e.isFile()).map((e) => e.name).sort();
-          let units;
-          if (dirs.length > 0 && loose.length > 0) {
-            console.error(`collection-coverage: ${root} holds both artifact directories (${dirs.join(", ")})`
-              + ` and loose files (${loose.join(", ")}); this layout is unrecognised, so refusing rather than deciding.`);
-            process.exit(1);
-          } else if (dirs.length > 0) {
-            units = dirs.map((d) => ({ label: d, dir: path.join(root, d) }));
-          } else if (loose.length > 0) {
-            units = [{ label: "(single gate artifact, extracted flat)", dir: root }];
-          } else {
-            console.error(`collection-coverage: no gate-* artifact arrived under ${root}; refusing rather than deciding.`);
-            process.exit(1);
-          }
-
-          const failures = [];
-          for (const unit of units) {
-            const present = fs.readdirSync(unit.dir)
-              .filter((n) => fs.statSync(path.join(unit.dir, n)).isFile()).sort();
-            const records = present.filter((n) => /^collected-.+\.json$/.test(n));
-            if (records.length !== 1) {
-              failures.push(`${unit.label}: expected exactly one collected-<job>.json record, found ${records.length}.`
-                + " That job's upload-artifact step is not collecting artifacts/ci/results as a directory.");
-              continue;
-            }
-            let record;
-            try {
-              record = JSON.parse(fs.readFileSync(path.join(unit.dir, records[0]), "utf8"));
-            } catch (error) {
-              failures.push(`${unit.label}: record ${records[0]} is unreadable (${error.message}); refusing rather than deciding.`);
-              continue;
-            }
-            if (typeof record?.job !== "string" || !Array.isArray(record?.produced)
-                || !record.produced.every((f) => typeof f === "string")) {
-              failures.push(`${unit.label}: record ${records[0]} is malformed; refusing rather than deciding.`);
-              continue;
-            }
-            console.log(`  ${unit.label} (job ${record.job}): produced ${record.produced.length}`
-              + ` -> ${record.produced.join(", ") || "(none)"}`);
-            for (const f of missingFrom(record.produced, present)) {
-              failures.push(`${unit.label}: produced ${f}, never collected.`);
-            }
-          }
-
-          console.log(`collection-coverage: ${units.length} gate artifact(s) inspected.`);
-          if (failures.length > 0) {
-            console.error("collection-coverage: gate results were produced on the runner and never collected:");
-            for (const f of failures) console.error(`  ${f}`);
-            console.error("Collect artifacts/ci/results as a directory in that job's upload-artifact step.");
-            process.exit(1);
-          }
-          console.log("collection-coverage: every produced gate result was collected.");
-          NODE
-      # S.I.R.#311. Runs BEFORE the join, because on a branch whose router predates this
-      # workflow's producer contract the join's `missing-gate-result` is a consequence and not the
-      # cause: it names `browser`, `documentation`, `cross-runtime` and `domain-conformance`, none
-      # of which the branch asked to skip, and says nothing about the router. This step names the
-      # cause, and separates it from gates that genuinely ran and genuinely failed -- so a branch
-      # that is merely too old and a branch that is actually broken do not report the same thing.
+      # S.I.R.#311. Runs before EVERY step that reads the receipts, because on a branch whose
+      # router predates this workflow's producer contract those steps report consequences and not
+      # the cause: the join names `browser`, `documentation`, `cross-runtime` and
+      # `domain-conformance`, none of which the branch asked to skip, and says nothing about the
+      # router. It is placed ahead of the collection check too, not merely ahead of the join, so
+      # that a run whose route job could not even reach a verdict still names the route job rather
+      # than complaining that no gate artifact arrived -- which is the same consequence one step
+      # earlier. This step names the cause, and separates it from gates that genuinely ran and
+      # genuinely failed, so a branch that is merely too old and a branch that is actually broken
+      # do not report the same thing.
       - name: Name a stale route contract before reading the receipts
         shell: bash
         env:
@@ -967,6 +886,91 @@ jobs:
             + " this branch's router and the base's workflow disagree on the route outputs the"
             + " pipeline is wired on. See this step's log for the deciding merge-vs-rebase condition.");
           process.exit(1);
+          NODE
+      - name: Verify every produced gate result was collected
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const path = require("node:path");
+          const root = "artifacts/ci/gates";
+
+          // Which files a record claims were produced but are absent from the same artifact.
+          const missingFrom = (produced, present) => produced.filter((f) => !present.includes(f));
+
+          // Self-test: prove on every run that this comparison can still report a drop. A check that
+          // has never been red is equally consistent with "nothing was wrong" and "it cannot fire".
+          if (missingFrom(["a.json"], ["a.json"]).length !== 0
+              || missingFrom(["a.json", "b.json"], ["a.json"]).join() !== "b.json") {
+            console.error("collection-coverage: self-test failed; the comparison cannot detect a dropped result.");
+            process.exit(1);
+          }
+
+          if (!fs.existsSync(root)) {
+            console.error(`collection-coverage: ${root} is absent, so no gate artifact was collected at all.`);
+            console.error("This is a refusal, not a pass: an unobservable gate is not a passing gate.");
+            process.exit(1);
+          }
+
+          // download-artifact gives each artifact its own directory -- EXCEPT when exactly one artifact
+          // matches the pattern, which it extracts flat into the path (src/download-artifact.ts:
+          // `isSingleArtifactDownload || inputs.mergeMultiple || artifacts.length === 1`). That third
+          // clause is not in the action's README. A one-gate route (evidence-only runs only integrity)
+          // therefore lands flat, and reading only subdirectories would refuse a legitimate run.
+          const entries = fs.readdirSync(root, { withFileTypes: true });
+          const dirs = entries.filter((e) => e.isDirectory()).map((e) => e.name).sort();
+          const loose = entries.filter((e) => e.isFile()).map((e) => e.name).sort();
+          let units;
+          if (dirs.length > 0 && loose.length > 0) {
+            console.error(`collection-coverage: ${root} holds both artifact directories (${dirs.join(", ")})`
+              + ` and loose files (${loose.join(", ")}); this layout is unrecognised, so refusing rather than deciding.`);
+            process.exit(1);
+          } else if (dirs.length > 0) {
+            units = dirs.map((d) => ({ label: d, dir: path.join(root, d) }));
+          } else if (loose.length > 0) {
+            units = [{ label: "(single gate artifact, extracted flat)", dir: root }];
+          } else {
+            console.error(`collection-coverage: no gate-* artifact arrived under ${root}; refusing rather than deciding.`);
+            process.exit(1);
+          }
+
+          const failures = [];
+          for (const unit of units) {
+            const present = fs.readdirSync(unit.dir)
+              .filter((n) => fs.statSync(path.join(unit.dir, n)).isFile()).sort();
+            const records = present.filter((n) => /^collected-.+\.json$/.test(n));
+            if (records.length !== 1) {
+              failures.push(`${unit.label}: expected exactly one collected-<job>.json record, found ${records.length}.`
+                + " That job's upload-artifact step is not collecting artifacts/ci/results as a directory.");
+              continue;
+            }
+            let record;
+            try {
+              record = JSON.parse(fs.readFileSync(path.join(unit.dir, records[0]), "utf8"));
+            } catch (error) {
+              failures.push(`${unit.label}: record ${records[0]} is unreadable (${error.message}); refusing rather than deciding.`);
+              continue;
+            }
+            if (typeof record?.job !== "string" || !Array.isArray(record?.produced)
+                || !record.produced.every((f) => typeof f === "string")) {
+              failures.push(`${unit.label}: record ${records[0]} is malformed; refusing rather than deciding.`);
+              continue;
+            }
+            console.log(`  ${unit.label} (job ${record.job}): produced ${record.produced.length}`
+              + ` -> ${record.produced.join(", ") || "(none)"}`);
+            for (const f of missingFrom(record.produced, present)) {
+              failures.push(`${unit.label}: produced ${f}, never collected.`);
+            }
+          }
+
+          console.log(`collection-coverage: ${units.length} gate artifact(s) inspected.`);
+          if (failures.length > 0) {
+            console.error("collection-coverage: gate results were produced on the runner and never collected:");
+            for (const f of failures) console.error(`  ${f}`);
+            console.error("Collect artifacts/ci/results as a directory in that job's upload-artifact step.");
+            process.exit(1);
+          }
+          console.log("collection-coverage: every produced gate result was collected.");
           NODE
       - name: Join required gate receipts
         shell: bash
