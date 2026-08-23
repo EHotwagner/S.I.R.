@@ -702,7 +702,10 @@ behaviour that no longer matches the corpus fails the gate even when its
 correspondence has been rebound in the same commit. `scripts/rebind-rules-corpus-sources.sh`
 runs the same route before recording anything, so the tool refuses to bless such a
 change at authoring time; the gate is what makes a hand-edited correspondence file
-fail too.
+fail too. That execution is itself guarded against going vacuous: the verifier
+injects a combat divergence and requires the resulting diagnostic, not merely a
+non-zero exit — the injection arm aborts either way, so an exit-code-only check
+would pass even with its subject broken.
 
 This check is deliberately **not** limited to rule-hosting paths. Only
 `CombatRules.fs` binds a rule symbol, but `FixedPoint.fs`, `CanonicalEncoding.fs`,
@@ -732,12 +735,22 @@ To change a declared implementation source:
 2. Run `scripts/rebind-rules-corpus-sources.sh` to see which identity subjects
    moved, then `--write` to record their new digests, **in the same commit**.
    The tool rebinds only paths whose normalized text actually differs and refuses
-   to add or remove a path. Before recording anything it builds **the project that
-   owns each rebound path** — resolved as `src/<Project>/<Project>.fsproj` — plus
-   the corpus test project, and then executes the corpus fixtures; it refuses if
-   any of those builds fails or if the fixtures refuse. The build guard is
-   per-path by construction: an earlier version built one fixed project, which
-   compiled 9 of the 19 declared paths and silently blessed the other 10.
+   to add or remove a path. Before recording anything it builds **every project
+   that actually compiles a rebound path** — resolved by reading `Compile Include`
+   entries and comparing resolved paths, not by naming convention — plus the
+   corpus test project, and then executes the corpus fixtures; it refuses if any
+   of those builds fails, if the fixtures refuse, or if **no project compiles a
+   declared path at all**.
+
+   Resolution is by build graph because convention is not sufficient. Two earlier
+   versions of this guard named a project instead of checking it: the first built
+   one fixed project, compiling 9 of the 19 declared paths; the second resolved
+   `src/<Project>/<Project>.fsproj`, which is correct for `App.fs` but wrong for
+   three others — `RulesExplorer.fs` is compiled by `SIR.RulesExplorer.Web.fsproj`,
+   and `Lab.fs` and `EngineCatalog.fs` by `src/SIR.Replay.Core/SIR.Replay.Core.fsproj`
+   through a `../SIR.Client/` include, a different directory entirely. Both
+   resolved to a project that exists and builds while leaving the changed file
+   uncompiled.
 3. Review the `source-correspondence.json` diff. It names exactly the identity
    subjects that moved, and that diff is the record of the decision.
 
