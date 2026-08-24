@@ -19,7 +19,8 @@
     "cross-runtime",
     "browser",
     "documentation",
-    "evidence"
+    "evidence",
+    "collection-strategies"
   ],
   "subjectOrder": [
     "integrity",
@@ -37,7 +38,8 @@
     "cross-runtime",
     "browser",
     "documentation",
-    "evidence"
+    "evidence",
+    "collection-strategies"
   ],
   "schemas": {
     "route": "sir.ci-route/v2",

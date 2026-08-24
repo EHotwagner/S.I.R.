@@ -29,6 +29,9 @@ jobs:
       browser: ${{ steps.route.outputs.browser }}
       documentation: ${{ steps.route.outputs.documentation }}
       evidence: ${{ steps.route.outputs.evidence }}
+      # S.I.R.#263. Derived from `selectedGates` by `route --github-output`, exactly like the seven
+      # above it -- the collection-strategies job below keys its `if:` on this and on nothing else.
+      collection_strategies: ${{ steps.route.outputs.collection_strategies }}
       prepare: ${{ steps.route.outputs.prepare }}
       # S.I.R.#304: one per producer, derived by expectedProducersFor() in scripts/ci-route.mjs --
       # the SAME function pr-verdict's join uses to build its expected set. Each prepare-* job below
@@ -99,6 +102,7 @@ jobs:
           # omits them breaks no job graph and this step must not invent a failure for them.
           SIR_ROUTE_REQUIRED: >-
             rules spatial cancellation cross_runtime browser documentation evidence
+            collection_strategies
             prepare_native prepare_fable prepare_web prepare_docs
         run: |
           node - <<'NODE'
@@ -749,9 +753,45 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with: { name: gate-documentation, path: artifacts/ci/results, retention-days: 1 }
 
+  # S.I.R.#263. The collection-strategy regression gate, which until this row no CI route selected.
+  # Modelled on `cross-runtime`: a wave-2 gate whose one producer is `native`, so its `needs:` is
+  # exactly what gateParts["collection-strategies"] declares and scripts/test-ci-route.mjs checks
+  # that equality rather than trusting it.
+  collection-strategies:
+    if: needs.route.outputs.collection_strategies == 'true'
+    needs: [route, prepare-native]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with: { global-json-file: global.json }
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: 26.5.0, cache: npm }
+      - run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with: { name: ci-route, path: artifacts/ci }
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with: { name: prepared-part-native, path: artifacts/ci/parts }
+      - run: ./scripts/run-ci-gate.sh collection-strategies artifacts/ci/results/collection-strategies.json
+        env:
+          SIR_CI_CACHE_HIT: "false"
+      - if: always()
+        name: Record produced gate results
+        shell: bash
+        run: |
+          mkdir -p artifacts/ci/results
+          node -e 'const fs=require("node:fs");const d="artifacts/ci/results";const job=process.argv[1];const produced=fs.readdirSync(d).filter((n)=>!/^collected-.+\.json$/.test(n)&&fs.statSync(`${d}/${n}`).isFile()).sort();fs.writeFileSync(`${d}/collected-${job}.json`,`${JSON.stringify({job,produced})}\n`)' collection-strategies
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with: { name: gate-collection-strategies, path: artifacts/ci/results, retention-days: 1 }
+
   pr-verdict:
     if: always() && github.event_name == 'pull_request'
-    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, prepare-docs, spatial-mutations, cancellation-mutations, browser-general-helper, browser-delivery, domain-conformance, cross-runtime, browser, documentation]
+    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, prepare-docs, spatial-mutations, cancellation-mutations, browser-general-helper, browser-delivery, domain-conformance, cross-runtime, browser, documentation, collection-strategies]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -1011,13 +1051,24 @@ jobs:
               rm -f artifacts/ci/results/browser-general-helper.json
             fi
           fi
-          args=()
-          for gate in integrity prepare-native prepare-fable prepare-web prepare-docs spatial-mutations cancellation-mutations browser-general-helper browser-delivery rules spatial cancellation cross-runtime browser documentation evidence; do
-            if [[ -f "artifacts/ci/results/$gate.json" ]]; then args+=(--result "$gate=artifacts/ci/results/$gate.json"); fi
-          done
+          # S.I.R.#263. THE SUBJECT ENUMERATION THAT STOOD HERE IS GONE, and that is the repair.
+          # It was a second, hand-written declaration of ci-route.mjs's `subjectOrder`, joined to it by
+          # nothing -- so a subject missing from it was never handed to the join, and its gate ran,
+          # passed, uploaded its receipt and had its verdict thrown away, with `pr-verdict` then
+          # reporting `missing-gate-result` for it (run 32656572583). Precisely: that is a
+          # MISATTRIBUTED RED, not a silent pass -- the run fails either way, and what is destroyed is
+          # the ability to tell "did not run" from "ran and passed".
+          # Six successive attempts to CHECK this list from outside were each defeated within one
+          # review round, because each answered a negative existential -- "which block is the real
+          # join?", then "which world is the block running in?" -- and each answer admitted one more
+          # hiding place (S.I.R.#334). `--results-dir` replaces the question with a derivation: the
+          # join reads the directory and selects from it BY `subjectOrder`. There is no list here to
+          # drift, and omitting the flag hands the join nothing, which fails loudly rather than
+          # quietly. `--results-dir` and `--result` are mutually exclusive, so a re-introduced list
+          # cannot sit alongside it.
           node scripts/ci-route.mjs join \
             --route artifacts/ci/route.json \
-            "${args[@]}" \
+            --results-dir artifacts/ci/results \
             --started-ms "$(<artifacts/ci/started-ms)" \
             --completed-ms "$(date +%s%3N)" \
             --output artifacts/ci/pr-verdict.json

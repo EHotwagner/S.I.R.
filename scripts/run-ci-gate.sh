@@ -29,6 +29,11 @@ case "$subject" in
   cancellation) preflight_parts=(native web) ;;
   browser|browser-general-helper|browser-delivery) preflight_parts=(web native) ;;
   documentation) preflight_parts=(web docs) ;;
+  # S.I.R.#263. The native part carries src/SIR.Domain and src/SIR.Simulation Release output, which
+  # the harness project references. Declared here so the preflight extracts them; the gate still
+  # compiles the harness itself, because prepare-native's part_paths do not transport
+  # tests/SIR.PhysicalCombat.Performance/bin.
+  collection-strategies) preflight_parts=(native) ;;
 esac
 if [[ ${#preflight_parts[@]} -gt 0 && "${SIR_CI_PREFLIGHT_REUSED:-false}" != true ]]; then
   set +e

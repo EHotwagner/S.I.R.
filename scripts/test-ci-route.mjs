@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { canonicalArtifactBindings, expectedBuildInvocations, expectedProducersFor, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, feedbackAcceptanceTargetMilliseconds, feedbackHeadroomMilliseconds, feedbackBudgetFor, feedbackWaveCount, feedbackPipelineOverheadMilliseconds, feedbackWaveBudgetMilliseconds, feedbackHeadroomBasisPoints, subjectWave, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
+import { canonicalArtifactBindings, expectedBuildInvocations, joinResultSubjects, expectedProducersFor, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, feedbackAcceptanceTargetMilliseconds, feedbackHeadroomMilliseconds, feedbackBudgetFor, feedbackWaveCount, feedbackPipelineOverheadMilliseconds, feedbackWaveBudgetMilliseconds, feedbackHeadroomBasisPoints, subjectWave, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
 import { browserShardCapacityFor } from "./browser-shard-capacity.mjs";
 import { mergeBrowserShardCases, parseBrowserShardJUnit } from "./browser-junit.mjs";
 
@@ -302,14 +302,16 @@ assert.ok(unknownScenarioOwner.failures.some(({ code, invocation }) =>
   code === "unknown-build-invocation" && invocation === "fable:tests/SIR.Client.Tests/UnknownRuntime.fsproj"));
 assert.deepEqual(contracts.timingPhases, ["queue", "setup", "restore", "build", "transport", "test", "total"]);
 assert.deepEqual(contracts.schemas, { route: routeSchema, artifactManifest: "sir.ci-artifact-manifest/v2", gateResult: gateSchema, timing: timingSchema, join: joinSchema });
-for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-mutations:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-docs:", "domain-conformance:", "cross-runtime:", "browser:", "browser-general-helper:", "browser-delivery:", "documentation:", "pr-verdict:", "cost-observer:", "protected-preflight:", "full-qualification:", "protected-verdict:", "integrity-sweep:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
+for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-mutations:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-docs:", "domain-conformance:", "cross-runtime:", "browser:", "browser-general-helper:", "browser-delivery:", "documentation:", "collection-strategies:", "pr-verdict:", "cost-observer:", "protected-preflight:", "full-qualification:", "protected-verdict:", "integrity-sweep:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
 for (const removedJob of ["browser-general-helper-2", "browser-general-helper-3"]) assert.doesNotMatch(workflow, new RegExp(`^  ${removedJob}:$`, "mu"));
 assert.match(workflow, /if: always\(\)/u);
 assert.match(workflow, /if: always\(\) && github\.event_name == 'pull_request'/u);
 assert.match(workflow, /schedule:/u);
 assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/u);
 assert.match(workflow, /hashFiles\('\*\*\/packages\.lock\.json', 'Directory\.Packages\.props', '\.config\/dotnet-tools\.json'\)/u);
-assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 19);
+// S.I.R.#263 added the `collection-strategies` job, so 19 became 20. An absolute count, updated
+// deliberately: it is what goes red if a job is added or removed without a look.
+assert.equal(workflow.match(/name: Capture runner start/gu)?.length, 20);
 for (const part of ["native", "fable", "web", "docs"]) assert.match(workflow, new RegExp(`qualify-pr\\.sh prepare-part ${part}`, "u"));
 assert.doesNotMatch(workflow, /qualify-pr\.sh prepare-part server/u);
 // S.I.R.#304. This line used to read `/classification != 'evidence-only'/` -- it PINNED the
@@ -406,7 +408,12 @@ assert.match(jobBody("browser"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/brow
 assert.match(jobBody("browser-general-helper"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-3\.junit\.xml[\s\S]*SIR_JUNIT_OUTPUT_2: artifacts\/ci\/results\/browser-general-4\.junit\.xml/u);
 assert.match(jobBody("pr-verdict"), /test-browser-global-merge\.mjs[\s\S]*browser-general-1\.junit\.xml[\s\S]*browser-general-2\.junit\.xml[\s\S]*browser-general-3\.junit\.xml[\s\S]*browser-general-4\.junit\.xml/u);
 assert.match(jobBody("pr-verdict"), /browser_merge_status=\$\?[\s\S]*rm -f artifacts\/ci\/results\/browser-general-helper\.json/u);
-assert.match(workflow, /for gate in integrity prepare-native prepare-fable prepare-web prepare-docs spatial-mutations cancellation-mutations browser-general-helper browser-delivery rules spatial cancellation cross-runtime browser documentation evidence/u);
+// S.I.R.#263/F3. The literal restatement of pr-verdict's subject loop that stood here is DELETED.
+// It was the #304 duplicate this change exists to remove -- a second declaration of `subjectOrder`
+// maintained by hand -- and it had already gone stale: it omitted `collection-strategies` and passed
+// anyway, because a substring match against a longer list is a prefix match. It also fired BEFORE the
+// derived check below, masking that check's refusal message on every unreadable-input case. The
+// equality asserted further down reads the loop out of this same workflow and needs no literal twin.
 assert.match(workflow, /\.\/scripts\/qualify-production\.sh --protected/u);
 const fullQualification = readFileSync(new URL("./qualify-production.sh", import.meta.url), "utf8");
 assert.ok(fullQualification.indexOf("dotnet restore SIR.slnx --locked-mode") < fullQualification.indexOf("test-conformance.sh"));
@@ -554,7 +561,9 @@ assert.match(fullQualification, /if \[\[ -n \$\{SIR_PROTECTED_PREFLIGHT_RECEIPT:
 assert.match(fullQualification, /src\/SIR\.Replay\.Web\/SIR\.Replay\.Web\.fsproj="\$protected_main_fable_builds"/u);
 assert.match(fullQualification, /src\/SIR\.Client\.Web\/SIR\.RulesExplorer\.Web\.fsproj="\$protected_main_fable_builds"/u);
 for (const subject of ["rules", "spatial", "cancellation", "cross-runtime", "historical-compatibility", "governance", "production-browser", "documentation", "performance", "sdd-verify"]) assert.match(fullQualification, new RegExp(`"${subject}"`, "u"));
-assert.equal(gateOrder.length, 7);
+// S.I.R.#263 added `collection-strategies`, so 7 became 8. Absolute by design: this is the line
+// that goes red when a gate is added or removed without a deliberate look at the pins below it.
+assert.equal(gateOrder.length, 8);
 
 
 // ---------------------------------------------------------------------------------------
@@ -572,6 +581,10 @@ const emittingJob = {
   "browser-delivery": "browser-delivery", "cross-runtime": "cross-runtime",
   browser: "browser", "browser-general-helper": "browser-general-helper",
   documentation: "documentation",
+  // S.I.R.#263. Its own job, which is the whole placement decision: as an `integrity` subject it
+  // would have emitted from the job that also emits `evidence`, and that job's receipt `total` is
+  // anchored at the JOB's first step, so its cost would have been inside the wave-1 maximum.
+  "collection-strategies": "collection-strategies",
 };
 for (const subject of subjectOrder) {
   const needsLine = /^\s*needs: (.+)$/mu.exec(jobBody(emittingJob[subject]))?.[1] ?? "";
@@ -610,6 +623,13 @@ const measuredTotals = {
   "prepare-native": 104_000, "prepare-fable": 98_000, "prepare-web": 120_000, "prepare-docs": 102_000,
   rules: 120_000, spatial: 120_000, cancellation: 120_000, "browser-delivery": 120_000,
   "cross-runtime": 70_000, browser: 89_000, "browser-general-helper": 78_000, documentation: 49_000,
+  // S.I.R.#263. NOT from run 32607930272, which predates this gate -- stated rather than smuggled
+  // in among numbers that do come from it. 23_010ms is this gate's own measured marginal cost on
+  // run 32654620076 (restore+build 15_530 + measurement 7_480), where it still ran as an
+  // `integrity` subject; the wave-2 job wrapper differs, so treat it as the right MAGNITUDE rather
+  // than a reading of the wave-2 job. That is all this fixture needs it to be: the two wave maxima
+  // asserted below are unchanged by its presence, which is the placement claim itself.
+  "collection-strategies": 23_010,
 };
 const measuredReceipt = (gate, override) => {
   const total = override ?? measuredTotals[gate];
@@ -822,6 +842,82 @@ for (const [classification, paths] of Object.entries(sixRoutes)) {
   assert.deepEqual([...ran].sort(), [...expected].sort(),
     `${classification}: ci.yml runs [${ran}] but pr-verdict expects [${expected}] -- these must be one declaration`);
 }
+// --- S.I.R.#263: the join's input set is DERIVED from `subjectOrder`, so there is nothing to check
+// --- it against ------------------------------------------------------------------------------
+//
+// `pr-verdict` used to enumerate the subjects in a hand-written `for gate in ...; do` loop in ci.yml.
+// That was a second declaration of `subjectOrder` joined to this one by nothing: a subject missing
+// from it was never handed to the join, so its gate RAN, PASSED, uploaded its receipt, and its
+// verdict was thrown away -- measured on run 32656572583, where `collection-strategies` passed in
+// 51s while `pr-verdict` reported `missing-gate-result` for it. PRECISELY, because an earlier
+// revision of this comment overstated it: that is a MISATTRIBUTED RED, not a silent pass. The run
+// fails either way. What the omission destroys is the ability to tell "this gate did not run" from
+// "this gate ran and passed" -- which is what cost this row several rounds of diagnosis, and is why
+// it is worth a gate, but it is not an escape.
+//
+// SEVEN ATTEMPTS TO CHECK THAT LOOP FROM OUTSIDE WERE EACH DEFEATED WITHIN ONE REVIEW ROUND:
+//
+//   #327 C2   `match()` without /g -- first occurrence only
+//   #327 F2   string literals defeating a comment stripper
+//   #263 F3   first-match `exec` on the loop, no cardinality
+//   #263 G1   unanchored substring, non-greedy body
+//   #263 M1   first-match `indexOf` on the step NAME
+//   #263 N1   a route fixture on which the gate under test is not selected
+//   #263 F1   an environment-conditional `continue` inside the real loop: the block SUCCEEDS and its
+//             join call is on a path the sandbox does not take, so `--output` cardinality counts only
+//             sandbox-taken paths. Three lines, `bash -n` clean, suite green.
+//
+// Every one of those answers a NEGATIVE EXISTENTIAL -- first "which block is the real join?", then
+// "which world is the block running in?" -- and a negative existential admits one more hiding place
+// each time it is answered (S.I.R.#334). The seventh was created by the repair of the sixth.
+//
+// SO THE QUESTION IS DELETED RATHER THAN ANSWERED AGAIN. The loop is gone from ci.yml; the join
+// takes `--results-dir` and selects from that directory BY `subjectOrder`. There is no list in the
+// workflow to drift, no block to execute, no sandbox, and no world to be indistinguishable from
+// production -- because nothing is executed and nothing is observed. What was a property of a shell
+// script is a pure function of one declaration, and this is a pure test of it.
+//
+// NO ASSERTION IS MADE HERE ABOUT ci.yml'S TEXT, deliberately. Omitting `--results-dir` hands the
+// join no receipts at all, which fails loudly at `pr-verdict` as `missing-gate-result` for every
+// subject rather than quietly for one. That failure mode is the enforcement; a text check would be
+// an eighth answer to the question this change exists to retire.
+assert.deepEqual(
+  joinResultSubjects(subjectOrder.map((subject) => `${subject}.json`)),
+  subjectOrder,
+  "with a receipt present for every subject the join must take every subject, in subjectOrder",
+);
+// A withheld receipt is absent and NOTHING ELSE MOVES -- the order and the remainder are preserved,
+// so this cannot pass by accident of sorting.
+for (const withheld of ["collection-strategies", "integrity", "evidence"]) {
+  const present = subjectOrder.filter((s) => s !== withheld).map((s) => `${s}.json`);
+  assert.deepEqual(
+    joinResultSubjects(present),
+    subjectOrder.filter((s) => s !== withheld),
+    `withholding ${withheld}'s receipt must remove exactly it from the join's input set`,
+  );
+}
+// A file that is no subject is never taken, however it is named -- including one that sorts first
+// and one that sorts last, since selection is BY subjectOrder and not by directory order.
+assert.deepEqual(
+  joinResultSubjects(["aaa-not-a-subject.json", ...subjectOrder.map((s) => `${s}.json`), "zzz-not-a-subject.json"]),
+  subjectOrder,
+  "a receipt that is not a subject must never reach the join",
+);
+// Non-receipt files in the same directory are ignored: the browser gates write JUnit XML there.
+assert.deepEqual(
+  joinResultSubjects([...subjectOrder.map((s) => `${s}.json`), "browser-general-1.junit.xml", "integrity-plan.json", "collected-browser.json"]),
+  subjectOrder,
+  "only `<subject>.json` may be taken, and `integrity-plan.json`/`collected-*.json` are not subjects",
+);
+// SELF-TEST: the comparison must be able to report a difference, or every assertion above is
+// decoration. Guarding the REAL function, not a replica of it.
+assert.notDeepEqual(
+  joinResultSubjects(subjectOrder.filter((s) => s !== "rules").map((s) => `${s}.json`)),
+  subjectOrder,
+  "join-derivation self-test: a missing receipt must be detectable",
+);
+assert.deepEqual(joinResultSubjects([]), [], "join-derivation self-test: an empty directory takes nothing");
+
 // --- S.I.R.#309: every classification's job graph must be SATISFIABLE -----------------------
 // S.I.R.#304 made producer SELECTION one declaration. It did not, and could not, decide whether
 // the workflow's `needs:` GRAPH can be satisfied once that selection is correct -- and it is a
