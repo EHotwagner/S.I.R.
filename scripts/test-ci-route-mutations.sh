@@ -123,6 +123,9 @@ expect_red .github/workflows/ci.yml '/gates+=(spatial)/d;'
 # and the string survived only inside this harness. Same intent, expressed against live code --
 # domain-conformance must still run the browser-delivery gate when the route selects browser.
 expect_red .github/workflows/ci.yml '/run-ci-gate.sh browser-delivery artifacts\/ci\/results\/browser-delivery.json/d;'
+# Detach the concurrent browser gate from the join: the job could exit/upload while Chromium is
+# still running, producing a missing or partially written receipt.
+expect_red .github/workflows/ci.yml '/run-ci-gate.sh browser-delivery artifacts\/ci\/results\/browser-delivery.json/,+1 {/pids+=("\$!")/d;}'
 expect_red .github/workflows/ci.yml '/run-ci-gate.sh cross-runtime artifacts\/ci\/results\/cross-runtime.json/d;'
 expect_red .github/workflows/ci.yml '/SIR_CI_PREFLIGHT_REUSED:/d;'
 expect_red scripts/qualify-pr.sh '/artifacts\/publish/d;'
