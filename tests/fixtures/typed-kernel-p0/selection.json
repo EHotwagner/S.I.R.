@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "roadmapMilestone": "P0",
+  "requiredSurfaceClasses": [
+    "fact",
+    "formula",
+    "transition",
+    "registered-algorithm",
+    "predicate-fixture",
+    "supersession-fixture",
+    "evidence",
+    "generated-projection",
+    "historical-replay-binding"
+  ],
+  "surfaces": [
+    {
+      "class": "fact",
+      "authority": "canonical-registry",
+      "id": "CONTENT-WEAPON-RIFLE-001",
+      "expectedKind": "fact",
+      "evidence": "tests/fixtures/rules-corpus/v2/manifest.json"
+    },
+    {
+      "class": "formula",
+      "authority": "canonical-registry",
+      "id": "COMBAT-DAMAGE-001",
+      "expectedKind": "formula",
+      "evidence": "tests/fixtures/rules-corpus/v2/manifest.json"
+    },
+    {
+      "class": "transition",
+      "authority": "canonical-registry",
+      "id": "COMBAT-ATTACK-RESOLUTION-001",
+      "expectedKind": "transition",
+      "evidence": "tests/fixtures/rules-corpus/v2/manifest.json"
+    },
+    {
+      "class": "registered-algorithm",
+      "authority": "canonical-registry",
+      "id": "COMBAT-TRACE-002",
+      "expectedKind": "algorithm",
+      "evidence": "tests/fixtures/rules-corpus/v2/manifest.json"
+    },
+    {
+      "class": "predicate-fixture",
+      "authority": "validation-fixture",
+      "id": "logical-compatibility-mutation",
+      "expectedKind": "predicate",
+      "evidence": "tests/SIR.Conformance.Shared/RuleCoherenceFixtures.fs"
+    },
+    {
+      "class": "supersession-fixture",
+      "authority": "validation-fixture",
+      "id": "supersession-cache-invalidation",
+      "expectedKind": "supersession",
+      "evidence": "tests/SIR.Conformance.Shared/RuleCoherenceFixtures.fs"
+    },
+    {
+      "class": "evidence",
+      "authority": "receipt",
+      "id": "rule-coherence-junit",
+      "expectedKind": "verification-receipt",
+      "evidence": "readiness/193-rule-authoring-coherence/rule-coherence.junit.xml"
+    },
+    {
+      "class": "generated-projection",
+      "authority": "projection",
+      "id": "rules-corpus-manifest-v2",
+      "expectedKind": "generated-json",
+      "evidence": "tests/fixtures/rules-corpus/v2/manifest.json"
+    },
+    {
+      "class": "historical-replay-binding",
+      "authority": "retained-evidence",
+      "id": "rules-package-v1",
+      "expectedKind": "replay-package-binding",
+      "evidence": "tests/fixtures/rules-corpus/v1/manifest.json"
+    }
+  ],
+  "artifacts": [
+    "src/SIR.Domain/RuleTypes.fs",
+    "src/SIR.Domain/Rules.fs",
+    "src/SIR.Simulation/CombatRules.fs",
+    "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+    "tests/SIR.Conformance.Shared/RuleCoherenceFixtures.fs",
+    "tests/fixtures/rules-corpus/v1/manifest.json",
+    "tests/fixtures/rules-corpus/v2/manifest.json",
+    "tests/fixtures/rules-corpus/v2/coverage.json",
+    "tests/fixtures/rules-corpus/v2/representative-application.hex",
+    "readiness/193-rule-authoring-coherence/rule-coherence.junit.xml",
+    "work/193-rule-authoring-coherence/spec.md",
+    "work/194-executable-rules-corpus/spec.md",
+    ".agents/skills/sir-author-rule/SKILL.md",
+    "docs/typed-kernel-p0-baseline.md",
+    "scripts/capture-typed-kernel-p0.sh",
+    "scripts/test-typed-kernel-p0.sh",
+    "scripts/verify-typed-kernel-p0.sh"
+  ]
+}

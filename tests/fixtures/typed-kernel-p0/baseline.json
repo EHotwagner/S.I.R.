@@ -1,0 +1,149 @@
+{
+  "artifacts": [
+    {
+      "path": "src/SIR.Domain/RuleTypes.fs",
+      "sha256": "c5318fa1c398edb56d87cc18c0dd95086e2e559c608b797a5e709774bd85102d"
+    },
+    {
+      "path": "src/SIR.Domain/Rules.fs",
+      "sha256": "e81c19f26eb73dd464a0ec11bac9d138e6bdab1a3a8e4bf5e034bf0a313e212c"
+    },
+    {
+      "path": "src/SIR.Simulation/CombatRules.fs",
+      "sha256": "15094cb80752f007bf07674a867998e29b6455040078df546744fa3753b51c6a"
+    },
+    {
+      "path": "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+      "sha256": "99b57ebd8049d1e8a19a35a8569463f5a34074ddb9c39f93ebc5abfdf2f6fd61"
+    },
+    {
+      "path": "tests/SIR.Conformance.Shared/RuleCoherenceFixtures.fs",
+      "sha256": "e5409ee0439ebd0c78512b53437ef3c7bb9fe4ad36585ed2940da1662ef61acb"
+    },
+    {
+      "path": "tests/fixtures/rules-corpus/v1/manifest.json",
+      "sha256": "e5bfe82d40e72ff8b41898e408c50dd0d8fb7e05b72c6acc24baab0e3b451ddc"
+    },
+    {
+      "path": "tests/fixtures/rules-corpus/v2/manifest.json",
+      "sha256": "0490cad14bc58503918f80641c5664a0c92417d9d4c90a18505167525c07a05c"
+    },
+    {
+      "path": "tests/fixtures/rules-corpus/v2/coverage.json",
+      "sha256": "73e5769b3d68eef34c256f283b57d9b12b698dab354b2d03f6af38625aa08b8e"
+    },
+    {
+      "path": "tests/fixtures/rules-corpus/v2/representative-application.hex",
+      "sha256": "5269f67925233a61d27d136319be78a38ff246c478eaea8cf66c303446f35f21"
+    },
+    {
+      "path": "readiness/193-rule-authoring-coherence/rule-coherence.junit.xml",
+      "sha256": "eacef360ebb2c1f4d9f8179d30e953d0abd25496dffe94ee47fa5d88d3a68bc1"
+    },
+    {
+      "path": "work/193-rule-authoring-coherence/spec.md",
+      "sha256": "fafdc4eb0ef9951b199bbd569a4bee1fe644db7d04b1212084159cb229267919"
+    },
+    {
+      "path": "work/194-executable-rules-corpus/spec.md",
+      "sha256": "d844d21fdf36544d64cf81435bed84d39cd23310450887b5c7f25a2ba84baf43"
+    },
+    {
+      "path": ".agents/skills/sir-author-rule/SKILL.md",
+      "sha256": "d4a0ebcd2282df20566a3119300988efff491bb72fcfcf386892fd5f00d573d6"
+    },
+    {
+      "path": "docs/typed-kernel-p0-baseline.md",
+      "sha256": "be0b09d26619f08f367752b757f1bd72bd6f8fa119a027bcc8d20f2a6bce9654"
+    },
+    {
+      "path": "scripts/capture-typed-kernel-p0.sh",
+      "sha256": "c2303b5bc6fe4a1a7567e0fb2324a55c17b18842fe3c4d0d448f1a0adf8b4767"
+    },
+    {
+      "path": "scripts/test-typed-kernel-p0.sh",
+      "sha256": "fd9507d920c73fcea954e8d71fd205739073e28ccd78f29978e7c9750a85551a"
+    },
+    {
+      "path": "scripts/verify-typed-kernel-p0.sh",
+      "sha256": "838c71d94cd61cf44f460c9371df420e815f72b2c29a4e719f9c47db6ea7415e"
+    }
+  ],
+  "corpusIdentity": {
+    "compatibilityProfile": "fs-gg-game-core-fable-lockstep-v1",
+    "engineIdentity": "sir-simulation-v1",
+    "implementationDigest": "c122374d27128276615a683cd8b102e710c664df622873ae731828f5ba759df6",
+    "manifestDigest": "95d7b73a2c23424ca31cfb32682151788ddad537f4ee7a4eadd9e8e0a91be0e6",
+    "packageVersion": "FS.GG.Game.Core@0.13.0",
+    "semanticDigest": "8f6148501eef3e0b7297770695695df31e198e7df17f1e47cfaae53f74aff840",
+    "sourceCommit": "eb0b2c29a80f0bf3b400ce4415bf8587b4645083"
+  },
+  "roadmapMilestone": "P0",
+  "schemaVersion": 1,
+  "selectionSha256": "3bb2dcd678758e6cfc9e5b094c96acac54e6529cc582ef848d9fd3c66a7bc357",
+  "surfaces": [
+    {
+      "authority": "canonical-registry",
+      "class": "fact",
+      "evidence": "tests/fixtures/rules-corpus/v2/manifest.json",
+      "expectedKind": "fact",
+      "id": "CONTENT-WEAPON-RIFLE-001"
+    },
+    {
+      "authority": "canonical-registry",
+      "class": "formula",
+      "evidence": "tests/fixtures/rules-corpus/v2/manifest.json",
+      "expectedKind": "formula",
+      "id": "COMBAT-DAMAGE-001"
+    },
+    {
+      "authority": "canonical-registry",
+      "class": "transition",
+      "evidence": "tests/fixtures/rules-corpus/v2/manifest.json",
+      "expectedKind": "transition",
+      "id": "COMBAT-ATTACK-RESOLUTION-001"
+    },
+    {
+      "authority": "canonical-registry",
+      "class": "registered-algorithm",
+      "evidence": "tests/fixtures/rules-corpus/v2/manifest.json",
+      "expectedKind": "algorithm",
+      "id": "COMBAT-TRACE-002"
+    },
+    {
+      "authority": "validation-fixture",
+      "class": "predicate-fixture",
+      "evidence": "tests/SIR.Conformance.Shared/RuleCoherenceFixtures.fs",
+      "expectedKind": "predicate",
+      "id": "logical-compatibility-mutation"
+    },
+    {
+      "authority": "validation-fixture",
+      "class": "supersession-fixture",
+      "evidence": "tests/SIR.Conformance.Shared/RuleCoherenceFixtures.fs",
+      "expectedKind": "supersession",
+      "id": "supersession-cache-invalidation"
+    },
+    {
+      "authority": "receipt",
+      "class": "evidence",
+      "evidence": "readiness/193-rule-authoring-coherence/rule-coherence.junit.xml",
+      "expectedKind": "verification-receipt",
+      "id": "rule-coherence-junit"
+    },
+    {
+      "authority": "projection",
+      "class": "generated-projection",
+      "evidence": "tests/fixtures/rules-corpus/v2/manifest.json",
+      "expectedKind": "generated-json",
+      "id": "rules-corpus-manifest-v2"
+    },
+    {
+      "authority": "retained-evidence",
+      "class": "historical-replay-binding",
+      "evidence": "tests/fixtures/rules-corpus/v1/manifest.json",
+      "expectedKind": "replay-package-binding",
+      "id": "rules-package-v1"
+    }
+  ]
+}
