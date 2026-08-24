@@ -52,8 +52,34 @@ if [[ -z "$pinned_runtime" ]]; then
   exit 92
 fi
 
-# Tiered compilation adds startup-dependent noise that swamps small-n comparisons.
-export DOTNET_TieredCompilation="${DOTNET_TieredCompilation:-0}"
+# ---------------------------------------------------------------- tiering confound guard
+#
+# THE THIRD CONFOUND, AND IT IS THE ONE THAT MOVES THE DECIDING NUMBER MOST. Tiered compilation adds
+# startup-dependent cost that lands hardest on the CHEAPEST strategy -- and every assertion here is a
+# ratio TO the best strategy, so mismeasuring that one collapses a whole case rather than one row.
+# Measured: `Array/packed-sort` 233-248ns with tiering off against 3201-3554ns with it on, ~13x, which
+# takes `line-dedupe`'s listRatio from 83.2-89.4 to 5.1 against a threshold of 10 -- a RED on a tree
+# with nothing wrong with it.
+#
+# THIS USED TO BE `export DOTNET_TieredCompilation="${DOTNET_TieredCompilation:-0}"` AND THAT WAS
+# WRONG. `:-` NEUTRALISES a caller's value only when there is none to neutralise: an ambient
+# `DOTNET_TieredCompilation=1` passed straight through, and the gate red with no abort at all. The
+# SDK pin and the runtime pin above both ABORT; this one silently accepted whatever it was handed,
+# which is the one shape the rest of this file exists to refuse. Neutralising is not the proof --
+# aborting is (independent-review contract, gate-inversion step 6).
+#
+# The cost of the old spelling is not hypothetical. The direct-dispatch comparison route -- the one
+# the review contract directs critics to use -- reds 8/8 on a clean tree, because it does not go
+# through this script and so never got the export. One review reported it green from a shell that had
+# inherited `TC=0`, and a later critic came within one step of filing a false finding against this
+# gate before reading this line.
+if [[ -n "${DOTNET_TieredCompilation-}" && "${DOTNET_TieredCompilation}" != "0" ]]; then
+  echo "verify-collection-strategies: ABORT -- DOTNET_TieredCompilation=${DOTNET_TieredCompilation} is set in this environment." >&2
+  echo "  This gate's assertions are ratios to the best strategy, and tiering inflates the best strategy ~13x," >&2
+  echo "  which reds line-dedupe on a correct tree. Unset it, or set it to 0, and re-run. Refusing to measure." >&2
+  exit 93
+fi
+export DOTNET_TieredCompilation=0
 
 dotnet restore "$project" --locked-mode
 dotnet build "$project" -c Release --no-restore
@@ -68,6 +94,16 @@ set -e
 # The receipt is written before the harness exits, on both the pass and the fail path, so this
 # reads the runtime of the process that produced the numbers above -- not of a stand-in probe.
 measured_runtime=$(node -e 'process.stdout.write(String(JSON.parse(require("node:fs").readFileSync(process.argv[1],"utf8")).RuntimeVersion ?? ""))' "$receipt")
+measured_tiering=$(node -e 'process.stdout.write(String(JSON.parse(require("node:fs").readFileSync(process.argv[1],"utf8")).TieredCompilation ?? ""))' "$receipt")
+# A READBACK, not a second measurement -- stated honestly. The harness reports the same variable this
+# script exported, so it proves the export REACHED the measuring process, not that the runtime obeyed
+# it. That is still worth asserting: the export crossing `dotnet run` into the child is exactly what
+# a wrapper, a shell function or a sanitised environment can break.
+if [[ "$measured_tiering" != "0" ]]; then
+  echo "verify-collection-strategies: ABORT -- the harness measured with TieredCompilation='${measured_tiering:-<unreadable>}', not 0;" >&2
+  echo "  the export did not reach the measuring process, so these ratios are not comparable to the thresholds." >&2
+  exit 93
+fi
 if [[ "$measured_runtime" != "$pinned_runtime" ]]; then
   echo "verify-collection-strategies: ABORT -- the harness measured on runtime '${measured_runtime:-<unreadable>}' while the muxer's pinned runtime is '$pinned_runtime'. The timings above are about a runtime the pin does not name; refusing to report them either way." >&2
   exit 91

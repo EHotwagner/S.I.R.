@@ -82,17 +82,24 @@ let schemaVersion = 1
 
 // ---------------------------------------------------------------- timing
 
-/// S.I.R.#263: 3, not 7. This gate runs inside the `integrity` job, which is wave 1 of the PR
-/// pipeline and therefore on the feedback critical path. At 7 trials the measurement cost 29.3s on
-/// a CI runner (run 32653979411: build ends 17:13:11.29, table prints 17:13:40.54) and `pr-verdict`
-/// red with `feedback-headroom-eroded` 333419 > 312000. The statistic is a MINIMUM over trials, and
-/// these are RATIO comparisons with the nearest margin at 2.3x, so trading trials for headroom
-/// costs precision the assertions do not spend. Override with SIR_COLLECTIONS_TRIALS when
-/// investigating locally, where no budget applies.
+/// 7, RESTORED. An earlier revision of this row cut it to 3 and justified that by the feedback
+/// critical path, on the reasoning that this gate ran inside the wave-1 `integrity` job. THAT
+/// JUSTIFICATION IS STALE: the gate is a wave-2 subject with its own job, measured at 56s against a
+/// wave-2 maximum of 2m14s, so the trials it needs are very nearly free.
+///
+/// AND THE REDUNDANCY WAS LOAD-BEARING, which the cut discovered the expensive way. The minimum of N
+/// is the statistic least polluted by a slow first pass, so trials are exactly what absorbs a
+/// tiering-warmed outlier. Measured against the direct-dispatch route with tiering left at its
+/// default: at 7 trials, 0 of 8 runs red; at 3 trials, 8 of 8 red. The cut did not cause the tiering
+/// confound -- `scripts/verify-collection-strategies.sh` guards that with a hard abort now -- but it
+/// removed the margin that had been masking it, and a gate whose correctness depends on nobody
+/// removing an unstated margin is a gate waiting to red on a clean tree.
+///
+/// Override with SIR_COLLECTIONS_TRIALS when investigating locally.
 let private trials =
     match Environment.GetEnvironmentVariable "SIR_COLLECTIONS_TRIALS" with
-    | null | "" -> 3
-    | value -> match Int32.TryParse value with | true, v when v > 0 -> v | _ -> 3
+    | null | "" -> 7
+    | value -> match Int32.TryParse value with | true, v when v > 0 -> v | _ -> 7
 
 /// Minimum-of-N wall time in nanoseconds per operation. Minimum, not mean: it is the statistic
 /// least polluted by scheduler preemption, and these are ratio comparisons.
@@ -489,28 +496,22 @@ let private assess (cases: CaseSample array) =
 // ================================================================ entry
 
 let run () =
-    // THE MATRIX IS THE ASSERTED SIZES PLUS ONE COMPANION ROW WHERE THE HEADER MAKES A SCALING
-    // CLAIM — 10 rows became 6, and 65 strategy-measurements became 24 (S.I.R.#263).
+    // THE FULL MATRIX, RESTORED. An earlier revision of this row cut 10 rows to 6 and 65
+    // strategy-measurements to 24, justified -- like the trials cut above -- by the PR feedback
+    // critical path on the reasoning that this gate ran inside the wave-1 `integrity` job. THAT
+    // JUSTIFICATION IS STALE: it is a wave-2 subject with its own job now, contributing nothing to
+    // either wave maximum, so the rows cost nothing they were cut to save.
     //
-    // This is a GATE, not a report. A row no assertion reads is documentation, and documentation
-    // measured on the PR feedback critical path is paid for by every pull request that touches this
-    // harness. That is the same trade `costBoundedSubjects` encodes one file over, and it is what
-    // `feedback-headroom-eroded` 333419 > 312000 on run 32653979411 cost when it was not made.
-    //
-    // What each companion row is FOR, so that a later reader trims the right thing or nothing:
-    //   blocker-lookup n=128   the CROSSOVER. `Map` beats `List.exists` here and loses to a linear
-    //                          array scan; at 16384 both are hopeless. One point cannot show that,
-    //                          and "an index is needed" is the claim the 16384 assertions rest on.
-    //   state-update 1024/512  the UPDATE-COUNT claim. Held at the same n as 1024/128 on purpose:
-    //                          the fold is linear in the update count and merge-scan is flat in it,
-    //                          which is a comparison BETWEEN these two rows and not visible in
-    //                          either. This is exactly what `merge-scan-beats-map-fold` asserts.
-    // `line-dedupe` and `membership-probe` assert a single-size ratio and get a single row each.
+    // Restoring them is not tidiness. The intermediate sizes are what make each row a SCALING claim
+    // rather than a single point, and "this shape is super-linear at the sizes the simulation
+    // reaches" is the entire content of the ordering claim these assertions defend. A single point
+    // cannot distinguish a super-linear shape from a slow constant.
     let cases =
-        [| for n in [ 128; 16384 ] -> blockerLookup n
-           for fraction in [ 8; 2 ] -> stateUpdate 1024 (max 1 (1024 / fraction))
-           yield lineDedupe 64
-           yield membershipProbe 1024 |]
+        [| for n in [ 8; 128; 2048; 16384 ] -> blockerLookup n
+           for n in [ 64; 256; 1024 ] do
+               for fraction in [ 8; 2 ] -> stateUpdate n (max 1 (n / fraction))
+           for n in [ 8; 24; 64; 256 ] -> lineDedupe n
+           for n in [ 64; 256; 1024 ] -> membershipProbe n |]
 
     let assertions, failures = assess cases
     { SchemaVersion = schemaVersion
