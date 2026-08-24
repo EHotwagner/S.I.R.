@@ -390,6 +390,7 @@ NODE
       cancellation) gate_parts=(native web) ;;
       browser|browser-general-helper|browser-delivery) gate_parts=(web native) ;;
       documentation) gate_parts=(web docs) ;;
+      collection-strategies) gate_parts=(native) ;;
     esac
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
       receipt_part=${gate_parts[0]}
@@ -458,6 +459,11 @@ NODE
       documentation)
         ./scripts/build-docs.sh --reuse-build-receipt "$receipt" --reuse-build-owner scripts/qualify-pr.sh --prepared-pr --reuse-site-build
         ;;
+      # S.I.R.#263. The collection-strategy regression gate. ONE statement, and its status is this
+      # arm's status: the script ends with the harness's own exit code and carries no `|| true`, so
+      # a red benchmark becomes `status: fail` in the sir.ci-gate-result/v1 receipt pr-verdict
+      # joins rather than a FAILED line inside a green log (the escape S.I.R.#265 measured).
+      collection-strategies) ./scripts/verify-collection-strategies.sh ;;
       evidence)
         # Every routed work item gets exactly one recorded outcome, whether or not it was checked, so
         # that "checked and passed" and "not checked" can never again be the same CI result (#272).

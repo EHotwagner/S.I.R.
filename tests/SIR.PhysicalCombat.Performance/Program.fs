@@ -804,6 +804,27 @@ let main args =
             raise (AwarenessPerformanceExit(verifyAwarenessPerformanceReceipt (argument "--verify-awareness-receipt" args) (argument "--candidate-commit" args)))
         elif args |> Array.contains "--awareness" then
             raise (AwarenessPerformanceExit(runAwarenessPerformance ()))
+        elif args |> Array.contains "--collections" then
+            // The gate's exit status is the ONLY thing downstream sees. `Failures` is the
+            // benchmark's own verdict, so it is what selects the code -- never a print.
+            // scripts/verify-collection-strategies.sh runs under `set -e` with this as its
+            // last command, so a non-zero here reaches qualify-pr.sh, run-ci-gate.sh's
+            // `status=fail`, and the gate receipt. S.I.R.#263.
+            let receipt = Collections.run ()
+            printf "%s" (Collections.render receipt)
+            args
+            |> Array.tryFindIndex ((=) "--collections-receipt")
+            |> Option.bind (fun index -> args |> Array.tryItem (index + 1))
+            |> Option.iter (fun path ->
+                Path.GetDirectoryName path
+                |> Option.ofObj
+                |> Option.iter (Directory.CreateDirectory >> ignore)
+                File.WriteAllText(
+                    path,
+                    JsonSerializer.Serialize(receipt, JsonSerializerOptions(WriteIndented = true))
+                    + Environment.NewLine)
+                printfn "collections-receipt=%s" path)
+            raise (AwarenessPerformanceExit(if receipt.Failures.Length = 0 then 0 else 1))
         let receiptPath = argument "--receipt" args
         let candidateCommit = argument "--candidate-commit" args
         let sourceTreeState = argument "--source-tree-state" args
