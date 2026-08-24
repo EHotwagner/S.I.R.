@@ -1,0 +1,38 @@
+{
+  "schema": "sir.typed-kernel-feedback-headroom/v1",
+  "subject": "typed-kernel-p1",
+  "source": {
+    "commit": "1a625b567bd615b07eb1d40801713633b08db716",
+    "tree": "617e06d3c6a54ed9e373896a5e7676199eaf1da7"
+  },
+  "protectedRun": {
+    "url": "https://github.com/EHotwagner/S.I.R./actions/runs/32721481481",
+    "attempt": 1,
+    "conclusion": "success",
+    "completedAt": "2026-08-24T11:27:27Z",
+    "routeDigest": "b1b1adb71432a464e0deafd527c3d60f3fd76f3aee6fae96c45be9a6bbbe299c",
+    "criticalPathMilliseconds": 309994,
+    "acceptanceTargetMilliseconds": 312000,
+    "budgetMilliseconds": 390000,
+    "requiredHeadroomMilliseconds": 78000,
+    "actualHeadroomMilliseconds": 80006,
+    "retryCount": 0
+  },
+  "rulesGate": {
+    "status": "pass",
+    "setupMilliseconds": 23521,
+    "testMilliseconds": 71585,
+    "totalMilliseconds": 95106
+  },
+  "preRepairObservation": {
+    "url": "https://github.com/EHotwagner/S.I.R./actions/runs/32719634737/attempts/3",
+    "conclusion": "failure",
+    "failureCode": "feedback-headroom-eroded",
+    "criticalPathMilliseconds": 333612,
+    "rulesGateTotalMilliseconds": 147096
+  },
+  "repairDelta": {
+    "criticalPathMilliseconds": -23618,
+    "rulesGateTotalMilliseconds": -51990
+  }
+}

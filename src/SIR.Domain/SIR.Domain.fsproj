@@ -18,8 +18,11 @@
     <Compile Include="SpatialIdentity.fs" />
     <Compile Include="RuleTypes.fsi" />
     <Compile Include="RuleTypes.fs" />
+    <Compile Include="SpecificationModel.fsi" />
+    <Compile Include="SpecificationModel.fs" />
     <Compile Include="Rules.fsi" />
     <Compile Include="Rules.fs" />
+    <Compile Include="RuleSpecification.fs" />
     <Compile Include="RuleCoherence.fsi" />
     <Compile Include="RuleCoherence.fs" />
   </ItemGroup>

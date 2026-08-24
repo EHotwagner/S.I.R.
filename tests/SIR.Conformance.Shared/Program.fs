@@ -154,6 +154,17 @@ let main arguments =
     | [ "--print-replay-package" ] ->
         ReplayFixtures.canonicalPackageBytes () |> NumericFixtures.hex |> printfn "%s"
         0
+#if !FABLE_COMPILER
+    | [ "--print-rules-corpus-bundle" ] ->
+        let bundle = System.Collections.Generic.Dictionary<string, string>()
+        bundle["manifest"] <- RulesCorpusFixtures.manifestJson ()
+        bundle["coverage"] <- RulesCorpusFixtures.coverageJson ()
+        bundle["representativeApplication"] <- RulesCorpusFixtures.representativeApplicationBytes () |> NumericFixtures.hex
+        bundle["specificationMarkdown"] <- RulesCorpusFixtures.specificationMarkdown ()
+        bundle["specificationReceipt"] <- RulesCorpusFixtures.specificationReceiptJson ()
+        printfn "%s" (System.Text.Json.JsonSerializer.Serialize bundle)
+        0
+#endif
     | [ "--print-rules-manifest" ] ->
         printfn "%s" (RulesCorpusFixtures.manifestJson ())
         0
@@ -162,6 +173,12 @@ let main arguments =
         0
     | [ "--print-rules-application" ] ->
         printfn "%s" (RulesCorpusFixtures.representativeApplicationBytes () |> NumericFixtures.hex)
+        0
+    | [ "--print-rule-specification" ] ->
+        printfn "%s" (RulesCorpusFixtures.specificationMarkdown ())
+        0
+    | [ "--print-rule-specification-receipt" ] ->
+        printfn "%s" (RulesCorpusFixtures.specificationReceiptJson ())
         0
     | [ "--print-rule-coherence" ] ->
         printfn "%s" (RuleCoherenceFixtures.evaluate () |> NumericFixtures.hex)

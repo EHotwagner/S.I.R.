@@ -451,7 +451,7 @@ module Rules =
             "{\"type\":\"algorithm\",\"symbol\":" + jsonString contract.ImplementationSymbol + ",\"fingerprint\":" + jsonString contract.Fingerprint + ",\"inputs\":" + jsonArray inputJson contract.Inputs + ",\"resultKind\":" + jsonString (kindName contract.ResultKind) + ",\"resultUnit\":" + jsonString contract.ResultUnit + ",\"explanationFields\":" + jsonArray jsonString contract.ExplanationFields + "}"
         | NarrativeSemantics -> "{\"type\":\"narrative\"}"
 
-    let manifestJson identity rules =
+    let manifestJson (identity: RulePackageIdentity) rules =
         let sourceJson = function
             | None -> "null"
             | Some source -> "{\"symbol\":" + jsonString source.Symbol + ",\"path\":" + jsonString source.RepositoryPath + ",\"commit\":" + jsonString source.Commit + "}"
@@ -461,7 +461,7 @@ module Rules =
             "{\"id\":" + jsonString (RuleId.value metadata.Id) + ",\"title\":" + jsonString metadata.Title + ",\"status\":" + jsonString (statusName metadata.Status) + ",\"kind\":" + jsonString (ruleKindName metadata.SemanticKind) + ",\"statement\":" + statement + ",\"rationale\":" + jsonString metadata.Rationale + ",\"dependencies\":" + jsonArray (RuleId.value >> jsonString) (metadata.Dependencies |> List.sortBy RuleId.value) + ",\"supersedes\":" + jsonArray (RuleId.value >> jsonString) (metadata.Supersedes |> List.sortBy RuleId.value) + ",\"examples\":" + jsonArray jsonString metadata.Examples + ",\"properties\":" + jsonArray jsonString metadata.Properties + ",\"evidence\":" + jsonArray jsonString metadata.Evidence + ",\"source\":" + sourceJson metadata.RuleSource + ",\"explanationVocabulary\":[\"operands\",\"outcome\",\"children\",\"eventId\"],\"semantics\":" + semanticsProjection rule.Semantics + "}"
         "{\"schemaVersion\":" + string identity.SchemaVersion + ",\"engineIdentity\":" + jsonString identity.EngineIdentity + ",\"compatibilityProfile\":" + jsonString identity.CompatibilityProfile + ",\"packageVersion\":" + jsonString identity.PackageVersion + ",\"sourceCommit\":" + jsonString identity.SourceCommit + ",\"implementationDigest\":" + jsonString (hex identity.ImplementationDigest) + ",\"semanticDigest\":" + jsonString (hex identity.SemanticDigest) + ",\"manifestDigest\":" + jsonString (hex identity.ManifestDigest) + ",\"rules\":" + jsonArray ruleJson (rules |> List.sortBy (fun rule -> RuleId.value rule.Metadata.Id)) + "}"
 
-    let coverageJson identity rules =
+    let coverageJson (identity: RulePackageIdentity) rules =
         let node kind identity authority = "{\"kind\":" + jsonString kind + ",\"identity\":" + jsonString identity + ",\"authority\":" + jsonString authority + "}"
         let edge rule target kind = "{\"from\":" + jsonString ("rule:" + RuleId.value rule.Metadata.Id) + ",\"to\":" + jsonString target + ",\"kind\":" + jsonString kind + "}"
         let sortedRules = rules |> List.sortBy (fun rule -> RuleId.value rule.Metadata.Id)

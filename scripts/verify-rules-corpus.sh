@@ -75,7 +75,7 @@ require_durable_source_commit "$repo_root" "$source_commit" "$canonical_source_r
 
 "$repo_root/scripts/generate-rules-corpus.sh" --check
 
-for fixture in manifest.json coverage.json representative-application.hex; do
+for fixture in manifest.json coverage.json representative-application.hex combat-damage-001.specification.md combat-damage-001.specification.json; do
   fixture_mutant=$(mktemp -d /tmp/sir-rules-fixture-mutant.XXXXXX)
   cp "$repo_root/tests/fixtures/rules-corpus/v2/"* "$fixture_mutant/"
   printf '\n ' >> "$fixture_mutant/$fixture"
@@ -86,6 +86,66 @@ for fixture in manifest.json coverage.json representative-application.hex; do
   fi
   rm -rf "$fixture_mutant"
 done
+
+missing_specification=$(mktemp -d /tmp/sir-rules-specification-missing.XXXXXX)
+specification_log=$(mktemp /tmp/sir-rules-specification-log.XXXXXX)
+cp "$repo_root/tests/fixtures/rules-corpus/v2/"* "$missing_specification/"
+rm "$missing_specification/combat-damage-001.specification.md"
+if SIR_RULES_FIXTURE_DIR="$missing_specification" "$repo_root/scripts/generate-rules-corpus.sh" --check >"$specification_log" 2>&1; then
+  echo "missing rule specification projection unexpectedly passed" >&2
+  rm -rf "$missing_specification"
+  exit 1
+fi
+search_quiet 'RULE-SPEC-PROJECTION-MISSING' "$specification_log" || { echo "missing projection refusal lacked its stable diagnostic" >&2; exit 1; }
+rm -rf "$missing_specification"
+
+malformed_specification=$(mktemp -d /tmp/sir-rules-specification-malformed.XXXXXX)
+cp "$repo_root/tests/fixtures/rules-corpus/v2/"* "$malformed_specification/"
+printf '{not-json}\n' > "$malformed_specification/combat-damage-001.specification.json"
+if SIR_RULES_FIXTURE_DIR="$malformed_specification" "$repo_root/scripts/generate-rules-corpus.sh" --check >"$specification_log" 2>&1; then
+  echo "malformed rule specification receipt unexpectedly passed" >&2
+  rm -rf "$malformed_specification"
+  exit 1
+fi
+search_quiet 'RULE-SPEC-PROJECTION-MALFORMED' "$specification_log" || { echo "malformed receipt refusal lacked its stable diagnostic" >&2; exit 1; }
+rm -rf "$malformed_specification"
+
+stale_specification=$(mktemp -d /tmp/sir-rules-specification-stale.XXXXXX)
+cp "$repo_root/tests/fixtures/rules-corpus/v2/"* "$stale_specification/"
+jq '.sourceFingerprint = "0000000000000000000000000000000000000000000000000000000000000000"' \
+  "$stale_specification/combat-damage-001.specification.json" > "$stale_specification/receipt.tmp"
+mv "$stale_specification/receipt.tmp" "$stale_specification/combat-damage-001.specification.json"
+if SIR_RULES_FIXTURE_DIR="$stale_specification" "$repo_root/scripts/generate-rules-corpus.sh" --check >"$specification_log" 2>&1; then
+  echo "stale rule specification source fingerprint unexpectedly passed" >&2
+  rm -rf "$stale_specification"
+  exit 1
+fi
+search_quiet 'RULE-SPEC-PROJECTION-STALE-SOURCE' "$specification_log" || { echo "stale-source refusal lacked its stable diagnostic" >&2; exit 1; }
+rm -rf "$stale_specification"
+
+direct_edit_specification=$(mktemp -d /tmp/sir-rules-specification-direct.XXXXXX)
+cp "$repo_root/tests/fixtures/rules-corpus/v2/"* "$direct_edit_specification/"
+printf '\nmanual edit\n' >> "$direct_edit_specification/combat-damage-001.specification.md"
+if SIR_RULES_FIXTURE_DIR="$direct_edit_specification" "$repo_root/scripts/generate-rules-corpus.sh" --check >"$specification_log" 2>&1; then
+  echo "direct rule specification projection edit unexpectedly passed" >&2
+  rm -rf "$direct_edit_specification"
+  exit 1
+fi
+search_quiet 'RULE-SPEC-PROJECTION-DIRECT-EDIT' "$specification_log" || { echo "direct-edit refusal lacked its stable diagnostic" >&2; exit 1; }
+rm -rf "$direct_edit_specification"
+
+unreadable_specification=$(mktemp -d /tmp/sir-rules-specification-unreadable.XXXXXX)
+cp "$repo_root/tests/fixtures/rules-corpus/v2/"* "$unreadable_specification/"
+rm "$unreadable_specification/combat-damage-001.specification.json"
+ln -s /proc/1/mem "$unreadable_specification/combat-damage-001.specification.json"
+if SIR_RULES_FIXTURE_DIR="$unreadable_specification" "$repo_root/scripts/generate-rules-corpus.sh" --check >"$specification_log" 2>&1; then
+  echo "unreadable rule specification receipt unexpectedly passed" >&2
+  rm -rf "$unreadable_specification"
+  exit 1
+fi
+search_quiet 'RULE-SPEC-PROJECTION-UNREADABLE' "$specification_log" || { echo "unreadable receipt refusal lacked its stable diagnostic" >&2; exit 1; }
+rm -rf "$unreadable_specification"
+rm -f "$specification_log"
 
 coverage_mutant=$(mktemp /tmp/sir-rules-coverage-mutant.XXXXXX)
 jq '.edges[0].to = "missing:node"' "$repo_root/tests/fixtures/rules-corpus/v2/coverage.json" > "$coverage_mutant"

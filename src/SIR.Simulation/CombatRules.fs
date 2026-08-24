@@ -42,9 +42,30 @@ module CombatRules =
     let private armor =
         { Metadata = metadata "COMBAT-ARMOR-004" "Armor retained effect" Formula "Armor retention is an explicit bounded ratio." [] "CombatRules.armor" "rules-corpus-v1"
           Semantics = FormulaSemantics(RuleValueKind.FixedPoint, "ratio", Clamp(Constant(fixedValue "ratio" zero), Constant(fixedValue "ratio" one), Input("retention", RuleValueKind.FixedPoint, "ratio"))) }
-    let private damage =
+    let private damageDefinition =
         { Metadata = metadata "COMBAT-DAMAGE-001" "Expected damage" Formula "Expected damage is the weapon effect multiplied once by trace probability and retained armor effect." [ "CONTENT-WEAPON-RIFLE-001"; "COMBAT-TRACE-002"; "COMBAT-ARMOR-004" ] "CombatRules.damage" "rules-corpus-v1"
           Semantics = FormulaSemantics(RuleValueKind.FixedPoint, "damage", Multiply(Multiply(Input("baseDamage", RuleValueKind.FixedPoint, "damage"), Input("trace", RuleValueKind.FixedPoint, "ratio")), Input("retention", RuleValueKind.FixedPoint, "ratio"))) }
+    let damageReferenceCanonicalBytes = Rules.canonicalRuleBytes damageDefinition
+    let damageSpecification =
+        RuleSpecification.hybrid
+            (SpecificationIdentity.create "COMBAT-DAMAGE-001" |> Result.defaultWith failwith)
+            { Agent = "avocet-f32f"
+              Session = "typed-kernel-p1"
+              SourcePath = "src/SIR.Simulation/CombatRules.fs"
+              SourceRevision = "eb0b2c29a80f0bf3b400ce4415bf8587b4645083"
+              AuthoredAtUtc = "2026-08-24T10:00:00Z" }
+            "Pilot the typed specification kernel without changing COMBAT-DAMAGE-001 authority or semantics."
+            damageDefinition
+            [ "baseDamage"; "trace"; "retention" ]
+            [ "expectedDamage" ]
+    let private damage =
+        damageSpecification
+        |> RuleSpecification.compile
+        |> Result.defaultWith (fun diagnostics ->
+            diagnostics
+            |> List.map (fun item -> item.Code + " " + item.Path + ": " + item.Message)
+            |> String.concat "; "
+            |> failwith)
     let private transition =
         { Metadata = metadata "COMBAT-ATTACK-RESOLUTION-001" "Resolve one explained attack" Transition "The attack transition exposes its ordered rule calls and authoritative event." [ "COMBAT-ENGAGEMENT-001"; "COMBAT-COLLISION-001"; "COMBAT-COVER-003"; "COMBAT-PENETRATION-001"; "COMBAT-DAMAGE-001"; "COMBAT-WOUND-001"; "COMBAT-SUPPRESSION-001"; "COMBAT-COLLATERAL-001" ] "CombatRules.resolveAttack" "rules-corpus-v2"
           Semantics = TransitionSemantics { Phase = "AttackPhase"; Preconditions = []; Reads = [ "attacker.cell"; "target.footprint"; "weapon"; "cover"; "armor"; "target.health"; "target.suppression" ]; Effects = [ "cover.integrity"; "target.health"; "target.wounds"; "target.incapacitated"; "target.suppression" ]; Events = [ "AttackResolved"; "CoverDestroyed" ] } }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="typed-kernel-p1" tests="5" failures="0" errors="0" skipped="0">
+  <testsuite name="typed-kernel-p1" tests="5" failures="0" errors="0" skipped="0">
+    <testcase classname="SIR.TypedKernel" name="native-build-and-conformance"></testcase>
+    <testcase classname="SIR.TypedKernel" name="projection-freshness-and-refusal-mutations"></testcase>
+    <testcase classname="SIR.TypedKernel" name="native-fable-specification-equality"></testcase>
+    <testcase classname="SIR.TypedKernel" name="public-surface-governance"></testcase>
+    <testcase classname="SIR.TypedKernel" name="production-review-freshness"></testcase>
+  </testsuite>
+</testsuites>

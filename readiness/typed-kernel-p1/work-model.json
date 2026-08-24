@@ -1,0 +1,2549 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "typed-kernel-p1",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/typed-kernel-p1/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "241e1fb204ca6de89e463d2e83c91d6bc7e820eb264ec56e5b10f65a5c199d03"
+      }
+    },
+    {
+      "path": "work/typed-kernel-p1/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "6b1dcb2b4f557e981803585a5836972848d8e52a4ad1b4dd9c2875586ae342fc"
+      }
+    },
+    {
+      "path": "work/typed-kernel-p1/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "595801945387dd64a7d5ac26be3706390f65530a785aa44cf0a9fbf3d3c62ce6"
+      }
+    },
+    {
+      "path": "work/typed-kernel-p1/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "8ecf703abd4836dc0258bd6808bb75e3e8fede0dd0a41f61b5d47f8bdd9af54d"
+      }
+    },
+    {
+      "path": "work/typed-kernel-p1/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "77f6869ce0c5fc68ba245ab9f248385d6937c2533cdf2a74cc1f9c7bccc13a99"
+      }
+    },
+    {
+      "path": "work/typed-kernel-p1/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "b6b9fc5c2e4f8117b2ed9c35b16b2ea39fe9a2e62b04a19c9a32f24a99e76625"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "typed-kernel-p1",
+    "title": "Typed Kernel P1 Specification Pilot",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "Canonical \u0060SpecificationModel\u0060 identity, schema version, provenance, normalized bytes, stable fingerprint, typed diagnostics, and deterministic semantic diff MUST be explicit and inspectable; invalid or unreadable values MUST not become a specification verdict. (covers AC-001, AC-003)",
+      "text": "Canonical \u0060SpecificationModel\u0060 identity, schema version, provenance, normalized bytes, stable fingerprint, typed diagnostics, and deterministic semantic diff MUST be explicit and inspectable; invalid or unreadable values MUST not become a specification verdict. (covers AC-001, AC-003)",
+      "acceptanceCriteria": [
+        "AC-001",
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/typed-kernel-p1/spec.md",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001",
+        "EV012",
+        "EV016"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "A S.I.R.-owned rule specification compiler MUST validate and compile one migrated real rule to the current \u0060RuleDefinition\u0060 authority without a second execution path. (covers AC-002)",
+      "text": "A S.I.R.-owned rule specification compiler MUST validate and compile one migrated real rule to the current \u0060RuleDefinition\u0060 authority without a second execution path. (covers AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/typed-kernel-p1/spec.md",
+      "sourceLocation": {
+        "line": 46,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002",
+        "EV013",
+        "EV014",
+        "EV016"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "Direct-record, computation-expression, and hybrid forms with equivalent meaning MUST normalize byte-identically; three iterative sessions MUST record questions, revisions, diagnostics, semantic-diff result, elapsed time, and select the least-friction surface. (covers AC-001, AC-004)",
+      "text": "Direct-record, computation-expression, and hybrid forms with equivalent meaning MUST normalize byte-identically; three iterative sessions MUST record questions, revisions, diagnostics, semantic-diff result, elapsed time, and select the least-friction surface. (covers AC-001, AC-004)",
+      "acceptanceCriteria": [
+        "AC-001",
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/typed-kernel-p1/spec.md",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003",
+        "EV013",
+        "EV017"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "Generated Markdown and manifest projection MUST carry source and generated fingerprints; check mode MUST reject stale, missing, malformed, or directly edited output, and generation MUST be the only normal write path. (covers AC-003, AC-004)",
+      "text": "Generated Markdown and manifest projection MUST carry source and generated fingerprints; check mode MUST reject stale, missing, malformed, or directly edited output, and generation MUST be the only normal write path. (covers AC-003, AC-004)",
+      "acceptanceCriteria": [
+        "AC-003",
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/typed-kernel-p1/spec.md",
+      "sourceLocation": {
+        "line": 48,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004",
+        "T034"
+      ],
+      "linkedEvidenceIds": [
+        "EV004",
+        "EV015",
+        "EV017",
+        "EV034"
+      ]
+    },
+    {
+      "id": "FR-005",
+      "title": "Registered algorithms MUST remain explicit opaque typed contracts whose symbol, fingerprint, inputs, result, reads/writes, evidence, and explanation fields are visible; the complete .NET/Fable corpus, execution, replay, manifest, and coverage behavior MUST remain compatible. (covers AC-002)",
+      "text": "Registered algorithms MUST remain explicit opaque typed contracts whose symbol, fingerprint, inputs, result, reads/writes, evidence, and explanation fields are visible; the complete .NET/Fable corpus, execution, replay, manifest, and coverage behavior MUST remain compatible. (covers AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/typed-kernel-p1/spec.md",
+      "sourceLocation": {
+        "line": 49,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T005"
+      ],
+      "linkedEvidenceIds": [
+        "EV005",
+        "EV014",
+        "EV016"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "\u0060RuleDefinition\u0060, \u0060Rules.validate\u0060, and existing",
+      "decision": "\u0060RuleDefinition\u0060, \u0060Rules.validate\u0060, and existing",
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [
+        "AC-002"
+      ],
+      "source": "work/typed-kernel-p1/clarifications.md",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T006"
+      ]
+    },
+    {
+      "id": "DEC-002",
+      "title": "Direct records are the semantic reference,",
+      "decision": "Direct records are the semantic reference,",
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [
+        "AC-001",
+        "AC-004"
+      ],
+      "source": "work/typed-kernel-p1/clarifications.md",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T007"
+      ]
+    },
+    {
+      "id": "DEC-003",
+      "title": "Only \u0060COMBAT-DAMAGE-001\u0060 is migrated. Every",
+      "decision": "Only \u0060COMBAT-DAMAGE-001\u0060 is migrated. Every",
+      "requirementRefs": [
+        "FR-002",
+        "FR-005"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [
+        "AC-002"
+      ],
+      "source": "work/typed-kernel-p1/clarifications.md",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T008"
+      ]
+    },
+    {
+      "id": "DEC-004",
+      "title": "The normalized specification uses one",
+      "decision": "The normalized specification uses one",
+      "requirementRefs": [
+        "FR-001",
+        "FR-004"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [
+        "AC-003"
+      ],
+      "source": "work/typed-kernel-p1/clarifications.md",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T009"
+      ]
+    },
+    {
+      "id": "DEC-005",
+      "title": "The existing rule-corpus generation tool owns the",
+      "decision": "The existing rule-corpus generation tool owns the",
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [
+        "AC-003"
+      ],
+      "source": "work/typed-kernel-p1/clarifications.md",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T010"
+      ]
+    },
+    {
+      "id": "DEC-006",
+      "title": "Three authoring-session receipts live under the SDD",
+      "decision": "Three authoring-session receipts live under the SDD",
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [
+        "AC-004"
+      ],
+      "source": "work/typed-kernel-p1/clarifications.md",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T011"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "AC-003",
+        "FR-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Implement requirement FR-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-002"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Implement requirement FR-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-003"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "AC-004",
+        "FR-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Implement requirement FR-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "AC-004",
+        "FR-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Implement requirement FR-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-005"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "T006",
+      "title": "Implement clarification decision DEC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-001"
+      ],
+      "sourceIds": [
+        "DEC-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV006"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "T007",
+      "title": "Implement clarification decision DEC-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-002"
+      ],
+      "sourceIds": [
+        "DEC-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV007"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "T008",
+      "title": "Implement clarification decision DEC-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-003"
+      ],
+      "sourceIds": [
+        "DEC-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV008"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "T009",
+      "title": "Implement clarification decision DEC-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-004"
+      ],
+      "sourceIds": [
+        "DEC-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV009"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "T010",
+      "title": "Implement clarification decision DEC-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-005"
+      ],
+      "sourceIds": [
+        "DEC-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV010"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "T011",
+      "title": "Implement clarification decision DEC-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-006"
+      ],
+      "sourceIds": [
+        "DEC-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV011"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "T012",
+      "title": "Implement plan decision PD-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "AC-003",
+        "DEC-004",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV012"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "T013",
+      "title": "Implement plan decision PD-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "AC-002",
+        "DEC-001",
+        "DEC-002",
+        "FR-002",
+        "FR-003",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV013"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "T014",
+      "title": "Implement plan decision PD-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "DEC-003",
+        "FR-002",
+        "FR-005",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV014"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "T015",
+      "title": "Implement plan decision PD-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "AC-004",
+        "DEC-005",
+        "FR-004",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV015"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "T016",
+      "title": "Implement plan decision PD-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "FR-001",
+        "FR-002",
+        "FR-005",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV016"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "T017",
+      "title": "Implement plan decision PD-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "DEC-006",
+        "FR-003",
+        "FR-004",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV017"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "T018",
+      "title": "Update contract surface PC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV018"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "T019",
+      "title": "Update contract surface PC-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV019"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "T020",
+      "title": "Update contract surface PC-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV020"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "id": "T021",
+      "title": "Update contract surface PC-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV021"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "id": "T022",
+      "title": "Record verification evidence VO-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PC-002",
+        "PD-001",
+        "PD-002",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV022"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "id": "T023",
+      "title": "Record verification evidence VO-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-003",
+        "VO-002"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV023"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "id": "T024",
+      "title": "Record verification evidence VO-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PC-004",
+        "PD-004",
+        "VO-003"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV024"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 24,
+        "column": 1
+      }
+    },
+    {
+      "id": "T025",
+      "title": "Record verification evidence VO-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PD-005",
+        "VO-004"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV025"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "id": "T026",
+      "title": "Record verification evidence VO-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PD-006",
+        "VO-005"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV026"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      }
+    },
+    {
+      "id": "T027",
+      "title": "Handle migration posture PM-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV027"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 27,
+        "column": 1
+      }
+    },
+    {
+      "id": "T028",
+      "title": "Handle migration posture PM-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PM-002"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV028"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "id": "T029",
+      "title": "Handle migration posture PM-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PM-003"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV029"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "id": "T030",
+      "title": "Refresh generated view impact GV-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV030"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      }
+    },
+    {
+      "id": "T031",
+      "title": "Refresh generated view impact GV-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-002",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV031"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 31,
+        "column": 1
+      }
+    },
+    {
+      "id": "T032",
+      "title": "Refresh generated view impact GV-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-003",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV032"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "id": "T033",
+      "title": "Refresh generated view impact GV-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-004",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV033"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "id": "T034",
+      "title": "Preserve protected feedback headroom for corpus governance",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T004",
+        "T017"
+      ],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "PD-007",
+        "VO-006"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV034"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 34,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV006",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T006",
+      "taskRefs": [
+        "T006"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV007",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T007",
+      "taskRefs": [
+        "T007"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV008",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T008",
+      "taskRefs": [
+        "T008"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV009",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T009",
+      "taskRefs": [
+        "T009"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV010",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T010",
+      "taskRefs": [
+        "T010"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV011",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T011",
+      "taskRefs": [
+        "T011"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV012",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T012",
+      "taskRefs": [
+        "T012"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV013",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T013",
+      "taskRefs": [
+        "T013"
+      ],
+      "requirementRefs": [
+        "FR-002",
+        "FR-003"
+      ],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV014",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T014",
+      "taskRefs": [
+        "T014"
+      ],
+      "requirementRefs": [
+        "FR-002",
+        "FR-005"
+      ],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV015",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T015",
+      "taskRefs": [
+        "T015"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV016",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T016",
+      "taskRefs": [
+        "T016"
+      ],
+      "requirementRefs": [
+        "FR-001",
+        "FR-002",
+        "FR-005"
+      ],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV017",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T017",
+      "taskRefs": [
+        "T017"
+      ],
+      "requirementRefs": [
+        "FR-003",
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV018",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T018",
+      "taskRefs": [
+        "T018"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV019",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T019",
+      "taskRefs": [
+        "T019"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV020",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T020",
+      "taskRefs": [
+        "T020"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV021",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T021",
+      "taskRefs": [
+        "T021"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV022",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T022",
+      "taskRefs": [
+        "T022"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV023",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T023",
+      "taskRefs": [
+        "T023"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV024",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T024",
+      "taskRefs": [
+        "T024"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 24,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV025",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T025",
+      "taskRefs": [
+        "T025"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV026",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T026",
+      "taskRefs": [
+        "T026"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV027",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T027",
+      "taskRefs": [
+        "T027"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 27,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV028",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T028",
+      "taskRefs": [
+        "T028"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV029",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T029",
+      "taskRefs": [
+        "T029"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV030",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T030",
+      "taskRefs": [
+        "T030"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV031",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T031",
+      "taskRefs": [
+        "T031"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "src/SIR.Domain/RuleSpecification.fs",
+        "src/SIR.Domain/SpecificationModel.fs",
+        "src/SIR.Domain/SpecificationModel.fsi",
+        "src/SIR.Simulation/CombatRules.fs",
+        "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json",
+        "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md",
+        "work/typed-kernel-p1/artifacts/authoring-surface-selection.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 31,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV032",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T032",
+      "taskRefs": [
+        "T032"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/fsharp-public-surface.json",
+        "readiness/fsharp-public-surfaces/src_SIR.Domain_SIR.Domain.fsproj.json",
+        "readiness/fsharp-public-surfaces/src_SIR.Simulation_SIR.Simulation.fsproj.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV033",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T033",
+      "taskRefs": [
+        "T033"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/assets/map-editor-review/manifest.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV034",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T034",
+      "taskRefs": [
+        "T034"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "readiness/typed-kernel-p1/feedback-headroom.json",
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "tests/SIR.Conformance.Shared/Program.fs"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 34,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/typed-kernel-p1/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.0.1"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/typed-kernel-p1/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "241e1fb204ca6de89e463d2e83c91d6bc7e820eb264ec56e5b10f65a5c199d03"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/typed-kernel-p1/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6b1dcb2b4f557e981803585a5836972848d8e52a4ad1b4dd9c2875586ae342fc"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/typed-kernel-p1/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "595801945387dd64a7d5ac26be3706390f65530a785aa44cf0a9fbf3d3c62ce6"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/typed-kernel-p1/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "8ecf703abd4836dc0258bd6808bb75e3e8fede0dd0a41f61b5d47f8bdd9af54d"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/typed-kernel-p1/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "77f6869ce0c5fc68ba245ab9f248385d6937c2533cdf2a74cc1f9c7bccc13a99"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/typed-kernel-p1/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b6b9fc5c2e4f8117b2ed9c35b16b2ea39fe9a2e62b04a19c9a32f24a99e76625"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "7e80403a1cf93fd0321ca384f432f6e9ddccbc490f490f1210eaeb1ad6750878"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}

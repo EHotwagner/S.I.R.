@@ -58,6 +58,8 @@ type HistoricalRuleResolution =
 
 [<RequireQualifiedAccess>]
 module CombatRules =
+    val damageSpecification: SpecificationModel<RuleSpecificationAst>
+    val damageReferenceCanonicalBytes: byte array
     val registry: RuleDefinition list
     val implementationArtifacts: (string * byte array) list
     val packageIdentity: RulePackageIdentity
