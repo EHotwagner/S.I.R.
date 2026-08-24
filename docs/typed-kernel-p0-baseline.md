@@ -92,7 +92,7 @@ both use vocabularies, but P0 has not proved a common vocabulary ownership contr
 Likewise, two domain variants are not evidence for a reusable open-extension
 registration mechanism. P1 may test these ideas; P0 does not admit them as solved.
 
-## S.I.R.-owned, non-transferable semantics
+## Domain-owned, non-transferable semantics
 
 The following remain explicitly outside a shared specification substrate:
 

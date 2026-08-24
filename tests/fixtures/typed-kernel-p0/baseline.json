@@ -54,7 +54,7 @@
     },
     {
       "path": "docs/typed-kernel-p0-baseline.md",
-      "sha256": "be0b09d26619f08f367752b757f1bd72bd6f8fa119a027bcc8d20f2a6bce9654"
+      "sha256": "c8459f4788f26a243ee0b1e72ec8b01f92694b66655d2a07549b10426495560d"
     },
     {
       "path": "scripts/capture-typed-kernel-p0.sh",
