@@ -24,30 +24,62 @@ const playwrightLib = (name) => require(require.resolve(`playwright/package.json
 const { forceRegExp } = playwrightLib("util.js");
 const { program } = playwrightLib("program.js");
 
+// THE ARGV GRAMMAR IS THEIRS TOO. WE RUN THEIR PARSER; WE DO NOT DESCRIBE IT.
+//
+// Deriving the flag names and the compiler still left a THIRD hand-written representation: the
+// grammar itself. Recognising only `flag`, `flag=value` and `flag value` is a description of
+// commander, and commander admits more than that -- attached short values (`-Gpattern`), clustered
+// shorts (`-xGpattern`), a literal `=` after a SHORT flag (which is part of the value, not a
+// separator), and last-wins on repetition. Each divergence was a real escape or a real false red.
+//
+// A list of argv forms cannot fix this, and adding one would be the fourth round of the same move.
+// So the grammar is not described here at all: a fresh command is built from Playwright's own
+// registered `test` options and asked to parse. What it returns IS what Playwright's CLI sees.
+const playwrightTestCommand = (() => {
+  const test = program.commands?.find((command) => command.name() === "test");
+  if (!test?.options?.length)
+    throw new Error("Playwright no longer registers a `test` command with options, so this filter check cannot parse a command line the way Playwright does. Refusing to guess at its grammar.");
+  return test;
+})();
+
 export const grepInvertFlagNames = (() => {
-  const test = program.commands.find((command) => command.name() === "test");
-  const option = test?.options?.find((candidate) => candidate.long === "--grep-invert");
+  const option = playwrightTestCommand.options.find((candidate) => candidate.long === "--grep-invert");
   if (!option?.long)
-    throw new Error("Playwright no longer registers a --grep-invert option under its `test` command, so this filter check cannot know what to look for on the command line. Refusing to guess.");
+    throw new Error("Playwright no longer registers a --grep-invert option under its `test` command. Refusing to guess.");
   return [option.long, option.short].filter(Boolean);
 })();
 
-export function tacticalOverlayLayerCommandLineFilterPatterns(argv) {
-  const patterns = [];
-  for (let index = 0; index < argv.length; index += 1) {
-    const argument = `${argv[index]}`;
-    let value = null;
-    if (grepInvertFlagNames.includes(argument) && index + 1 < argv.length) value = `${argv[index + 1]}`;
-    else for (const flag of grepInvertFlagNames)
-      if (argument.startsWith(`${flag}=`)) value = argument.slice(flag.length + 1);
-    if (value === null) continue;
-    try {
-      patterns.push({ source: argument.split("=")[0], value, expression: forceRegExp(value) });
-    } catch {
-      patterns.push({ source: argument.split("=")[0], value, unparseable: true });
-    }
+// Returns exactly what Playwright's CLI would put in `grepInvert` for these user arguments, including
+// last-wins on repetition -- which a collector that gathered every occurrence got wrong in the other
+// direction, refusing a run whose earlier pattern was overridden and never applied.
+export function playwrightGrepInvertFor(userArguments) {
+  const command = playwrightTestCommand.createCommand("test");
+  command.exitOverride();
+  command.configureOutput({ writeOut() {}, writeErr() {} });
+  command.allowUnknownOption(true).allowExcessArguments(true);
+  for (const option of playwrightTestCommand.options) command.addOption(option);
+  command.action(() => {});
+  try {
+    command.parse(userArguments, { from: "user" });
+  } catch {
+    // Playwright's own parser rejected these arguments. Whether the budget test survives is then
+    // unknowable rather than fine, so this is surfaced as a refusal rather than as "no filter".
+    return { unparseable: true };
   }
-  return patterns;
+  return { value: command.opts().grepInvert };
+}
+
+export function tacticalOverlayLayerCommandLineFilterPatterns(argv) {
+  // `from: "user"` wants the arguments after the executable and script; a leading `test` subcommand
+  // is tolerated as an excess argument rather than stripped by hand.
+  const parsed = playwrightGrepInvertFor(argv.slice(2));
+  if (parsed.unparseable) return [{ source: grepInvertFlagNames[0], value: argv.slice(2).join(" "), unparseable: true }];
+  if (parsed.value === undefined || parsed.value === null) return [];
+  try {
+    return [{ source: grepInvertFlagNames[0], value: parsed.value, expression: forceRegExp(parsed.value) }];
+  } catch {
+    return [{ source: grepInvertFlagNames[0], value: parsed.value, unparseable: true }];
+  }
 }
 
 export function tacticalOverlayLayerFilterPatterns(config, argv) {

@@ -8,7 +8,7 @@ import { gunzipSync } from "node:zlib";
 import { byteDigest, digest, evaluateArtifactVerdict, evaluateRunFrameVerdict, extractFrameHealth, fixtureIdentityDigest, measurementReport, extractInputToPaint, extractJourneyTrace, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, validateObservedControls, validateProductionSummary, validateRetainedRawEvidence, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
 import { documentedFrameCeilingCell, documentedTacticalBudgetRows, supersededTacticalFigures, tacticalBudgetSurfaces, tacticalDeclaredBudgetObjects, tacticalOverlayLayerBudget, tacticalOverlayLayerBudgetReason, assertTacticalOverlayLayerBudget, assertTacticalOverlayLayerBudgetWasEvaluatedSince, tacticalOverlayLayerEvaluationMark, tacticalOverlayLayerSurface, tacticalOverlayLayerRunRefusal, tacticalOverlayLayerBudgetTag, assertTacticalOverlayLayerRunNetArmed, tacticalOverlayLayerFilterRefusal, tacticalOverlayLayerReporterModule, tacticalOverlayLayerBudgetTitlePaths, tacticalOverlayLayerBudgetTitle, tacticalOverlayLayerSpecFile, tacticalOverlayLayerConfigFilterPatterns, tacticalBudgetTableDocumentation, tacticalProjectedQuantities, tacticalFrameBudget, tacticalFrameBudgetDocumentation, tacticalFrameCadenceBudget, tacticalFrameCadenceBudgetReason, tacticalInputToPaintBudgetReason, tacticalReviewManifestBudgets, tacticalRuntimeEffectCap, tacticalStructuralBudgetReason, tacticalWorkloadBudgetAtScale, tacticalWorkloadBudgetFor, tacticalWorkloadBudgetList } from "./lib/performance-budget.mjs";
 
-import { grepInvertFlagNames, tacticalOverlayLayerCommandLineFilterPatterns, tacticalOverlayLayerFilterPatterns } from "../tests/SIR.Browser.Tests/declared-budget-reporter.js";
+import { grepInvertFlagNames, playwrightGrepInvertFor, tacticalOverlayLayerCommandLineFilterPatterns, tacticalOverlayLayerFilterPatterns } from "../tests/SIR.Browser.Tests/declared-budget-reporter.js";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 // validateDefinitions COMPOSES the budget: workload policy from the fixture file, ceiling from the
@@ -1028,16 +1028,53 @@ const { forceRegExp: playwrightForceRegExp } = createRequire(import.meta.url)(
 
 assert.deepEqual(grepInvertFlagNames, ["--grep-invert", "-G"],
   "the grep-invert flag names must come from Playwright's registered `test` command; `-G` is a documented alias and hand-written parsing did not know it");
-for (const spelling of ["restore independently", "RESTORE INDEPENDENTLY", "/restore independently/", "/restore independently/i", "@tactical-overlay-budget"])
-  for (const argv of [["--grep-invert", spelling], ["-G", spelling], [`--grep-invert=${spelling}`]]) {
-    const [compiled] = tacticalOverlayLayerCommandLineFilterPatterns(argv);
-    const expected = playwrightForceRegExp(spelling);
-    assert.ok(compiled, `${argv.join(" ")} must be recognised as a grep-invert spelling`);
-    assert.equal(`${compiled.expression}`, `${expected}`,
-      `${argv.join(" ")} must compile exactly as Playwright's forceRegExp does (${expected}); compiling it by hand is how this check came to disagree with the matcher it is judging`);
-  }
-assert.deepEqual(tacticalOverlayLayerCommandLineFilterPatterns(["--grep", "@production-delivery"]), [],
-  "a positive --grep is not a grep-invert and must not be collected; this check judges --grep-invert only");
+
+// THE ARGV GRAMMAR IS PINNED TO MEASURED PLAYWRIGHT BEHAVIOUR, NOT DESCRIBED.
+//
+// The previous version of this block compiled 15 "spellings" and compared `forceRegExp(value)` with
+// `forceRegExp(spelling)` -- BOTH FROM THE SAME FUNCTION. That asserts only `value === spelling`: a
+// property of the parse, never of the compilation. Its pattern axis carried no information at all,
+// which is why four more patterns changed nothing while one more ARGV FORM reds it instantly. The
+// second representation had moved out of the parser and into the list of cases.
+//
+// The grammar is no longer this file's to describe: `playwrightGrepInvertFor` runs a command built
+// from Playwright's own registered options. What is pinned here is the OBSERVED RESULT for each argv
+// shape, so a change in their grammar reds this gate and asks to be re-measured, rather than quietly
+// opening spelling eleven. Every expectation below was measured against Playwright, including the two
+// that are counter-intuitive: a literal `=` after a SHORT flag is part of the VALUE, and a repeated
+// flag is LAST-WINS rather than cumulative.
+const measuredGrammar = [
+  [["-G", "restore independently"], "restore independently"],
+  [["-Grestore independently"], "restore independently"],
+  [["-xGrestore independently"], "restore independently"],
+  [["-G=restore independently"], "=restore independently"],
+  [["-G", "a", "-G", "restore independently"], "restore independently"],
+  [["--grep-invert", "restore independently"], "restore independently"],
+  [["--grep-invert=restore independently"], "restore independently"],
+  [["--grep-invert", "@production-delivery", "--shard=1/8"], "@production-delivery"],
+  [["--grep", "@production-delivery"], undefined],
+  [[], undefined],
+];
+for (const [userArguments, expected] of measuredGrammar) {
+  assert.deepEqual(playwrightGrepInvertFor(userArguments), { value: expected },
+    `Playwright's parser resolves ${JSON.stringify(userArguments)} to ${JSON.stringify(expected)}; if this changed, the filter check is judging a different command line than the one that ran`);
+  const collected = tacticalOverlayLayerCommandLineFilterPatterns(["node", "cli.js", ...userArguments]);
+  assert.equal(collected.length, expected === undefined ? 0 : 1,
+    `${JSON.stringify(userArguments)} must contribute ${expected === undefined ? "no" : "exactly one"} filter pattern -- collecting every occurrence of a last-wins flag refused runs whose earlier pattern was overridden`);
+  if (expected !== undefined)
+    assert.equal(collected[0].value, expected,
+      `${JSON.stringify(userArguments)} must contribute the value Playwright resolved, not one this file re-derived`);
+}
+
+// THE COMPILER IS THEIRS, and that is a separate claim from the grammar. This one is meaningful
+// because the inputs are values Playwright's PARSER produced, compared against Playwright's own
+// compiler -- not one function compared with itself.
+for (const [userArguments, expected] of measuredGrammar) {
+  if (expected === undefined) continue;
+  const [collected] = tacticalOverlayLayerCommandLineFilterPatterns(["node", "cli.js", ...userArguments]);
+  assert.equal(`${collected.expression}`, `${playwrightForceRegExp(expected)}`,
+    `${JSON.stringify(userArguments)} must compile exactly as Playwright's forceRegExp does; compiling by hand is how this check came to disagree with the matcher it judges`);
+}
 
 // THE CONFIG CHANNEL CARRIES ITS REGEXP THROUGH, FLAGS INCLUDED. Rebuilding from `.source` dropped
 // them, which is the config-side half of the same disagreement.
@@ -1051,7 +1088,10 @@ assert.equal(tacticalOverlayLayerConfigFilterPatterns({ projects: [{ name: "", g
 // production cannot supply is not evidence about production, which is how two earlier rounds looked
 // green; this reproduces the resolved config byte-for-byte.
 const runConfig = (overrides = {}) => ({ projects: [{ name: "", grepInvert: null }], grepInvert: null, ...overrides });
-const refuse = (config, argv = []) => tacticalOverlayLayerFilterRefusal(tacticalOverlayLayerFilterPatterns(config, argv), config);
+// argv is given as USER arguments; the two leading positions Playwright's own process.argv carries
+// (executable and script) are supplied here so the collector slices the same way it does in a run.
+const refuse = (config, userArguments = []) =>
+  tacticalOverlayLayerFilterRefusal(tacticalOverlayLayerFilterPatterns(config, ["node", "cli.js", ...userArguments]), config);
 const budgetTitlePaths = tacticalOverlayLayerBudgetTitlePaths(runConfig());
 for (const part of [tacticalOverlayLayerSpecFile, tacticalOverlayLayerBudgetTitle, tacticalOverlayLayerBudgetTag])
   assert.ok(budgetTitlePaths[0].includes(part), `the reconstructed title path must carry ${JSON.stringify(part)}`);
@@ -1086,7 +1126,7 @@ const sticky = playwrightForceRegExp("restore independently");
 assert.match(`${tacticalOverlayLayerFilterRefusal([{ source: "x", expression: sticky }], runConfig())}`, /excludes the overlay-layer budget test/);
 assert.match(`${tacticalOverlayLayerFilterRefusal([{ source: "x", expression: sticky }], runConfig())}`, /excludes the overlay-layer budget test/,
   "the same expression must refuse identically on a second call; a stateful lastIndex would let the second run through");
-console.log(`JUSTIFIED tactical-overlay-budget-net-installation: the run-level net's installation is enumerated -- an armed run passes, an unregistered reporter is refused, unreadable configurations are refused rather than assumed armed; the grep-invert flag names and pattern compilation are DERIVED FROM PLAYWRIGHT and asserted equivalent to its own forceRegExp across 15 spellings, so a drift in its parser reds this gate; and a filter that removes the budget test is refused through the command line (both flag names, both equals-sign forms), the top-level grepInvert, its array form and the per-project field, while 7 patterns that do NOT remove it are not. SCOPE: --grep-invert only. A positive --grep selecting a cohort without this test is deliberately not judged, because the production-delivery cohort runs without it legitimately; and this guard is provisional -- the terminal guarantee is S.I.R.#334's, not this one's.`);
+console.log(`JUSTIFIED tactical-overlay-budget-net-installation: the run-level net's installation is enumerated -- an armed run passes, an unregistered reporter is refused, unreadable configurations are refused rather than assumed armed. The command line is parsed by PLAYWRIGHT'S OWN command, built from its registered test options, and ${measuredGrammar.length} argv shapes are pinned to measured Playwright behaviour -- attached and clustered short values, a literal equals after a short flag being part of the value, and last-wins on repetition -- so a change in its grammar, its flag names or its compiler reds this gate rather than opening another spelling. A filter that removes the budget test is refused through the command line, the top-level grepInvert, its array form and the per-project field, while ${7} patterns that do NOT remove it are not. SCOPE: --grep-invert only; a positive --grep selecting a cohort without this test is deliberately not judged, because the production-delivery cohort runs without it legitimately. This guard is provisional -- the terminal guarantee is S.I.R.#334's, not this one's.`);
 
 console.log(`JUSTIFIED tactical-overlay-budget-run-refusal: a declared-but-unexecuted ${tacticalOverlayLayerBudgetTag} test is refused in 3 suppression states, an executed or failed one is not, a shard that never carried it is not, and an unreadable run is refused rather than passed`);
 console.log(`JUSTIFIED tactical-overlay-budget-wiring: the browser spec is WIRED to the declared verdict -- it imports and references the throwing form, does not use the returning form, tags the budget-bearing test, and carries no copy of ${overlayCeiling}; ${tacticalOverlayLayerSurface.attribute} is still emitted by the product. This is a source check and says NOTHING about whether the verdict executes: that is the evaluation guard and the run-level refusal. Both are inverted above, and so is the run-level net\u2019s own INSTALLATION -- an earlier revision of this line said "both inverted above" while only the guard had its installation checked, which is the asymmetry round 3 found.`);
