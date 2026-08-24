@@ -622,44 +622,57 @@ export function tacticalOverlayLayerBudgetTitlePaths(config) {
   ].join(" "));
 }
 
-// EVERY SPELLING OF THE FILTER, BECAUSE "BOTH CHANNELS" WAS ONE OF FOUR.
+// THE FILTER PATTERNS ARE PLAYWRIGHT'S TO PARSE AND COMPILE, NOT THIS MODULE'S TO RE-IMPLEMENT.
 //
-// `grepInvert` is a RegExp OR an array of them, at the top level OR per project -- and Playwright
-// filters on the PER-PROJECT value. A CLI `--grep-invert` reaches none of them: it is applied as a
-// selection filter and the resolved config's field stays null. Each of these removed the budget test
-// with a sibling present and shipped a forced breach at exit 0 while the declaration said "BOTH
-// CHANNELS".
-const tacticalOverlayLayerFilterPatterns = (config, argv) => {
+// This file used to walk argv and call `new RegExp(value)` itself. That was a second, hand-authored
+// representation of a fact Playwright already holds -- the same defect S.I.R.#334 names, installed in
+// the checker that exists to catch it -- and it disagreed with the original in three ways at once,
+// each of which shipped a forced breach at exit 0:
+//
+//   * `-G` is a documented alias for `--grep-invert`, and the hand parser did not know it;
+//   * Playwright compiles a CLI pattern with `forceRegExp`, which unwraps `/…/` and otherwise applies
+//     the `gi` flags -- so it is CASE-INSENSITIVE where `new RegExp(value)` is not, and literal where
+//     it unwraps. `--grep-invert "RESTORE INDEPENDENTLY"` removed the test and was not refused;
+//   * the config channel rebuilt each pattern from `.source`, silently discarding its flags.
+//
+// So the parsing and compiling now happen where Playwright's own functions are reachable -- in
+// tests/SIR.Browser.Tests/declared-budget-reporter.js, which derives the flag names from Playwright's
+// registered command and compiles with its `forceRegExp`. This module deliberately imports nothing
+// from Playwright: it is the shared declaration and several of its consumers run without it.
+//
+// What arrives here is already-compiled patterns, each with the channel it came from.
+export function tacticalOverlayLayerConfigFilterPatterns(config) {
   const patterns = [];
   const collect = (source, value) => {
     for (const candidate of Array.isArray(value) ? value : [value])
-      if (candidate instanceof RegExp) patterns.push({ source, value: candidate.source });
+      // The RegExp is carried through AS-IS. Rebuilding it from `.source` dropped its flags, which is
+      // the config-channel half of the same disagreement.
+      if (candidate instanceof RegExp) patterns.push({ source, expression: candidate });
   };
   collect("the config's grepInvert", config?.grepInvert);
   for (const project of Array.isArray(config?.projects) ? config.projects : [])
     collect(`project ${JSON.stringify(project?.name ?? "")}'s grepInvert`, project?.grepInvert);
-  for (let index = 0; index < argv.length; index += 1) {
-    const argument = `${argv[index]}`;
-    if (argument === "--grep-invert" && index + 1 < argv.length) patterns.push({ source: "--grep-invert", value: `${argv[index + 1]}` });
-    else if (argument.startsWith("--grep-invert=")) patterns.push({ source: "--grep-invert", value: argument.slice("--grep-invert=".length) });
-  }
   return patterns;
-};
+}
 
-export function tacticalOverlayLayerFilterRefusal(config, argv = []) {
-  const patterns = tacticalOverlayLayerFilterPatterns(config, argv);
+export function tacticalOverlayLayerFilterRefusal(patterns, config) {
+  if (!Array.isArray(patterns))
+    throw new Error("the overlay-layer filter refusal needs this run's compiled filter patterns; an unreadable filter set is refused rather than assumed empty");
   if (patterns.length === 0) return null;
   const titlePaths = tacticalOverlayLayerBudgetTitlePaths(config);
   for (const pattern of patterns) {
-    let expression;
-    try {
-      expression = new RegExp(pattern.value);
-    } catch {
-      return `this run was filtered with ${pattern.source} ${JSON.stringify(pattern.value)}, which is not a pattern this check can parse. Its effect on the overlay-layer budget test is therefore unknown, and an unknown effect on the budget's own test is refused rather than assumed harmless.`;
-    }
-    const excluded = titlePaths.find((titlePath) => expression.test(titlePath));
+    if (pattern.unparseable)
+      return `this run was filtered with ${pattern.source} ${JSON.stringify(pattern.value)}, which Playwright's own pattern compiler could not accept. Its effect on the overlay-layer budget test is therefore unknown, and an unknown effect on the budget's own test is refused rather than assumed harmless.`;
+    // `lastIndex` is stateful on a /g/ regex and `forceRegExp` applies `g`, so a shared expression
+    // tested twice can answer differently the second time. Playwright tests each title against a
+    // fresh evaluation; this resets rather than inheriting whatever the last call left behind.
+    pattern.expression.lastIndex = 0;
+    const excluded = titlePaths.find((titlePath) => {
+      pattern.expression.lastIndex = 0;
+      return pattern.expression.test(titlePath);
+    });
     if (excluded)
-      return `this run excludes the overlay-layer budget test via ${pattern.source} (${pattern.value}), which matches its full title path ${JSON.stringify(excluded)} and removes it from the run entirely. A run that filtered the budget out is not a run that met it, so it is refused here, while every filter that does NOT match that title path stays available.`;
+      return `this run excludes the overlay-layer budget test via ${pattern.source} (${pattern.expression}), which matches its full title path ${JSON.stringify(excluded)} and removes it from the run entirely. A run that filtered the budget out is not a run that met it, so it is refused here, while every filter that does NOT match that title path stays available.`;
   }
   return null;
 }
