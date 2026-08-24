@@ -42,6 +42,14 @@ module RulesCorpusFixtures =
     let manifestJson () = CombatRules.retainedPackage.ManifestJson
     let coverageJson () = CombatRules.retainedPackage.CoverageJson
     let representativeApplicationBytes () = (attack "fixture-attack-1").Explanation |> Rules.canonicalApplicationBytes
+    let specificationMarkdown () =
+        CombatRules.damageSpecification
+        |> RuleSpecification.markdownProjection
+        |> Result.defaultWith (fun diagnostics -> failwithf "Specification projection failed: %A" diagnostics)
+    let specificationReceiptJson () =
+        CombatRules.damageSpecification
+        |> RuleSpecification.projectionReceiptJson "hybrid" "tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md"
+        |> Result.defaultWith (fun diagnostics -> failwithf "Specification receipt failed: %A" diagnostics)
     let performanceWorkload iterations =
         let mutable checksum = 0
         for index in 1 .. iterations do
@@ -57,6 +65,73 @@ module RulesCorpusFixtures =
         checksum, applications, operands, (Rules.canonicalApplicationBytes explanation).Length, (System.Text.Encoding.UTF8.GetBytes CombatRules.retainedPackage.ManifestJson).Length
 
     let evaluate injectDivergence =
+        let selected = CombatRules.damageSpecification
+        let compiled = RuleSpecification.compile selected |> Result.defaultWith (fun diagnostics -> failwithf "Selected specification did not compile: %A" diagnostics)
+        require (Rules.canonicalRuleBytes compiled = CombatRules.damageReferenceCanonicalBytes) "The migrated specification changed COMBAT-DAMAGE-001 canonical bytes."
+
+        let direct: SpecificationModel<RuleSpecificationAst> =
+            { Identity = selected.Identity
+              SchemaVersion = selected.SchemaVersion
+              Provenance = selected.Provenance
+              Intent = "Direct-record authoring trial."
+              Ast = selected.Ast }
+        let computation =
+            RuleSpecification.computation selected.Identity selected.Provenance "Computation-expression authoring trial." {
+                definition compiled
+                reads selected.Ast.Reads
+                writes selected.Ast.Writes
+            }
+        let normalized model = RuleSpecification.normalizedBytes model |> Result.defaultWith (fun diagnostics -> failwithf "Normalization failed: %A" diagnostics)
+        require (normalized direct = normalized selected) "Direct-record and selected hybrid authoring normalized differently."
+        require (normalized computation = normalized selected) "Computation-expression and selected hybrid authoring normalized differently."
+        let fingerprint model = RuleSpecification.fingerprint model |> Result.defaultWith (fun diagnostics -> failwithf "Fingerprint failed: %A" diagnostics)
+        require (fingerprint direct = fingerprint selected && fingerprint computation = fingerprint selected) "Equivalent authoring forms produced different fingerprints."
+        let compiledBytes model = RuleSpecification.compile model |> Result.defaultWith (fun diagnostics -> failwithf "Compilation failed: %A" diagnostics) |> Rules.canonicalRuleBytes
+        require (compiledBytes direct = compiledBytes selected && compiledBytes computation = compiledBytes selected) "Equivalent authoring forms compiled differently."
+        match RuleSpecification.semanticDiff direct computation with
+        | Ok Equivalent -> ()
+        | verdict -> failwithf "Equivalent authoring forms produced a semantic diff: %A" verdict
+
+        let invalidProvenance =
+            { selected with Provenance = { selected.Provenance with SourceRevision = "not-a-git-object" } }
+        match RuleSpecification.validate invalidProvenance with
+        | diagnostics when diagnostics |> List.exists (fun item -> item.Code = "SPEC-PROVENANCE-REVISION" && item.Path = "/provenance/sourceRevision") -> ()
+        | diagnostics -> failwithf "Malformed provenance did not produce the stable diagnostic: %A" diagnostics
+
+        let invalidAst =
+            { selected with Ast = { selected.Ast with Definition = { selected.Ast.Definition with Metadata = { selected.Ast.Definition.Metadata with Evidence = [] } } } }
+        match RuleSpecification.validate invalidAst with
+        | diagnostics when diagnostics |> List.exists (fun item -> item.Code = "RULE-SPEC-EVIDENCE-REQUIRED" && item.Path = "/ast/definition/metadata/evidence") -> ()
+        | diagnostics -> failwithf "Invalid rule AST did not produce the stable diagnostic: %A" diagnostics
+
+        let changed =
+            { selected with
+                Ast =
+                    { selected.Ast with
+                        Definition = { selected.Ast.Definition with Metadata = { selected.Ast.Definition.Metadata with Rationale = selected.Ast.Definition.Metadata.Rationale + " Changed." } } } }
+        match RuleSpecification.semanticDiff selected changed with
+        | Ok(Changed changes) when changes |> List.exists (fun change -> change.Path = "/ast") -> ()
+        | verdict -> failwithf "Semantic AST change was not reported deterministically: %A" verdict
+
+        let traceDefinition = CombatRules.registry |> List.find (fun rule -> RuleId.value rule.Metadata.Id = "COMBAT-TRACE-002")
+        let traceModel =
+            RuleSpecification.hybrid
+                (SpecificationIdentity.create "COMBAT-TRACE-002" |> Result.defaultWith failwith)
+                { selected.Provenance with Agent = "conformance"; Session = "registered-algorithm" }
+                "Verify explicit registered-algorithm bindings."
+                traceDefinition
+                [ "visibleSamples"; "totalSamples" ]
+                [ "no-write:pure-result" ]
+        match RuleSpecification.tryRegisteredAlgorithm traceModel.Ast with
+        | Some algorithm ->
+            require (algorithm.ImplementationSymbol = "FS.GG.Game.Core.Los.lineOfSightBy") "Registered algorithm lost its implementation symbol."
+            require (algorithm.Inputs.Length = 2 && algorithm.Reads.Length = 2 && algorithm.Writes = [ "no-write:pure-result" ]) "Registered algorithm lost explicit input/read/write bindings."
+            require (not (List.isEmpty algorithm.Evidence) && not (List.isEmpty algorithm.ExplanationFields)) "Registered algorithm lost evidence or explanation bindings."
+        | None -> failwith "Algorithm specification was not exposed as a registered algorithm."
+
+        require ((specificationMarkdown ()).Contains "<!-- sir-rule-specification/v1 -->") "Generated specification Markdown omitted its schema marker."
+        require ((specificationReceiptJson ()).Contains "\"selectedSurface\":\"hybrid\"") "Generated specification receipt omitted the selected authoring surface."
+
         require (CombatRules.registry.Length = 16) "The combat registry must cover the complete physical-combat consequence chain."
         require (CombatRules.registry |> List.map (fun rule -> RuleId.value rule.Metadata.Id) |> List.distinct |> List.length = 16) "Rule IDs are not unique."
         let requiredPhysicalRules =

@@ -1,0 +1,875 @@
+schemaVersion: 1
+workId: typed-kernel-p1
+stage: evidence
+status: evidenceReady
+sourceSpec: work/typed-kernel-p1/spec.md
+sourceClarifications: work/typed-kernel-p1/clarifications.md
+sourceChecklist: work/typed-kernel-p1/checklist.md
+sourcePlan: work/typed-kernel-p1/plan.md
+sourceTasks: work/typed-kernel-p1/tasks.yml
+sourceAnalysis: readiness/typed-kernel-p1/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/typed-kernel-p1/analysis.json
+    digest: ef87443e6273dc60290e5ff7080f5a63c9b7d3f78b163333a72a219a60bbcdae
+    schemaVersion: 1
+  - label: checklist
+    path: work/typed-kernel-p1/checklist.md
+    digest: 241e1fb204ca6de89e463d2e83c91d6bc7e820eb264ec56e5b10f65a5c199d03
+    schemaVersion: 1
+  - label: clarifications
+    path: work/typed-kernel-p1/clarifications.md
+    digest: 6b1dcb2b4f557e981803585a5836972848d8e52a4ad1b4dd9c2875586ae342fc
+    schemaVersion: 1
+  - label: plan
+    path: work/typed-kernel-p1/plan.md
+    digest: 3c6e7efcd8df09f90ef1ae82324b3330237ad7f5f2004c9b9d5476e2a63e2ab0
+    schemaVersion: 1
+  - label: spec
+    path: work/typed-kernel-p1/spec.md
+    digest: 77f6869ce0c5fc68ba245ab9f248385d6937c2533cdf2a74cc1f9c7bccc13a99
+    schemaVersion: 1
+  - label: tasks
+    path: work/typed-kernel-p1/tasks.yml
+    digest: e69970b232d3a31551787fcde5e7e0ed0e881fb337cb7f2a65aee553cdd7abe5
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV012]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: [FR-002, FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV013]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: [FR-002, FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV014]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV015]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: [FR-001, FR-002, FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV016]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: [FR-003, FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV017]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV018]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV019]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV020]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV021]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV022]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV023]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV024]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV025]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV026
+    kind: verification
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV026]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV027
+    kind: verification
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV027]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV028
+    kind: verification
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV028]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV029
+    kind: verification
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV029]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV030
+    kind: verification
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV030]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV031
+    kind: verification
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV031]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, src/SIR.Domain/RuleSpecification.fs, src/SIR.Domain/SpecificationModel.fs, src/SIR.Domain/SpecificationModel.fsi, src/SIR.Simulation/CombatRules.fs, tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.json, tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md, work/typed-kernel-p1/artifacts/authoring-surface-selection.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 3
+      failed: 0
+      skipped: 0
+    notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

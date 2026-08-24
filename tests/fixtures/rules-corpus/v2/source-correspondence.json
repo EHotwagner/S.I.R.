@@ -2,10 +2,16 @@
   "schema": "sir-rules-source-correspondence-v2",
   "outsideIdentityRule": "Compile items of the rules implementation projects that are KNOWINGLY outside the sealed implementation identity set. This register is the COMPLEMENT of implementation-sources.json .sources: recording a path here never adds coverage, it declares a loss of it, so it cannot be used to widen the frozen set. scripts/verify-rules-corpus.sh refuses any compile item that entered the RULES IMPLEMENTATION CLOSURE after sourceCommit and is neither a declared source nor listed here -- that closure being every project compiling a declared source plus everything reachable from one through ProjectReference, transitively, so a new project one or more reference hops out is covered -- so extraction out of a declared source into a new file is a refusal with an actionable diagnostic rather than a silent loss of correspondence coverage (S.I.R.#290). An entry naming a path that is no longer in the closure is stale and is also refused. The register must be present and must be an array of strings; absent or wrongly typed is a refusal, because an absent register cannot be told apart from a deliberate empty one.",
   "outsideIdentity": [
+    "src/SIR.Domain/RuleSpecification.fs",
+    "src/SIR.Domain/SpecificationModel.fs",
+    "src/SIR.Domain/SpecificationModel.fsi",
     "src/SIR.Simulation/$(SpatialQueryImplementation)",
     "src/SIR.Simulation/$([System.IO.Path]::ChangeExtension('$(SpatialQueryImplementation)', '.fsi'))"
   ],
   "outsideIdentityNotes": {
+    "src/SIR.Domain/RuleSpecification.fs": "P1 typed-protocol-kernel pilot code introduced after the frozen rules implementation identity. It is reviewably outside that historical identity set; unchanged compiled rule bytes, semantic/package digests, generated-projection freshness, and .NET/Fable conformance guard the pilot output.",
+    "src/SIR.Domain/SpecificationModel.fs": "P1 generic specification envelope implementation introduced after the frozen rules implementation identity. The frozen set cannot grow in this change, so the new compile item is declared outside it and covered by the P1 conformance and projection gates.",
+    "src/SIR.Domain/SpecificationModel.fsi": "Public signature for the P1 generic specification envelope, introduced with its implementation after the frozen rules identity and governed by the same P1 evidence.",
     "src/SIR.Simulation/$(SpatialQueryImplementation)": "MSBuild property expression, not a path this gate can resolve. A conditional swap-in (Condition=\"'$(SpatialQueryImplementation)' != ''\") that replaces SpatialQuery.fs for the spatial-query mutation route. Neither SpatialQuery.fs nor any substitute is a declared implementation source, so the swap-in is outside the sealed identity set on either branch of the condition. It is recorded rather than resolved because this gate cannot evaluate an MSBuild expression, and an unevaluable include must not be silently dropped.",
     "src/SIR.Simulation/$([System.IO.Path]::ChangeExtension('$(SpatialQueryImplementation)', '.fsi'))": "The signature half of the same conditional swap-in, and outside the sealed identity set for the same reason."
   },
@@ -24,13 +30,13 @@
     "src/SIR.Domain/CanonicalEncoding.fs": "6ac9ad4352aeb377c5ef87c9bb17b450aba2d8d64af0b2e83cde515861b70503",
     "src/SIR.Domain/CanonicalHash.fs": "f05d74a91f24712990406b35784ffe010628530b7baa78384e16282c59032a6f",
     "src/SIR.Domain/FixedPoint.fs": "fc163a6b8ee048b35b608fbd42a8563df79728d22f479435fc465615d7453b82",
-    "src/SIR.Domain/Rules.fs": "e81c19f26eb73dd464a0ec11bac9d138e6bdab1a3a8e4bf5e034bf0a313e212c",
+    "src/SIR.Domain/Rules.fs": "dfe4698dffc8d213976b211a59138410c7f20a64c604bee04b7de46b05e909aa",
     "src/SIR.Match/MatchReplay.fs": "63fcfc3f8335dadf6bc457b9207e293b85f1829810155730ee488bbb8cccfe24",
     "src/SIR.Match/PhysicalCombatServices.fs": "e0100379d914701b19485c0344f0f7417430535a3fdd47b1367d8193188bb5c6",
     "src/SIR.Server/PhysicalCombatDiagnostics.fs": "6ef3affdea25a3a46adc69acda4c746a46ca055ec9a730f74961beabbf185637",
     "src/SIR.Simulation/CombatModel.fs": "21e9e716ea5de4f0879a58f62a6e9a5f2dc61fafac85f2d2352b34a73ced980a",
     "src/SIR.Simulation/CombatModel.fsi": "79971a63598b29a63eb2e185583b505a37f31b95382486fdd4ac9ee708610833",
-    "src/SIR.Simulation/CombatRules.fs": "714a8f3b2a635d187dc8fb4ec32059344f53757e85af613f24dff6ac4704a6b9",
+    "src/SIR.Simulation/CombatRules.fs": "e38e46ac15c48ed7c1703b92ddcef66cd733dadb0887d2e77753137bd4a64861",
     "src/SIR.Simulation/Replay.fs": "5fd3a62b97729e8c090e5e83101eb4a79a51a4928a169ac18492a90ccc99e12d",
     "src/SIR.Simulation/Simulation.fs": "57c60049162d36b24cd19da499ec0d75b064bf8ab46d63d20cd9b64ab39794f4"
   }

@@ -163,6 +163,12 @@ let main arguments =
     | [ "--print-rules-application" ] ->
         printfn "%s" (RulesCorpusFixtures.representativeApplicationBytes () |> NumericFixtures.hex)
         0
+    | [ "--print-rule-specification" ] ->
+        printfn "%s" (RulesCorpusFixtures.specificationMarkdown ())
+        0
+    | [ "--print-rule-specification-receipt" ] ->
+        printfn "%s" (RulesCorpusFixtures.specificationReceiptJson ())
+        0
     | [ "--print-rule-coherence" ] ->
         printfn "%s" (RuleCoherenceFixtures.evaluate () |> NumericFixtures.hex)
         0
