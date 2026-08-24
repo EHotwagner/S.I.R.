@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/typed-kernel-p1/ship.json",
-      "digest": "sha256:0e24ad76902ec286bfc9318ccc38315a644c797d631e4ff853553195b782f8d8",
+      "digest": "sha256:e09fcfa12c9e0919a64d22f1d5a5f64e979cc3faf18952f7bf6fe76d0c128454",
       "schemaVersion": 1
     },
     {
       "path": "readiness/typed-kernel-p1/verify.json",
-      "digest": "sha256:87ee8aff58d9b6771fe909479adbd0eaf0928c732e53eddf7c15d9db5b8720b0",
+      "digest": "sha256:b28c827b475869fb070cd0fd1336276bb4d407d2ed044925084ca2e5b9c55797",
       "schemaVersion": 1
     },
     {
       "path": "readiness/typed-kernel-p1/work-model.json",
-      "digest": "sha256:6581550467ac5a7c07f4dc8cf9e9b6f240ec5391b53a583a8cf005777045d35c",
+      "digest": "sha256:9efbaa5e4b03ea831934b737f9fb5756627469c18902404b450338b65ab3c0b3",
       "schemaVersion": 1
     }
   ],
@@ -188,6 +188,11 @@
         "rationale": null
       },
       {
+        "id": "evidence:EV034",
+        "state": "real",
+        "rationale": null
+      },
+      {
         "id": "task:T001",
         "state": "real",
         "rationale": null
@@ -351,6 +356,11 @@
         "id": "task:T033",
         "state": "real",
         "rationale": null
+      },
+      {
+        "id": "task:T034",
+        "state": "real",
+        "rationale": null
       }
     ],
     "dependencies": [
@@ -485,6 +495,10 @@
       {
         "dependent": "evidence:EV033",
         "dependency": "task:T033"
+      },
+      {
+        "dependent": "evidence:EV034",
+        "dependency": "task:T034"
       },
       {
         "dependent": "task:T001",
@@ -729,6 +743,18 @@
       {
         "dependent": "task:T033",
         "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T034",
+        "dependency": "evidence:EV034"
+      },
+      {
+        "dependent": "task:T034",
+        "dependency": "task:T004"
+      },
+      {
+        "dependent": "task:T034",
+        "dependency": "task:T017"
       }
     ]
   },

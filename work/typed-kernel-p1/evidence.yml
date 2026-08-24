@@ -11,7 +11,7 @@ sourceAnalysis: readiness/typed-kernel-p1/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/typed-kernel-p1/analysis.json
-    digest: b32d04b832dda558b5a0e17cb857140c425b982529d73af76672d29c367f0dcd
+    digest: abb9b677c29ab9810784f49a5cba3a702f622f12ec69d23eabfe1e6af5f1a117
     schemaVersion: 1
   - label: checklist
     path: work/typed-kernel-p1/checklist.md
@@ -23,7 +23,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/typed-kernel-p1/plan.md
-    digest: 41916b161147793a6dcf6fd4a364388a2440ba74770cd3762607b00beab2310d
+    digest: 8ecf703abd4836dc0258bd6808bb75e3e8fede0dd0a41f61b5d47f8bdd9af54d
     schemaVersion: 1
   - label: spec
     path: work/typed-kernel-p1/spec.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/typed-kernel-p1/tasks.yml
-    digest: 70550e6adbc78a79a983a39abe0ee4d69e590a4a5f5f29155e910fe8b3ce4432
+    digest: b6b9fc5c2e4f8117b2ed9c35b16b2ea39fe9a2e62b04a19c9a32f24a99e76625
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -925,5 +925,32 @@ evidence:
       failed: 0
       skipped: 0
     notes: [The existing production-review gate accepted the regenerated exact Fable bundle binding.]
+  - id: EV034
+    kind: verification
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: [AC-003]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV034]
+    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, tests/SIR.Conformance.Shared/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: ["One native bundle emission replaced five process launches per corpus generation; the complete corpus/refusal mutation verifier passed."]
 lifecycleNotes:
   - "Next lifecycle action: verify."

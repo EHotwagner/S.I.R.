@@ -168,3 +168,8 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 - Purpose: Carry out lifecycle task T033 (done) covering GV-004, PD-001.
 - Related: GV-004, PD-001
 
+## T034 — Preserve protected feedback headroom for corpus governance
+- Stage: specify
+- Purpose: Carry out lifecycle task T034 (done) covering AC-003, FR-004, PD-007, VO-006.
+- Related: AC-003, FR-004, PD-007, VO-006
+

@@ -41,7 +41,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "81e93c2ea590cc3368141c7cbfb0e2efa550799ec1fbf17b52d5e3e33fe724b7"
+        "value": "00acea70ca8b0f0bf36fd830f109e906ded79d144b9bec047dc190997b92e6e8"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -71,7 +71,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "41916b161147793a6dcf6fd4a364388a2440ba74770cd3762607b00beab2310d"
+        "value": "8ecf703abd4836dc0258bd6808bb75e3e8fede0dd0a41f61b5d47f8bdd9af54d"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "70550e6adbc78a79a983a39abe0ee4d69e590a4a5f5f29155e910fe8b3ce4432"
+        "value": "b6b9fc5c2e4f8117b2ed9c35b16b2ea39fe9a2e62b04a19c9a32f24a99e76625"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -382,6 +382,16 @@
       "id": "AR029",
       "sourcePath": "work/typed-kernel-p1/plan.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
+      "sourceId": "PD-007",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR030",
+      "sourcePath": "work/typed-kernel-p1/plan.md",
+      "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": null,
       "targetId": null,
       "relationship": "taskSourcePlan",
@@ -389,7 +399,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR030",
+      "id": "AR031",
       "sourcePath": "work/typed-kernel-p1/plan.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "VO-001",
@@ -399,7 +409,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR031",
+      "id": "AR032",
       "sourcePath": "work/typed-kernel-p1/plan.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "VO-002",
@@ -409,7 +419,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR032",
+      "id": "AR033",
       "sourcePath": "work/typed-kernel-p1/plan.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "VO-003",
@@ -419,7 +429,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR033",
+      "id": "AR034",
       "sourcePath": "work/typed-kernel-p1/plan.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "VO-004",
@@ -429,7 +439,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR034",
+      "id": "AR035",
       "sourcePath": "work/typed-kernel-p1/plan.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "VO-005",
@@ -439,7 +449,17 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR035",
+      "id": "AR036",
+      "sourcePath": "work/typed-kernel-p1/plan.md",
+      "targetPath": "work/typed-kernel-p1/tasks.yml",
+      "sourceId": "VO-006",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR037",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "AC-001",
@@ -449,7 +469,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR036",
+      "id": "AR038",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "AC-002",
@@ -459,7 +479,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR037",
+      "id": "AR039",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "AC-003",
@@ -469,7 +489,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR038",
+      "id": "AR040",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "AC-004",
@@ -479,7 +499,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR039",
+      "id": "AR041",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/checklist.md",
       "sourceId": null,
@@ -489,7 +509,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR040",
+      "id": "AR042",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/plan.md",
       "sourceId": null,
@@ -499,7 +519,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR041",
+      "id": "AR043",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "FR-001",
@@ -509,7 +529,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR042",
+      "id": "AR044",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "FR-002",
@@ -519,7 +539,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR043",
+      "id": "AR045",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "FR-003",
@@ -529,7 +549,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR044",
+      "id": "AR046",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "FR-004",
@@ -539,7 +559,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR045",
+      "id": "AR047",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "FR-005",
@@ -549,7 +569,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR046",
+      "id": "AR048",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/clarifications.md",
       "sourceId": null,
@@ -559,7 +579,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR047",
+      "id": "AR049",
       "sourcePath": "work/typed-kernel-p1/spec.md",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": null,
@@ -569,7 +589,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR048",
+      "id": "AR050",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T006",
@@ -579,7 +599,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR049",
+      "id": "AR051",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T007",
@@ -589,7 +609,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR050",
+      "id": "AR052",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T008",
@@ -599,7 +619,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR051",
+      "id": "AR053",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T009",
@@ -609,7 +629,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR052",
+      "id": "AR054",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T010",
@@ -619,7 +639,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR053",
+      "id": "AR055",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T011",
@@ -629,7 +649,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR054",
+      "id": "AR056",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T012",
@@ -639,7 +659,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR055",
+      "id": "AR057",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T013",
@@ -649,7 +669,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR056",
+      "id": "AR058",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T014",
@@ -659,7 +679,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR057",
+      "id": "AR059",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T015",
@@ -669,7 +689,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR058",
+      "id": "AR060",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T016",
@@ -679,7 +699,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR059",
+      "id": "AR061",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T017",
@@ -689,7 +709,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR060",
+      "id": "AR062",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T018",
@@ -699,7 +719,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR061",
+      "id": "AR063",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T019",
@@ -709,7 +729,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR062",
+      "id": "AR064",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T020",
@@ -719,7 +739,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR063",
+      "id": "AR065",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T021",
@@ -729,7 +749,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR064",
+      "id": "AR066",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T022",
@@ -739,7 +759,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR065",
+      "id": "AR067",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T023",
@@ -749,7 +769,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR066",
+      "id": "AR068",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T024",
@@ -759,7 +779,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR067",
+      "id": "AR069",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T025",
@@ -769,7 +789,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR068",
+      "id": "AR070",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T026",
@@ -779,7 +799,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR069",
+      "id": "AR071",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T027",
@@ -789,7 +809,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR070",
+      "id": "AR072",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T028",
@@ -799,7 +819,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR071",
+      "id": "AR073",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T029",
@@ -809,7 +829,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR072",
+      "id": "AR074",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T030",
@@ -819,7 +839,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR073",
+      "id": "AR075",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T031",
@@ -829,7 +849,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR074",
+      "id": "AR076",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T032",
@@ -839,7 +859,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR075",
+      "id": "AR077",
       "sourcePath": "work/typed-kernel-p1/tasks.yml",
       "targetPath": "work/typed-kernel-p1/tasks.yml",
       "sourceId": "T033",
@@ -847,11 +867,31 @@
       "relationship": "taskDependency",
       "state": "current",
       "diagnosticIds": []
+    },
+    {
+      "id": "AR078",
+      "sourcePath": "work/typed-kernel-p1/tasks.yml",
+      "targetPath": "work/typed-kernel-p1/tasks.yml",
+      "sourceId": "T034",
+      "targetId": "T004",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR079",
+      "sourcePath": "work/typed-kernel-p1/tasks.yml",
+      "targetPath": "work/typed-kernel-p1/tasks.yml",
+      "sourceId": "T034",
+      "targetId": "T017",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
     }
   ],
   "readiness": {
     "status": "implementationReady",
-    "readyCount": 75,
+    "readyCount": 79,
     "advisoryCount": 0,
     "warningCount": 0,
     "blockingCount": 0,

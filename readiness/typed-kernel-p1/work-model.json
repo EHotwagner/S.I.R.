@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "e1000e81870a76ea88ae538811c3612636f6498e4f2fb1cdcb9aa9cacdb478ac"
+        "value": "5a2b820e2f45e8dd4dbf130816a430452e052d18b7e9921d0b773f75adddc6d6"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "41916b161147793a6dcf6fd4a364388a2440ba74770cd3762607b00beab2310d"
+        "value": "8ecf703abd4836dc0258bd6808bb75e3e8fede0dd0a41f61b5d47f8bdd9af54d"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "70550e6adbc78a79a983a39abe0ee4d69e590a4a5f5f29155e910fe8b3ce4432"
+        "value": "b6b9fc5c2e4f8117b2ed9c35b16b2ea39fe9a2e62b04a19c9a32f24a99e76625"
       }
     }
   ],
@@ -214,12 +214,14 @@
         "column": 1
       },
       "linkedTaskIds": [
-        "T004"
+        "T004",
+        "T034"
       ],
       "linkedEvidenceIds": [
         "EV004",
         "EV015",
-        "EV017"
+        "EV017",
+        "EV034"
       ]
     },
     {
@@ -1286,6 +1288,37 @@
       "source": "work/typed-kernel-p1/tasks.yml",
       "sourceLocation": {
         "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "id": "T034",
+      "title": "Preserve protected feedback headroom for corpus governance",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T004",
+        "T017"
+      ],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "PD-007",
+        "VO-006"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV034"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 34,
         "column": 1
       }
     }
@@ -2390,6 +2423,34 @@
         "line": 33,
         "column": 1
       }
+    },
+    {
+      "id": "EV034",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T034",
+      "taskRefs": [
+        "T034"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "scripts/generate-rules-corpus.sh",
+        "scripts/verify-rules-corpus.sh",
+        "tests/SIR.Conformance.Shared/Program.fs"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 34,
+        "column": 1
+      }
     }
   ],
   "generatedViews": [
@@ -2446,7 +2507,7 @@
           "path": "work/typed-kernel-p1/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "e1000e81870a76ea88ae538811c3612636f6498e4f2fb1cdcb9aa9cacdb478ac"
+            "value": "5a2b820e2f45e8dd4dbf130816a430452e052d18b7e9921d0b773f75adddc6d6"
           },
           "schemaVersion": 1
         },
@@ -2454,7 +2515,7 @@
           "path": "work/typed-kernel-p1/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "41916b161147793a6dcf6fd4a364388a2440ba74770cd3762607b00beab2310d"
+            "value": "8ecf703abd4836dc0258bd6808bb75e3e8fede0dd0a41f61b5d47f8bdd9af54d"
           },
           "schemaVersion": 1
         },
@@ -2470,14 +2531,14 @@
           "path": "work/typed-kernel-p1/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "70550e6adbc78a79a983a39abe0ee4d69e590a4a5f5f29155e910fe8b3ce4432"
+            "value": "b6b9fc5c2e4f8117b2ed9c35b16b2ea39fe9a2e62b04a19c9a32f24a99e76625"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "713a272cc461046842e8c141a93644d77004fefc378c8a09ff6b68d0e08be4c6"
+        "value": "2308d7ff2f02ae64360b24545e637707269921e6288e50d3f9bbdd702b304a5c"
       },
       "currency": "current"
     }

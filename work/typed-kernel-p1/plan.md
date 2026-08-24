@@ -33,6 +33,7 @@ Prose status: planned
 - PD-004 [AC-003] [AC-004] [FR-004] [DEC-005] complete: Extend the existing rule-governance generator and `generate-rules-corpus.sh`/`verify-rules-corpus.sh` boundary to emit/check one deterministic Markdown projection and one JSON authoring receipt in `tests/fixtures/rules-corpus/v2`; embed normalized-source and generated-body fingerprints and refuse missing, malformed, stale-source, or directly edited output distinctly.
 - PD-005 [AC-001] [AC-002] [AC-003] [FR-001] [FR-002] [FR-005] complete: Extend shared conformance fixtures with normalization/compile/projection assertions and focused subject mutations for identity, provenance, AST validation, equivalent syntax, stale source, direct edit, unreadable input, and opaque registered-algorithm visibility; preserve the pre-P1 authoritative output bytes.
 - PD-006 [AC-004] [FR-003] [FR-004] [DEC-006] complete: Extend `sir-author-rule` through inspect → intent → one material question → typed proposal and human projection → edit → validate → semantic diff → evidence/coherence → revise; commit three bounded authoring-session receipts under the SDD artifact directory and select the lowest-friction surface from their measured fields.
+- PD-007 [AC-003] [FR-004] complete: Emit all five rule-corpus artifacts from one native conformance process so projection governance retains its existing refusal coverage without eroding the repository's protected feedback-headroom budget.
 
 ## Contract Impact
 - PC-001 [PD-001] F# API: additive repository-local schema-v1 `SpecificationModel` identity/provenance/diagnostic/normalization/diff surface in `SIR.Domain`; this is a pilot source, not a published shared package.
@@ -46,6 +47,7 @@ Prose status: planned
 - VO-003 [PD-004] [PC-003] [PC-004] generatedViewTest: Corpus generation write/check is deterministic; missing, malformed, stale-source, and direct-edit mutations each red with a distinct actionable diagnostic and restored output is byte-identical.
 - VO-004 [PD-005] mutationTest: Every added or modified refusal gate is inverted by breaking its subject, including unreadable JSON and a production-shaped fixture, and the observed red is recorded before restored green.
 - VO-005 [PD-006] documentationTest: Three authoring-session receipts have complete measurement envelopes and the skill/report selection is derived from their question/revision/diagnostic/elapsed/diff fields.
+- VO-006 [PD-007] performanceTest: The complete corpus and refusal-mutation verifier passes with bundled artifact emission and the protected CI route re-establishes its existing feedback-headroom contract.
 
 ## Performance Intent
 - Normalization and projection are authoring-time operations. Record elapsed time for all

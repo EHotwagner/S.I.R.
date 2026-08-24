@@ -11,11 +11,12 @@ trap 'rm -rf "$temporary_dir"' EXIT
 prepared_args=()
 if [[ "${SIR_RULES_PREPARED_PR:-0}" == 1 ]]; then prepared_args=(--no-build --no-restore); fi
 
-dotnet run --project "$project" -c Release "${prepared_args[@]}" -- --print-rules-manifest > "$temporary_dir/manifest.json"
-dotnet run --project "$project" -c Release --no-build -- --print-rules-coverage > "$temporary_dir/coverage.json"
-dotnet run --project "$project" -c Release --no-build -- --print-rules-application > "$temporary_dir/representative-application.hex"
-dotnet run --project "$project" -c Release --no-build -- --print-rule-specification > "$temporary_dir/combat-damage-001.specification.md"
-dotnet run --project "$project" -c Release --no-build -- --print-rule-specification-receipt > "$temporary_dir/combat-damage-001.specification.json"
+dotnet run --project "$project" -c Release "${prepared_args[@]}" -- --print-rules-corpus-bundle > "$temporary_dir/bundle.json"
+jq -r '.manifest' "$temporary_dir/bundle.json" > "$temporary_dir/manifest.json"
+jq -r '.coverage' "$temporary_dir/bundle.json" > "$temporary_dir/coverage.json"
+jq -r '.representativeApplication' "$temporary_dir/bundle.json" > "$temporary_dir/representative-application.hex"
+jq -r '.specificationMarkdown' "$temporary_dir/bundle.json" > "$temporary_dir/combat-damage-001.specification.md"
+jq -r '.specificationReceipt' "$temporary_dir/bundle.json" > "$temporary_dir/combat-damage-001.specification.json"
 
 jq -e '.schemaVersion == 1 and (.rules | length == 16)' "$temporary_dir/manifest.json" >/dev/null
 jq -e '.schemaVersion == 1 and .authorityBoundary.outside == "legacy"' "$temporary_dir/coverage.json" >/dev/null

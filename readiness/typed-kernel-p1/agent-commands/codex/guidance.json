@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "81e93c2ea590cc3368141c7cbfb0e2efa550799ec1fbf17b52d5e3e33fe724b7"
+        "value": "00acea70ca8b0f0bf36fd830f109e906ded79d144b9bec047dc190997b92e6e8"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -19,7 +19,7 @@
   ],
   "behaviorModelDigest": {
     "algorithm": "sha256",
-    "value": "116e522d1db9dd932e8e7cfc8417090a922dd3cbde1255eb3ee397e6d9f23d5f"
+    "value": "fb356530f50d5c37e69be87b6168bd354adc214481787c8925bdd2a60dd46628"
   },
   "commands": [
     {
@@ -376,19 +376,32 @@
         "GV-004",
         "PD-001"
       ]
+    },
+    {
+      "id": "T034",
+      "title": "Preserve protected feedback headroom for corpus governance",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T034 (done) covering AC-003, FR-004, PD-007, VO-006.",
+      "relatedIds": [
+        "AC-003",
+        "FR-004",
+        "PD-007",
+        "VO-006"
+      ]
     }
   ],
   "skills": [
     {
       "id": "automated-tests",
       "title": "automated-tests",
-      "capability": "Required by tasks: T022, T023, T024, T025, T026.",
+      "capability": "Required by tasks: T022, T023, T024, T025, T026, T034.",
       "relatedIds": [
         "T022",
         "T023",
         "T024",
         "T025",
-        "T026"
+        "T026",
+        "T034"
       ]
     },
     {
@@ -457,13 +470,14 @@
     {
       "id": "readiness-evidence",
       "title": "readiness-evidence",
-      "capability": "Required by tasks: T022, T023, T024, T025, T026.",
+      "capability": "Required by tasks: T022, T023, T024, T025, T026, T034.",
       "relatedIds": [
         "T022",
         "T023",
         "T024",
         "T025",
-        "T026"
+        "T026",
+        "T034"
       ]
     },
     {
@@ -487,5 +501,16 @@
       "kind": "skills"
     }
   ],
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "id": "agents.staleGeneratedGuidance",
+      "severity": "warning",
+      "artifact": "readiness/typed-kernel-p1/agent-commands/codex/guidance.json",
+      "message": "Generated agent guidance for target \u0027codex\u0027 no longer matches the current normalized work model.",
+      "correction": "Regenerate agent guidance so the generated view matches the current work model.",
+      "relatedIds": [
+        "codex"
+      ]
+    }
+  ]
 }

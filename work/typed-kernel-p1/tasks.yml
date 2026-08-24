@@ -358,6 +358,16 @@ tasks:
     sourceIds: [GV-004, PD-001]
     requiredSkills: [deterministic-json]
     requiredEvidence: [EV033]
+  - id: T034
+    title: Preserve protected feedback headroom for corpus governance
+    status: done
+    owner: sdd
+    dependencies: [T004, T017]
+    requirements: [FR-004]
+    decisions: []
+    sourceIds: [AC-003, PD-007, VO-006]
+    requiredSkills: [automated-tests, readiness-evidence]
+    requiredEvidence: [EV034]
 acceptedDeferrals: []
 findings: []
 advisoryNotes:
