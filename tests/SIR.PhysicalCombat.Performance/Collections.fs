@@ -509,12 +509,18 @@ let run () =
     // WHAT THEY ACTUALLY DO, measured in the regime the guard exists to prevent, because a guard that
     // removes a confound also removes the ability to see what the confound was doing. With tiering ON:
     //
-    //   17 rows, 7 trials (shipped)   Array/packed-sort 257.9-260.6ns   0 red in 3 of 3
-    //   4 rows, 3 trials              Array/packed-sort 3176-3383ns     3 red in 3 of 3,
-    //                                 listRatio 5.8-6.1 against a threshold of 10
+    //   17 rows, 7 trials (shipped)   Array/packed-sort 257.9-260.6ns   0 red in 9 of 9
+    //   6 rows, 3 trials (the trim     Array/packed-sort 3258-3427ns     4 red in 4 of 4,
+    //     this row actually shipped                                      listRatio 5.7-6.3 against
+    //     at c5e4f3d)                                                    a threshold of 10
     //
     // The rows ahead of `line-dedupe` warm the JIT before the cheapest strategy -- the one every
     // ratio in that case divides by -- is measured. Delete them and the ~13x lands squarely on it.
+    //
+    // The second row is the HISTORICAL literal, rebuilt from c5e4f3d, not a reconstruction: an
+    // earlier revision of this table said "4 rows", which named a smaller configuration than the one
+    // that actually failed and whose spread is looser (a 4-row run reached listRatio 9.09, within
+    // 0.91 of the threshold). Both red; 6 rows is the accurate history and the tighter measurement.
     //
     // SO THEY ARE LOAD-BEARING, AND NOT AS COVERAGE. Nothing here reads them, and a reviewer who
     // measures only under the guard will correctly observe that extending the size axis changes no

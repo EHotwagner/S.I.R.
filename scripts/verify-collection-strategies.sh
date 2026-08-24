@@ -61,9 +61,13 @@ fi
 # WHAT THAT IS WORTH AT THE SHIPPED HEAD, STATED HONESTLY, BECAUSE AN EARLIER VERSION OF THIS COMMENT
 # QUOTED THE PRE-REPAIR REGIME AS IF IT WERE THIS ONE. With the matrix and trials as they now ship --
 # 17 rows, 7 trials -- tiering-on is GREEN: `Array/packed-sort` 257.9-260.6ns against a 236ns
-# baseline, roughly +9%, and 0 red in 12 runs. The ~13x figure is real but belongs to a DIFFERENT
-# configuration: trimmed to 4 rows at 3 trials, tiering-on gives 3176-3383ns and reds `line-dedupe`
-# 3 of 3, listRatio 5.8-6.1 against a threshold of 10.
+# baseline, roughly +9%, and 0 red in 9 runs. The ~13x figure is real but belongs to a DIFFERENT
+# configuration -- the one this row actually shipped for a round: trimmed to 6 rows at 3 trials,
+# tiering-on gives 3258-3427ns and reds `line-dedupe` 4 of 4, listRatio 5.7-6.3 against a threshold
+# of 10. (An earlier revision of this comment said "4 rows". That was a reconstruction, not the
+# historical literal; the trim at c5e4f3d was 6 rows, and naming the smaller one understated the
+# configuration that actually failed. Its spread is also looser -- a 4-row run reached 9.09, within
+# 0.91 of the threshold -- so 6 rows is both the accurate history and the tighter demonstration.)
 #
 # SO WHY ABORT AT ALL, IF THE SHIPPED CONFIGURATION SURVIVES IT? Because that survival is bought by
 # the row count and the trial count -- they warm the JIT before the cheapest strategy is measured --
@@ -88,7 +92,7 @@ fi
 if [[ -n "${DOTNET_TieredCompilation-}" && "${DOTNET_TieredCompilation}" != "0" ]]; then
   echo "verify-collection-strategies: ABORT -- DOTNET_TieredCompilation=${DOTNET_TieredCompilation} is set in this environment." >&2
   echo "  This gate's assertions are ratios to the best strategy, and tiering inflates that strategy. At the" >&2
-  echo "  shipped matrix and trial count the effect is ~9% and survivable; trimmed to 4 rows at 3 trials it is" >&2
+  echo "  shipped matrix and trial count the effect is ~9% and survivable; trimmed to 6 rows at 3 trials it is" >&2
   echo "  ~13x and reds line-dedupe on a correct tree. The margin is warmup, not an assertion, so it is not" >&2
   echo "  relied on. Unset it, or set it to 0, and re-run. Refusing to measure." >&2
   exit 93
