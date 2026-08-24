@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "5a2b820e2f45e8dd4dbf130816a430452e052d18b7e9921d0b773f75adddc6d6"
+        "value": "595801945387dd64a7d5ac26be3706390f65530a785aa44cf0a9fbf3d3c62ce6"
       }
     },
     {
@@ -2436,6 +2436,7 @@
         "FR-004"
       ],
       "artifactRefs": [
+        "readiness/typed-kernel-p1/feedback-headroom.json",
         "scripts/generate-rules-corpus.sh",
         "scripts/verify-rules-corpus.sh",
         "tests/SIR.Conformance.Shared/Program.fs"
@@ -2507,7 +2508,7 @@
           "path": "work/typed-kernel-p1/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "5a2b820e2f45e8dd4dbf130816a430452e052d18b7e9921d0b773f75adddc6d6"
+            "value": "595801945387dd64a7d5ac26be3706390f65530a785aa44cf0a9fbf3d3c62ce6"
           },
           "schemaVersion": 1
         },
@@ -2538,7 +2539,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "2308d7ff2f02ae64360b24545e637707269921e6288e50d3f9bbdd702b304a5c"
+        "value": "7e80403a1cf93fd0321ca384f432f6e9ddccbc490f490f1210eaeb1ad6750878"
       },
       "currency": "current"
     }

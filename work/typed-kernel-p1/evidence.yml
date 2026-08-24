@@ -11,7 +11,7 @@ sourceAnalysis: readiness/typed-kernel-p1/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/typed-kernel-p1/analysis.json
-    digest: abb9b677c29ab9810784f49a5cba3a702f622f12ec69d23eabfe1e6af5f1a117
+    digest: 197094424bc8af9716c693f9932844082ca01b76b862ac116d06b3526c8ee20b
     schemaVersion: 1
   - label: checklist
     path: work/typed-kernel-p1/checklist.md
@@ -937,10 +937,12 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-007]
     obligationRefs: [EV034]
-    artifacts: [scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, tests/SIR.Conformance.Shared/Program.fs]
+    artifacts: [readiness/typed-kernel-p1/feedback-headroom.json, scripts/generate-rules-corpus.sh, scripts/verify-rules-corpus.sh, tests/SIR.Conformance.Shared/Program.fs]
     sourceRefs:
       - kind: verification
         path: scripts/verify-rules-corpus.sh
+      - kind: verification
+        path: readiness/typed-kernel-p1/feedback-headroom.json
     result: pass
     synthetic: false
     observedRun:
@@ -951,6 +953,6 @@ evidence:
       passed: 5
       failed: 0
       skipped: 0
-    notes: ["One native bundle emission replaced five process launches per corpus generation; the complete corpus/refusal mutation verifier passed."]
+    notes: [Exact-head protected CI observed a 309994 ms critical path against the 312000 ms acceptance target and restored 80006 ms of budget headroom with zero retries., "One native bundle emission replaced five process launches per corpus generation; the complete corpus/refusal mutation verifier passed."]
 lifecycleNotes:
   - "Next lifecycle action: verify."

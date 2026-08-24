@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "00acea70ca8b0f0bf36fd830f109e906ded79d144b9bec047dc190997b92e6e8"
+        "value": "57cbc5d7b7174a228b9eae2c1b43b7195a5c8c1f152d528fe7c041fc71985b0b"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -501,16 +501,5 @@
       "kind": "skills"
     }
   ],
-  "diagnostics": [
-    {
-      "id": "agents.staleGeneratedGuidance",
-      "severity": "warning",
-      "artifact": "readiness/typed-kernel-p1/agent-commands/codex/guidance.json",
-      "message": "Generated agent guidance for target \u0027codex\u0027 no longer matches the current normalized work model.",
-      "correction": "Regenerate agent guidance so the generated view matches the current work model.",
-      "relatedIds": [
-        "codex"
-      ]
-    }
-  ]
+  "diagnostics": []
 }
