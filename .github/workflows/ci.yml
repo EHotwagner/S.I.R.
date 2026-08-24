@@ -559,10 +559,15 @@ jobs:
             ./scripts/run-ci-gate.sh "$gate" "artifacts/ci/results/$gate.json" &
             pids+=("$!")
           done
-          for pid in "${pids[@]}"; do wait "$pid" || status=1; done
+          # The delivery-browser gate consumes the already extracted native/web parts and writes
+          # its own receipt, so it is independent of rules/spatial/cancellation. Running it after
+          # those gates made its receipt inherit their whole elapsed setup and repeatedly eroded
+          # the cross-cutting feedback headroom despite every functional gate passing.
           if [[ '${{ needs.route.outputs.browser }}' == 'true' ]]; then
-            ./scripts/run-ci-gate.sh browser-delivery artifacts/ci/results/browser-delivery.json || status=1
+            ./scripts/run-ci-gate.sh browser-delivery artifacts/ci/results/browser-delivery.json &
+            pids+=("$!")
           fi
+          for pid in "${pids[@]}"; do wait "$pid" || status=1; done
           exit "$status"
       - if: always()
         name: Record produced gate results

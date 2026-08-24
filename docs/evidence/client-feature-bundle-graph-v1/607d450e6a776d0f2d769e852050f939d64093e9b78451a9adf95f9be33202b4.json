@@ -1,0 +1,115 @@
+{
+  "schema": "sir.client.feature-bundle-graph/v1",
+  "registryVersion": 2,
+  "registryDigest": "aad975ea91b54a6e1f9bf115991710b143822c97345e5a56bef5eedf33d72e73",
+  "buildInputDigest": "7684a25dd128ada4787ddc4532be339db4552ec4a743ecc3c742650043936b41",
+  "entry": "content/sir-client/v1/app.js",
+  "dynamicEntries": [
+    "content/sir-client/v1/DocsView-NV6BHnpc.js",
+    "content/sir-client/v1/RulesExplorer-B9-Y4pg7.js",
+    "content/sir-client/v1/RulesWorkbenchView-D8ZjP_0t.js",
+    "content/sir-client/v1/SamplesFeature-D0UZearD.js",
+    "content/sir-client/v1/TacticalEnvironmentView-BFnhhCJb.js",
+    "content/sir-client/v1/deferred-delivery-support-CFKGOZNJ.js"
+  ],
+  "features": [
+    {
+      "id": "delivery-support",
+      "phase": "deferred",
+      "route": "delivery-support",
+      "control": "delivery-support",
+      "logicalChunk": "deferred-delivery-support",
+      "emitted": "content/sir-client/v1/deferred-delivery-support-CFKGOZNJ.js",
+      "bytes": {
+        "raw": 304,
+        "gzip": 230,
+        "brotli": 163
+      },
+      "sha256": "15b5bb33b0a0c0b78dda96ccf726783400605dc188e64731ad0f6171fe2eb608"
+    },
+    {
+      "id": "docs",
+      "phase": "deferred",
+      "route": "docs",
+      "control": "modality-docs",
+      "logicalChunk": "DocsView",
+      "emitted": "content/sir-client/v1/DocsView-NV6BHnpc.js",
+      "bytes": {
+        "raw": 6687,
+        "gzip": 2412,
+        "brotli": 2125
+      },
+      "sha256": "86618bbbf71363a2a79f6060481fd779f10cb788a1f5c074c8a9d56c0e990b76"
+    },
+    {
+      "id": "rules-explorer",
+      "phase": "deferred",
+      "route": "data",
+      "control": "supporting-data",
+      "logicalChunk": "RulesExplorer",
+      "emitted": "content/sir-client/v1/RulesExplorer-B9-Y4pg7.js",
+      "bytes": {
+        "raw": 62632,
+        "gzip": 18672,
+        "brotli": 16198
+      },
+      "sha256": "59714a75d6002c1eb002e51ee2e3ab98cdf29557c05932c45379a4d1f7fcf0c7"
+    },
+    {
+      "id": "rules-workbench",
+      "phase": "deferred",
+      "route": "rules",
+      "control": "supporting-rules",
+      "logicalChunk": "RulesWorkbenchView",
+      "emitted": "content/sir-client/v1/RulesWorkbenchView-D8ZjP_0t.js",
+      "bytes": {
+        "raw": 12823,
+        "gzip": 4035,
+        "brotli": 3561
+      },
+      "sha256": "3cdffa9125e0b7aa930cd5b30e1f60f209ccfc275f044a97666311d0f8c8e4cd"
+    },
+    {
+      "id": "samples",
+      "phase": "deferred",
+      "route": "samples",
+      "control": "supporting-samples",
+      "logicalChunk": "SamplesFeature",
+      "emitted": "content/sir-client/v1/SamplesFeature-D0UZearD.js",
+      "bytes": {
+        "raw": 3056,
+        "gzip": 1321,
+        "brotli": 1134
+      },
+      "sha256": "20a871616a4e73b628f06a125a6e178a0fd16b9578254d4faef0118a0a132782"
+    },
+    {
+      "id": "shell",
+      "phase": "bootstrap",
+      "route": "initial",
+      "control": "application-entry",
+      "logicalChunk": "app",
+      "emitted": "content/sir-client/v1/app.js",
+      "bytes": {
+        "raw": 540585,
+        "gzip": 127279,
+        "brotli": 104010
+      },
+      "sha256": "91d4c298bd17812076b1a3d9649918e66b9b1af1c914a96139d255916627e4cc"
+    },
+    {
+      "id": "tactical-environment",
+      "phase": "deferred",
+      "route": "editor",
+      "control": "editor-environment",
+      "logicalChunk": "TacticalEnvironmentView",
+      "emitted": "content/sir-client/v1/TacticalEnvironmentView-BFnhhCJb.js",
+      "bytes": {
+        "raw": 9484,
+        "gzip": 2661,
+        "brotli": 2321
+      },
+      "sha256": "02023cd6da42fcb61f7699421acb855bfb993f1697ebe105ffea27482ac01619"
+    }
+  ]
+}

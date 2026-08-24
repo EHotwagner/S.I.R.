@@ -329,7 +329,7 @@ assert.match(workflow, /domain-conformance:\n[\s\S]*?needs: \[route, prepare-nat
 // The literal was the consumption half of the same defect: a `domain` route prepares no `web`
 // part, so an unconditional `extract-parts ... web` turns the skip this job stopped being into
 // a red download step instead. The gate list itself is unchanged and still pinned in order.
-assert.match(jobBody("domain-conformance"), /parts\+=\(native\)[\s\S]*parts\+=\(fable\)[\s\S]*parts\+=\(web\)[\s\S]*extract-parts "\$\{parts\[@\]\}"[\s\S]*gates\+=\(rules\)[\s\S]*gates\+=\(spatial\)[\s\S]*gates\+=\(cancellation\)[\s\S]*for gate in[\s\S]*run-ci-gate\.sh "\$gate"[\s\S]*for pid in[^\n]*wait[^\n]*done[\s\S]*run-ci-gate\.sh browser-delivery[\s\S]*gate-domain-conformance/u);
+assert.match(jobBody("domain-conformance"), /parts\+=\(native\)[\s\S]*parts\+=\(fable\)[\s\S]*parts\+=\(web\)[\s\S]*extract-parts "\$\{parts\[@\]\}"[\s\S]*gates\+=\(rules\)[\s\S]*gates\+=\(spatial\)[\s\S]*gates\+=\(cancellation\)[\s\S]*for gate in[\s\S]*run-ci-gate\.sh "\$gate"[\s\S]*run-ci-gate\.sh browser-delivery[^\n]*&[\s\S]*pids\+=\("\$!"\)[\s\S]*for pid in[^\n]*wait[^\n]*done[\s\S]*gate-domain-conformance/u);
 assert.doesNotMatch(jobBody("domain-conformance"), /extract-parts native fable web/u,
   "the extracted part set must be derived from the route's producer flags, never a fixed literal");
 assert.doesNotMatch(jobBody("domain-conformance"), /gates\+=\(browser-delivery\)/u);

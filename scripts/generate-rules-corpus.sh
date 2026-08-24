@@ -22,13 +22,15 @@ jq -e '.schemaVersion == 1 and (.rules | length == 16)' "$temporary_dir/manifest
 jq -e '.schemaVersion == 1 and .authorityBoundary.outside == "legacy"' "$temporary_dir/coverage.json" >/dev/null
 "$repo_root/scripts/validate-rules-coverage.sh" "$temporary_dir/coverage.json"
 jq -e '
-  .schema == "sir-rule-specification-projection/v1"
+  .schema == "sir-rule-specification-projection/v2"
+  and .kernelPackage == "FS.GG.SDD.Artifacts@1.3.0-preview.3"
+  and .extension == "sir-rule-specification/1"
   and .identity == "COMBAT-DAMAGE-001"
   and .schemaVersion == 1
   and (.sourceFingerprint | test("^[0-9a-f]{64}$"))
   and (.generatedFingerprint | test("^[0-9a-f]{64}$"))
   and .selectedSurface == "hybrid"' "$temporary_dir/combat-damage-001.specification.json" >/dev/null
-grep -Eq '^<!-- sir-rule-specification/v1 -->$' "$temporary_dir/combat-damage-001.specification.md"
+grep -Eq '^<!-- fsgg-typed-specification/v1 -->$' "$temporary_dir/combat-damage-001.specification.md"
 
 check_specification_fixture() {
   local projection="$fixture_dir/combat-damage-001.specification.md"
@@ -45,15 +47,24 @@ check_specification_fixture() {
     echo "RULE-SPEC-PROJECTION-UNREADABLE: the generated specification projection or receipt could not be read" >&2
     return 1
   }
+  jq -e 'type == "object"' "$receipt" >/dev/null 2>&1 || {
+    echo "RULE-SPEC-PROJECTION-MALFORMED: regenerate the invalid specification receipt with --write" >&2
+    return 1
+  }
+  jq -e '.kernelPackage == "FS.GG.SDD.Artifacts@1.3.0-preview.3"' "$receipt" >/dev/null 2>&1 || {
+    echo "RULE-SPEC-PACKAGE-MISMATCH: restore FS.GG.SDD.Artifacts 1.3.0-preview.3 and regenerate the specification artifacts with --write" >&2
+    return 1
+  }
   jq -e '
-    .schema == "sir-rule-specification-projection/v1"
+    .schema == "sir-rule-specification-projection/v2"
+    and .extension == "sir-rule-specification/1"
     and .identity == "COMBAT-DAMAGE-001"
     and (.sourceFingerprint | type == "string" and test("^[0-9a-f]{64}$"))
     and (.generatedFingerprint | type == "string" and test("^[0-9a-f]{64}$"))' "$receipt" >/dev/null 2>&1 || {
     echo "RULE-SPEC-PROJECTION-MALFORMED: regenerate the invalid specification receipt with --write" >&2
       return 1
     }
-  grep -Eq '^<!-- sir-rule-specification/v1 -->$' "$projection" || {
+  grep -Eq '^<!-- fsgg-typed-specification/v1 -->$' "$projection" || {
     echo "RULE-SPEC-PROJECTION-MALFORMED: regenerate the invalid specification Markdown with --write" >&2
     return 1
   }

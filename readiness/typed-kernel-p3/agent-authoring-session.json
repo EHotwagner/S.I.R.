@@ -1,0 +1,26 @@
+{
+  "schema": "sir-agent-authoring-session/v1",
+  "milestone": "typed-kernel-p3",
+  "rule": "COMBAT-DAMAGE-001",
+  "package": "FS.GG.SDD.Artifacts@1.3.0-preview.3",
+  "packageSource": "public-nuget",
+  "selectedSurface": "hybrid",
+  "sharedAuthority": "FS.GG.SDD.Artifacts.TypedSpecifications",
+  "extensionAuthority": "SIR.Domain.RuleSpecificationAst",
+  "skillSha256": "841a5eb78ca8b5492d4668a22c3443f8661769ad8f5f840dc3a798394136222b",
+  "referenceSha256": "95ddce286e22359fbbbb1f93e0ce431ac296f2995ee5044a368aea1fddef40f1",
+  "sessionSha256": "488418883175e8aead04d27040210c78eefee2d0e218befe014c6eba961489c7",
+  "exercised": [
+    "direct-hybrid-computation-normalization",
+    "compile-and-semantic-diff",
+    "projection-freshness",
+    "source-semantic-extension-package-mutations",
+    "native-fable-canonical-equality",
+    "cone-coherence"
+  ],
+  "coherence": {
+    "mode": "cone",
+    "termination": "complete",
+    "rulesInSlice": 15
+  }
+}
