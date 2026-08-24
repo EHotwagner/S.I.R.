@@ -12,6 +12,7 @@ mkdir -p "$evidence_root"
 # Exercise the consumer from the public NuGet source with a fresh package root.
 export NUGET_PACKAGES="$task_tmp/nuget-packages"
 dotnet restore SIR.slnx --configfile NuGet.Config --locked-mode --no-http-cache
+dotnet restore src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj --configfile NuGet.Config --locked-mode --no-http-cache
 dotnet build SIR.slnx -c Release --no-restore
 ./scripts/test-conformance.sh --domain-only
 ./scripts/verify-rules-corpus.sh
@@ -36,8 +37,8 @@ if grep -E '(^|/)(SIR|EHotwagner)([./]|$)' "$task_tmp/package.entries" >/dev/nul
 fi
 
 mapfile -t lock_files < <(rg -l '"FS.GG.SDD.Artifacts"' --glob packages.lock.json | sort)
-test "${#lock_files[@]}" -ge 20 || {
-  echo "typed-kernel-p3: fewer than 20 consumer lock graphs reference the package" >&2
+test "${#lock_files[@]}" -eq 21 || {
+  echo "typed-kernel-p3: expected 21 consumer lock graphs, observed ${#lock_files[@]}" >&2
   exit 1
 }
 for lock_file in "${lock_files[@]}"; do

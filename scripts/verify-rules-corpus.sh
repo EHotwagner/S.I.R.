@@ -2026,7 +2026,11 @@ sed 's#^src/SIR.Domain/Rules.fs\t[0-9a-f]\{64\}$#src/SIR.Domain/Rules.fs\t000000
 mutated_sources_digest=$(sha256sum "$identity_mutant" | cut -d' ' -f1)
 rm -f "$identity_mutant"
 rm -f "$source_digest_input"
-declared_sources_digest=$(sed -n 's/.*"implementation", System.Text.Encoding.UTF8.GetBytes "\([0-9a-f]\{64\}\)".*/\1/p' "$repo_root/src/SIR.Simulation/CombatRules.fs")
+declared_sources_digest=$(
+  sed -n \
+    '/let implementationArtifacts =/,/let packageIdentity =/ s/.*GetBytes "\([0-9a-f]\{64\}\)".*/\1/p' \
+    "$repo_root/src/SIR.Simulation/CombatRules.fs"
+)
 test "$declared_sources_digest" = "$actual_sources_digest" || { echo "implementation source manifest digest does not match pinned sources" >&2; exit 1; }
 test "$declared_sources_digest" != "$mutated_sources_digest" || { echo "implementation identity source mutation unexpectedly passed" >&2; exit 1; }
 declared_package_sha=$(jq -r '.packageSha256' "$source_manifest")

@@ -32,7 +32,7 @@
     "src/SIR.Server/PhysicalCombatDiagnostics.fs": "6ef3affdea25a3a46adc69acda4c746a46ca055ec9a730f74961beabbf185637",
     "src/SIR.Simulation/CombatModel.fs": "21e9e716ea5de4f0879a58f62a6e9a5f2dc61fafac85f2d2352b34a73ced980a",
     "src/SIR.Simulation/CombatModel.fsi": "79971a63598b29a63eb2e185583b505a37f31b95382486fdd4ac9ee708610833",
-    "src/SIR.Simulation/CombatRules.fs": "284c66fb3a50b1e83cdb3c9c7126742ccf782cebd1d293e10fbdc3d0515d00b1",
+    "src/SIR.Simulation/CombatRules.fs": "dc7c61ec1ee562aa335ba6ffa13643e6443ab5b0f2746cbc944ef81918d4d5b5",
     "src/SIR.Simulation/Replay.fs": "5fd3a62b97729e8c090e5e83101eb4a79a51a4928a169ac18492a90ccc99e12d",
     "src/SIR.Simulation/Simulation.fs": "57c60049162d36b24cd19da499ec0d75b064bf8ab46d63d20cd9b64ab39794f4"
   }

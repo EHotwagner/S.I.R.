@@ -11,7 +11,7 @@ sourceAnalysis: readiness/typed-kernel-p3/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/typed-kernel-p3/analysis.json
-    digest: 410b8b8beeeab3e2a6290aa796fd3973eb4b05b64291a057d2d549874e105c1d
+    digest: 90beedf0589d73992a75ce4a85b45ab939a3c92166471fa7a596cc0045b300dc
     schemaVersion: 1
   - label: checklist
     path: work/typed-kernel-p3/checklist.md
