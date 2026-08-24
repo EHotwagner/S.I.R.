@@ -496,16 +496,35 @@ let private assess (cases: CaseSample array) =
 // ================================================================ entry
 
 let run () =
-    // THE FULL MATRIX, RESTORED. An earlier revision of this row cut 10 rows to 6 and 65
-    // strategy-measurements to 24, justified -- like the trials cut above -- by the PR feedback
-    // critical path on the reasoning that this gate ran inside the wave-1 `integrity` job. THAT
-    // JUSTIFICATION IS STALE: it is a wave-2 subject with its own job now, contributing nothing to
-    // either wave maximum, so the rows cost nothing they were cut to save.
+    // THE FULL 17-ROW MATRIX. These rows are JIT WARMUP. That is the whole of why they are here, and
+    // an earlier revision of this comment said something else.
     //
-    // Restoring them is not tidiness. The intermediate sizes are what make each row a SCALING claim
-    // rather than a single point, and "this shape is super-linear at the sizes the simulation
-    // reaches" is the entire content of the ordering claim these assertions defend. A single point
-    // cannot distinguish a super-linear shape from a slow constant.
+    // WHAT THAT REVISION CLAIMED, AND WHY IT WAS FALSE: it said the intermediate sizes make each row a
+    // SCALING claim, and that a single point cannot tell a super-linear shape from a slow constant.
+    // The second sentence is true about benchmarking in general and false about THIS gate. `assess`
+    // reads exactly ONE size per case -- blocker-lookup at 16384, state-update at 1024, line-dedupe at
+    // 64, membership-probe at 1024 -- so under the tiering guard the other thirteen rows change no
+    // verdict at all. It also said "10 rows"; there are 17.
+    //
+    // WHAT THEY ACTUALLY DO, measured in the regime the guard exists to prevent, because a guard that
+    // removes a confound also removes the ability to see what the confound was doing. With tiering ON:
+    //
+    //   17 rows, 7 trials (shipped)   Array/packed-sort 257.9-260.6ns   0 red in 3 of 3
+    //   4 rows, 3 trials              Array/packed-sort 3176-3383ns     3 red in 3 of 3,
+    //                                 listRatio 5.8-6.1 against a threshold of 10
+    //
+    // The rows ahead of `line-dedupe` warm the JIT before the cheapest strategy -- the one every
+    // ratio in that case divides by -- is measured. Delete them and the ~13x lands squarely on it.
+    //
+    // SO THEY ARE LOAD-BEARING, AND NOT AS COVERAGE. Nothing here reads them, and a reviewer who
+    // measures only under the guard will correctly observe that extending the size axis changes no
+    // verdict while dropping a STRATEGY reds instantly, and conclude the rows are decorative. That
+    // inference is sound and its premise is not: it is taken in the one regime where the thing the
+    // rows defend against has already been removed.
+    //
+    // The reason matters because the false one licensed the cut. These rows were trimmed once, one
+    // round ago, on exactly the reasoning that a row no assertion reads is documentation -- and that
+    // trim is what let the tiering confound through.
     let cases =
         [| for n in [ 8; 128; 2048; 16384 ] -> blockerLookup n
            for n in [ 64; 256; 1024 ] do

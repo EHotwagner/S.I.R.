@@ -54,12 +54,24 @@ fi
 
 # ---------------------------------------------------------------- tiering confound guard
 #
-# THE THIRD CONFOUND, AND IT IS THE ONE THAT MOVES THE DECIDING NUMBER MOST. Tiered compilation adds
-# startup-dependent cost that lands hardest on the CHEAPEST strategy -- and every assertion here is a
-# ratio TO the best strategy, so mismeasuring that one collapses a whole case rather than one row.
-# Measured: `Array/packed-sort` 233-248ns with tiering off against 3201-3554ns with it on, ~13x, which
-# takes `line-dedupe`'s listRatio from 83.2-89.4 to 5.1 against a threshold of 10 -- a RED on a tree
-# with nothing wrong with it.
+# THE THIRD CONFOUND. Tiered compilation adds startup-dependent cost that lands hardest on the
+# CHEAPEST strategy -- and every assertion here is a ratio TO the best strategy, so mismeasuring that
+# one collapses a whole case rather than one row.
+#
+# WHAT THAT IS WORTH AT THE SHIPPED HEAD, STATED HONESTLY, BECAUSE AN EARLIER VERSION OF THIS COMMENT
+# QUOTED THE PRE-REPAIR REGIME AS IF IT WERE THIS ONE. With the matrix and trials as they now ship --
+# 17 rows, 7 trials -- tiering-on is GREEN: `Array/packed-sort` 257.9-260.6ns against a 236ns
+# baseline, roughly +9%, and 0 red in 12 runs. The ~13x figure is real but belongs to a DIFFERENT
+# configuration: trimmed to 4 rows at 3 trials, tiering-on gives 3176-3383ns and reds `line-dedupe`
+# 3 of 3, listRatio 5.8-6.1 against a threshold of 10.
+#
+# SO WHY ABORT AT ALL, IF THE SHIPPED CONFIGURATION SURVIVES IT? Because that survival is bought by
+# the row count and the trial count -- they warm the JIT before the cheapest strategy is measured --
+# and NOTHING IN THE ASSERTIONS DEPENDS ON THEM. They were trimmed once already, one review round
+# ago, and that trim is precisely what let this confound through. A gate whose correctness rests on
+# nobody shrinking an unstated margin is a gate waiting to red on a clean tree, so the precondition is
+# asserted here rather than left implicit in the size of a table. Neutralising is not the proof;
+# aborting is (gate-inversion step 6).
 #
 # THIS USED TO BE `export DOTNET_TieredCompilation="${DOTNET_TieredCompilation:-0}"` AND THAT WAS
 # WRONG. `:-` NEUTRALISES a caller's value only when there is none to neutralise: an ambient
@@ -75,8 +87,10 @@ fi
 # gate before reading this line.
 if [[ -n "${DOTNET_TieredCompilation-}" && "${DOTNET_TieredCompilation}" != "0" ]]; then
   echo "verify-collection-strategies: ABORT -- DOTNET_TieredCompilation=${DOTNET_TieredCompilation} is set in this environment." >&2
-  echo "  This gate's assertions are ratios to the best strategy, and tiering inflates the best strategy ~13x," >&2
-  echo "  which reds line-dedupe on a correct tree. Unset it, or set it to 0, and re-run. Refusing to measure." >&2
+  echo "  This gate's assertions are ratios to the best strategy, and tiering inflates that strategy. At the" >&2
+  echo "  shipped matrix and trial count the effect is ~9% and survivable; trimmed to 4 rows at 3 trials it is" >&2
+  echo "  ~13x and reds line-dedupe on a correct tree. The margin is warmup, not an assertion, so it is not" >&2
+  echo "  relied on. Unset it, or set it to 0, and re-run. Refusing to measure." >&2
   exit 93
 fi
 export DOTNET_TieredCompilation=0
