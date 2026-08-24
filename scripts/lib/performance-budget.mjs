@@ -167,6 +167,10 @@ const requireDeclaredUnitCount = (unitCount) => {
 // therefore REFUSED as unclassifiable rather than passed: "I could not evaluate this" is never "I
 // evaluated it and it passed" (#266).
 export const tacticalFrameCadenceBudget = Object.freeze({
+  // Every declared budget object NAMES ITSELF, so a quantity id is read off the declaration rather
+  // than supplied by a fallback at the gate. See tacticalDeclaredBudgetObjects below.
+  key: "tacticalFrameCadenceBudget",
+
   displayRefreshHertz,
   framePeriodMilliseconds,
   maximumElapsedVsyncsPerFrame,
@@ -235,6 +239,66 @@ export const tacticalRuntimeEffectCap = Object.freeze({
   maximumEffectInstances: tacticalWorkloadBudgets.stress200.maximumEffects,
 });
 
+// THE OVERLAY-LAYER NODE BOUND, AND WHY IT IS ITS OWN QUANTITY (S.I.R.#327).
+//
+// `#persistent-tactical-overlay-layer` is ONE of the eight layers the scene paints
+// (terrain>edges>routes>units>effects>selection>tactical-overlays>annotations). The product publishes
+// that layer's cost separately as `data-overlay-node-estimate`, emitted from the overlay set's own
+// `Cost.EstimatedSvgNodes`. The WHOLE-SCENE estimate is a different attribute
+// (`data-visual-node-estimate`) computed over a different subtree, and `maximumDomNodes` bounds that.
+//
+// THIS BOUND AND representative100.maximumDomNodes ARE BOTH 5000, AND THAT IS A COINCIDENCE OF
+// VALUE, NOT AN IDENTITY. Deriving one from the other would install the "do these agree?" defect at
+// the declaration: they agree today, they would move together tomorrow, and no reader could tell a
+// shared value from a shared meaning. Measured rather than argued -- toggling overlays moves
+// `data-overlay-node-estimate` 23 -> 12 while `data-visual-node-estimate` holds at 479. The value
+// sweep in scripts/test-svg-pipeline-measurement.mjs has also carried "an unrelated overlay-layer
+// node bound in the browser spec" as an exemption reason since S.I.R.#318, so the two quantities were
+// known to be distinct before either was declared.
+//
+// IT IS A SCALAR, DELIBERATELY. The assertion runs at the product's default scale rather than at
+// either declared review workload, and nothing in the product tiers overlay cost by unit count.
+// A per-workload row would mean inventing a stress-200 figure this repository has never measured --
+// a threshold invented at the point of use, which is half of what S.I.R.#318 repaired -- or writing
+// 5000 down twice, which the rule at the top of this file forbids even when the copies agree. The
+// precedent for a scalar published into every row of that table is
+// tacticalFrameBudget.callbackMillisecondsCeiling.
+//
+// PROVENANCE. The literal entered at 8cb6449 ("Add configurable tactical analysis overlays",
+// 2026-08-13) already bare: no derivation, no comment and no cited source. 1194ce7 later the same day
+// MOVED it onto the counted-node identifier when it added the estimate-honesty check. There is no
+// recoverable intent for the value 5000 and this module does not invent one; what changes is that the
+// number is stated ONCE, published, and enforced HERE rather than at the call site.
+const maximumOverlayDomNodes = 5000;
+
+export const tacticalOverlayLayerBudget = Object.freeze({
+  key: "tacticalOverlayLayerBudget",
+
+  maximumOverlayDomNodes,
+
+  measures:
+    "element count of the live #persistent-tactical-overlay-layer subtree, which the product "
+    + "publishes as data-overlay-node-estimate. ONE layer of the tactical scene, not the whole-scene "
+    + "node estimate maximumDomNodes bounds, and not a compositor, paint, GPU or swapchain claim.",
+  surfacedAs: "data-overlay-node-estimate",
+  source: "scripts/lib/performance-budget.mjs (tacticalOverlayLayerBudget) -- the single declaration.",
+  publishedAs:
+    "docs/performance-budget.md, \"Tactical visual-system budget\" table, \"Overlay-layer SVG nodes\" "
+    + "column. Workload-independent, so the same declared cell is projected into every row.",
+});
+
+// EVERY TOP-LEVEL DECLARED BUDGET OBJECT, NAMED HERE RATHER THAN LISTED IN THE GATE.
+//
+// The no-restatement sweep used to build this list itself, and reached a quantity only if somebody
+// remembered to add it -- a hand-maintained list of budget objects inside the gate that exists to
+// stop hand-maintained copies of budget numbers, which is the same disease one level up that
+// S.I.R.#299's critic found in its consumer list and S.I.R.#318 found again in its budget fields.
+export const tacticalDeclaredBudgetObjects = Object.freeze([
+  ...tacticalWorkloadBudgetList,
+  tacticalFrameCadenceBudget,
+  tacticalOverlayLayerBudget,
+]);
+
 // WHERE EACH BUDGETED QUANTITY IS SURFACED TO A BROWSER CONSUMER.
 //
 // A consumer that reads one of these attributes off the live DOM is holding the MEASUREMENT, and the
@@ -267,6 +331,19 @@ const tacticalBudgetProjections = Object.freeze([
     quantities: (workload) => [`${workload.key}.maximumDomNodes`],
     cell: (workload) => `≤ ${documentedThousands(workload.maximumDomNodes)}`,
     manifest: (workload) => ({ maximumDomNodes: workload.maximumDomNodes }),
+  }),
+  Object.freeze({
+    // WORKLOAD-INDEPENDENT, so the workload argument is deliberately ignored and the one declared
+    // cell is projected into every row -- the same shape the frame-ceiling column below uses.
+    //
+    // It projects into the published TABLE and not into the review manifest, because the tactical
+    // review does not measure the overlay layer: publishing a budget into an artifact that never
+    // reports it would be a number a reader could not check against anything. `quantities` still
+    // names it, so the "declared in code and published nowhere" guard is satisfied by the table.
+    column: "Overlay-layer SVG nodes",
+    quantities: () => ["tacticalOverlayLayerBudget.maximumOverlayDomNodes"],
+    cell: () => `≤ ${documentedThousands(tacticalOverlayLayerBudget.maximumOverlayDomNodes)}`,
+    manifest: () => ({}),
   }),
   Object.freeze({
     column: "Active effects",
@@ -335,6 +412,268 @@ export function tacticalStructuralBudgetReason(budget, measured) {
   requireFiniteMeasurement(`${budget.label} effects`, measured?.effects);
   if (measured.domNodes > budget.maximumDomNodes) return `${budget.units}-unit SVG node budget exceeded: measured ${measured.domNodes} against the declared ceiling of ${budget.maximumDomNodes}`;
   if (measured.effects > budget.maximumEffects) return `${budget.units}-unit active-effect budget exceeded: measured ${measured.effects} against the declared ceiling of ${budget.maximumEffects}`;
+  return null;
+}
+
+// THE OVERLAY-LAYER VERDICT, INCLUDING ITS TELEMETRY CROSS-CHECK (S.I.R.#327).
+//
+// This is the whole comparison, and the browser spec CALLS it rather than writing one. That is the
+// difference between this and every earlier attempt at the same repair, all of which policed how the
+// spec was allowed to write the comparison and were escaped six times in four review rounds -- once
+// per way of writing it, because that space has no end. There is nothing here for a source scanner to
+// police: the spec passes two measurements in and asserts the verdict is null, so there is no literal
+// to plant and no statement shape to get wrong.
+//
+// It also makes the cross-check UNREMOVABLE rather than merely required. An earlier revision demanded
+// that the spec contain an equality assertion, and a later revision of the same item silently deleted
+// that demand while the declaration still advertised it. Here the cross-check is a branch of this
+// function: deleting it means editing the declaration, where it is inverted in-process.
+//
+// TWO DISTINCT FAILURES, REPORTED DISTINCTLY.
+//
+//   1. the telemetry disagrees with the count. `data-overlay-node-estimate` is the product's own
+//      REPORT of the layer's cost and is not identical to it -- review of this item measured the
+//      report under-reporting the count on the static hosting route, while the production .NET route
+//      agreed in every state reached. So the report is corroborated against an independent count
+//      rather than trusted, and a disagreement is named as a telemetry fault, not as a budget breach.
+//   2. the counted nodes exceed the declared bound. THE BUDGET IS ABOUT THE COUNT, not the report: a
+//      budget bound to a self-report enforces the report rather than the cost.
+//
+// The cross-check is checked FIRST, so a wrong report can never be the thing a budget verdict was
+// computed from. And an unmeasured input is refused rather than passed: "I could not evaluate this"
+// is never "I evaluated it and it passed" (#266).
+//
+// THE BOUND ON THE CROSS-CHECK, STATED: it corroborates the attribute in the states the caller
+// actually reaches. It is not a certificate that the product's estimate is correct everywhere.
+export function tacticalOverlayLayerBudgetReason(measured) {
+  requireFiniteMeasurement("overlay-layer countedNodes", measured?.countedNodes);
+  requireFiniteMeasurement("overlay-layer reportedEstimate", measured?.reportedEstimate);
+  if (measured.countedNodes !== measured.reportedEstimate)
+    return `overlay-layer telemetry disagrees with the live DOM: ${tacticalOverlayLayerBudget.surfacedAs} reports ${measured.reportedEstimate} and the layer actually contains ${measured.countedNodes} element(s). The budget is applied to the counted nodes, so this is a telemetry fault rather than a budget breach -- but a report that disagrees with what it reports on is not evidence about anything, and it is refused before any verdict is derived from it.`;
+  if (measured.countedNodes > tacticalOverlayLayerBudget.maximumOverlayDomNodes)
+    return `overlay-layer node budget exceeded: the live #persistent-tactical-overlay-layer subtree contains ${measured.countedNodes} element(s) against the declared ceiling of ${tacticalOverlayLayerBudget.maximumOverlayDomNodes}`;
+  return null;
+}
+
+// AND THE FORM THE BROWSER CONSUMER CALLS: IT MEASURES, IT THROWS, AND IT RECORDS THAT IT RAN.
+//
+// Three obligations used to sit at the call site, and each one was a place this item's defect class
+// could live. They are removed in order.
+//
+//   1. THE COMPARISON. Handled by the reason function above: the spec no longer writes one.
+//   2. ASSERTING ON THE RESULT. A function returning null-or-reason still requires the caller to
+//      assert correctly, and `.toBeDefined()`, `.toBeTruthy()` and discarding the result all passed
+//      while a breach returned a reason nobody read. So this throws and returns nothing.
+//   3. SUPPLYING THE MEASUREMENTS -- and this is the one review round 1 of the fresh chain found.
+//      Taking two numbers meant the call site chose them, so `{ countedNodes: 0, reportedEstimate: 0 }`
+//      satisfied the budget while the real layer held 5001 elements, and a repointed locator measured
+//      a subtree that does not exist. This takes the LIVE PAGE and measures the subject itself, from
+//      selectors declared here. There is nothing for a call site to fabricate.
+//
+// AND WHETHER IT RAN IS ANSWERED BY EXECUTION, NOT BY READING THE SPEC. Every earlier attempt to
+// answer "was this called?" was a regex over the consumer's source, and each spelling closed opened
+// another -- commenting the call out, `if (false)`, and `test.skip()` all left the gate printing
+// JUSTIFIED while a real 5001-element breach shipped and the browser suite reported 1 passed. A
+// counter that only a real invocation can move cannot be satisfied by any way of writing the call,
+// because it is not looking at the writing.
+export const tacticalOverlayLayerSurface = Object.freeze({
+  root: "#persistent-tactical-svg",
+  layer: "#persistent-tactical-overlay-layer",
+  attribute: "data-overlay-node-estimate",
+});
+
+let tacticalOverlayLayerEvaluations = 0;
+
+// An opaque mark, so a caller compares two marks rather than reasoning about a count.
+export function tacticalOverlayLayerEvaluationMark() {
+  return tacticalOverlayLayerEvaluations;
+}
+
+export async function assertTacticalOverlayLayerBudget(page) {
+  if (!page || typeof page.locator !== "function")
+    throw new Error("the overlay-layer budget assertion measures the live page and must be given one; it does not accept measurements chosen by the caller");
+  const root = page.locator(tacticalOverlayLayerSurface.root);
+  const layer = root.locator(tacticalOverlayLayerSurface.layer);
+  const countedNodes = await layer.locator("*").count();
+  // NOT `Number(await ...)` DIRECTLY: `Number(null)` is 0, so an attribute the product has stopped
+  // emitting would read as a confident zero and sail under the ceiling instead of being refused.
+  // "I could not read this" is never "I read it and it was fine" (#266).
+  const reported = await root.getAttribute(tacticalOverlayLayerSurface.attribute);
+  if (reported === null || `${reported}`.trim() === "")
+    throw new Error(`${tacticalOverlayLayerSurface.attribute} is absent from ${tacticalOverlayLayerSurface.root}, so the overlay layer's reported cost could not be read at all. An absent report is refused, not read as zero.`);
+  const reportedEstimate = Number(reported);
+  // Recorded BEFORE the throw: a breach is an evaluation that happened and failed, not one that never
+  // ran, and the two must never be confused by the guard below.
+  tacticalOverlayLayerEvaluations += 1;
+  const reason = tacticalOverlayLayerBudgetReason({ countedNodes, reportedEstimate });
+  if (reason) throw new Error(reason);
+}
+
+// THE REFUSAL THE BROWSER SUITE PERFORMS. A run in which the verdict was never evaluated is refused,
+// and it is refused on an observed counter rather than on the shape of the source that should have
+// moved it.
+export function assertTacticalOverlayLayerBudgetWasEvaluatedSince(mark) {
+  if (!Number.isInteger(mark))
+    throw new Error("the overlay-layer evaluation guard needs a mark taken before the work ran; without one it cannot tell a fresh evaluation from an older one");
+  if (tacticalOverlayLayerEvaluations === mark)
+    throw new Error(`the overlay-layer node budget was never evaluated during this test. ${tacticalOverlayLayerSurface.layer} may have grown past its declared ceiling of ${tacticalOverlayLayerBudget.maximumOverlayDomNodes} without anything noticing. A commented-out, short-circuited, body-level-skipped or deleted call reaches this the same way -- the guard observes whether the verdict RAN, not how the call was written. It does NOT reach a test suppressed by the .skip / .fixme MODIFIERS, which Playwright applies before fixture setup so that nothing belonging to the test runs at all; those are refused by tacticalOverlayLayerRunRefusal instead. An earlier revision of this sentence claimed skipping was covered here, which was true of one form and false of the other, and that hid a real escape.`);
+}
+
+// THE RUN-LEVEL REFUSAL, BECAUSE A FIXTURE CANNOT POLICE A TEST THAT NEVER STARTS.
+//
+// The per-test guard above runs as part of the test's lifecycle, so it catches everything that
+// happens INSIDE a running test: a commented-out call, `if (false)`, a body-level `test.skip()`
+// (setup has already happened by then), a deleted call. It cannot catch the `.skip` / `.fixme`
+// MODIFIERS, because Playwright suppresses the test BEFORE fixture setup -- one token,
+// `overlayBudgetTest(` to `overlayBudgetTest.skip(`, and a genuine 5001-element breach reported
+// `1 skipped`, exit 0, `failures="0"`.
+//
+// That escape stayed invisible because ONE measurement -- body-level `test.skip()` -- was
+// generalised across TWO different mechanisms that look identical and are not. So this second net is
+// keyed off the RUN'S OWN ACCOUNTING, which exists whether or not the test ever started.
+//
+// KEYED ON A TAG, NOT A TITLE. A title is prose and drifts; the tag is a declared identity that
+// survives the modifier, since a skipped test is still a declared test with its tags intact.
+//
+// SHARD-SAFE BY CONSTRUCTION, and that is not incidental: this suite is sharded, so a rule that
+// demanded the test be present in every shard would red on correct runs and would be removed. A run
+// that carries NO tagged test is a shard that was not given it -- not a suppression -- and is
+// allowed. A run that CARRIES one and did not execute it is refused.
+export const tacticalOverlayLayerBudgetTag = "@tactical-overlay-budget";
+
+export function tacticalOverlayLayerRunRefusal(outcomes) {
+  if (!Array.isArray(outcomes))
+    throw new Error("the overlay-layer run refusal needs the run's outcomes; an unreadable run is refused, not passed");
+  const tagged = outcomes.filter((outcome) => (outcome?.tags ?? []).includes(tacticalOverlayLayerBudgetTag));
+  // Not in this shard. The absence of the test is not evidence that it was suppressed.
+  if (tagged.length === 0) return null;
+  const notExecuted = tagged.filter((outcome) => outcome.status !== "passed" && outcome.status !== "failed");
+  if (notExecuted.length === 0) return null;
+  return `${notExecuted.length} test(s) carrying ${tacticalOverlayLayerBudgetTag} were declared in this run and never executed (${notExecuted.map((outcome) => `${outcome.title}: ${outcome.status}`).join("; ")}). The overlay-layer node budget is enforced only by running that test, so a skipped or suppressed one means ${tacticalOverlayLayerSurface.layer} was never measured against its declared ceiling of ${tacticalOverlayLayerBudget.maximumOverlayDomNodes}. A run that did not check is not a run that passed.`;
+}
+
+// AND THE RUN-LEVEL NET'S OWN INSTALLATION IS CHECKED, BECAUSE A NET THAT MUST BE INSTALLED TO WORK
+// IS A NET WHOSE INSTALLATION IS PART OF WHAT IT CLAIMS (S.I.R.#327 review round 3).
+//
+// The per-test guard got both halves checked: the function, and the fact that it ran -- the tag the
+// constructor injects is what proves the second. The run-level net got only the first. Its behaviour
+// was enumerated as a pure function while its INSTALLATION -- one array element in the Playwright
+// config -- was assumed, so unregistering the reporter left a suppressed budget test reported as a
+// clean run, and the in-process gate still printed a line asserting a property of RUNS on evidence
+// about a FUNCTION. That is the tag/import-line defect one link further along: satisfied by something
+// adjacent to the thing it names.
+//
+// Read from the RESOLVED CONFIG OF THE RUNNING RUN, not from the config file's text. A regex over
+// playwright.config.js would be a fifth spelling of the check that exhausted this item's first chain;
+// this asks the run what it actually armed.
+export const tacticalOverlayLayerReporterModule = "declared-budget-reporter.js";
+
+export function assertTacticalOverlayLayerRunNetArmed(config) {
+  const reporters = config?.reporter;
+  if (!Array.isArray(reporters))
+    throw new Error("the overlay-layer budget could not read this run's reporter list, so it cannot tell whether the run-level net is armed; an unreadable configuration is refused rather than assumed armed");
+  const armed = reporters.some((entry) => {
+    const target = Array.isArray(entry) ? entry[0] : entry;
+    return typeof target === "string" && target.endsWith(tacticalOverlayLayerReporterModule);
+  });
+  if (!armed)
+    throw new Error(`this run does not have ${tacticalOverlayLayerReporterModule} registered as a reporter, so nothing would refuse a run in which the overlay-layer budget test was suppressed before it started. The per-test guard cannot cover that case -- Playwright applies .skip/.fixme before fixture setup -- so with the reporter unregistered the budget has no enforcement against suppression at all.`);
+}
+
+// AND THE RUN MUST NOT HAVE FILTERED THE BUDGET TEST OUT BY TAG.
+//
+// The run-level refusal deliberately allows a run that carries no tagged test, because sharding
+// splits this suite and a shard that was not given the test is not a suppression. `--grep-invert` on
+// the tag exploits exactly that allowance, and it is not a contrived attack: test-browser-shards.mjs
+// already passes --grep/--grep-invert to split cohorts, so tag filtering is a knob this suite turns.
+//
+// Excluding a COHORT is legitimate; a filter that matches the budget test's own title path is not.
+// Only the second is refused, and the comparison is against the string Playwright greps.
+// COMPARE AGAINST THE STRING PLAYWRIGHT COMPARES AGAINST, BUILT FROM THE DECLARED IDENTITY.
+//
+// Two earlier versions of this check were wrong in different ways, and the second was worse.
+//
+//   1. It tested the pattern against the BARE TAG. Playwright greps a test's full title path, so a
+//      title-substring `--grep-invert` removed the test and was NOT refused, while an anchored tag
+//      pattern did not remove it and WAS refused.
+//   2. The repair learned the join format from a SIBLING test in the same spec file -- and the sibling
+//      search matched any test from that file INCLUDING THE BUDGET TEST ITSELF. So when the invert
+//      removed the last such test, the sibling was null and the check returned null: the escape hatch
+//      opened on exactly the input it existed to catch. `--grep-invert "visible-workflows"` shipped a
+//      forced breach at exit 0. That arm is also taken legitimately in 4 of 8 shards, so it could not
+//      simply be turned into a refusal.
+//
+// THE SIBLING WAS NEVER NEEDED. The identity is fully declared here -- spec file, title, tag -- and
+// the only thing the sibling supplied was a join format those parts can be assembled into directly.
+// Playwright's title path is [project, root, file, ...describes, title], joined by spaces, with the
+// tags appended; the project name is read from the run's own config rather than assumed empty.
+export const tacticalOverlayLayerBudgetTitle =
+  "View analysis overlays share pointer and keyboard commands and restore independently";
+
+export const tacticalOverlayLayerSpecFile = "visible-workflows.spec.js";
+
+export function tacticalOverlayLayerBudgetTitlePaths(config) {
+  const projects = Array.isArray(config?.projects) && config.projects.length > 0 ? config.projects : [{ name: "" }];
+  return projects.map((project) => [
+    `${project?.name ?? ""}`,
+    "",
+    tacticalOverlayLayerSpecFile,
+    `${tacticalOverlayLayerBudgetTitle} ${tacticalOverlayLayerBudgetTag}`,
+  ].join(" "));
+}
+
+// THE FILTER PATTERNS ARE PLAYWRIGHT'S TO PARSE AND COMPILE, NOT THIS MODULE'S TO RE-IMPLEMENT.
+//
+// This file used to walk argv and call `new RegExp(value)` itself. That was a second, hand-authored
+// representation of a fact Playwright already holds -- the same defect S.I.R.#334 names, installed in
+// the checker that exists to catch it -- and it disagreed with the original in three ways at once,
+// each of which shipped a forced breach at exit 0:
+//
+//   * `-G` is a documented alias for `--grep-invert`, and the hand parser did not know it;
+//   * Playwright compiles a CLI pattern with `forceRegExp`, which unwraps `/…/` and otherwise applies
+//     the `gi` flags -- so it is CASE-INSENSITIVE where `new RegExp(value)` is not, and literal where
+//     it unwraps. `--grep-invert "RESTORE INDEPENDENTLY"` removed the test and was not refused;
+//   * the config channel rebuilt each pattern from `.source`, silently discarding its flags.
+//
+// So the parsing and compiling now happen where Playwright's own functions are reachable -- in
+// tests/SIR.Browser.Tests/declared-budget-reporter.js, which derives the flag names from Playwright's
+// registered command and compiles with its `forceRegExp`. This module deliberately imports nothing
+// from Playwright: it is the shared declaration and several of its consumers run without it.
+//
+// What arrives here is already-compiled patterns, each with the channel it came from.
+export function tacticalOverlayLayerConfigFilterPatterns(config) {
+  const patterns = [];
+  const collect = (source, value) => {
+    for (const candidate of Array.isArray(value) ? value : [value])
+      // The RegExp is carried through AS-IS. Rebuilding it from `.source` dropped its flags, which is
+      // the config-channel half of the same disagreement.
+      if (candidate instanceof RegExp) patterns.push({ source, expression: candidate });
+  };
+  collect("the config's grepInvert", config?.grepInvert);
+  for (const project of Array.isArray(config?.projects) ? config.projects : [])
+    collect(`project ${JSON.stringify(project?.name ?? "")}'s grepInvert`, project?.grepInvert);
+  return patterns;
+}
+
+export function tacticalOverlayLayerFilterRefusal(patterns, config) {
+  if (!Array.isArray(patterns))
+    throw new Error("the overlay-layer filter refusal needs this run's compiled filter patterns; an unreadable filter set is refused rather than assumed empty");
+  if (patterns.length === 0) return null;
+  const titlePaths = tacticalOverlayLayerBudgetTitlePaths(config);
+  for (const pattern of patterns) {
+    if (pattern.unparseable)
+      return `this run was filtered with ${pattern.source} ${JSON.stringify(pattern.value)}, which Playwright's own pattern compiler could not accept. Its effect on the overlay-layer budget test is therefore unknown, and an unknown effect on the budget's own test is refused rather than assumed harmless.`;
+    // `lastIndex` is stateful on a /g/ regex and `forceRegExp` applies `g`, so a shared expression
+    // tested twice can answer differently the second time. Playwright tests each title against a
+    // fresh evaluation; this resets rather than inheriting whatever the last call left behind.
+    pattern.expression.lastIndex = 0;
+    const excluded = titlePaths.find((titlePath) => {
+      pattern.expression.lastIndex = 0;
+      return pattern.expression.test(titlePath);
+    });
+    if (excluded)
+      return `this run excludes the overlay-layer budget test via ${pattern.source} (${pattern.expression}), which matches its full title path ${JSON.stringify(excluded)} and removes it from the run entirely. A run that filtered the budget out is not a run that met it, so it is refused here, while every filter that does NOT match that title path stays available.`;
+  }
   return null;
 }
 

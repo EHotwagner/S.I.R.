@@ -21,7 +21,7 @@ export default defineConfig({
   // sharding across separate ports, so deterministic live-session identities
   // can never collide between concurrent browser contexts.
   workers: 1,
-  reporter: [[resolve(import.meta.dirname, "deterministic-junit-reporter.js"), {
+  reporter: [[resolve(import.meta.dirname, "declared-budget-reporter.js"), {}], [resolve(import.meta.dirname, "deterministic-junit-reporter.js"), {
     // Focused SDD obligations use separately deterministic receipts.  The
     // default remains the complete browser inventory used by CI.
     outputFile: resolve(repoRoot, process.env.SIR_JUNIT_OUTPUT || "artifacts/test-results/browser.junit.xml"),
