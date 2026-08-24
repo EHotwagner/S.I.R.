@@ -110,6 +110,19 @@ fi
 search_quiet 'RULE-SPEC-PROJECTION-MALFORMED' "$specification_log" || { echo "malformed receipt refusal lacked its stable diagnostic" >&2; exit 1; }
 rm -rf "$malformed_specification"
 
+wrong_package_specification=$(mktemp -d /tmp/sir-rules-specification-package.XXXXXX)
+cp "$repo_root/tests/fixtures/rules-corpus/v2/"* "$wrong_package_specification/"
+jq '.kernelPackage = "FS.GG.SDD.Artifacts@0.0.0-wrong"' \
+  "$wrong_package_specification/combat-damage-001.specification.json" > "$wrong_package_specification/receipt.tmp"
+mv "$wrong_package_specification/receipt.tmp" "$wrong_package_specification/combat-damage-001.specification.json"
+if SIR_RULES_FIXTURE_DIR="$wrong_package_specification" "$repo_root/scripts/generate-rules-corpus.sh" --check >"$specification_log" 2>&1; then
+  echo "wrong typed-kernel package identity unexpectedly passed" >&2
+  rm -rf "$wrong_package_specification"
+  exit 1
+fi
+search_quiet 'RULE-SPEC-PACKAGE-MISMATCH' "$specification_log" || { echo "wrong package refusal lacked its stable diagnostic" >&2; exit 1; }
+rm -rf "$wrong_package_specification"
+
 stale_specification=$(mktemp -d /tmp/sir-rules-specification-stale.XXXXXX)
 cp "$repo_root/tests/fixtures/rules-corpus/v2/"* "$stale_specification/"
 jq '.sourceFingerprint = "0000000000000000000000000000000000000000000000000000000000000000"' \

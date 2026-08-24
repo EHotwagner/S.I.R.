@@ -1,10 +1,12 @@
-<!-- sir-rule-specification/v1 -->
-<!-- source-fingerprint: 51eb470c9e98c3fb1255b6647e51c0dd8fb957d1fda6e3ef8e3cf8619e3b96b1 -->
-<!-- generated-fingerprint: 4464042404acea5907cdea3b4f50730adccd3b16122dd13faa93742bff7ccd14 -->
+<!-- fsgg-typed-specification/v1 -->
+<!-- extension: sir-rule-specification/1 -->
+<!-- source-fingerprint: 6c09fe9c43a2f3c658b3ab1a0f80459ec6c7206e63408a65d8a0c6d14b078af5 -->
+<!-- generated-fingerprint: 209b7d2ac3ed1a174a436a130973a47daf78cdc278935b3f063181299bf9a2f7 -->
 # Expected damage
 
 - Model: `COMBAT-DAMAGE-001`
 - Schema: `1`
+- Extension: `sir-rule-specification/1`
 - Rule: `COMBAT-DAMAGE-001` (`Formula`)
 - Status: `Canonical`
 - Source: `src/SIR.Simulation/CombatRules.fs@eb0b2c29a80f0bf3b400ce4415bf8587b4645083`
@@ -22,4 +24,4 @@ Expected damage is the weapon effect multiplied once by trace probability and re
 
 ## Semantic fingerprint
 
-`51eb470c9e98c3fb1255b6647e51c0dd8fb957d1fda6e3ef8e3cf8619e3b96b1`
+`6c09fe9c43a2f3c658b3ab1a0f80459ec6c7206e63408a65d8a0c6d14b078af5`
