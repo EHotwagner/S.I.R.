@@ -54,10 +54,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -81,10 +81,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -108,10 +108,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -135,10 +135,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -162,10 +162,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -189,10 +189,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -216,10 +216,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -243,10 +243,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -270,10 +270,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -297,10 +297,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -324,10 +324,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -351,10 +351,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -378,10 +378,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -405,10 +405,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -432,10 +432,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -459,10 +459,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -486,10 +486,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -513,10 +513,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p3/typed-kernel-p3.junit.xml
-      digest: "sha256:e696c9036fe5492668fce40322af0f6985a80bbaf325c1bf7a7398ec0e515f00"
+      digest: "sha256:c052a67be21eca2db513bf0f1c46d17934afac1d21692db7fad21d8db36e93c9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]

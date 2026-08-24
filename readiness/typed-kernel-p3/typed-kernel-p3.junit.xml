@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites tests="6" failures="0" skipped="0"><testsuite name="typed-kernel-p3" tests="6" failures="0" skipped="0">
+<testsuites tests="7" failures="0" skipped="0"><testsuite name="typed-kernel-p3" tests="7" failures="0" skipped="0">
 <properties><property name="producer" value="work/typed-kernel-p3/generate-evidence.sh"/><property name="package" value="FS.GG.SDD.Artifacts 1.3.0-preview.3"/></properties>
 <testcase classname="typed-kernel-p3" name="nuget.org-only clean locked restore passes" />
 <testcase classname="typed-kernel-p3" name="release solution build passes" />
@@ -7,4 +7,5 @@
 <testcase classname="typed-kernel-p3" name="rules corpus projections and mismatch mutations pass" />
 <testcase classname="typed-kernel-p3" name="producer archive carries fable source and no consumer entries" />
 <testcase classname="typed-kernel-p3" name="all consumer lock graphs resolve exact preview package" />
+<testcase classname="typed-kernel-p3" name="governed agent authoring route uses the public package boundary" />
 </testsuite></testsuites>
