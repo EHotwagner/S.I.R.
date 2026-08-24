@@ -10,6 +10,8 @@ mkdir -p "$(dirname "$receipt")"
 build_rc=0
 rules_rc=0
 cross_runtime_rc=0
+governance_rc=0
+production_review_rc=0
 
 dotnet build "$repo_root/tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj" -c Release --no-restore >/dev/null 2>&1 || build_rc=$?
 "$repo_root/scripts/verify-rules-corpus.sh" >/dev/null 2>&1 || rules_rc=$?
@@ -28,16 +30,26 @@ if ((build_rc == 0)); then
 else
   cross_runtime_rc=1
 fi
+"$repo_root/scripts/verify-fable-game-governance.sh" >/dev/null 2>&1 || governance_rc=$?
+if ! npm run build:client >/dev/null 2>&1; then
+  production_review_rc=1
+elif ! npm run review:map-editor >/dev/null 2>&1; then
+  production_review_rc=1
+elif ! node "$repo_root/scripts/test-map-editor-qualification.mjs" "$repo_root/artifacts/client" >/dev/null 2>&1; then
+  production_review_rc=1
+fi
 
 failures=0
 if ((build_rc != 0)); then failures=$((failures + 1)); fi
 if ((rules_rc != 0)); then failures=$((failures + 1)); fi
 if ((cross_runtime_rc != 0)); then failures=$((failures + 1)); fi
+if ((governance_rc != 0)); then failures=$((failures + 1)); fi
+if ((production_review_rc != 0)); then failures=$((failures + 1)); fi
 
 {
   printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>'
-  printf '<testsuites name="typed-kernel-p1" tests="3" failures="%d" errors="0" skipped="0">\n' "$failures"
-  printf '  <testsuite name="typed-kernel-p1" tests="3" failures="%d" errors="0" skipped="0">\n' "$failures"
+  printf '<testsuites name="typed-kernel-p1" tests="5" failures="%d" errors="0" skipped="0">\n' "$failures"
+  printf '  <testsuite name="typed-kernel-p1" tests="5" failures="%d" errors="0" skipped="0">\n' "$failures"
   printf '    <testcase classname="SIR.TypedKernel" name="native-build-and-conformance">'
   if ((build_rc != 0)); then printf '<failure message="native build or conformance failed" />'; fi
   printf '%s\n' '</testcase>'
@@ -47,11 +59,17 @@ if ((cross_runtime_rc != 0)); then failures=$((failures + 1)); fi
   printf '    <testcase classname="SIR.TypedKernel" name="native-fable-specification-equality">'
   if ((cross_runtime_rc != 0)); then printf '<failure message="native and Fable specification projections diverged" />'; fi
   printf '%s\n' '</testcase>'
+  printf '    <testcase classname="SIR.TypedKernel" name="public-surface-governance">'
+  if ((governance_rc != 0)); then printf '<failure message="public F# surface governance failed" />'; fi
+  printf '%s\n' '</testcase>'
+  printf '    <testcase classname="SIR.TypedKernel" name="production-review-freshness">'
+  if ((production_review_rc != 0)); then printf '<failure message="production review bundle binding is stale" />'; fi
+  printf '%s\n' '</testcase>'
   printf '%s\n' '  </testsuite>' '</testsuites>'
 } > "$receipt"
 
 if ((failures != 0)); then
-  echo "typed-kernel evidence failed: build=$build_rc rules=$rules_rc cross-runtime=$cross_runtime_rc" >&2
+  echo "typed-kernel evidence failed: build=$build_rc rules=$rules_rc cross-runtime=$cross_runtime_rc governance=$governance_rc production-review=$production_review_rc" >&2
   exit 1
 fi
 

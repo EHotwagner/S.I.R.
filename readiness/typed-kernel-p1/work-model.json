@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "f6f969567123dbce2a4c6767b8e08819d666526152f6afa04211fb43b69c1fea"
+        "value": "e1000e81870a76ea88ae538811c3612636f6498e4f2fb1cdcb9aa9cacdb478ac"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "3c6e7efcd8df09f90ef1ae82324b3330237ad7f5f2004c9b9d5476e2a63e2ab0"
+        "value": "41916b161147793a6dcf6fd4a364388a2440ba74770cd3762607b00beab2310d"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "e69970b232d3a31551787fcde5e7e0ed0e881fb337cb7f2a65aee553cdd7abe5"
+        "value": "70550e6adbc78a79a983a39abe0ee4d69e590a4a5f5f29155e910fe8b3ce4432"
       }
     }
   ],
@@ -1236,6 +1236,58 @@
         "line": 31,
         "column": 1
       }
+    },
+    {
+      "id": "T032",
+      "title": "Refresh generated view impact GV-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-003",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV032"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "id": "T033",
+      "title": "Refresh generated view impact GV-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-004",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV033"
+      ],
+      "source": "work/typed-kernel-p1/tasks.yml",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      }
     }
   ],
   "evidence": [
@@ -2288,6 +2340,56 @@
         "line": 31,
         "column": 1
       }
+    },
+    {
+      "id": "EV032",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T032",
+      "taskRefs": [
+        "T032"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/fsharp-public-surface.json",
+        "readiness/fsharp-public-surfaces/src_SIR.Domain_SIR.Domain.fsproj.json",
+        "readiness/fsharp-public-surfaces/src_SIR.Simulation_SIR.Simulation.fsproj.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV033",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T033",
+      "taskRefs": [
+        "T033"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/assets/map-editor-review/manifest.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/typed-kernel-p1/evidence.yml",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      }
     }
   ],
   "generatedViews": [
@@ -2344,7 +2446,7 @@
           "path": "work/typed-kernel-p1/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "f6f969567123dbce2a4c6767b8e08819d666526152f6afa04211fb43b69c1fea"
+            "value": "e1000e81870a76ea88ae538811c3612636f6498e4f2fb1cdcb9aa9cacdb478ac"
           },
           "schemaVersion": 1
         },
@@ -2352,7 +2454,7 @@
           "path": "work/typed-kernel-p1/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "3c6e7efcd8df09f90ef1ae82324b3330237ad7f5f2004c9b9d5476e2a63e2ab0"
+            "value": "41916b161147793a6dcf6fd4a364388a2440ba74770cd3762607b00beab2310d"
           },
           "schemaVersion": 1
         },
@@ -2368,14 +2470,14 @@
           "path": "work/typed-kernel-p1/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "e69970b232d3a31551787fcde5e7e0ed0e881fb337cb7f2a65aee553cdd7abe5"
+            "value": "70550e6adbc78a79a983a39abe0ee4d69e590a4a5f5f29155e910fe8b3ce4432"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "a6063f797ccd19ad162e3a131c425b4fba6f9b62380fb3c8a0b78a60034c06fd"
+        "value": "713a272cc461046842e8c141a93644d77004fefc378c8a09ff6b68d0e08be4c6"
       },
       "currency": "current"
     }

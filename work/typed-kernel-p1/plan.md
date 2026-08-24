@@ -61,6 +61,8 @@ Prose status: planned
 ## Generated View Impact
 - GV-001 [PD-001] workModel: Standard SDD exclusively generates `readiness/typed-kernel-p1/work-model.json` from the authored lifecycle sources; implementation code never edits it, and analyze/verify must report stale source digests before acceptance.
 - GV-002 [PD-004] ruleProjection: `tests/fixtures/rules-corpus/v2/combat-damage-001.specification.md` and its JSON receipt are generated only by the existing corpus generator and bind source/normalized/body fingerprints.
+- GV-003 [PD-001] fsharpPublicSurface: the repository governance verifier regenerates the aggregate and per-project public-surface receipts after the additive `SIR.Domain` and `CombatRules.fsi` API changes.
+- GV-004 [PD-001] productionReview: the public kernel changes the production Fable bundle even though gameplay output is unchanged, so `docs/assets/map-editor-review/manifest.json` must be regenerated from that exact bundle to retain the existing production-review freshness contract.
 
 ## Accepted Deferrals
 No accepted plan deferrals recorded.

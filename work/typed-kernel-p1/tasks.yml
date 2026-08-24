@@ -25,7 +25,7 @@ sources:
     schemaVersion: 1
   - label: plan
     path: work/typed-kernel-p1/plan.md
-    digest: 3c6e7efcd8df09f90ef1ae82324b3330237ad7f5f2004c9b9d5476e2a63e2ab0
+    digest: 41916b161147793a6dcf6fd4a364388a2440ba74770cd3762607b00beab2310d
     schemaVersion: 1
 tasks:
   - id: T001
@@ -338,6 +338,26 @@ tasks:
     sourceIds: [GV-002, PD-004]
     requiredSkills: [deterministic-json]
     requiredEvidence: [EV031]
+  - id: T032
+    title: Refresh generated view impact GV-003
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [GV-003, PD-001]
+    requiredSkills: [deterministic-json]
+    requiredEvidence: [EV032]
+  - id: T033
+    title: Refresh generated view impact GV-004
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [GV-004, PD-001]
+    requiredSkills: [deterministic-json]
+    requiredEvidence: [EV033]
 acceptedDeferrals: []
 findings: []
 advisoryNotes:

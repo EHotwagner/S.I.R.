@@ -41,7 +41,7 @@
       "kind": "analysis",
       "digest": {
         "algorithm": "sha256",
-        "value": "ef87443e6273dc60290e5ff7080f5a63c9b7d3f78b163333a72a219a60bbcdae"
+        "value": "b32d04b832dda558b5a0e17cb857140c425b982529d73af76672d29c367f0dcd"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +51,7 @@
       "kind": "source",
       "digest": {
         "algorithm": "sha256",
-        "value": "a88774eea575480d1e3bbb50f7308f2cc59ad701fa38a6749874390a14c3573a"
+        "value": "87ee8aff58d9b6771fe909479adbd0eaf0928c732e53eddf7c15d9db5b8720b0"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +61,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "2afc18f8ec8f8214fa9c8e1a261a71b482da71a8965d0c17b5f110f048927d73"
+        "value": "6581550467ac5a7c07f4dc8cf9e9b6f240ec5391b53a583a8cf005777045d35c"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "9194345b10e686750f426376b3f234c76c16bd0544dce654a1d3698584b127bc"
+        "value": "60447df70a0557f0eb5a4bbe754d171a5ad5f5830f437e04ee6fd8d0c9d9acc2"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -101,7 +101,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "3c6e7efcd8df09f90ef1ae82324b3330237ad7f5f2004c9b9d5476e2a63e2ab0"
+        "value": "41916b161147793a6dcf6fd4a364388a2440ba74770cd3762607b00beab2310d"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -121,7 +121,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "e69970b232d3a31551787fcde5e7e0ed0e881fb337cb7f2a65aee553cdd7abe5"
+        "value": "70550e6adbc78a79a983a39abe0ee4d69e590a4a5f5f29155e910fe8b3ce4432"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -167,9 +167,9 @@
   "verificationReadiness": {
     "status": "verificationReady",
     "blockingFindingIds": [],
-    "evidenceSupportedCount": 31,
+    "evidenceSupportedCount": 33,
     "evidenceSelfAttestedCount": 0,
-    "evidenceObservedCount": 31,
+    "evidenceObservedCount": 33,
     "evidenceDeferredCount": 0,
     "evidenceMissingCount": 0,
     "evidenceStaleCount": 0,
@@ -420,6 +420,22 @@
     {
       "id": "ED-EV031",
       "obligationId": "EV031",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV032",
+      "obligationId": "EV032",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV033",
+      "obligationId": "EV033",
       "state": "supported",
       "observed": true,
       "severity": "ready",

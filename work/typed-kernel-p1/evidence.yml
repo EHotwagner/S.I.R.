@@ -11,7 +11,7 @@ sourceAnalysis: readiness/typed-kernel-p1/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/typed-kernel-p1/analysis.json
-    digest: ef87443e6273dc60290e5ff7080f5a63c9b7d3f78b163333a72a219a60bbcdae
+    digest: b32d04b832dda558b5a0e17cb857140c425b982529d73af76672d29c367f0dcd
     schemaVersion: 1
   - label: checklist
     path: work/typed-kernel-p1/checklist.md
@@ -23,7 +23,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/typed-kernel-p1/plan.md
-    digest: 3c6e7efcd8df09f90ef1ae82324b3330237ad7f5f2004c9b9d5476e2a63e2ab0
+    digest: 41916b161147793a6dcf6fd4a364388a2440ba74770cd3762607b00beab2310d
     schemaVersion: 1
   - label: spec
     path: work/typed-kernel-p1/spec.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/typed-kernel-p1/tasks.yml
-    digest: e69970b232d3a31551787fcde5e7e0ed0e881fb337cb7f2a65aee553cdd7abe5
+    digest: 70550e6adbc78a79a983a39abe0ee4d69e590a4a5f5f29155e910fe8b3ce4432
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -54,10 +54,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -81,10 +81,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -108,10 +108,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -135,10 +135,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -162,10 +162,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -189,10 +189,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -216,10 +216,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -243,10 +243,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -270,10 +270,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -297,10 +297,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -324,10 +324,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -351,10 +351,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -378,10 +378,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -405,10 +405,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -432,10 +432,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -459,10 +459,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -486,10 +486,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -513,10 +513,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -540,10 +540,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -567,10 +567,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -594,10 +594,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -621,10 +621,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -648,10 +648,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -675,10 +675,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -702,10 +702,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -729,10 +729,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -756,10 +756,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -783,10 +783,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -810,10 +810,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -837,10 +837,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
@@ -864,12 +864,66 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
-      digest: "sha256:aa5f1d9a6f14f5e32557c039a3a49c1e48dfbea4d894d26c165e5f9aedd9cf0f"
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Observed P1 build, and native/Fable projection gates passed., corpus mutation]
+  - id: EV032
+    kind: verification
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV032]
+    artifacts: [readiness/fsharp-public-surface.json, readiness/fsharp-public-surfaces/src_SIR.Domain_SIR.Domain.fsproj.json, readiness/fsharp-public-surfaces/src_SIR.Simulation_SIR.Simulation.fsproj.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-fable-game-governance.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: ["Repository governance regenerated and checked the additive F# public-surface receipts."]
+  - id: EV033
+    kind: verification
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV033]
+    artifacts: [docs/assets/map-editor-review/manifest.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-map-editor-qualification.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/typed-kernel-p1/typed-kernel-p1.junit.xml
+      digest: "sha256:962b6d95b727225ee4a198638527e00c4baf2bf255b7a361ddc72dbe8868fa6d"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [The existing production-review gate accepted the regenerated exact Fable bundle binding.]
 lifecycleNotes:
   - "Next lifecycle action: verify."

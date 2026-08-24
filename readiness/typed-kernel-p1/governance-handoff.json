@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/typed-kernel-p1/ship.json",
-      "digest": "sha256:8ddf3cb115fc8a6d2b69f9c6f5e1ce9bf21e4111d5dd4f543137186ac14a606f",
+      "digest": "sha256:0e24ad76902ec286bfc9318ccc38315a644c797d631e4ff853553195b782f8d8",
       "schemaVersion": 1
     },
     {
       "path": "readiness/typed-kernel-p1/verify.json",
-      "digest": "sha256:a88774eea575480d1e3bbb50f7308f2cc59ad701fa38a6749874390a14c3573a",
+      "digest": "sha256:87ee8aff58d9b6771fe909479adbd0eaf0928c732e53eddf7c15d9db5b8720b0",
       "schemaVersion": 1
     },
     {
       "path": "readiness/typed-kernel-p1/work-model.json",
-      "digest": "sha256:2afc18f8ec8f8214fa9c8e1a261a71b482da71a8965d0c17b5f110f048927d73",
+      "digest": "sha256:6581550467ac5a7c07f4dc8cf9e9b6f240ec5391b53a583a8cf005777045d35c",
       "schemaVersion": 1
     }
   ],
@@ -178,6 +178,16 @@
         "rationale": null
       },
       {
+        "id": "evidence:EV032",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV033",
+        "state": "real",
+        "rationale": null
+      },
+      {
         "id": "task:T001",
         "state": "real",
         "rationale": null
@@ -331,6 +341,16 @@
         "id": "task:T031",
         "state": "real",
         "rationale": null
+      },
+      {
+        "id": "task:T032",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T033",
+        "state": "real",
+        "rationale": null
       }
     ],
     "dependencies": [
@@ -457,6 +477,14 @@
       {
         "dependent": "evidence:EV031",
         "dependency": "task:T031"
+      },
+      {
+        "dependent": "evidence:EV032",
+        "dependency": "task:T032"
+      },
+      {
+        "dependent": "evidence:EV033",
+        "dependency": "task:T033"
       },
       {
         "dependent": "task:T001",
@@ -684,6 +712,22 @@
       },
       {
         "dependent": "task:T031",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T032",
+        "dependency": "evidence:EV032"
+      },
+      {
+        "dependent": "task:T032",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T033",
+        "dependency": "evidence:EV033"
+      },
+      {
+        "dependent": "task:T033",
         "dependency": "task:T001"
       }
     ]
