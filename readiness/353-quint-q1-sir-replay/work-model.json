@@ -1,0 +1,513 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "353-quint-q1-sir-replay",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/353-quint-q1-sir-replay/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "bb7cdbbf3cccd4db6b6dca3a8593b4805e1465e504a28eec47a6e06dd69a4302"
+      }
+    },
+    {
+      "path": "work/353-quint-q1-sir-replay/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "5231406d3d817d66871cda6b3811f1cd09f80971061131f4ac862c58205b2a81"
+      }
+    },
+    {
+      "path": "work/353-quint-q1-sir-replay/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "2f52cb8a2f1ac08cc342fae01010943039dee3ff5ac29f805d0b2e4ad3ff58f7"
+      }
+    },
+    {
+      "path": "work/353-quint-q1-sir-replay/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "612d7e6a8ddfef82ba74f6c7ba9f9f688fd4c1d2a6de1efdf7862252899bd3e7"
+      }
+    },
+    {
+      "path": "work/353-quint-q1-sir-replay/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "343d95f2c729b37b70bcd223f078189a7d848940e7728db40d2417fd2facc5b4"
+      }
+    },
+    {
+      "path": "work/353-quint-q1-sir-replay/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "8acb36c26ec39d801c43c513435b2f088b43bc0a207588274fe2b4f9958d1cb0"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "353-quint-q1-sir-replay",
+    "title": "Quint Q1 Sir Replay",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "replay Initialize then ApplyDamage(3) then ApplyDamage(20) through CombatRules.resolveConsequences and compare hitPoints, lastAction, and lastAmount after every transition with exact producer, adapter, implementation, trace, seed, and bound fingerprints; require five injected mapping/implementation defects to fail at their first divergent transition (Stories: US-001; Acceptance: AC-001)",
+      "text": "replay Initialize then ApplyDamage(3) then ApplyDamage(20) through CombatRules.resolveConsequences and compare hitPoints, lastAction, and lastAmount after every transition with exact producer, adapter, implementation, trace, seed, and bound fingerprints; require five injected mapping/implementation defects to fail at their first divergent transition (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/353-quint-q1-sir-replay/spec.md",
+      "sourceLocation": {
+        "line": 31,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001"
+      ]
+    }
+  ],
+  "decisions": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Update contract surface PC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Record verification evidence VO-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Handle migration posture PM-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Refresh generated view impact GV-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        "tests/SIR.Conformance.Shared/QuintReplayFixtures.fs",
+        "tests/fixtures/rules-corpus/quint-q1/sir-reviewed-witness.itf.json",
+        "tests/fixtures/rules-corpus/quint-q1/sir-reviewed-witness.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/353-quint-q1-sir-replay/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "tests/fixtures/rules-corpus/quint-q1/README.md",
+        "tests/fixtures/rules-corpus/quint-q1/producer-candidate-manifest.json",
+        "tests/fixtures/rules-corpus/quint-q1/producer-candidate-receipt.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/353-quint-q1-sir-replay/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/353-quint-q1-sir-replay/sir-replay-receipt.json",
+        "readiness/353-quint-q1-sir-replay/sir-replay.junit.xml",
+        "scripts/qualify-quint-q1-sir-replay.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/353-quint-q1-sir-replay/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "tests/SIR.Conformance.Shared/Program.fs",
+        "tests/SIR.Conformance.Shared/QuintReplayFixtures.fs",
+        "tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/353-quint-q1-sir-replay/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/353-quint-q1-sir-replay/analysis.json",
+        "readiness/353-quint-q1-sir-replay/work-model.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/353-quint-q1-sir-replay/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/353-quint-q1-sir-replay/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.2.5"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/353-quint-q1-sir-replay/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "bb7cdbbf3cccd4db6b6dca3a8593b4805e1465e504a28eec47a6e06dd69a4302"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/353-quint-q1-sir-replay/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5231406d3d817d66871cda6b3811f1cd09f80971061131f4ac862c58205b2a81"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/353-quint-q1-sir-replay/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "2f52cb8a2f1ac08cc342fae01010943039dee3ff5ac29f805d0b2e4ad3ff58f7"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/353-quint-q1-sir-replay/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "612d7e6a8ddfef82ba74f6c7ba9f9f688fd4c1d2a6de1efdf7862252899bd3e7"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/353-quint-q1-sir-replay/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "343d95f2c729b37b70bcd223f078189a7d848940e7728db40d2417fd2facc5b4"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/353-quint-q1-sir-replay/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "8acb36c26ec39d801c43c513435b2f088b43bc0a207588274fe2b4f9958d1cb0"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "e4e238ffdf5d10c52d5492ad2f730eb62aa0d3e3d84077b730f1e9f778a8b5fc"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}

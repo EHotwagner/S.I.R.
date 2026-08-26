@@ -1,0 +1,86 @@
+schemaVersion: 1
+work:
+  id: 353-quint-q1-sir-replay
+  title: "Quint Q1 Sir Replay"
+  stage: tasks
+  status: tasksReady
+  sourceSpec: work/353-quint-q1-sir-replay/spec.md
+  sourceClarifications: work/353-quint-q1-sir-replay/clarifications.md
+  sourceChecklist: work/353-quint-q1-sir-replay/checklist.md
+  sourcePlan: work/353-quint-q1-sir-replay/plan.md
+  publicOrToolFacingImpact: true
+
+sources:
+  - label: spec
+    path: work/353-quint-q1-sir-replay/spec.md
+    digest: 343d95f2c729b37b70bcd223f078189a7d848940e7728db40d2417fd2facc5b4
+    schemaVersion: 1
+  - label: clarifications
+    path: work/353-quint-q1-sir-replay/clarifications.md
+    digest: 5231406d3d817d66871cda6b3811f1cd09f80971061131f4ac862c58205b2a81
+    schemaVersion: 1
+  - label: checklist
+    path: work/353-quint-q1-sir-replay/checklist.md
+    digest: bb7cdbbf3cccd4db6b6dca3a8593b4805e1465e504a28eec47a6e06dd69a4302
+    schemaVersion: 1
+  - label: plan
+    path: work/353-quint-q1-sir-replay/plan.md
+    digest: 612d7e6a8ddfef82ba74f6c7ba9f9f688fd4c1d2a6de1efdf7862252899bd3e7
+    schemaVersion: 1
+tasks:
+  - id: T001
+    title: Implement requirement FR-001
+    status: done
+    owner: sdd
+    dependencies: []
+    requirements: [FR-001]
+    decisions: []
+    sourceIds: [AC-001, FR-001, PD-001]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV001]
+  - id: T002
+    title: Update contract surface PC-001
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PD-001]
+    requiredSkills: [fsharp]
+    requiredEvidence: [EV002]
+  - id: T003
+    title: Record verification evidence VO-001
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PD-001, VO-001]
+    requiredSkills: [automated-tests, readiness-evidence]
+    requiredEvidence: [EV003]
+  - id: T004
+    title: Handle migration posture PM-001
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PM-001]
+    requiredSkills: [schema-versioning]
+    requiredEvidence: [EV004]
+  - id: T005
+    title: Refresh generated view impact GV-001
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [GV-001, PD-001]
+    requiredSkills: [deterministic-json]
+    requiredEvidence: [EV005]
+acceptedDeferrals: []
+findings: []
+advisoryNotes:
+  - "Optional Governance pointers remain compatibility facts only."
+lifecycleNotes:
+  - "Next lifecycle action: fsgg-sdd analyze --work 353-quint-q1-sir-replay."

@@ -63,12 +63,31 @@ let main arguments =
                       SpatialQueryFixtures.evaluate false
                       AwarenessReactionFixtures.evaluate None
                       CombatFixtures.evaluate false
+#if SIR_QUINT_Q1_REPLAY
+                      (QuintReplayFixtures.verifyExact (); [||])
+#endif
                       replay ]
                     |> SIR.Domain.CanonicalEncoding.concatenate
                     |> NumericFixtures.hex
                     |> printfn "%s"
 
                     0
+#if SIR_QUINT_Q1_REPLAY
+    | [ "--quint-q1-replay" ] ->
+        QuintReplayFixtures.receiptJson () |> printfn "%s"
+        0
+    | [ "--inject-quint-q1-mutation"; mutationName ] ->
+        match QuintReplayFixtures.tryParseMutation mutationName with
+        | None ->
+            eprintfn "Unknown Q1 replay mutation: %s" mutationName
+            2
+        | Some mutation ->
+            let divergence = QuintReplayFixtures.verifyMutation mutation
+            eprintfn
+                "first divergence: transition=%d action=%s field=%s expected=%s actual=%s mutation=%s"
+                divergence.Transition divergence.Action divergence.Field divergence.Expected divergence.Actual mutationName
+            1
+#endif
     | [ "--inject-simulation-divergence"; phaseName ] ->
         match SimulationFixtures.tryParsePhase phaseName with
         | None ->

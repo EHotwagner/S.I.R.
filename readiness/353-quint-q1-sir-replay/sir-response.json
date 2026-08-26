@@ -1,0 +1,44 @@
+{
+  "schema": "fsgg.quint.sir-acceptance-response/q1",
+  "subject": "EHotwagner/S.I.R.#353",
+  "producerSubject": "FS-GG/FS.GG.SDD#922",
+  "producerCandidateCommit": "3a0eced13305b146df2febd96698e38335cae99c",
+  "producerReceiptHead": "6cf3f1f0746c817e1171cd3a7b63865c25c1e346",
+  "producerManifestSha256": "0bb0a34f6e93c933b441fd34ebc0bbd521ac792b95955d49ed528cab3c014ddd",
+  "routeDecisionDigest": "34f2bce86de800a380304812d669b146ed16190212d8cb0079fe694252c4cf5e",
+  "runtime": {
+    "sdk": "10.0.302",
+    "traceCount": 1,
+    "stateCount": 3,
+    "seed": "92220",
+    "transitionBound": 2,
+    "normalization": "exact int32/string projection; immediate deterministic quiescence",
+    "adapterSha256": "3c9f9da85dc97f0f8870617c29f53af21a0add2d04128cbcad112faa7d394a1e",
+    "implementationSha256": "3fa44465db98e8715d0d818a8714958bd2dc66f13c8180da15fb1ca2f12661f0",
+    "runtimeReceiptSha256": "88a28763e8e84f2d551834ef030bb02ca88921cc3e8222d8f88d5f1bf23eec87"
+  },
+  "qualification": {
+    "observedSingleHostMilliseconds": 2081,
+    "timingIsPassThreshold": false,
+    "independentMutationsRejected": 5,
+    "selectionPositive": "src/SIR.Simulation/CombatRules.fs",
+    "selectionNegative": "src/SIR.Client/UnrelatedView.fs",
+    "harnessSha256": "ebe2f9036be7233a57360e9cb17ad2c1a16feea5d89cc38e1de9a61241fdd64b",
+    "junitSha256": "0fbee652b0b732b7bd64b206cb5f779be7afd100b2abc392169f37d07c3ec0c1",
+    "verifyReceiptSha256": "135a0f0214d48103e2ffe7cbe24edfa1a900a804477bcab122cfa3f116a4acce"
+  },
+  "mutations": [
+    "wrong-action-mapping",
+    "omitted-action",
+    "wrong-observable-field",
+    "stale-expected-state",
+    "combat-boundary-bypass"
+  ],
+  "authority": "test-only-correspondence; no production rule authority",
+  "verdict": "accept-exact-runtime-correspondence",
+  "gitBinding": {
+    "method": "successor-commit-receipt",
+    "receiptPath": "readiness/353-quint-q1-sir-replay/sir-response-commit-receipt.json",
+    "note": "A successor commit binds this response to the exact S.I.R. candidate commit and tree."
+  }
+}

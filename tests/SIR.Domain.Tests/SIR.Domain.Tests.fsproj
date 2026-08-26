@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <DefineConstants>$(DefineConstants);SIR_QUINT_Q1_REPLAY</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../SIR.Conformance.Shared/NumericFixtures.fs" Link="NumericFixtures.fs" />
@@ -14,6 +15,7 @@
     <Compile Include="../SIR.Conformance.Shared/SpatialQueryFixtures.fs" Link="SpatialQueryFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/AwarenessReactionFixtures.fs" Link="AwarenessReactionFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/CombatFixtures.fs" Link="CombatFixtures.fs" />
+    <Compile Include="../SIR.Conformance.Shared/QuintReplayFixtures.fs" Link="QuintReplayFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/Program.fs" Link="Program.fs" />
   </ItemGroup>
   <ItemGroup>

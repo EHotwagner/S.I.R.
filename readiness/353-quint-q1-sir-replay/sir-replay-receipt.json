@@ -1,0 +1,14 @@
+{
+  "schema": "fsgg.quint.sir-runtime-replay-receipt/q1",
+  "producerCandidateCommit": "3a0eced13305b146df2febd96698e38335cae99c",
+  "producerReceiptHead": "6cf3f1f0746c817e1171cd3a7b63865c25c1e346",
+  "producerManifestSha256": "0bb0a34f6e93c933b441fd34ebc0bbd521ac792b95955d49ed528cab3c014ddd",
+  "traceSha256": "70d1f8343fc212a86b7dacc4a2507a4513bdaadf1ee85b36c5c1d2907a2a4ddf",
+  "adapterSha256": "3c9f9da85dc97f0f8870617c29f53af21a0add2d04128cbcad112faa7d394a1e",
+  "implementationSha256": "3fa44465db98e8715d0d818a8714958bd2dc66f13c8180da15fb1ca2f12661f0",
+  "seed": "92220",
+  "transitionBound": 2,
+  "traceCount": 1,
+  "normalization": "exact int32/string projection; immediate deterministic quiescence",
+  "verdict": "accept-exact-runtime-correspondence"
+}
