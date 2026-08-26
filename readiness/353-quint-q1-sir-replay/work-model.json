@@ -53,7 +53,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "bb7cdbbf3cccd4db6b6dca3a8593b4805e1465e504a28eec47a6e06dd69a4302"
+        "value": "60880ce36036d6144bcb4e3604996ee83e8cedd8db806ea4fbd8bf35d80f0774"
       }
     },
     {
@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "8c5af6803bd222609fb07f39b36b9b8d1af87c5341b2c9258f286c1722c9cd84"
+        "value": "d5fad3b188762a83b6f5e7f701e9ce97daa55909f1e2f40fd62679cf63c3dac1"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "612d7e6a8ddfef82ba74f6c7ba9f9f688fd4c1d2a6de1efdf7862252899bd3e7"
+        "value": "7da057a903e60219380f1cf10aff661040518eff248fb53243fc8f64132ba4ef"
       }
     },
     {
@@ -101,7 +101,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "343d95f2c729b37b70bcd223f078189a7d848940e7728db40d2417fd2facc5b4"
+        "value": "010e40ea1422b7bad084330b62d2fd89875100c4b31b3b16a3b5e9bf5c026547"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "8acb36c26ec39d801c43c513435b2f088b43bc0a207588274fe2b4f9958d1cb0"
+        "value": "d4b8342716856b1db399ecf3fe62fe300572f186cbee2f737d1ec6977c4d7200"
       }
     }
   ],
@@ -137,7 +137,7 @@
       "classification": [],
       "source": "work/353-quint-q1-sir-replay/spec.md",
       "sourceLocation": {
-        "line": 31,
+        "line": 34,
         "column": 1
       },
       "linkedTaskIds": [
@@ -145,6 +145,69 @@
       ],
       "linkedEvidenceIds": [
         "EV001"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "the selected conformance CI route shall use the committed producer-derived Quint model plus pinned Quint 0.32.0 and evaluator 0.6.0 binaries to generate at least 64 deterministic ITF traces and replay their complete normalized state corpus through the production adapter; an unrelated route shall skip this work (Stories: US-001; Acceptance: AC-002)",
+      "text": "the selected conformance CI route shall use the committed producer-derived Quint model plus pinned Quint 0.32.0 and evaluator 0.6.0 binaries to generate at least 64 deterministic ITF traces and replay their complete normalized state corpus through the production adapter; an unrelated route shall skip this work (Stories: US-001; Acceptance: AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/353-quint-q1-sir-replay/spec.md",
+      "sourceLocation": {
+        "line": 35,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "every first-divergence failure shall report transition index, stable action identity, fixture path, JSON pointer, adapter source path, and production implementation source path, including the independent combat-boundary mutation at the real interpreter seam (Stories: US-001; Acceptance: AC-003)",
+      "text": "every first-divergence failure shall report transition index, stable action identity, fixture path, JSON pointer, adapter source path, and production implementation source path, including the independent combat-boundary mutation at the real interpreter seam (Stories: US-001; Acceptance: AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/353-quint-q1-sir-replay/spec.md",
+      "sourceLocation": {
+        "line": 36,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "qualification receipts shall bind exact bytes and resolved paths for the executed .NET muxer, SDK dotnet entry point, hostfxr, runtime tree, combined package locks, pinned Quint and evaluator tools, model, adapter, implementation, corpus, seed, bounds, and JUnit output (Stories: US-001; Acceptance: AC-004)",
+      "text": "qualification receipts shall bind exact bytes and resolved paths for the executed .NET muxer, SDK dotnet entry point, hostfxr, runtime tree, combined package locks, pinned Quint and evaluator tools, model, adapter, implementation, corpus, seed, bounds, and JUnit output (Stories: US-001; Acceptance: AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/353-quint-q1-sir-replay/spec.md",
+      "sourceLocation": {
+        "line": 37,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004"
+      ],
+      "linkedEvidenceIds": [
+        "EV004"
       ]
     }
   ],
@@ -180,19 +243,25 @@
     },
     {
       "id": "T002",
-      "title": "Update contract surface PC-001",
+      "title": "Generate and replay the selected-route sampled corpus",
       "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
       ],
-      "requirements": [],
+      "requirements": [
+        "FR-002"
+      ],
       "decisions": [],
       "sourceIds": [
-        "PC-001",
-        "PD-001"
+        "AC-002",
+        "FR-002",
+        "PC-002",
+        "PD-002",
+        "VO-002"
       ],
       "requiredSkills": [
+        "automated-tests",
         "fsharp"
       ],
       "requiredEvidence": [
@@ -206,18 +275,23 @@
     },
     {
       "id": "T003",
-      "title": "Record verification evidence VO-001",
+      "title": "Prove source-located divergences at the real interpreter seam",
       "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
       ],
-      "requirements": [],
+      "requirements": [
+        "FR-003"
+      ],
       "decisions": [],
       "sourceIds": [
+        "AC-003",
+        "FR-003",
         "PC-001",
-        "PD-001",
-        "VO-001"
+        "PD-003",
+        "VO-001",
+        "VO-003"
       ],
       "requiredSkills": [
         "automated-tests",
@@ -234,19 +308,27 @@
     },
     {
       "id": "T004",
-      "title": "Handle migration posture PM-001",
+      "title": "Bind the complete runtime and model-tool closure",
       "status": "done",
       "owner": "sdd",
       "dependencies": [
-        "T001"
+        "T001",
+        "T002"
       ],
-      "requirements": [],
+      "requirements": [
+        "FR-004"
+      ],
       "decisions": [],
       "sourceIds": [
-        "PC-001",
-        "PM-001"
+        "AC-004",
+        "FR-004",
+        "PC-002",
+        "PD-004",
+        "PM-001",
+        "VO-004"
       ],
       "requiredSkills": [
+        "readiness-evidence",
         "schema-versioning"
       ],
       "requiredEvidence": [
@@ -264,13 +346,19 @@
       "status": "done",
       "owner": "sdd",
       "dependencies": [
-        "T001"
+        "T001",
+        "T002",
+        "T003",
+        "T004"
       ],
       "requirements": [],
       "decisions": [],
       "sourceIds": [
         "GV-001",
-        "PD-001"
+        "PD-001",
+        "PD-002",
+        "PD-003",
+        "PD-004"
       ],
       "requiredSkills": [
         "deterministic-json"
@@ -322,11 +410,17 @@
       "taskRefs": [
         "T002"
       ],
-      "requirementRefs": [],
+      "requirementRefs": [
+        "FR-002"
+      ],
       "artifactRefs": [
+        "readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-conformance.sh",
         "tests/fixtures/rules-corpus/quint-q1/README.md",
         "tests/fixtures/rules-corpus/quint-q1/producer-candidate-manifest.json",
-        "tests/fixtures/rules-corpus/quint-q1/producer-candidate-receipt.json"
+        "tests/fixtures/rules-corpus/quint-q1/producer-candidate-receipt.json",
+        "tests/fixtures/rules-corpus/quint-q1/sir-damage.qnt"
       ],
       "result": "pass",
       "synthetic": false,
@@ -348,7 +442,9 @@
       "taskRefs": [
         "T003"
       ],
-      "requirementRefs": [],
+      "requirementRefs": [
+        "FR-003"
+      ],
       "artifactRefs": [
         "readiness/353-quint-q1-sir-replay/sir-replay-receipt.json",
         "readiness/353-quint-q1-sir-replay/sir-replay.junit.xml",
@@ -378,8 +474,13 @@
       "taskRefs": [
         "T004"
       ],
-      "requirementRefs": [],
+      "requirementRefs": [
+        "FR-004"
+      ],
       "artifactRefs": [
+        "readiness/353-quint-q1-sir-replay/sir-replay-receipt.json",
+        "readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json",
+        "scripts/qualify-quint-q1-sir-replay.sh",
         "tests/SIR.Conformance.Shared/Program.fs",
         "tests/SIR.Conformance.Shared/QuintReplayFixtures.fs",
         "tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj"
@@ -429,7 +530,7 @@
       "schemaVersion": 1,
       "generator": {
         "id": "FS.GG.SDD.Artifacts",
-        "version": "1.2.5"
+        "version": "1.0.1"
       },
       "sources": [
         {
@@ -460,7 +561,7 @@
           "path": "work/353-quint-q1-sir-replay/checklist.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "bb7cdbbf3cccd4db6b6dca3a8593b4805e1465e504a28eec47a6e06dd69a4302"
+            "value": "60880ce36036d6144bcb4e3604996ee83e8cedd8db806ea4fbd8bf35d80f0774"
           },
           "schemaVersion": 1
         },
@@ -476,7 +577,7 @@
           "path": "work/353-quint-q1-sir-replay/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "8c5af6803bd222609fb07f39b36b9b8d1af87c5341b2c9258f286c1722c9cd84"
+            "value": "d5fad3b188762a83b6f5e7f701e9ce97daa55909f1e2f40fd62679cf63c3dac1"
           },
           "schemaVersion": 1
         },
@@ -484,7 +585,7 @@
           "path": "work/353-quint-q1-sir-replay/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "612d7e6a8ddfef82ba74f6c7ba9f9f688fd4c1d2a6de1efdf7862252899bd3e7"
+            "value": "7da057a903e60219380f1cf10aff661040518eff248fb53243fc8f64132ba4ef"
           },
           "schemaVersion": 1
         },
@@ -492,7 +593,7 @@
           "path": "work/353-quint-q1-sir-replay/spec.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "343d95f2c729b37b70bcd223f078189a7d848940e7728db40d2417fd2facc5b4"
+            "value": "010e40ea1422b7bad084330b62d2fd89875100c4b31b3b16a3b5e9bf5c026547"
           },
           "schemaVersion": 1
         },
@@ -500,14 +601,14 @@
           "path": "work/353-quint-q1-sir-replay/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "8acb36c26ec39d801c43c513435b2f088b43bc0a207588274fe2b4f9958d1cb0"
+            "value": "d4b8342716856b1db399ecf3fe62fe300572f186cbee2f737d1ec6977c4d7200"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "a7157fc74ca4af74baab5f4a824af79216dfe64508198a86c72fdaf70e59d277"
+        "value": "8f5dc53788d5ccdfb864aabc7e50e9612cdd1e53aac02dfa49d69fddddbb4dea"
       },
       "currency": "current"
     }

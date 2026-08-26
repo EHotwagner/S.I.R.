@@ -4,7 +4,7 @@
   "workId": "353-quint-q1-sir-replay",
   "stage": "analyze",
   "status": "implementationReady",
-  "generator": "FS.GG.SDD.Artifacts/1.2.5",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -41,7 +41,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "8413d86f94e233f1ff5f2d406c42dd8ad5a714343a1702fea887537f8ef6b3c1"
+        "value": "4540b2d8e42da61421c23bd77e55c2c58ce45d3e4b176f19dab429cff4b8bcef"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +51,7 @@
       "kind": "checklist",
       "digest": {
         "algorithm": "sha256",
-        "value": "bb7cdbbf3cccd4db6b6dca3a8593b4805e1465e504a28eec47a6e06dd69a4302"
+        "value": "60880ce36036d6144bcb4e3604996ee83e8cedd8db806ea4fbd8bf35d80f0774"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -71,7 +71,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "612d7e6a8ddfef82ba74f6c7ba9f9f688fd4c1d2a6de1efdf7862252899bd3e7"
+        "value": "7da057a903e60219380f1cf10aff661040518eff248fb53243fc8f64132ba4ef"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "specification",
       "digest": {
         "algorithm": "sha256",
-        "value": "343d95f2c729b37b70bcd223f078189a7d848940e7728db40d2417fd2facc5b4"
+        "value": "010e40ea1422b7bad084330b62d2fd89875100c4b31b3b16a3b5e9bf5c026547"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "8acb36c26ec39d801c43c513435b2f088b43bc0a207588274fe2b4f9958d1cb0"
+        "value": "d4b8342716856b1db399ecf3fe62fe300572f186cbee2f737d1ec6977c4d7200"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -162,6 +162,16 @@
       "id": "AR007",
       "sourcePath": "work/353-quint-q1-sir-replay/plan.md",
       "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "PC-002",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR008",
+      "sourcePath": "work/353-quint-q1-sir-replay/plan.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
       "sourceId": "GV-001",
       "targetId": null,
       "relationship": "generatedViewDisposition",
@@ -169,7 +179,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR008",
+      "id": "AR009",
       "sourcePath": "work/353-quint-q1-sir-replay/plan.md",
       "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
       "sourceId": "PM-001",
@@ -179,7 +189,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR009",
+      "id": "AR010",
       "sourcePath": "work/353-quint-q1-sir-replay/plan.md",
       "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
       "sourceId": "PD-001",
@@ -189,7 +199,37 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR010",
+      "id": "AR011",
+      "sourcePath": "work/353-quint-q1-sir-replay/plan.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "PD-002",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR012",
+      "sourcePath": "work/353-quint-q1-sir-replay/plan.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "PD-003",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR013",
+      "sourcePath": "work/353-quint-q1-sir-replay/plan.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "PD-004",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR014",
       "sourcePath": "work/353-quint-q1-sir-replay/plan.md",
       "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
       "sourceId": null,
@@ -199,7 +239,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR011",
+      "id": "AR015",
       "sourcePath": "work/353-quint-q1-sir-replay/plan.md",
       "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
       "sourceId": "VO-001",
@@ -209,7 +249,37 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR012",
+      "id": "AR016",
+      "sourcePath": "work/353-quint-q1-sir-replay/plan.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "VO-002",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR017",
+      "sourcePath": "work/353-quint-q1-sir-replay/plan.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "VO-003",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR018",
+      "sourcePath": "work/353-quint-q1-sir-replay/plan.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "VO-004",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR019",
       "sourcePath": "work/353-quint-q1-sir-replay/spec.md",
       "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
       "sourceId": "AC-001",
@@ -219,7 +289,37 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR013",
+      "id": "AR020",
+      "sourcePath": "work/353-quint-q1-sir-replay/spec.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "AC-002",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR021",
+      "sourcePath": "work/353-quint-q1-sir-replay/spec.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "AC-003",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR022",
+      "sourcePath": "work/353-quint-q1-sir-replay/spec.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "AC-004",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR023",
       "sourcePath": "work/353-quint-q1-sir-replay/spec.md",
       "targetPath": "work/353-quint-q1-sir-replay/checklist.md",
       "sourceId": null,
@@ -229,7 +329,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR014",
+      "id": "AR024",
       "sourcePath": "work/353-quint-q1-sir-replay/spec.md",
       "targetPath": "work/353-quint-q1-sir-replay/plan.md",
       "sourceId": null,
@@ -239,7 +339,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR015",
+      "id": "AR025",
       "sourcePath": "work/353-quint-q1-sir-replay/spec.md",
       "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
       "sourceId": "FR-001",
@@ -249,7 +349,37 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR016",
+      "id": "AR026",
+      "sourcePath": "work/353-quint-q1-sir-replay/spec.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "FR-002",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR027",
+      "sourcePath": "work/353-quint-q1-sir-replay/spec.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "FR-003",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR028",
+      "sourcePath": "work/353-quint-q1-sir-replay/spec.md",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "FR-004",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR029",
       "sourcePath": "work/353-quint-q1-sir-replay/spec.md",
       "targetPath": "work/353-quint-q1-sir-replay/clarifications.md",
       "sourceId": null,
@@ -259,7 +389,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR017",
+      "id": "AR030",
       "sourcePath": "work/353-quint-q1-sir-replay/spec.md",
       "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
       "sourceId": null,
@@ -269,7 +399,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR018",
+      "id": "AR031",
       "sourcePath": "work/353-quint-q1-sir-replay/tasks.yml",
       "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
       "sourceId": "T002",
@@ -279,7 +409,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR019",
+      "id": "AR032",
       "sourcePath": "work/353-quint-q1-sir-replay/tasks.yml",
       "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
       "sourceId": "T003",
@@ -289,7 +419,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR020",
+      "id": "AR033",
       "sourcePath": "work/353-quint-q1-sir-replay/tasks.yml",
       "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
       "sourceId": "T004",
@@ -299,7 +429,17 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR021",
+      "id": "AR034",
+      "sourcePath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "T004",
+      "targetId": "T002",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR035",
       "sourcePath": "work/353-quint-q1-sir-replay/tasks.yml",
       "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
       "sourceId": "T005",
@@ -307,11 +447,41 @@
       "relationship": "taskDependency",
       "state": "current",
       "diagnosticIds": []
+    },
+    {
+      "id": "AR036",
+      "sourcePath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "T005",
+      "targetId": "T002",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR037",
+      "sourcePath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "T005",
+      "targetId": "T003",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR038",
+      "sourcePath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "targetPath": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceId": "T005",
+      "targetId": "T004",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
     }
   ],
   "readiness": {
     "status": "implementationReady",
-    "readyCount": 21,
+    "readyCount": 38,
     "advisoryCount": 0,
     "warningCount": 0,
     "blockingCount": 0,

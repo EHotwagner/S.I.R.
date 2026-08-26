@@ -13,7 +13,7 @@ work:
 sources:
   - label: spec
     path: work/353-quint-q1-sir-replay/spec.md
-    digest: 343d95f2c729b37b70bcd223f078189a7d848940e7728db40d2417fd2facc5b4
+    digest: 010e40ea1422b7bad084330b62d2fd89875100c4b31b3b16a3b5e9bf5c026547
     schemaVersion: 1
   - label: clarifications
     path: work/353-quint-q1-sir-replay/clarifications.md
@@ -21,11 +21,11 @@ sources:
     schemaVersion: 1
   - label: checklist
     path: work/353-quint-q1-sir-replay/checklist.md
-    digest: bb7cdbbf3cccd4db6b6dca3a8593b4805e1465e504a28eec47a6e06dd69a4302
+    digest: 60880ce36036d6144bcb4e3604996ee83e8cedd8db806ea4fbd8bf35d80f0774
     schemaVersion: 1
   - label: plan
     path: work/353-quint-q1-sir-replay/plan.md
-    digest: 612d7e6a8ddfef82ba74f6c7ba9f9f688fd4c1d2a6de1efdf7862252899bd3e7
+    digest: 7da057a903e60219380f1cf10aff661040518eff248fb53243fc8f64132ba4ef
     schemaVersion: 1
 tasks:
   - id: T001
@@ -39,43 +39,43 @@ tasks:
     requiredSkills: [fsharp, implementation]
     requiredEvidence: [EV001]
   - id: T002
-    title: Update contract surface PC-001
+    title: Generate and replay the selected-route sampled corpus
     status: done
     owner: sdd
     dependencies: [T001]
-    requirements: []
+    requirements: [FR-002]
     decisions: []
-    sourceIds: [PC-001, PD-001]
-    requiredSkills: [fsharp]
+    sourceIds: [AC-002, FR-002, PC-002, PD-002, VO-002]
+    requiredSkills: [fsharp, automated-tests]
     requiredEvidence: [EV002]
   - id: T003
-    title: Record verification evidence VO-001
+    title: Prove source-located divergences at the real interpreter seam
     status: done
     owner: sdd
     dependencies: [T001]
-    requirements: []
+    requirements: [FR-003]
     decisions: []
-    sourceIds: [PC-001, PD-001, VO-001]
+    sourceIds: [AC-003, FR-003, PC-001, PD-003, VO-001, VO-003]
     requiredSkills: [automated-tests, readiness-evidence]
     requiredEvidence: [EV003]
   - id: T004
-    title: Handle migration posture PM-001
+    title: Bind the complete runtime and model-tool closure
     status: done
     owner: sdd
-    dependencies: [T001]
-    requirements: []
+    dependencies: [T001, T002]
+    requirements: [FR-004]
     decisions: []
-    sourceIds: [PC-001, PM-001]
-    requiredSkills: [schema-versioning]
+    sourceIds: [AC-004, FR-004, PC-002, PD-004, VO-004, PM-001]
+    requiredSkills: [schema-versioning, readiness-evidence]
     requiredEvidence: [EV004]
   - id: T005
     title: Refresh generated view impact GV-001
     status: done
     owner: sdd
-    dependencies: [T001]
+    dependencies: [T001, T002, T003, T004]
     requirements: []
     decisions: []
-    sourceIds: [GV-001, PD-001]
+    sourceIds: [GV-001, PD-001, PD-002, PD-003, PD-004]
     requiredSkills: [deterministic-json]
     requiredEvidence: [EV005]
 acceptedDeferrals: []

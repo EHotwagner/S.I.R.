@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
   "contractVersion": "2.0.0",
-  "generatorVersion": "FS.GG.SDD.Artifacts/1.2.5",
+  "generatorVersion": "FS.GG.SDD.Artifacts/1.0.1",
   "workId": "353-quint-q1-sir-replay",
   "sources": [
     {
       "path": "readiness/353-quint-q1-sir-replay/ship.json",
-      "digest": "sha256:41f7b3877d8d05db6b897accaf4caf5dc194f7b2b8d1d5ca10bf0461693ff451",
+      "digest": "sha256:e694377b070f05b6754428c76aa7842181f33a67c98abc4e5ac4b949d0a92c35",
       "schemaVersion": 1
     },
     {
       "path": "readiness/353-quint-q1-sir-replay/verify.json",
-      "digest": "sha256:f0ecd201ebc49f10826b25c638262c737f455fadd01583057dd0c7362c4b456b",
+      "digest": "sha256:505d80a3971ed192d2c3fb2660012ff3cfaa0b99a569932f93950e6b753693b0",
       "schemaVersion": 1
     },
     {
       "path": "readiness/353-quint-q1-sir-replay/work-model.json",
-      "digest": "sha256:eb9cbdc5b226f02125f17ba36622a954fef70344c590103d7d996c9570f3f312",
+      "digest": "sha256:cd3be1e33bd89faa857f102b3215b80e757b1d1917d5eb7854a49ec17626f0c8",
       "schemaVersion": 1
     }
   ],
@@ -123,12 +123,28 @@
         "dependency": "task:T001"
       },
       {
+        "dependent": "task:T004",
+        "dependency": "task:T002"
+      },
+      {
         "dependent": "task:T005",
         "dependency": "evidence:EV005"
       },
       {
         "dependent": "task:T005",
         "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T005",
+        "dependency": "task:T002"
+      },
+      {
+        "dependent": "task:T005",
+        "dependency": "task:T003"
+      },
+      {
+        "dependent": "task:T005",
+        "dependency": "task:T004"
       }
     ]
   },

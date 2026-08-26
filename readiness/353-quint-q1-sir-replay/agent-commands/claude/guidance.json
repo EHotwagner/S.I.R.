@@ -3,7 +3,7 @@
   "viewVersion": "1.0",
   "workId": "353-quint-q1-sir-replay",
   "targetId": "claude",
-  "generator": "FS.GG.SDD.Artifacts/1.2.5",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "generated": true,
   "sources": [
     {
@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "8413d86f94e233f1ff5f2d406c42dd8ad5a714343a1702fea887537f8ef6b3c1"
+        "value": "cd3be1e33bd89faa857f102b3215b80e757b1d1917d5eb7854a49ec17626f0c8"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -19,7 +19,7 @@
   ],
   "behaviorModelDigest": {
     "algorithm": "sha256",
-    "value": "017699c2fdacdb25e42ac866f859b92503b027dde12c25018d65754a041b269c"
+    "value": "7b9d8cc32b415fddac8c6aa48d1831d8767f1ee5441f752ea6f9d9f9e2796cc5"
   },
   "commands": [
     {
@@ -35,43 +35,56 @@
     },
     {
       "id": "T002",
-      "title": "Update contract surface PC-001",
+      "title": "Generate and replay the selected-route sampled corpus",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T002 (done) covering PC-001, PD-001.",
+      "purpose": "Carry out lifecycle task T002 (done) covering AC-002, FR-002, PC-002, PD-002, VO-002.",
       "relatedIds": [
-        "PC-001",
-        "PD-001"
+        "AC-002",
+        "FR-002",
+        "PC-002",
+        "PD-002",
+        "VO-002"
       ]
     },
     {
       "id": "T003",
-      "title": "Record verification evidence VO-001",
+      "title": "Prove source-located divergences at the real interpreter seam",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T003 (done) covering PC-001, PD-001, VO-001.",
+      "purpose": "Carry out lifecycle task T003 (done) covering AC-003, FR-003, PC-001, PD-003, VO-001, VO-003.",
       "relatedIds": [
+        "AC-003",
+        "FR-003",
         "PC-001",
-        "PD-001",
-        "VO-001"
+        "PD-003",
+        "VO-001",
+        "VO-003"
       ]
     },
     {
       "id": "T004",
-      "title": "Handle migration posture PM-001",
+      "title": "Bind the complete runtime and model-tool closure",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T004 (done) covering PC-001, PM-001.",
+      "purpose": "Carry out lifecycle task T004 (done) covering AC-004, FR-004, PC-002, PD-004, PM-001, VO-004.",
       "relatedIds": [
-        "PC-001",
-        "PM-001"
+        "AC-004",
+        "FR-004",
+        "PC-002",
+        "PD-004",
+        "PM-001",
+        "VO-004"
       ]
     },
     {
       "id": "T005",
       "title": "Refresh generated view impact GV-001",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T005 (done) covering GV-001, PD-001.",
+      "purpose": "Carry out lifecycle task T005 (done) covering GV-001, PD-001, PD-002, PD-003, PD-004.",
       "relatedIds": [
         "GV-001",
-        "PD-001"
+        "PD-001",
+        "PD-002",
+        "PD-003",
+        "PD-004"
       ]
     }
   ],
@@ -79,8 +92,9 @@
     {
       "id": "automated-tests",
       "title": "automated-tests",
-      "capability": "Required by tasks: T003.",
+      "capability": "Required by tasks: T002, T003.",
       "relatedIds": [
+        "T002",
         "T003"
       ]
     },
@@ -112,9 +126,10 @@
     {
       "id": "readiness-evidence",
       "title": "readiness-evidence",
-      "capability": "Required by tasks: T003.",
+      "capability": "Required by tasks: T003, T004.",
       "relatedIds": [
-        "T003"
+        "T003",
+        "T004"
       ]
     },
     {

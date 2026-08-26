@@ -5,7 +5,7 @@
   "producerCandidateCommit": "3a0eced13305b146df2febd96698e38335cae99c",
   "producerReceiptHead": "6cf3f1f0746c817e1171cd3a7b63865c25c1e346",
   "producerManifestSha256": "0bb0a34f6e93c933b441fd34ebc0bbd521ac792b95955d49ed528cab3c014ddd",
-  "routeDecisionDigest": "34f2bce86de800a380304812d669b146ed16190212d8cb0079fe694252c4cf5e",
+  "routeDecisionDigest": "b6a034d241596c9d69834f12c89344450b73474506e0ee535e54c829a11ed23f",
   "repair": {
     "rejectedHead": "730377c72f2d3537d894ad24fa02485e67a6370c",
     "critic": "smew-7b7d",
@@ -47,8 +47,8 @@
     "ciIntegrationSha256": "a38aefb2889569a493003cf8c1e0502e5b9efa07ac661dd7ca294967515d8419",
     "ciContractTestSha256": "182d18e92aeeb218b7bc1000d45232b8535cec6ab1498783802208822e30a32e",
     "junitSha256": "2b4cd63d502c0f257cdbbf5f8c79f747dc8c1dd980e662ae0325ccbe774aecd9",
-    "verifyReceiptSha256": "f0ecd201ebc49f10826b25c638262c737f455fadd01583057dd0c7362c4b456b",
-    "shipReceiptSha256": "41f7b3877d8d05db6b897accaf4caf5dc194f7b2b8d1d5ca10bf0461693ff451"
+    "verifyReceiptSha256": "505d80a3971ed192d2c3fb2660012ff3cfaa0b99a569932f93950e6b753693b0",
+    "shipReceiptSha256": "e694377b070f05b6754428c76aa7842181f33a67c98abc4e5ac4b949d0a92c35"
   },
   "mutations": [
     "wrong-action-mapping",
@@ -62,7 +62,7 @@
   "verdict": "accept-exact-and-sampled-runtime-correspondence",
   "gitBinding": {
     "method": "successor-commit-receipt",
-    "receiptPath": "readiness/353-quint-q1-sir-replay/sir-response-repair-commit-receipt.json",
-    "note": "A successor commit binds this repaired response to the exact S.I.R. repair candidate commit and tree."
+    "receiptPath": "readiness/353-quint-q1-sir-replay/sir-response-final-commit-receipt.json",
+    "note": "A successor commit binds the fully traced repaired response to the exact S.I.R. candidate commit and tree."
   }
 }

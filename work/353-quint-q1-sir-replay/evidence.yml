@@ -11,11 +11,11 @@ sourceAnalysis: readiness/353-quint-q1-sir-replay/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/353-quint-q1-sir-replay/analysis.json
-    digest: 4e591b122a9ccc39113dcdd2fe4481f462dd816ff72262bcca120545ae32d30a
+    digest: e979e44948e0b41067fc6c7910760b23a513586cd218e746be5bfe804bb768f9
     schemaVersion: 1
   - label: checklist
     path: work/353-quint-q1-sir-replay/checklist.md
-    digest: bb7cdbbf3cccd4db6b6dca3a8593b4805e1465e504a28eec47a6e06dd69a4302
+    digest: 60880ce36036d6144bcb4e3604996ee83e8cedd8db806ea4fbd8bf35d80f0774
     schemaVersion: 1
   - label: clarifications
     path: work/353-quint-q1-sir-replay/clarifications.md
@@ -23,15 +23,15 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/353-quint-q1-sir-replay/plan.md
-    digest: 612d7e6a8ddfef82ba74f6c7ba9f9f688fd4c1d2a6de1efdf7862252899bd3e7
+    digest: 7da057a903e60219380f1cf10aff661040518eff248fb53243fc8f64132ba4ef
     schemaVersion: 1
   - label: spec
     path: work/353-quint-q1-sir-replay/spec.md
-    digest: 343d95f2c729b37b70bcd223f078189a7d848940e7728db40d2417fd2facc5b4
+    digest: 010e40ea1422b7bad084330b62d2fd89875100c4b31b3b16a3b5e9bf5c026547
     schemaVersion: 1
   - label: tasks
     path: work/353-quint-q1-sir-replay/tasks.yml
-    digest: 8acb36c26ec39d801c43c513435b2f088b43bc0a207588274fe2b4f9958d1cb0
+    digest: d4b8342716856b1db399ecf3fe62fe300572f186cbee2f737d1ec6977c4d7200
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -41,9 +41,9 @@ evidence:
       id: T001
     taskRefs: [T001]
     requirementRefs: [FR-001]
-    acceptanceScenarioRefs: []
+    acceptanceScenarioRefs: [AC-001]
     clarificationDecisionRefs: []
-    checklistResultRefs: []
+    checklistResultRefs: [CR-001]
     planDecisionRefs: [PD-001]
     obligationRefs: [EV001]
     artifacts: [tests/SIR.Conformance.Shared/QuintReplayFixtures.fs, tests/fixtures/rules-corpus/quint-q1/sir-reviewed-witness.itf.json, tests/fixtures/rules-corpus/quint-q1/sir-reviewed-witness.json]
@@ -67,13 +67,13 @@ evidence:
       type: task
       id: T002
     taskRefs: [T002]
-    requirementRefs: []
-    acceptanceScenarioRefs: []
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: [AC-002]
     clarificationDecisionRefs: []
-    checklistResultRefs: []
-    planDecisionRefs: [PD-001]
+    checklistResultRefs: [CR-002]
+    planDecisionRefs: [PD-002]
     obligationRefs: [EV002]
-    artifacts: [tests/fixtures/rules-corpus/quint-q1/README.md, tests/fixtures/rules-corpus/quint-q1/producer-candidate-manifest.json, tests/fixtures/rules-corpus/quint-q1/producer-candidate-receipt.json]
+    artifacts: [readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json, scripts/test-ci-route.mjs, scripts/test-conformance.sh, tests/fixtures/rules-corpus/quint-q1/README.md, tests/fixtures/rules-corpus/quint-q1/producer-candidate-manifest.json, tests/fixtures/rules-corpus/quint-q1/producer-candidate-receipt.json, tests/fixtures/rules-corpus/quint-q1/sir-damage.qnt]
     sourceRefs:
       - kind: verification
         path: scripts/qualify-quint-q1-sir-replay.sh
@@ -87,18 +87,18 @@ evidence:
       passed: 7
       failed: 0
       skipped: 0
-    notes: ["The fixture refuses producer commit, receipt head, manifest, profile, contract, witness, seed, bound, envelope/ITF, and deterministic-replay drift."]
+    notes: ["The selected conformance route consumes the committed producer-derived model, pinned Quint 0.32.0 and evaluator 0.6.0 artifacts, and deterministically generates/replays 64 traces and 576 states; the unrelated-path control skips it."]
   - id: EV003
     kind: verification
     subject:
       type: task
       id: T003
     taskRefs: [T003]
-    requirementRefs: []
-    acceptanceScenarioRefs: []
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: [AC-003]
     clarificationDecisionRefs: []
-    checklistResultRefs: []
-    planDecisionRefs: [PD-001]
+    checklistResultRefs: [CR-003]
+    planDecisionRefs: [PD-003]
     obligationRefs: [EV003]
     artifacts: [readiness/353-quint-q1-sir-replay/sir-replay-receipt.json, readiness/353-quint-q1-sir-replay/sir-replay.junit.xml, readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json, scripts/qualify-quint-q1-sir-replay.sh, scripts/test-ci-route.mjs, scripts/test-conformance.sh, tests/fixtures/rules-corpus/quint-q1/sir-damage.qnt]
     sourceRefs:
@@ -121,13 +121,13 @@ evidence:
       type: task
       id: T004
     taskRefs: [T004]
-    requirementRefs: []
-    acceptanceScenarioRefs: []
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: [AC-004]
     clarificationDecisionRefs: []
-    checklistResultRefs: []
-    planDecisionRefs: []
+    checklistResultRefs: [CR-004]
+    planDecisionRefs: [PD-004]
     obligationRefs: [EV004]
-    artifacts: [tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintReplayFixtures.fs, tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj]
+    artifacts: [readiness/353-quint-q1-sir-replay/sir-replay-receipt.json, readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json, scripts/qualify-quint-q1-sir-replay.sh, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintReplayFixtures.fs, tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj]
     sourceRefs:
       - kind: verification
         path: scripts/qualify-quint-q1-sir-replay.sh
@@ -141,7 +141,7 @@ evidence:
       passed: 7
       failed: 0
       skipped: 0
-    notes: ["All replay surfaces are native test-only additions; canonical authority, public runtime APIs, package versions, provider floors, lifecycle defaults, Fable sources, and historical evidence are unchanged."]
+    notes: ["The runtime receipt binds resolved paths and exact bytes for the executed muxer, SDK entry, hostfxr, runtime tree, package locks, pinned model tools, model, adapter, implementation, corpus, seed, bounds, and JUnit; all surfaces remain native test-only and non-authoritative."]
   - id: EV005
     kind: verification
     subject:
@@ -152,7 +152,7 @@ evidence:
     acceptanceScenarioRefs: []
     clarificationDecisionRefs: []
     checklistResultRefs: []
-    planDecisionRefs: [PD-001]
+    planDecisionRefs: [PD-001, PD-002, PD-003, PD-004]
     obligationRefs: [EV005]
     artifacts: [readiness/353-quint-q1-sir-replay/analysis.json, readiness/353-quint-q1-sir-replay/work-model.json]
     sourceRefs:
