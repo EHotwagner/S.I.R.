@@ -1,0 +1,618 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "353-quint-q1-sir-replay",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/353-quint-q1-sir-replay/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "60880ce36036d6144bcb4e3604996ee83e8cedd8db806ea4fbd8bf35d80f0774"
+      }
+    },
+    {
+      "path": "work/353-quint-q1-sir-replay/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "5231406d3d817d66871cda6b3811f1cd09f80971061131f4ac862c58205b2a81"
+      }
+    },
+    {
+      "path": "work/353-quint-q1-sir-replay/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "d5fad3b188762a83b6f5e7f701e9ce97daa55909f1e2f40fd62679cf63c3dac1"
+      }
+    },
+    {
+      "path": "work/353-quint-q1-sir-replay/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "7da057a903e60219380f1cf10aff661040518eff248fb53243fc8f64132ba4ef"
+      }
+    },
+    {
+      "path": "work/353-quint-q1-sir-replay/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "010e40ea1422b7bad084330b62d2fd89875100c4b31b3b16a3b5e9bf5c026547"
+      }
+    },
+    {
+      "path": "work/353-quint-q1-sir-replay/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "d4b8342716856b1db399ecf3fe62fe300572f186cbee2f737d1ec6977c4d7200"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "353-quint-q1-sir-replay",
+    "title": "Quint Q1 Sir Replay",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "replay Initialize then ApplyDamage(3) then ApplyDamage(20) through CombatRules.resolveConsequences and compare hitPoints, lastAction, and lastAmount after every transition with exact producer, adapter, implementation, trace, seed, and bound fingerprints; require five injected mapping/implementation defects to fail at their first divergent transition (Stories: US-001; Acceptance: AC-001)",
+      "text": "replay Initialize then ApplyDamage(3) then ApplyDamage(20) through CombatRules.resolveConsequences and compare hitPoints, lastAction, and lastAmount after every transition with exact producer, adapter, implementation, trace, seed, and bound fingerprints; require five injected mapping/implementation defects to fail at their first divergent transition (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/353-quint-q1-sir-replay/spec.md",
+      "sourceLocation": {
+        "line": 34,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "the selected conformance CI route shall use the committed producer-derived Quint model plus pinned Quint 0.32.0 and evaluator 0.6.0 binaries to generate at least 64 deterministic ITF traces and replay their complete normalized state corpus through the production adapter; an unrelated route shall skip this work (Stories: US-001; Acceptance: AC-002)",
+      "text": "the selected conformance CI route shall use the committed producer-derived Quint model plus pinned Quint 0.32.0 and evaluator 0.6.0 binaries to generate at least 64 deterministic ITF traces and replay their complete normalized state corpus through the production adapter; an unrelated route shall skip this work (Stories: US-001; Acceptance: AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/353-quint-q1-sir-replay/spec.md",
+      "sourceLocation": {
+        "line": 35,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "every first-divergence failure shall report transition index, stable action identity, fixture path, JSON pointer, adapter source path, and production implementation source path, including the independent combat-boundary mutation at the real interpreter seam (Stories: US-001; Acceptance: AC-003)",
+      "text": "every first-divergence failure shall report transition index, stable action identity, fixture path, JSON pointer, adapter source path, and production implementation source path, including the independent combat-boundary mutation at the real interpreter seam (Stories: US-001; Acceptance: AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/353-quint-q1-sir-replay/spec.md",
+      "sourceLocation": {
+        "line": 36,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "qualification receipts shall bind exact bytes and resolved paths for the executed .NET muxer, SDK dotnet entry point, hostfxr, runtime tree, combined package locks, pinned Quint and evaluator tools, model, adapter, implementation, corpus, seed, bounds, and JUnit output (Stories: US-001; Acceptance: AC-004)",
+      "text": "qualification receipts shall bind exact bytes and resolved paths for the executed .NET muxer, SDK dotnet entry point, hostfxr, runtime tree, combined package locks, pinned Quint and evaluator tools, model, adapter, implementation, corpus, seed, bounds, and JUnit output (Stories: US-001; Acceptance: AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/353-quint-q1-sir-replay/spec.md",
+      "sourceLocation": {
+        "line": 37,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004"
+      ],
+      "linkedEvidenceIds": [
+        "EV004"
+      ]
+    }
+  ],
+  "decisions": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Generate and replay the selected-route sampled corpus",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [
+        "FR-002"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-002",
+        "PC-002",
+        "PD-002",
+        "VO-002"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Prove source-located divergences at the real interpreter seam",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [
+        "FR-003"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-003",
+        "PC-001",
+        "PD-003",
+        "VO-001",
+        "VO-003"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Bind the complete runtime and model-tool closure",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001",
+        "T002"
+      ],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "FR-004",
+        "PC-002",
+        "PD-004",
+        "PM-001",
+        "VO-004"
+      ],
+      "requiredSkills": [
+        "readiness-evidence",
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Refresh generated view impact GV-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001",
+        "T002",
+        "T003",
+        "T004"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-001",
+        "PD-002",
+        "PD-003",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/353-quint-q1-sir-replay/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        "tests/SIR.Conformance.Shared/QuintReplayFixtures.fs",
+        "tests/fixtures/rules-corpus/quint-q1/sir-reviewed-witness.itf.json",
+        "tests/fixtures/rules-corpus/quint-q1/sir-reviewed-witness.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/353-quint-q1-sir-replay/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [
+        "readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-conformance.sh",
+        "tests/fixtures/rules-corpus/quint-q1/README.md",
+        "tests/fixtures/rules-corpus/quint-q1/producer-candidate-manifest.json",
+        "tests/fixtures/rules-corpus/quint-q1/producer-candidate-receipt.json",
+        "tests/fixtures/rules-corpus/quint-q1/sir-damage.qnt"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/353-quint-q1-sir-replay/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [
+        "readiness/353-quint-q1-sir-replay/sir-replay-receipt.json",
+        "readiness/353-quint-q1-sir-replay/sir-replay.junit.xml",
+        "readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json",
+        "scripts/qualify-quint-q1-sir-replay.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-conformance.sh",
+        "tests/fixtures/rules-corpus/quint-q1/sir-damage.qnt"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/353-quint-q1-sir-replay/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "readiness/353-quint-q1-sir-replay/sir-replay-receipt.json",
+        "readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json",
+        "scripts/qualify-quint-q1-sir-replay.sh",
+        "tests/SIR.Conformance.Shared/Program.fs",
+        "tests/SIR.Conformance.Shared/QuintReplayFixtures.fs",
+        "tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/353-quint-q1-sir-replay/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/353-quint-q1-sir-replay/analysis.json",
+        "readiness/353-quint-q1-sir-replay/work-model.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/353-quint-q1-sir-replay/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/353-quint-q1-sir-replay/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.0.1"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/353-quint-q1-sir-replay/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "60880ce36036d6144bcb4e3604996ee83e8cedd8db806ea4fbd8bf35d80f0774"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/353-quint-q1-sir-replay/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5231406d3d817d66871cda6b3811f1cd09f80971061131f4ac862c58205b2a81"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/353-quint-q1-sir-replay/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d5fad3b188762a83b6f5e7f701e9ce97daa55909f1e2f40fd62679cf63c3dac1"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/353-quint-q1-sir-replay/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7da057a903e60219380f1cf10aff661040518eff248fb53243fc8f64132ba4ef"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/353-quint-q1-sir-replay/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "010e40ea1422b7bad084330b62d2fd89875100c4b31b3b16a3b5e9bf5c026547"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/353-quint-q1-sir-replay/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d4b8342716856b1db399ecf3fe62fe300572f186cbee2f737d1ec6977c4d7200"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "8f5dc53788d5ccdfb864aabc7e50e9612cdd1e53aac02dfa49d69fddddbb4dea"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}

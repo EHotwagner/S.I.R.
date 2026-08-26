@@ -1,0 +1,18 @@
+{
+  "schema": "fsgg.quint.sir-response-final-commit-receipt/q1",
+  "subject": "EHotwagner/S.I.R.#353",
+  "producerSubject": "FS-GG/FS.GG.SDD#922",
+  "candidateCommit": "f4a99f89182512aa619e56ac02658c8c37b46430",
+  "candidateTree": "02c877058b914970b71cbec51afbf238305e755e",
+  "responsePath": "readiness/353-quint-q1-sir-replay/sir-response.json",
+  "responseGitBlob": "0ab38f216176d39cd150ca89f573ac83063c035c",
+  "responseSha256": "46c117744b867def807a6b5540effd23efd916e87fbd2c42530866bf66902e4c",
+  "supersedesRepairCandidate": "54f91a39845e6ff95ea37ffdb3207ca31b4fa9eb",
+  "routeDecisionDigest": "b6a034d241596c9d69834f12c89344450b73474506e0ee535e54c829a11ed23f",
+  "critic": "osprey-7f5d",
+  "reviewState": "fresh-successor-confirmation-pending",
+  "producerCandidateCommit": "3a0eced13305b146df2febd96698e38335cae99c",
+  "producerReceiptHead": "6cf3f1f0746c817e1171cd3a7b63865c25c1e346",
+  "authority": "S.I.R. fully traced exact-and-sampled-runtime-correspondence acceptance",
+  "verdict": "accept-exact-and-sampled-runtime-correspondence"
+}

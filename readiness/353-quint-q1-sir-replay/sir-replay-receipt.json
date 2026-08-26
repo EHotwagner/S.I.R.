@@ -1,0 +1,25 @@
+{
+  "schema": "fsgg.quint.sir-runtime-replay-receipt/q1",
+  "producerCandidateCommit": "3a0eced13305b146df2febd96698e38335cae99c",
+  "producerReceiptHead": "6cf3f1f0746c817e1171cd3a7b63865c25c1e346",
+  "producerManifestSha256": "0bb0a34f6e93c933b441fd34ebc0bbd521ac792b95955d49ed528cab3c014ddd",
+  "traceSha256": "70d1f8343fc212a86b7dacc4a2507a4513bdaadf1ee85b36c5c1d2907a2a4ddf",
+  "adapterSha256": "b43f1af703c5239d916dad95c8b93a9049307abb0fbc6033cb368081d1a29d54",
+  "implementationSha256": "3fa44465db98e8715d0d818a8714958bd2dc66f13c8180da15fb1ca2f12661f0",
+  "seed": "92220",
+  "transitionBound": 2,
+  "traceCount": 1,
+  "normalization": "exact int32/string projection; immediate deterministic quiescence",
+  "verdict": "accept-exact-runtime-correspondence",
+  "toolchain": {
+    "muxerPath": "/tmp/dotnet-sdk-10.0.302.SmzLP7/dotnet",
+    "muxerSha256": "0a5ec28e49da2c0be91ff3fc8fff53c250c9bbd92b25d3b9bfc5721adba96a0c",
+    "sdkVersion": "10.0.302",
+    "sdkEntrySha256": "68b1f89d08b33b75d9b85c07dbf2400d2c4658fddce619acabdac184cc9dd6ff",
+    "hostfxrPath": "/tmp/dotnet-sdk-10.0.302.SmzLP7/host/fxr/10.0.11/libhostfxr.so",
+    "hostfxrSha256": "261524c6971b43a9b8733fb4058eb0c3e8e02415149ec8fc88027aaf153e7bee",
+    "runtimePath": "/tmp/dotnet-sdk-10.0.302.SmzLP7/shared/Microsoft.NETCore.App/10.0.11",
+    "runtimeTreeSha256": "53c6532f6bb61a9a151a4ef482b5e917d0c2d82d27005e052fe77a525e57e7d0",
+    "packageLocksSha256": "b57f4660815750351cdd0227b3ba9a0eda94b97c9d7265d1aa2ab2f1e4661f1a"
+  }
+}

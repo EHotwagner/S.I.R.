@@ -15,6 +15,7 @@ trap 'rm -rf -- "$temporary"' EXIT
 fixture_scripts=(
   ci-route.mjs test-ci-route.mjs browser-shard-capacity.mjs browser-junit.mjs
   qualify-pr.sh qualify-production.sh build-docs.sh run-ci-gate.sh
+  qualify-quint-q1-sir-replay.sh
   smoke-worker-roundtrip.mjs test-browser-global-merge.mjs test-browser-shards.mjs
   test-conformance.sh test-spatial-subject-mutations.sh
   test-worker-cancellation-subject-mutation.sh verify-spatial-query.sh

@@ -1,0 +1,86 @@
+schemaVersion: 1
+work:
+  id: 353-quint-q1-sir-replay
+  title: "Quint Q1 Sir Replay"
+  stage: tasks
+  status: tasksReady
+  sourceSpec: work/353-quint-q1-sir-replay/spec.md
+  sourceClarifications: work/353-quint-q1-sir-replay/clarifications.md
+  sourceChecklist: work/353-quint-q1-sir-replay/checklist.md
+  sourcePlan: work/353-quint-q1-sir-replay/plan.md
+  publicOrToolFacingImpact: true
+
+sources:
+  - label: spec
+    path: work/353-quint-q1-sir-replay/spec.md
+    digest: 010e40ea1422b7bad084330b62d2fd89875100c4b31b3b16a3b5e9bf5c026547
+    schemaVersion: 1
+  - label: clarifications
+    path: work/353-quint-q1-sir-replay/clarifications.md
+    digest: 5231406d3d817d66871cda6b3811f1cd09f80971061131f4ac862c58205b2a81
+    schemaVersion: 1
+  - label: checklist
+    path: work/353-quint-q1-sir-replay/checklist.md
+    digest: 60880ce36036d6144bcb4e3604996ee83e8cedd8db806ea4fbd8bf35d80f0774
+    schemaVersion: 1
+  - label: plan
+    path: work/353-quint-q1-sir-replay/plan.md
+    digest: 7da057a903e60219380f1cf10aff661040518eff248fb53243fc8f64132ba4ef
+    schemaVersion: 1
+tasks:
+  - id: T001
+    title: Implement requirement FR-001
+    status: done
+    owner: sdd
+    dependencies: []
+    requirements: [FR-001]
+    decisions: []
+    sourceIds: [AC-001, FR-001, PD-001]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV001]
+  - id: T002
+    title: Generate and replay the selected-route sampled corpus
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: [FR-002]
+    decisions: []
+    sourceIds: [AC-002, FR-002, PC-002, PD-002, VO-002]
+    requiredSkills: [fsharp, automated-tests]
+    requiredEvidence: [EV002]
+  - id: T003
+    title: Prove source-located divergences at the real interpreter seam
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: [FR-003]
+    decisions: []
+    sourceIds: [AC-003, FR-003, PC-001, PD-003, VO-001, VO-003]
+    requiredSkills: [automated-tests, readiness-evidence]
+    requiredEvidence: [EV003]
+  - id: T004
+    title: Bind the complete runtime and model-tool closure
+    status: done
+    owner: sdd
+    dependencies: [T001, T002]
+    requirements: [FR-004]
+    decisions: []
+    sourceIds: [AC-004, FR-004, PC-002, PD-004, VO-004, PM-001]
+    requiredSkills: [schema-versioning, readiness-evidence]
+    requiredEvidence: [EV004]
+  - id: T005
+    title: Refresh generated view impact GV-001
+    status: done
+    owner: sdd
+    dependencies: [T001, T002, T003, T004]
+    requirements: []
+    decisions: []
+    sourceIds: [GV-001, PD-001, PD-002, PD-003, PD-004]
+    requiredSkills: [deterministic-json]
+    requiredEvidence: [EV005]
+acceptedDeferrals: []
+findings: []
+advisoryNotes:
+  - "Optional Governance pointers remain compatibility facts only."
+lifecycleNotes:
+  - "Next lifecycle action: fsgg-sdd analyze --work 353-quint-q1-sir-replay."

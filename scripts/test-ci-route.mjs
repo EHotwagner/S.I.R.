@@ -427,6 +427,10 @@ for (const browserJob of ["browser", "browser-general-helper", "browser-delivery
 }
 assert.match(focusedQualification, /web\)[\s\S]*node_modules\/@playwright\/test[\s\S]*node_modules\/playwright[\s\S]*node_modules\/playwright-core[\s\S]*;;/u);
 const conformanceQualification = readFileSync(new URL("./test-conformance.sh", import.meta.url), "utf8");
+const quintQ1Qualification = readFileSync(new URL("./qualify-quint-q1-sir-replay.sh", import.meta.url), "utf8");
+assert.match(conformanceQualification, /qualify-quint-q1-sir-replay\.sh --changed-path[\s\S]*jq -r '\.paths\[\]'[\s\S]*SIR_Q1_CI_SAMPLES=64[\s\S]*quint-q1-sampled-replay\.json/u);
+assert.match(quintQ1Qualification, /scripts\/test-conformance\.sh[\s\S]*quint-linux-amd64[\s\S]*quint_evaluator-x86_64-unknown-linux-gnu[\s\S]*--n-traces "\$sample_count"[\s\S]*--quint-q1-sampled/u);
+assert.match(quintQ1Qualification, /muxerSha256[\s\S]*sdkEntrySha256[\s\S]*hostfxrSha256[\s\S]*runtimeTreeSha256[\s\S]*packageLocksSha256/u);
 const spatialMutationQualification = readFileSync(new URL("./test-spatial-subject-mutations.sh", import.meta.url), "utf8");
 const cancellationMutationQualification = readFileSync(new URL("./test-worker-cancellation-subject-mutation.sh", import.meta.url), "utf8");
 const spatialQualification = readFileSync(new URL("./verify-spatial-query.sh", import.meta.url), "utf8");

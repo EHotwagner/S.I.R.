@@ -1,0 +1,173 @@
+schemaVersion: 1
+workId: 353-quint-q1-sir-replay
+stage: evidence
+status: evidenceReady
+sourceSpec: work/353-quint-q1-sir-replay/spec.md
+sourceClarifications: work/353-quint-q1-sir-replay/clarifications.md
+sourceChecklist: work/353-quint-q1-sir-replay/checklist.md
+sourcePlan: work/353-quint-q1-sir-replay/plan.md
+sourceTasks: work/353-quint-q1-sir-replay/tasks.yml
+sourceAnalysis: readiness/353-quint-q1-sir-replay/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/353-quint-q1-sir-replay/analysis.json
+    digest: e979e44948e0b41067fc6c7910760b23a513586cd218e746be5bfe804bb768f9
+    schemaVersion: 1
+  - label: checklist
+    path: work/353-quint-q1-sir-replay/checklist.md
+    digest: 60880ce36036d6144bcb4e3604996ee83e8cedd8db806ea4fbd8bf35d80f0774
+    schemaVersion: 1
+  - label: clarifications
+    path: work/353-quint-q1-sir-replay/clarifications.md
+    digest: 5231406d3d817d66871cda6b3811f1cd09f80971061131f4ac862c58205b2a81
+    schemaVersion: 1
+  - label: plan
+    path: work/353-quint-q1-sir-replay/plan.md
+    digest: 7da057a903e60219380f1cf10aff661040518eff248fb53243fc8f64132ba4ef
+    schemaVersion: 1
+  - label: spec
+    path: work/353-quint-q1-sir-replay/spec.md
+    digest: 010e40ea1422b7bad084330b62d2fd89875100c4b31b3b16a3b5e9bf5c026547
+    schemaVersion: 1
+  - label: tasks
+    path: work/353-quint-q1-sir-replay/tasks.yml
+    digest: d4b8342716856b1db399ecf3fe62fe300572f186cbee2f737d1ec6977c4d7200
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: [AC-001]
+    clarificationDecisionRefs: []
+    checklistResultRefs: [CR-001]
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV001]
+    artifacts: [tests/SIR.Conformance.Shared/QuintReplayFixtures.fs, tests/fixtures/rules-corpus/quint-q1/sir-reviewed-witness.itf.json, tests/fixtures/rules-corpus/quint-q1/sir-reviewed-witness.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/qualify-quint-q1-sir-replay.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/353-quint-q1-sir-replay/sir-replay.junit.xml
+      digest: "sha256:2b4cd63d502c0f257cdbbf5f8c79f747dc8c1dd980e662ae0325ccbe774aecd9"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [The adapter invokes the real CombatRules interpreter for every ApplyDamage action and exact-compares all three declared observable fields over the committed three-state witness.]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: [AC-002]
+    clarificationDecisionRefs: []
+    checklistResultRefs: [CR-002]
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV002]
+    artifacts: [readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json, scripts/test-ci-route.mjs, scripts/test-conformance.sh, tests/fixtures/rules-corpus/quint-q1/README.md, tests/fixtures/rules-corpus/quint-q1/producer-candidate-manifest.json, tests/fixtures/rules-corpus/quint-q1/producer-candidate-receipt.json, tests/fixtures/rules-corpus/quint-q1/sir-damage.qnt]
+    sourceRefs:
+      - kind: verification
+        path: scripts/qualify-quint-q1-sir-replay.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/353-quint-q1-sir-replay/sir-replay.junit.xml
+      digest: "sha256:2b4cd63d502c0f257cdbbf5f8c79f747dc8c1dd980e662ae0325ccbe774aecd9"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: ["The selected conformance route consumes the committed producer-derived model, pinned Quint 0.32.0 and evaluator 0.6.0 artifacts, and deterministically generates/replays 64 traces and 576 states; the unrelated-path control skips it."]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: [AC-003]
+    clarificationDecisionRefs: []
+    checklistResultRefs: [CR-003]
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV003]
+    artifacts: [readiness/353-quint-q1-sir-replay/sir-replay-receipt.json, readiness/353-quint-q1-sir-replay/sir-replay.junit.xml, readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json, scripts/qualify-quint-q1-sir-replay.sh, scripts/test-ci-route.mjs, scripts/test-conformance.sh, tests/fixtures/rules-corpus/quint-q1/sir-damage.qnt]
+    sourceRefs:
+      - kind: verification
+        path: scripts/qualify-quint-q1-sir-replay.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/353-quint-q1-sir-replay/sir-replay.junit.xml
+      digest: "sha256:2b4cd63d502c0f257cdbbf5f8c79f747dc8c1dd980e662ae0325ccbe774aecd9"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: ["The qualification replays twice for determinism, rejects wrong mapping, omission, observable, expected-state, and independently injected interpreter-boundary mutations with source-located first-divergence diagnostics, and CI generates/replays 64 model-derived ITF traces (576 states)."]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: [AC-004]
+    clarificationDecisionRefs: []
+    checklistResultRefs: [CR-004]
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV004]
+    artifacts: [readiness/353-quint-q1-sir-replay/sir-replay-receipt.json, readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json, scripts/qualify-quint-q1-sir-replay.sh, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintReplayFixtures.fs, tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj]
+    sourceRefs:
+      - kind: verification
+        path: scripts/qualify-quint-q1-sir-replay.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/353-quint-q1-sir-replay/sir-replay.junit.xml
+      digest: "sha256:2b4cd63d502c0f257cdbbf5f8c79f747dc8c1dd980e662ae0325ccbe774aecd9"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: ["The runtime receipt binds resolved paths and exact bytes for the executed muxer, SDK entry, hostfxr, runtime tree, package locks, pinned model tools, model, adapter, implementation, corpus, seed, bounds, and JUnit; all surfaces remain native test-only and non-authoritative."]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003, PD-004]
+    obligationRefs: [EV005]
+    artifacts: [readiness/353-quint-q1-sir-replay/analysis.json, readiness/353-quint-q1-sir-replay/work-model.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/qualify-quint-q1-sir-replay.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/353-quint-q1-sir-replay/sir-replay.junit.xml
+      digest: "sha256:2b4cd63d502c0f257cdbbf5f8c79f747dc8c1dd980e662ae0325ccbe774aecd9"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: ["Generated SDD projections are refreshed from current lifecycle sources and report no stale source, missing disposition, warning, or blocking finding."]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

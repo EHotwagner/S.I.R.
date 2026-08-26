@@ -343,6 +343,34 @@ if [[ -n "$input_presentation_leak" ]]; then
   exit 1
 fi
 
+# Q1 runtime/model correspondence is selected from the live CI route, not from a hand-set job flag.
+# The producer model generates the larger ITF corpus on the runner; S.I.R. then replays every state
+# through the native-only real-interpreter adapter. An unrelated route records a real skip, while a
+# combat, adapter, fixture, or harness change cannot bypass this gate.
+if [[ -f "$repo_root/artifacts/ci/route.json" && -f "$repo_root/tests/fixtures/rules-corpus/quint-q1/sir-damage.qnt" ]]; then
+  q1_selected=false
+  while IFS= read -r changed_path; do
+    selection="$($repo_root/scripts/qualify-quint-q1-sir-replay.sh --changed-path "$changed_path")"
+    if [[ "$selection" == SIR-Q1-SELECTED:* ]]; then
+      q1_selected=true
+      printf '%s\n' "$selection"
+      break
+    fi
+  done < <(jq -r '.paths[]' "$repo_root/artifacts/ci/route.json")
+
+  if [[ "$q1_selected" == true ]]; then
+    mkdir -p "$repo_root/artifacts/ci/results"
+    DOTNET_BIN="${SIR_REAL_DOTNET:-$(command -v dotnet)}" \
+      SIR_Q1_CI_SAMPLES=64 \
+      SIR_Q1_RECEIPT_OUT="$repo_root/artifacts/ci/results/quint-q1-runtime-replay.json" \
+      SIR_Q1_SAMPLED_RECEIPT_OUT="$repo_root/artifacts/ci/results/quint-q1-sampled-replay.json" \
+      SIR_Q1_JUNIT_OUT="$repo_root/artifacts/ci/results/quint-q1-replay.junit.xml" \
+      "$repo_root/scripts/qualify-quint-q1-sir-replay.sh"
+  else
+    printf 'SIR-Q1-CI-SKIPPED: no bound combat/adapter/fixture/harness path changed\n'
+  fi
+fi
+
 if [[ "$domain_only" == true ]]; then
   printf 'Focused cross-runtime domain gate passed: %d bytes agree across .NET and Fable/Node; modal input, match, replay, divergence, numeric authority, and presentation boundaries agree.\n' "$(( ${#dotnet_output} / 2 ))"
   exit 0

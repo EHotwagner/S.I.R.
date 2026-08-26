@@ -1,0 +1,14 @@
+{
+  "schema": "fsgg.quint.sir-sampled-itf-replay-receipt/q1",
+  "quintVersion": "0.32.0",
+  "quintSha256": "939b64095b706017f2f202c6f99c860c40be7c31bddc2b98557316e50f42cd7f",
+  "evaluatorVersion": "0.6.0",
+  "evaluatorSha256": "b2efdeac5713d153e41bf2143b94ed75d888fdd5637f4a5d61a04c695313510a",
+  "modelSha256": "39b06159db6f0a76b8cc1d7b60eed6155a33539f9c47cb4d4079a915ad4a72d5",
+  "corpusSha256": "12ff36e96f8c80ef8015d799ecb895cd25ac9bf71b606f8f5f1cc24cd838b29a",
+  "seed": "92220",
+  "maxSteps": 8,
+  "traces": 64,
+  "states": 576,
+  "verdict": "accept-sampled-runtime-correspondence"
+}
