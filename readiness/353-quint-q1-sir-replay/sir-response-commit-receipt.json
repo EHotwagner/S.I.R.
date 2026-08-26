@@ -1,0 +1,14 @@
+{
+  "schema": "fsgg.quint.sir-response-commit-receipt/q1",
+  "subject": "EHotwagner/S.I.R.#353",
+  "producerSubject": "FS-GG/FS.GG.SDD#922",
+  "candidateCommit": "52cf12726e19e4cf78113b547f13847c8d43d92e",
+  "candidateTree": "cdd1bb3657b8c330e7956b0efe84c58014698e5a",
+  "responsePath": "readiness/353-quint-q1-sir-replay/sir-response.json",
+  "responseGitBlob": "18a16239ec3d5e7f82f3298d3cc3d5981b446be3",
+  "responseSha256": "6a272c9baa624f3e922df9cc2d1dbf1fe7625bf95675ca6b06a71a1a83c2827e",
+  "producerCandidateCommit": "3a0eced13305b146df2febd96698e38335cae99c",
+  "producerReceiptHead": "6cf3f1f0746c817e1171cd3a7b63865c25c1e346",
+  "authority": "S.I.R. exact-runtime-correspondence acceptance",
+  "verdict": "accept-exact-runtime-correspondence"
+}
