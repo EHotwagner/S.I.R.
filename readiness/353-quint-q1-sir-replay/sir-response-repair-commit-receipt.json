@@ -1,0 +1,18 @@
+{
+  "schema": "fsgg.quint.sir-response-repair-commit-receipt/q1",
+  "subject": "EHotwagner/S.I.R.#353",
+  "producerSubject": "FS-GG/FS.GG.SDD#922",
+  "candidateCommit": "54f91a39845e6ff95ea37ffdb3207ca31b4fa9eb",
+  "candidateTree": "e40299a3ec0a9ae24a25d489b56e34a0f8ad53fd",
+  "responsePath": "readiness/353-quint-q1-sir-replay/sir-response.json",
+  "responseGitBlob": "0d53a3c248b728b85bbc691847004a462db0b0aa",
+  "responseSha256": "15e7faf7e733a7e8b73c7f40e16833e9adf1021a8e915c255449ca1b63f4180a",
+  "supersedesRejectedHead": "730377c72f2d3537d894ad24fa02485e67a6370c",
+  "critic": "smew-7b7d",
+  "reviewDecisionDigest": "bb8bdc8cfbe3a597d9974bc1984eaeae5057c82457e4004bcb75fa9dceef44b9",
+  "reviewDecisionUrl": "https://github.com/EHotwagner/S.I.R./pull/354#issuecomment-5421056214",
+  "producerCandidateCommit": "3a0eced13305b146df2febd96698e38335cae99c",
+  "producerReceiptHead": "6cf3f1f0746c817e1171cd3a7b63865c25c1e346",
+  "authority": "S.I.R. exact-and-sampled-runtime-correspondence repair acceptance",
+  "verdict": "accept-exact-and-sampled-runtime-correspondence"
+}
