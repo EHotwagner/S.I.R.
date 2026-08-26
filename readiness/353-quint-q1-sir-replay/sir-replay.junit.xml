@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="sir-quint-q1-runtime-replay" tests="6" failures="0" errors="0" skipped="0">
+<testsuite name="sir-quint-q1-runtime-replay" tests="7" failures="0" errors="0" skipped="0">
   <testcase classname="SIR.QuintQ1" name="exact-runtime-replay"/>
   <testcase classname="SIR.QuintQ1" name="mutation-wrong-action-mapping"/>
   <testcase classname="SIR.QuintQ1" name="mutation-omitted-action"/>
   <testcase classname="SIR.QuintQ1" name="mutation-wrong-observable-field"/>
   <testcase classname="SIR.QuintQ1" name="mutation-stale-expected-state"/>
   <testcase classname="SIR.QuintQ1" name="mutation-combat-boundary-bypass"/>
+  <testcase classname="SIR.QuintQ1" name="sampled-itf-runtime-replay"/>
 </testsuite>

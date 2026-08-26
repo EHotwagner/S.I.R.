@@ -84,9 +84,14 @@ let main arguments =
         | Some mutation ->
             let divergence = QuintReplayFixtures.verifyMutation mutation
             eprintfn
-                "first divergence: transition=%d action=%s field=%s expected=%s actual=%s mutation=%s"
-                divergence.Transition divergence.Action divergence.Field divergence.Expected divergence.Actual mutationName
+                "first divergence: fixture=%s pointer=%s transition=%d action=%s field=%s expected=%s actual=%s adapter=%s implementation=%s mutation=%s"
+                divergence.FixturePath divergence.JsonPointer divergence.Transition divergence.Action divergence.Field
+                divergence.Expected divergence.Actual divergence.AdapterSource divergence.ImplementationSource mutationName
             1
+    | [ "--quint-q1-sampled"; directory; count ] ->
+        let traces, states = QuintReplayFixtures.verifySampledCorpus directory (int count)
+        printfn "SIR-Q1-SAMPLED-ACCEPT: traces=%d states=%d" traces states
+        0
 #endif
     | [ "--inject-simulation-divergence"; phaseName ] ->
         match SimulationFixtures.tryParsePhase phaseName with

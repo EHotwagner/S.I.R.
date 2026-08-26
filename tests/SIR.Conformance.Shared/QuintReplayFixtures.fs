@@ -21,7 +21,11 @@ type QuintReplayDivergence =
       Action: string
       Field: string
       Expected: string
-      Actual: string }
+      Actual: string
+      FixturePath: string
+      JsonPointer: string
+      AdapterSource: string
+      ImplementationSource: string }
 
 type private ModelObservation =
     { HitPoints: int32
@@ -40,6 +44,9 @@ module QuintReplayFixtures =
     let private adapterPath = Path.Combine(__SOURCE_DIRECTORY__, "QuintReplayFixtures.fs")
     let private implementationPath =
         Path.GetFullPath(Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "SIR.Simulation", "CombatRules.fs"))
+    let private fixtureRelativePath = "tests/fixtures/rules-corpus/quint-q1/sir-reviewed-witness.itf.json"
+    let private adapterSource = "tests/SIR.Conformance.Shared/QuintReplayFixtures.fs:applyDamageWith"
+    let private implementationSource = "src/SIR.Simulation/CombatRules.fs:CombatRules.resolveConsequences"
 
     let private sha256 path =
         path
@@ -61,7 +68,7 @@ module QuintReplayFixtures =
 
     // This is the only product transition adapter. It delegates damage and saturation to the real
     // interpreter; it contains no copied health-subtraction or clamp expression.
-    let private applyDamage amount current =
+    let private applyDamageWith resolveConsequences amount current =
         let input =
             { Attacker = cell 0 0
               TargetFootprint = [ cell 1 0 ]
@@ -73,12 +80,25 @@ module QuintReplayFixtures =
               ArmorRetention = FixedPoint.fromRatio 1 1 |> required
               EventId = $"quint-q1-damage-{amount}" }
 
-        CombatRules.resolveConsequences current.HitPoints 0 0 input
+        resolveConsequences current.HitPoints 0 0 input
         |> required
         |> fun outcome ->
             { HitPoints = outcome.RemainingHealth
               LastAction = "ApplyDamage"
               LastAmount = amount }
+
+    let private applyDamage amount current =
+        applyDamageWith CombatRules.resolveConsequences amount current
+
+    // Independent implementation-seam mutant: the real interpreter is called first, then its
+    // boundary result is corrupted before the adapter projects it. No damage/clamp expression is
+    // copied into the test, and a post-projection mutation cannot satisfy this case.
+    let private applyDamageWithBoundaryDefect amount current =
+        let defectResolver health suppression delta input =
+            CombatRules.resolveConsequences health suppression delta input
+            |> Result.map (fun outcome -> { outcome with RemainingHealth = -1 })
+
+        applyDamageWith defectResolver amount current
 
     let private initialize () =
         { HitPoints = 10
@@ -99,28 +119,25 @@ module QuintReplayFixtures =
           LastAction = element.GetProperty("lastAction") |> text
           LastAmount = bigint (element.GetProperty("lastAmount")) }
 
-    let private firstField transition action expected actual =
+    let private firstField fixturePath transition action expected actual =
+        let mismatch field expectedValue actualValue =
+            Some
+                { Transition = transition
+                  Action = action
+                  Field = field
+                  Expected = expectedValue
+                  Actual = actualValue
+                  FixturePath = fixturePath
+                  JsonPointer = $"/states/{transition}/{field}"
+                  AdapterSource = adapterSource
+                  ImplementationSource = implementationSource }
+
         if expected.HitPoints <> actual.HitPoints then
-            Some
-                { Transition = transition
-                  Action = action
-                  Field = "hitPoints"
-                  Expected = string expected.HitPoints
-                  Actual = string actual.HitPoints }
+            mismatch "hitPoints" (string expected.HitPoints) (string actual.HitPoints)
         elif expected.LastAction <> actual.LastAction then
-            Some
-                { Transition = transition
-                  Action = action
-                  Field = "lastAction"
-                  Expected = expected.LastAction
-                  Actual = actual.LastAction }
+            mismatch "lastAction" expected.LastAction actual.LastAction
         elif expected.LastAmount <> actual.LastAmount then
-            Some
-                { Transition = transition
-                  Action = action
-                  Field = "lastAmount"
-                  Expected = string expected.LastAmount
-                  Actual = string actual.LastAmount }
+            mismatch "lastAmount" (string expected.LastAmount) (string actual.LastAmount)
         else
             None
 
@@ -172,7 +189,7 @@ module QuintReplayFixtures =
                 let envelopeExpected = observationOfExpected step
                 let itfExpected = observationOfItf states[index]
 
-                match firstField index action envelopeExpected itfExpected with
+                match firstField fixtureRelativePath index action envelopeExpected itfExpected with
                 | Some mismatch -> failwithf "Q1 envelope/ITF disagreement before runtime replay: %A" mismatch
                 | None -> ()
 
@@ -183,6 +200,9 @@ module QuintReplayFixtures =
                     | "ApplyDamage", _, Some WrongActionMapping ->
                         let amount = step.GetProperty("arguments").GetProperty("amount").GetInt32()
                         applyDamage (amount + 1) current
+                    | "ApplyDamage", _, Some CombatBoundaryBypass ->
+                        let amount = step.GetProperty("arguments").GetProperty("amount").GetInt32()
+                        applyDamageWithBoundaryDefect amount current
                     | "ApplyDamage", _, _ ->
                         let amount = step.GetProperty("arguments").GetProperty("amount").GetInt32()
                         applyDamage amount current
@@ -191,7 +211,6 @@ module QuintReplayFixtures =
                 let actual =
                     match mutation with
                     | Some WrongObservableField -> { current with LastAmount = current.LastAmount + 1 }
-                    | Some CombatBoundaryBypass when current.HitPoints = 0 -> { current with HitPoints = -1 }
                     | _ -> current
 
                 let expected =
@@ -199,7 +218,7 @@ module QuintReplayFixtures =
                     | Some StaleExpectedState, 1 -> { envelopeExpected with HitPoints = envelopeExpected.HitPoints + 1 }
                     | _ -> envelopeExpected
 
-                divergence <- firstField index action expected actual
+                divergence <- firstField fixtureRelativePath index action expected actual
 
         divergence
 
@@ -212,6 +231,43 @@ module QuintReplayFixtures =
         match replay (Some mutation) with
         | Some divergence -> divergence
         | None -> failwithf "Q1 mutation was accepted: %A" mutation
+
+    let verifySampledCorpus directory expectedTraceCount =
+        verifyProducerBindings ()
+        let paths = Directory.GetFiles(directory, "sample_*.itf.json") |> Array.sort
+
+        if paths.Length <> expectedTraceCount then
+            failwithf "Q1 sampled corpus count mismatch: expected=%d actual=%d" expectedTraceCount paths.Length
+
+        let mutable totalStates = 0
+
+        for path in paths do
+            use document = JsonDocument.Parse(File.ReadAllBytes path)
+            let root = document.RootElement
+            let status = root.GetProperty("#meta").GetProperty("status") |> text
+            if status <> "ok" then failwithf "Q1 sampled ITF status was not ok: %s" path
+
+            let variables = root.GetProperty("vars").EnumerateArray() |> Seq.map text |> Seq.toArray
+            if variables <> [| "hitPoints"; "lastAction"; "lastAmount" |] then
+                failwithf "Q1 sampled ITF variable projection drifted: %s" path
+
+            let states = root.GetProperty("states").EnumerateArray() |> Seq.toArray
+            if states.Length < 2 then failwithf "Q1 sampled ITF was too short: %s" path
+            totalStates <- totalStates + states.Length
+            let mutable current = initialize ()
+
+            for index in 0 .. states.Length - 1 do
+                let expected = observationOfItf states[index]
+                current <-
+                    if index = 0 then initialize ()
+                    elif expected.LastAction = "ApplyDamage" then applyDamage expected.LastAmount current
+                    else failwithf "Unknown sampled Q1 action at %s#/states/%d/lastAction" path index
+
+                match firstField path index expected.LastAction expected current with
+                | None -> ()
+                | Some divergence -> failwithf "Q1 sampled runtime replay diverged: %A" divergence
+
+        paths.Length, totalStates
 
     let tryParseMutation = function
         | "wrong-action-mapping" -> Some WrongActionMapping

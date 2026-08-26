@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "2f52cb8a2f1ac08cc342fae01010943039dee3ff5ac29f805d0b2e4ad3ff58f7"
+        "value": "8c5af6803bd222609fb07f39b36b9b8d1af87c5341b2c9258f286c1722c9cd84"
       }
     },
     {
@@ -352,7 +352,11 @@
       "artifactRefs": [
         "readiness/353-quint-q1-sir-replay/sir-replay-receipt.json",
         "readiness/353-quint-q1-sir-replay/sir-replay.junit.xml",
-        "scripts/qualify-quint-q1-sir-replay.sh"
+        "readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json",
+        "scripts/qualify-quint-q1-sir-replay.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-conformance.sh",
+        "tests/fixtures/rules-corpus/quint-q1/sir-damage.qnt"
       ],
       "result": "pass",
       "synthetic": false,
@@ -472,7 +476,7 @@
           "path": "work/353-quint-q1-sir-replay/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "2f52cb8a2f1ac08cc342fae01010943039dee3ff5ac29f805d0b2e4ad3ff58f7"
+            "value": "8c5af6803bd222609fb07f39b36b9b8d1af87c5341b2c9258f286c1722c9cd84"
           },
           "schemaVersion": 1
         },
@@ -503,7 +507,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "e4e238ffdf5d10c52d5492ad2f730eb62aa0d3e3d84077b730f1e9f778a8b5fc"
+        "value": "a7157fc74ca4af74baab5f4a824af79216dfe64508198a86c72fdaf70e59d277"
       },
       "currency": "current"
     }

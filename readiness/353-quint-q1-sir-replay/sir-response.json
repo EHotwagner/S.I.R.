@@ -6,6 +6,13 @@
   "producerReceiptHead": "6cf3f1f0746c817e1171cd3a7b63865c25c1e346",
   "producerManifestSha256": "0bb0a34f6e93c933b441fd34ebc0bbd521ac792b95955d49ed528cab3c014ddd",
   "routeDecisionDigest": "34f2bce86de800a380304812d669b146ed16190212d8cb0079fe694252c4cf5e",
+  "repair": {
+    "rejectedHead": "730377c72f2d3537d894ad24fa02485e67a6370c",
+    "critic": "smew-7b7d",
+    "reviewDecisionDigest": "bb8bdc8cfbe3a597d9974bc1984eaeae5057c82457e4004bcb75fa9dceef44b9",
+    "reviewDecisionUrl": "https://github.com/EHotwagner/S.I.R./pull/354#issuecomment-5421056214",
+    "disposition": "all four blocking findings repaired; fresh successor review pending"
+  },
   "runtime": {
     "sdk": "10.0.302",
     "traceCount": 1,
@@ -13,19 +20,35 @@
     "seed": "92220",
     "transitionBound": 2,
     "normalization": "exact int32/string projection; immediate deterministic quiescence",
-    "adapterSha256": "3c9f9da85dc97f0f8870617c29f53af21a0add2d04128cbcad112faa7d394a1e",
+    "adapterSha256": "b43f1af703c5239d916dad95c8b93a9049307abb0fbc6033cb368081d1a29d54",
     "implementationSha256": "3fa44465db98e8715d0d818a8714958bd2dc66f13c8180da15fb1ca2f12661f0",
-    "runtimeReceiptSha256": "88a28763e8e84f2d551834ef030bb02ca88921cc3e8222d8f88d5f1bf23eec87"
+    "runtimeReceiptSha256": "117cf14d97c2fad745458e7fb8127485aba3191b423385bab52d2824f2f01bcf"
+  },
+  "sampledCorpus": {
+    "generatedInSelectedCiRoute": true,
+    "quintVersion": "0.32.0",
+    "quintSha256": "939b64095b706017f2f202c6f99c860c40be7c31bddc2b98557316e50f42cd7f",
+    "evaluatorVersion": "0.6.0",
+    "evaluatorSha256": "b2efdeac5713d153e41bf2143b94ed75d888fdd5637f4a5d61a04c695313510a",
+    "modelSha256": "39b06159db6f0a76b8cc1d7b60eed6155a33539f9c47cb4d4079a915ad4a72d5",
+    "seed": "92220",
+    "maxSteps": 8,
+    "traceCount": 64,
+    "stateCount": 576,
+    "receiptSha256": "7bcf469f27c148fbd2cfc48181f9cfeac7ff52ba3cf74944f8a0e58e1a6863ba"
   },
   "qualification": {
-    "observedSingleHostMilliseconds": 2081,
+    "observedSingleHostMilliseconds": 2930,
     "timingIsPassThreshold": false,
     "independentMutationsRejected": 5,
     "selectionPositive": "src/SIR.Simulation/CombatRules.fs",
     "selectionNegative": "src/SIR.Client/UnrelatedView.fs",
-    "harnessSha256": "ebe2f9036be7233a57360e9cb17ad2c1a16feea5d89cc38e1de9a61241fdd64b",
-    "junitSha256": "0fbee652b0b732b7bd64b206cb5f779be7afd100b2abc392169f37d07c3ec0c1",
-    "verifyReceiptSha256": "135a0f0214d48103e2ffe7cbe24edfa1a900a804477bcab122cfa3f116a4acce"
+    "harnessSha256": "a80f05084e8f9b079097a11098c63998d8db2b188df2d9f1ffcc3fe7412bd36f",
+    "ciIntegrationSha256": "a38aefb2889569a493003cf8c1e0502e5b9efa07ac661dd7ca294967515d8419",
+    "ciContractTestSha256": "182d18e92aeeb218b7bc1000d45232b8535cec6ab1498783802208822e30a32e",
+    "junitSha256": "2b4cd63d502c0f257cdbbf5f8c79f747dc8c1dd980e662ae0325ccbe774aecd9",
+    "verifyReceiptSha256": "f0ecd201ebc49f10826b25c638262c737f455fadd01583057dd0c7362c4b456b",
+    "shipReceiptSha256": "41f7b3877d8d05db6b897accaf4caf5dc194f7b2b8d1d5ca10bf0461693ff451"
   },
   "mutations": [
     "wrong-action-mapping",
@@ -34,11 +57,12 @@
     "stale-expected-state",
     "combat-boundary-bypass"
   ],
-  "authority": "test-only-correspondence; no production rule authority",
-  "verdict": "accept-exact-runtime-correspondence",
+  "authority": "test-only correspondence; no production rule authority",
+  "status": "repair-qualified-successor-review-pending",
+  "verdict": "accept-exact-and-sampled-runtime-correspondence",
   "gitBinding": {
     "method": "successor-commit-receipt",
-    "receiptPath": "readiness/353-quint-q1-sir-replay/sir-response-commit-receipt.json",
-    "note": "A successor commit binds this response to the exact S.I.R. candidate commit and tree."
+    "receiptPath": "readiness/353-quint-q1-sir-replay/sir-response-repair-commit-receipt.json",
+    "note": "A successor commit binds this repaired response to the exact S.I.R. repair candidate commit and tree."
   }
 }

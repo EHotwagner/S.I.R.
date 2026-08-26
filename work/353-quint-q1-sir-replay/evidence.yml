@@ -11,7 +11,7 @@ sourceAnalysis: readiness/353-quint-q1-sir-replay/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/353-quint-q1-sir-replay/analysis.json
-    digest: ae0da59cccd0d1ae86dfdf32c586e2706363f3834baaa7df801da4864c3cd548
+    digest: 4e591b122a9ccc39113dcdd2fe4481f462dd816ff72262bcca120545ae32d30a
     schemaVersion: 1
   - label: checklist
     path: work/353-quint-q1-sir-replay/checklist.md
@@ -54,10 +54,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/353-quint-q1-sir-replay/sir-replay.junit.xml
-      digest: "sha256:0fbee652b0b732b7bd64b206cb5f779be7afd100b2abc392169f37d07c3ec0c1"
+      digest: "sha256:2b4cd63d502c0f257cdbbf5f8c79f747dc8c1dd980e662ae0325ccbe774aecd9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: [The adapter invokes the real CombatRules interpreter for every ApplyDamage action and exact-compares all three declared observable fields over the committed three-state witness.]
@@ -81,10 +81,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/353-quint-q1-sir-replay/sir-replay.junit.xml
-      digest: "sha256:0fbee652b0b732b7bd64b206cb5f779be7afd100b2abc392169f37d07c3ec0c1"
+      digest: "sha256:2b4cd63d502c0f257cdbbf5f8c79f747dc8c1dd980e662ae0325ccbe774aecd9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: ["The fixture refuses producer commit, receipt head, manifest, profile, contract, witness, seed, bound, envelope/ITF, and deterministic-replay drift."]
@@ -100,7 +100,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV003]
-    artifacts: [readiness/353-quint-q1-sir-replay/sir-replay-receipt.json, readiness/353-quint-q1-sir-replay/sir-replay.junit.xml, scripts/qualify-quint-q1-sir-replay.sh]
+    artifacts: [readiness/353-quint-q1-sir-replay/sir-replay-receipt.json, readiness/353-quint-q1-sir-replay/sir-replay.junit.xml, readiness/353-quint-q1-sir-replay/sir-sampled-replay-receipt.json, scripts/qualify-quint-q1-sir-replay.sh, scripts/test-ci-route.mjs, scripts/test-conformance.sh, tests/fixtures/rules-corpus/quint-q1/sir-damage.qnt]
     sourceRefs:
       - kind: verification
         path: scripts/qualify-quint-q1-sir-replay.sh
@@ -108,13 +108,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/353-quint-q1-sir-replay/sir-replay.junit.xml
-      digest: "sha256:0fbee652b0b732b7bd64b206cb5f779be7afd100b2abc392169f37d07c3ec0c1"
+      digest: "sha256:2b4cd63d502c0f257cdbbf5f8c79f747dc8c1dd980e662ae0325ccbe774aecd9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
-    notes: ["The qualification replays twice for determinism and rejects wrong mapping, omission, observable, expected-state, and combat-boundary mutations with first-divergence diagnostics."]
+    notes: ["The qualification replays twice for determinism, rejects wrong mapping, omission, observable, expected-state, and independently injected interpreter-boundary mutations with source-located first-divergence diagnostics, and CI generates/replays 64 model-derived ITF traces (576 states)."]
   - id: EV004
     kind: verification
     subject:
@@ -135,10 +135,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/353-quint-q1-sir-replay/sir-replay.junit.xml
-      digest: "sha256:0fbee652b0b732b7bd64b206cb5f779be7afd100b2abc392169f37d07c3ec0c1"
+      digest: "sha256:2b4cd63d502c0f257cdbbf5f8c79f747dc8c1dd980e662ae0325ccbe774aecd9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: ["All replay surfaces are native test-only additions; canonical authority, public runtime APIs, package versions, provider floors, lifecycle defaults, Fable sources, and historical evidence are unchanged."]
@@ -162,10 +162,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/353-quint-q1-sir-replay/sir-replay.junit.xml
-      digest: "sha256:0fbee652b0b732b7bd64b206cb5f779be7afd100b2abc392169f37d07c3ec0c1"
+      digest: "sha256:2b4cd63d502c0f257cdbbf5f8c79f747dc8c1dd980e662ae0325ccbe774aecd9"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 7
       failed: 0
       skipped: 0
     notes: ["Generated SDD projections are refreshed from current lifecycle sources and report no stale source, missing disposition, warning, or blocking finding."]
