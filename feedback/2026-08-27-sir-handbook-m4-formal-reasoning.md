@@ -5,7 +5,7 @@ workspace: S.I.R-roadmap-m4
 cycle: roadmap-sir-combat-quint-handbook-m4-formal-reasoning
 lane: sdd
 toolVersion: 1.4.0
-commit: cd305ffa5be632cf0fd987f50fa0c1ebff3b45a1
+commit: dc82658b9b7bf57df705cd994074cc46e4545e78
 ---
 
 # Development feedback — combat Quint handbook M4 formal reasoning
@@ -35,10 +35,10 @@ One rendered-text assertion was initially brittle because source whitespace beca
 
 - **Kind:** positive-pattern
 - **Impact:** Maintainers can prove that each handbook mutation is detected for the intended reason without editing the canonical literate model or retaining defective fixtures.
-- **Expected:** Threshold, bounds, suppression, cover, collateral, and catalogue-integrity defects each fail through a named detector, and the unchanged extraction passes through the same detector.
-- **Observed:** The focused receipt reports 76 passing checks, including six mutation subjects, six observed-red results, six restored-green results, three reachable major-action witnesses, and seven authoritative property bindings.
+- **Expected:** Threshold, bounds, suppression, cover, collateral, and catalogue-integrity defects each fail through a named detector, the three major-action witnesses bind identity and state delta, every claimed property field occurs inside its named predicate, and the unchanged extraction passes through the same detector.
+- **Observed:** The focused receipt reports 142 passing checks: six executable semantic mutation pairs, six action identity/delta mutation pairs, fifteen predicate-local binding mutation pairs, three reachable major-action witnesses, and seven authoritative properties.
 - **Evidence:** file:work/365-handbook-m4/audit-formal-reasoning.mjs; file:readiness/365-handbook-m4/formal-reasoning.junit.xml; command:node work/365-handbook-m4/audit-formal-reasoning.mjs --require-rendered
-- **Version:** S.I.R. commit `cd305ff`; Quint 0.32.0; authority digest `f121c201…`.
+- **Version:** S.I.R. commit `dc82658`; Quint 0.32.0; authority digest `f121c201…`.
 - **Owner:** EHotwagner/S.I.R. handbook qualification
 - **Recurrence:** extends the authority-derived detector patterns in the M2 feedback report §4.1 and M3 feedback report §4.2.
 - **Avoidable cost:** none
@@ -51,7 +51,7 @@ One rendered-text assertion was initially brittle because source whitespace beca
 - **Expected:** Every required referenced example is packaged with the skill or addressed through a stable skill-relative location.
 - **Observed:** The documented consumer-relative `docs/examples/lifecycle-artifacts/spec.md` path is absent; M3's committed lifecycle corpus supplied the fallback grammar.
 - **Evidence:** command:test ! -e docs/examples/lifecycle-artifacts/spec.md; file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m4-formal-reasoning.jsonl; issue:FS-GG/FS.GG.SDD#539
-- **Version:** FS.GG.SDD skill guidance and `fsgg-sdd` 1.4.0 at S.I.R. commit `cd305ff`.
+- **Version:** FS.GG.SDD skill guidance and `fsgg-sdd` 1.4.0 at S.I.R. commit `dc82658`.
 - **Owner:** FS-GG.SDD lifecycle skill packaging/documentation
 - **Recurrence:** seen again in `feedback/2026-08-13-sir-item-182-awareness-reaction-windows.md` §4.6, `feedback/item-185-in-application-docs.md` §4.1, and `feedback/2026-08-15-SIR-186.md` §4.1; existing upstream FS-GG/FS.GG.SDD#539 is closed.
 - **Avoidable cost:** one failed lookup and a fallback comparison against the M3 lifecycle corpus.
@@ -67,7 +67,7 @@ The SDD skills' required worked-example path contradicts the consumer checkout l
 
 ## §7 Workarounds still in the tree
 
-The qualification continues the inherited explicit SDK-resolver environment cleanup around strict documentation rendering. The six mutations exist only in temporary directories. No duplicate Quint authority, mutated fixture, generated site, or refresh-created unrelated skill remains in the tree. The absence of retained refresh diagnostics prevents a stronger claim about why the transient files appeared.
+The qualification continues the inherited explicit SDK-resolver environment cleanup around strict documentation rendering. All semantic, action-witness, and predicate-binding mutants exist only in temporary directories. No duplicate Quint authority, mutated fixture, generated site, or refresh-created unrelated skill remains in the tree. The absence of retained refresh diagnostics prevents a stronger claim about why the transient files appeared.
 
 ## §8 Friction and avoidable cost
 
@@ -79,7 +79,7 @@ The rendered-content marker caused one full qualification retry. Missing skill e
 
 ## §10 Outcome markers
 
-- First focused qualification: 76/76 checks passed, including all six red/restored-green mutation pairs, three action witnesses, and seven property bindings.
+- Final focused qualification: 142/142 checks passed, including six semantic, six action identity/delta, and fifteen predicate-binding red/restored-green pairs, three action witnesses, and seven properties.
 - First rendered state: strict fsdocs rendered the M4 chapters; one brittle whitespace assertion was repaired and the complete aggregate reran green.
 - Full semantic regression: the authority digest remained `f121c201…`; seven broader witnesses, eight broader mutations, 64 sampled model traces, and 16 runtime replay traces passed under Quint 0.32.0.
 - First green lifecycle verification: 20/20 obligations were observed and non-synthetic; analyze reported 53 ready relationships and zero blockers.
@@ -88,7 +88,7 @@ The rendered-content marker caused one full qualification retry. Missing skill e
 
 ## §11 Falsifiable improvements
 
-- Preserve §4.1 by retaining one single-defect temporary fixture per named mutation and requiring red then unchanged-green through the same detector. Acceptance: the focused command reports exactly six mutation pairs, three reachable major actions, seven state bindings, and zero failures without leaving a mutated file.
+- Preserve §4.1 by retaining one single-defect temporary fixture per named mutation and requiring red then unchanged-green through the same detector. Acceptance: the focused command reports six semantic, six action identity/delta, and fifteen predicate-binding mutation pairs, three reachable major actions, seven property bindings, and zero failures without leaving a mutated file.
 - No new action for duplicate §4.2; reopen or supersede FS-GG/FS.GG.SDD#539 only with a current producer-side reproduction and release scope.
 - Maintain honest claim language. Acceptance: sampled commands state sample count, step bound, and seed; bounded verification says exhaustive only within the represented finite bound; neither claims production equivalence.
 - No new M4 action is proposed for the duplicate historical invalidation baseline; repair its established audit exceptions before treating a product-head comparison as milestone-specific.
@@ -103,7 +103,7 @@ The rendered-content marker caused one full qualification retry. Missing skill e
 | sdd-authoring | exercised | Charter through ship completed with eight requirements, three decisions, twenty tasks, and converged views. |
 | implementation-apis | not-exercised | No runtime or public API changed. |
 | dependencies-build | exercised | Locked restore, Release build, strict fsdocs, and pinned Quint completed. |
-| testing | exercised | Link audit, 76-check focused audit, six mutation pairs, three witnesses, full Q4/runtime regression, and ledger audit passed. |
+| testing | exercised | Link audit, 142-check focused audit, 27 mutation pairs, three witnesses, full Q4/runtime regression, and ledger audit passed. |
 | evidence | exercised | Twenty obligations are observed and non-synthetic; focused, aggregate, lifecycle, verify, and ship receipts are committed. |
 | runtime-playtest | not-exercised | Runtime replay remained a regression suite; no user-facing play journey was run. |
 | performance | not-exercised | Reserved for M6V; the explicitly excluded pnext performance gate was not run. |

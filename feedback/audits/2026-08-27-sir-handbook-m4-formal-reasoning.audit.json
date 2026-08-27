@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-27-sir-handbook-m4-formal-reasoning.md",
-  "reportSha256": "d9d9411ca3ca6e8ab7b19ae16af4cc3301462253c0ead372d4db83e730175579",
+  "reportSha256": "8e2e33df71a81770de487f1b838a116cacf26d1b94b7922ffb429c1f09ac9878",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -13,12 +13,12 @@
         {
           "locator": "file:work/365-handbook-m4/audit-formal-reasoning.mjs",
           "result": "verified",
-          "sha256": "4775103413100a285c38eda37e64602d64a6636956336fa0b90d5fe8871c0048"
+          "sha256": "098fdf2839b6bed96f44ded38970907707ca0dad6e99d6d139465df00985e923"
         },
         {
           "locator": "file:readiness/365-handbook-m4/formal-reasoning.junit.xml",
           "result": "verified",
-          "sha256": "92185224754e9984433e2ebee079638526c5891015f54e5badd477cb55f95a30"
+          "sha256": "53daa7a7045ceadc2e5ceef57b1ccb1e084004fddcdb310d2794a7b19142722b"
         },
         {
           "locator": "command:node work/365-handbook-m4/audit-formal-reasoning.mjs --require-rendered",
@@ -26,7 +26,7 @@
         }
       ],
       "confidenceLimits": [
-        "Verified: six detector-specific red/restored-green pairs, three reachable major-action witnesses, seven state bindings, and 76 rendered-inclusive checks.",
+        "Verified: six semantic, six action identity/delta, and fifteen predicate-binding red/restored-green pairs, three reachable major-action witnesses, seven properties, and 142 rendered-inclusive checks.",
         "This validates the detector pattern, not Apalache-backed exhaustive verification or production runtime equivalence."
       ]
     },
