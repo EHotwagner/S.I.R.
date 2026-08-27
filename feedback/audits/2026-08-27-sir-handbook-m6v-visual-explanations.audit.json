@@ -1,0 +1,155 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-handbook-m6v-visual-explanations.md",
+  "reportSha256": "8355187c986df56eeeca76ccc0a07b95749f38335dad1b414d4b12a85d84ca26",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "duplicate",
+      "missingFacts": [
+        "No retained terminal refusal receipt independently proves the earlier refused-claim and avoidable-cost subclaim; the report correctly labels it claim-only."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m6v-visual-explanations.jsonl",
+          "result": "claim-only",
+          "sha256": "86f651a18a1bee9fc3a187f92b707b530af6346e19ea797d4521673a04253c5e"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#377",
+          "result": "verified"
+        },
+        {
+          "locator": "command:scripts/fsgg-coord delivery-route show 377 --json",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The duplicate classification and chronology are independently verified; the historical refusal itself remains checkpoint testimony.",
+        "The owner label identifies the producer surface, not a new assignee commitment; accepted/duplicate is therefore the appropriate disposition."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "commit:6204e70c823ac9706568067d4d951b344de6cbb6",
+          "result": "verified"
+        },
+        {
+          "locator": "commit:7f21882a26d0e5fb6dd9667139875ae4e3e56dee",
+          "result": "verified"
+        },
+        {
+          "locator": "file:work/377-handbook-m6v/spec.md",
+          "result": "verified",
+          "sha256": "3c503cbcc7ee4e4440f3d0c76c3debe1477f935ab82352ea0773288fe4d1a61d"
+        },
+        {
+          "locator": "file:work/377-handbook-m6v/plan.md",
+          "result": "verified",
+          "sha256": "83a6286fc0e9d5e463a63ef5be0446f784ddd7582900ebc2f0a90f8ee3cf6e74"
+        },
+        {
+          "locator": "file:readiness/377-handbook-m6v/performance-smoke.json",
+          "result": "verified",
+          "sha256": "116e117157596cc4cfe2f3bd3ecec2d46b93b76727d34e771ddddab149b44552"
+        },
+        {
+          "locator": "file:readiness/377-handbook-m6v/performance-evidence.json",
+          "result": "verified",
+          "sha256": "6947e52f8197dbccb8c02d90264c62509301e1ad5a8c5f77c6108883074a77da"
+        },
+        {
+          "locator": "file:readiness/377-handbook-m6v/visual-qualification.json",
+          "result": "verified",
+          "sha256": "5b2abfd81e74d4342a2129cac4a3a75c3ccd5a8b5339c18296b476c08d395a63"
+        }
+      ],
+      "confidenceLimits": [
+        "This proves final consistency from the first measurement candidate onward, not independent producer ownership before implementation.",
+        "The typed-contract pattern is consistent declarations plus machine checks, not literal single-source generation of every copy."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:work/377-handbook-m6v/inspect-rendered-visuals.mjs",
+          "result": "verified",
+          "sha256": "1612583a3b35460c37fac9227232779307680bd3899974ab1530c4ad748dea99"
+        },
+        {
+          "locator": "file:readiness/377-handbook-m6v/rendered/inspection.json",
+          "result": "verified",
+          "sha256": "c167ccc722fcf426647ac6b9409191d623766746a878a3f397d7e090f4f340d7"
+        },
+        {
+          "locator": "file:readiness/377-handbook-m6v/performance-evidence.json",
+          "result": "verified",
+          "sha256": "6947e52f8197dbccb8c02d90264c62509301e1ad5a8c5f77c6108883074a77da"
+        },
+        {
+          "locator": "file:readiness/377-handbook-m6v/timing-overflow-mutation.json",
+          "result": "verified",
+          "sha256": "ef034cc4ff466d3b4c850a6e14d625776aafb203de57b9e4130320df773bd2af"
+        },
+        {
+          "locator": "command:bash work/377-handbook-m6v/qualify-handbook-m6v.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The warm subject is user-meaningful: six real external img resources must load, decode, and have non-zero intrinsic dimensions in the browser clock.",
+        "Browser launch and cold-site readiness are separately reported, not hidden in warm samples.",
+        "The retained permanent mutation measures the same six-image load-and-decode subject and exceeds both unchanged budgets at p95 399.5/p99 409.9.",
+        "Current control and repair are directly reproducible; only the superseded historical attempts remain narrative."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:work/377-handbook-m6v/evidence.yml",
+          "result": "verified",
+          "sha256": "d4d23cb364cb7e56c34092f6d757ea25bcfa5d3dac8b5b7e6bfc3686e4f761c0"
+        },
+        {
+          "locator": "file:readiness/377-handbook-m6v/qualification.junit.xml",
+          "result": "verified",
+          "sha256": "bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
+        },
+        {
+          "locator": "file:readiness/377-handbook-m6v/verify.json",
+          "result": "verified",
+          "sha256": "ce23cb63ba50cfaec2433597723ac7b26a7680841d2a60bb8e073bc96cce3500"
+        },
+        {
+          "locator": "file:readiness/377-handbook-m6v/ship-verdict.json",
+          "result": "verified",
+          "sha256": "d282dba90be84cd17cd703d3ea43062fa819b6453d1ceb325ce2bd98b05aa803"
+        },
+        {
+          "locator": "command:fsgg-sdd verify --work 377-handbook-m6v",
+          "result": "verified"
+        },
+        {
+          "locator": "command:fsgg-sdd ship --work 377-handbook-m6v",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The 35 lifecycle dispositions share one real eight-case aggregate receipt; they are not 35 independent test executions, and the report says so.",
+        "Owner labels are supported by artifact generator metadata and repository boundaries; they do not independently evidence a future external commitment."
+      ]
+    }
+  ]
+}
