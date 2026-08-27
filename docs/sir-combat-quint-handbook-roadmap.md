@@ -176,6 +176,30 @@ Completion evidence (2026-08-27):
   history only when the M3 PR merges; post-merge validation must confirm main, issue #363 closure, and
   project status Done.
 
+### - [x] O1 — Route ordinary main-push CI by relevance
+
+**Outcome:** handbook roadmap merges no longer repeat unrelated complete product qualification, while
+the protected boundary remains exact-source and fail-closed.
+
+Completion evidence (2026-08-27):
+
+- Ordinary `main` pushes and pull requests share the canonical `sir.ci-route/v2` classifier, producer
+  derivation, focused gate DAG, and deterministic join. Push routing uses exact `HEAD^..HEAD`; an empty
+  inventory or missing parent refuses instead of inventing a path.
+- Unknown, mixed, `.github`, router, protected-receipt, and CI-contract changes remain conservative
+  cross-cutting routes. The stable `protected-verdict` validates `sir.protected-join/v2` focused receipts,
+  while schedule and manual dispatch retain complete preflight/core clean-room qualification.
+- A permissionless Pages selector verifies the exact triggering route and creates a deployment only when
+  documentation was selected. The deploy job consumes the routed site's exact route, gate, and build
+  receipts and cannot rebuild or deploy an unrelated successful merge.
+- Focused positive and restored-negative evidence is owned by
+  `work/366-main-ci-routing/qualify-main-ci-routing.sh`; lifecycle evidence is under
+  `work/366-main-ci-routing/` and `readiness/366-main-ci-routing/`; feedback cycle:
+  `roadmap-sir-combat-quint-handbook-ci-main-routing`; delivery issue: #366.
+- Delivery boundary: this checked entry records the merge candidate. It becomes landed completion history
+  only after independent exact-head review, green PR CI, merge, a first focused post-merge protected verdict,
+  issue #366 closure, and project status Done. M4 and the later M6V visual milestone remain unchanged.
+
 ### - [ ] M4 — Formal reasoning and mutation laboratory
 
 **Outcome:** the handbook teaches how to learn from execution and failure.
