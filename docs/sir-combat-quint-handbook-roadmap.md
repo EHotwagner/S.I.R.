@@ -1,6 +1,6 @@
 ---
 title: S.I.R. Combat in Quint handbook roadmap
-category: Design
+category: Battlefield Systems
 categoryindex: 4
 index: 47
 description: Milestone ledger and authority inventory for the S.I.R. Combat in Quint handbook.
