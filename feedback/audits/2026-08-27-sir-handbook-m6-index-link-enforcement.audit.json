@@ -1,0 +1,70 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-handbook-m6-index-link-enforcement.md",
+  "reportSha256": "aa3d86f8a35de81c7e1776548c85c1fcc0fd80cdd552ab832b6063992f7bc392",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:docs/sir-combat-quint-handbook.md",
+          "result": "verified",
+          "sha256": "6905f06ddad7ef5c19ab6ed4e1db595ae2af8c3c920799c754689e3a66b371a6"
+        },
+        {
+          "locator": "file:docs/sir-combat-quint-vocabulary.json",
+          "result": "verified",
+          "sha256": "65201c6c8bc5b6614f7a33d606bb32b53493e72982903fbf6bf0c88197dcd8ee"
+        },
+        {
+          "locator": "file:work/375-handbook-m6/audit-handbook-structure.mjs",
+          "result": "verified",
+          "sha256": "765f77a800e855c9e3fe2dbbb20b811b2e38fb5974d972decfb2e8902510ec3a"
+        },
+        {
+          "locator": "file:readiness/375-handbook-m6/structure-audit.junit.xml",
+          "result": "verified",
+          "sha256": "a9011cc1f14ece081868916dd4d6430aed12f867750be2addc1564e1d98f6205"
+        },
+        {
+          "locator": "command:bash work/375-handbook-m6/qualify-handbook-m6.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Verification establishes a structural navigation contract, not empirical learner usability.",
+        "Hosted CI, Pages, merge, and post-merge behavior were pending at the report boundary.",
+        "Inventory counts are bound to the named commit and must change intentionally with authoritative inputs."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m6-index-link-enforcement.jsonl",
+          "result": "claim-only",
+          "sha256": "18555bf4e4f41e7cbe68bcea0f93ea0cb18b48f28b60355fa469d6aaff693317"
+        },
+        {
+          "locator": "command:./scripts/build-docs.sh --prepare-site-only",
+          "result": "verified"
+        },
+        {
+          "locator": "command:unset DOTNET_HOST_PATH DOTNET_ROOT_X64 DOTNET_ROOT && ./scripts/build-docs.sh --prepare-site-only",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The fail/pass envelope was verified only in the current agent environment and pinned SDK/fsdocs versions.",
+        "Clearing all three resolver variables proves the workaround envelope, not the minimal causal variable.",
+        "No existing issue was found that owns this exact documentation bootstrap boundary."
+      ]
+    }
+  ]
+}
