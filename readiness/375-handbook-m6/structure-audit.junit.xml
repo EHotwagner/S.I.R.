@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sir-handbook-m6-structure" tests="5" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.HandbookM6" name="complete-index-alias-declaration-rule-chapter-reconciliation"/>
+  <testcase classname="SIR.HandbookM6" name="missing-fragment-observed-red-restored-green"/>
+  <testcase classname="SIR.HandbookM6" name="duplicate-anchor-observed-red-restored-green"/>
+  <testcase classname="SIR.HandbookM6" name="absent-index-entry-observed-red-restored-green"/>
+  <testcase classname="SIR.HandbookM6" name="unlinked-controlled-occurrence-observed-red-restored-green"/>
+</testsuite>

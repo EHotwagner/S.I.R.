@@ -12,7 +12,7 @@ document-type: handbook
 <a id="handbook-top"></a>
 # Combat in Quint: From Design Decisions to Executable Models
 
-This in-progress first edition combines a stable navigation and definition-address contract with a representative rifle-attack learning spine and complete coverage of all sixteen stable combat rules. Chapters still marked “Scheduled content” belong to later roadmap milestones and remain honest placeholders, not executable claims.
+This in-progress first edition combines stable navigation, a complete mechanically enforced definition index, a representative rifle-attack learning spine, and complete coverage of all sixteen stable combat rules. Chapters still marked “Scheduled content” belong to later roadmap milestones and remain honest placeholders, not executable claims.
 
 ## Table of contents
 
@@ -382,7 +382,7 @@ The authority uses [round-half-away-from-zero](#unit-round-half-away-from-zero) 
     saturateInt32(divideRoundedAwayFromZero(left * right, SCALE))
 ```
 
-There is one important [claim boundary](#def-claim-boundary): [fromRatio](#qnt-from-ratio), [addFixed](#qnt-add-fixed), and [multiplyFixed](#qnt-multiply-fixed) call [saturateInt32](#qnt-saturate-int32), but [roundedDamage](#qnt-rounded-damage) deliberately models the runtime's signed int32 wrap in `rawDamage + SCALE / 2` before division. The representative `200000 + 5000` is safely inside int32. Do not infer from this example that overflow saturates at the final rounding layer; the separate authority [run](#def-run) `damageRoundingPreservesInt32Wrap` preserves that edge explicitly.
+There is one important [claim boundary](#def-claim-boundary): [fromRatio](#qnt-from-ratio), [addFixed](#qnt-add-fixed), and [multiplyFixed](#qnt-multiply-fixed) call [saturateInt32](#qnt-saturate-int32), but [roundedDamage](#qnt-rounded-damage) deliberately models the runtime's signed int32 wrap in `rawDamage + SCALE / 2` before division. The representative `200000 + 5000` is safely inside int32. Do not infer from this example that overflow saturates at the final rounding layer; the separate authority [damageRoundingPreservesInt32Wrap](#run-damage-rounding-preserves-int32-wrap) [run](#def-run) preserves that edge explicitly.
 
 <a id="chapter-15-the-external-line-of-sight-contract-boundary"></a>
 ### 15. The external line-of-sight contract boundary
@@ -1267,27 +1267,37 @@ whether supercover produced those counts.
 <a id="chapter-50-alphabetical-definition-index"></a>
 ### 50. Alphabetical definition index
 
-The index preserves the complete M0 address inventory. M2 filled the representative spine and M3 filled
-all sixteen rule definitions without changing anchors; M6 completes the remaining aliases,
-cross-references, and enforcement.
+The index reconciles 188 canonical entries: the original M0 address inventory plus three declarations
+that entered the literate authority before M6 (`UINT32_RANGE`, `wrapInt32`, and
+`damageRoundingPreservesInt32Wrap`). Every entry now supplies a definition, declaration locus, related
+canonical links, and a scoped runtime-correspondence statement. Five common aliases are recorded in the
+schema-v2 vocabulary manifest and surfaced at their canonical entries; aliases remain search aids, not
+parallel definitions.
+
+The documentation build runs a dependency-free Markdown block/inline AST audit before rendering. It
+reconciles all literate Quint declarations, all sixteen rule IDs, all fifty chapters, the three reading
+paths, aliases, anchors, fragment links, and eligible controlled prose. The only occurrence exemptions
+are structural and manifest-declared: front matter, fenced code, headings, inline code, and this canonical
+index. Four isolated mutations prove missing fragments, duplicate anchors, absent index entries, and
+unlinked eligible prose each observe red before untouched input restores green.
 
 <a id="qnt-absolute"></a>
-**absolute** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**absolute** — function. The function for absolute, declared authoritatively as `pure def absolute(value: int): int = if (value < 0) -value else value` in the literate Quint model. **Declared at:** literate model `SirCombat.absolute`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-action"></a>
-**action** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**action** — keyword. A Quint declaration whose guarded execution updates one or more primed state variables atomically. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-add-fixed"></a>
-**addFixed** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**addFixed** — function. The function for add fixed, declared authoritatively as `pure def addFixed(left: int, right: int): int = saturateInt32(left + right)` in the literate Quint model. **Declared at:** literate model `SirCombat.addFixed`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="concept-aggregate-attack-resolution"></a>
-**aggregate attack resolution** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**aggregate attack resolution** — concept. One atomic transition that computes and publishes the completed damage, health, wound, incapacity, suppression, and explanation consequences of an attack. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-algorithm-entry"></a>
-**AlgorithmEntry** — type. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**AlgorithmEntry** — type. The type for algorithm entry, declared authoritatively as `type AlgorithmEntry = {` in the literate Quint model. **Declared at:** literate model `SirCombat.AlgorithmEntry`. **Related terms:** [record](#def-record), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-allied-attack"></a>
-**alliedAttack** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**alliedAttack** — value. The value for allied attack, declared authoritatively as `pure val alliedAttack: AttackInput = {` in the literate Quint model. **Declared at:** literate model `SirCombat.alliedAttack`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="stat-armor-retention"></a>
 **armor retention** — stat. Fraction of traced damage retained after armor, clamped to raw `0..10000`; the representative attack uses `8000` (`0.8`). **Declared at:** `AttackInput.armorRetentionRaw`. **Related terms:** [retainedEffect](#qnt-retained-effect), [expected damage](#stat-expected-damage). **Runtime correspondence:** fixed-point armor/damage handling in `CombatRules`.
@@ -1299,31 +1309,31 @@ cross-references, and enforcement.
 **base damage** — stat. Weapon damage before trace and armor retention; the representative rifle value is `25`, encoded as raw `250000`. **Declared at:** `rifleDamageRaw` and `AttackInput.baseDamageRaw`. **Related terms:** [expected damage](#stat-expected-damage), [scale 10,000](#unit-scale-10-000). **Runtime correspondence:** rifle fact consumed by `CombatRules`.
 
 <a id="def-bounded-verification"></a>
-**bounded verification** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**bounded verification** — evidence. Exhaustive exploration of every behavior inside explicitly chosen finite bounds; it proves only the bounded state space. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [claim boundary](#def-claim-boundary), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-bounded100"></a>
-**bounded100** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**bounded100** — function. The function for bounded100, declared authoritatively as `pure def bounded100(value: int): int = maximum(0, minimum(100, value))` in the literate Quint model. **Declared at:** literate model `SirCombat.bounded100`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="property-bounded-combat-state"></a>
-**boundedCombatState** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**boundedCombatState** — property. The property for bounded combat state, declared authoritatively as `val boundedCombatState = and {` in the literate Quint model. **Declared at:** literate model `SirCombat.boundedCombatState`. **Related terms:** [property](#def-property), [bounded verification](#def-bounded-verification). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="catalogue-property-bounded-combat-state"></a>
-**BoundedCombatState** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**BoundedCombatState** — catalogue property. The catalogue identity for the `boundedCombatState` model property, including its declared subjects. **Declared at:** `SirCombat.propertyCatalogue`. **Related terms:** [propertyCatalogue](#qnt-property-catalogue), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="unit-cells"></a>
-**cells** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**cells** — unit. Discrete map-distance units used by engagement preparation and the external trace contract. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [scale 10,000](#unit-scale-10-000), [AttackInput](#qnt-attack-input). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-claim-boundary"></a>
 **claim boundary** — evidence. Explicit limit on what an execution or receipt establishes; a green Quint witness establishes model behavior, while runtime correspondence requires separate interpreter replay evidence. **Declared at:** handbook chapters 14 and 38. **Related terms:** [correspondence](#def-correspondence), [witness](#def-witness). **Runtime correspondence:** enforced by exact/sampled Q4 replay and independent divergence mutations.
 
 <a id="concept-collateral-consequence"></a>
-**collateral consequence** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**collateral consequence** — concept. The ordinary completed combat consequence of an attack whose source and target share a faction; it is not silently suppressed. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="run-collateral-outcome-ignores-faction"></a>
-**collateralOutcomeIgnoresFaction** — run. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**collateralOutcomeIgnoresFaction** — run. The run for collateral outcome ignores faction, declared authoritatively as `run collateralOutcomeIgnoresFaction = {` in the literate Quint model. **Declared at:** literate model `SirCombatTests.collateralOutcomeIgnoresFaction`. **Related terms:** [run](#def-run), [witness](#def-witness). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-combat"></a>
-**combat** — variable. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**combat** — variable. The variable for combat, declared authoritatively as `var combat: CombatState` in the literate Quint model. **Declared at:** literate model `SirCombat.combat`. **Related terms:** [state variable](#def-state-variable), [CombatState](#qnt-combat-state). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="rule-combat-armor-004"></a>
 **COMBAT-ARMOR-004** — rule. Formula that bounds the retained effect after armor. **Declared at:** `ruleCatalogue`; `retainedEffect`. **Related terms:** [armor retention](#stat-armor-retention), [penetration](#concept-penetration). **Runtime correspondence:** stable armor-retention subject; see the M5 controlled correspondence map.
@@ -1371,13 +1381,13 @@ cross-references, and enforcement.
 **CombatState** — type. Cohesive durable combat state containing health, suppression, cover integrity/blocking, and incapacitation. **Declared at:** `SirCombat.CombatState`; initialized by `initialCombat`. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation), [nextConsequences](#qnt-next-consequences). **Runtime correspondence:** completed state consequences produced by `CombatRules`.
 
 <a id="qnt-consequence-explanation-order"></a>
-**consequenceExplanationOrder** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**consequenceExplanationOrder** — value. The value for consequence explanation order, declared authoritatively as `pure val consequenceExplanationOrder = List(` in the literate Quint model. **Declared at:** literate model `SirCombat.consequenceExplanationOrder`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-consequence-observation"></a>
-**consequenceObservation** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**consequenceObservation** — function. The function for consequence observation, declared authoritatively as `pure def consequenceObservation(input: AttackInput): Observation = {` in the literate Quint model. **Declared at:** literate model `SirCombat.consequenceObservation`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-constant"></a>
-**constant** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**constant** — keyword. A Quint name bound once by the model and unavailable for transition-time reassignment. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="rule-content-body-human-001"></a>
 **CONTENT-BODY-HUMAN-001** — rule. Human-body content fact represented by full raw armor retention. **Declared at:** `ruleCatalogue`; `humanArmorRetentionRaw`. **Related terms:** [armor retention](#stat-armor-retention), [scale 10,000](#unit-scale-10-000). **Runtime correspondence:** stable body fact; see the M5 controlled correspondence map.
@@ -1389,58 +1399,61 @@ cross-references, and enforcement.
 **correspondence** — evidence. Checked agreement between model observations and production interpreter outcomes under explicitly identified traces, mappings, versions, and subjects; it is separate from model execution. **Declared at:** chapter 38 and Q4 replay receipts. **Related terms:** [claim boundary](#def-claim-boundary), [execution trace](#def-execution-trace). **Runtime correspondence:** `QuintQ4ReplayFixtures` compares exact and sampled traces with `CombatRules` and reports first divergence.
 
 <a id="def-counterexample"></a>
-**counterexample** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**counterexample** — evidence. A concrete state/action path returned when a checked property is false inside the explored boundary. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [claim boundary](#def-claim-boundary), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="concept-cover-blocking"></a>
-**cover blocking** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**cover blocking** — concept. Whether intact cover stops the current or a later projectile, kept distinct from cover integrity. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="stat-cover-damage"></a>
-**cover damage** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**cover damage** — stat. The bounded integrity loss applied to cover by one impact, with a minimum of one point. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="stat-cover-integrity"></a>
-**cover integrity** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**cover integrity** — stat. A bounded 0–100 durability value; reaching zero makes cover non-blocking for future projectiles. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation). **Aliases:** `cover HP`. **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-cover-damage"></a>
-**coverDamage** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**coverDamage** — function. The function for cover damage, declared authoritatively as `pure def coverDamage(baseDamage: int): int = maximum(1, baseDamage / 2)` in the literate Quint model. **Declared at:** literate model `SirCombat.coverDamage`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-cover-observation"></a>
-**coverObservation** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**coverObservation** — function. The function for cover observation, declared authoritatively as `pure def coverObservation(` in the literate Quint model. **Declared at:** literate model `SirCombat.coverObservation`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="concept-current-collision-consumption"></a>
-**current-collision consumption** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**current-collision consumption** — concept. The rule that a projectile which destroys cover is still stopped by that same collision even though later projectiles may pass. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="stat-damage"></a>
-**damage** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**damage** — stat. Whole combat harm after trace, retention, fixed-point composition, and final rounding. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="unit-damage-points"></a>
-**damage points** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**damage points** — unit. Whole-number units used for weapon output and completed attack harm. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [scale 10,000](#unit-scale-10-000), [AttackInput](#qnt-attack-input). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-damage-for-attack"></a>
 **damageForAttack** — function. Composes trace ratio, retained effect, expected raw damage, and final whole-point rounding for one valid input. **Declared at:** `SirCombat.damageForAttack`. **Related terms:** [traceRaw](#qnt-trace-raw), [expectedDamageRaw](#qnt-expected-damage-raw), [roundedDamage](#qnt-rounded-damage). **Runtime correspondence:** representative damage calculation in `CombatRules`.
 
+<a id="run-damage-rounding-preserves-int32-wrap"></a>
+**damageRoundingPreservesInt32Wrap** — run. The run for damage rounding preserves int32 wrap, declared authoritatively as `run damageRoundingPreservesInt32Wrap` in the literate Quint model. **Declared at:** literate model `SirCombatTests.damageRoundingPreservesInt32Wrap`. **Related terms:** [run](#def-run), [witness](#def-witness). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
+
 <a id="concept-destroyed-cover"></a>
-**destroyed cover** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**destroyed cover** — concept. Cover whose integrity is zero and whose future blocking flag is therefore false. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="property-destroyed-cover-is-permeable"></a>
-**destroyedCoverIsPermeable** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**destroyedCoverIsPermeable** — property. The property for destroyed cover is permeable, declared authoritatively as `val destroyedCoverIsPermeable = (combat.coverIntegrity == 0) implies not(combat.coverBlocking)` in the literate Quint model. **Declared at:** literate model `SirCombat.destroyedCoverIsPermeable`. **Related terms:** [property](#def-property), [bounded verification](#def-bounded-verification). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="catalogue-property-destroyed-cover-is-permeable"></a>
-**DestroyedCoverIsPermeable** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**DestroyedCoverIsPermeable** — catalogue property. The catalogue identity for the `destroyedCoverIsPermeable` model property, including its declared subjects. **Declared at:** `SirCombat.propertyCatalogue`. **Related terms:** [propertyCatalogue](#qnt-property-catalogue), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="run-destroying-cover-consumes-current-collision"></a>
-**destroyingCoverConsumesCurrentCollision** — run. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**destroyingCoverConsumesCurrentCollision** — run. The run for destroying cover consumes current collision, declared authoritatively as `run destroyingCoverConsumesCurrentCollision` in the literate Quint model. **Declared at:** literate model `SirCombatTests.destroyingCoverConsumesCurrentCollision`. **Related terms:** [run](#def-run), [witness](#def-witness). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-divide-rounded-away-from-zero"></a>
-**divideRoundedAwayFromZero** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**divideRoundedAwayFromZero** — function. The function for divide rounded away from zero, declared authoritatively as `pure def divideRoundedAwayFromZero(numerator: int, denominator: int): int = {` in the literate Quint model. **Declared at:** literate model `SirCombat.divideRoundedAwayFromZero`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="concept-event-identity"></a>
-**event identity** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**event identity** — concept. The stable identifier carried through an input and observation so replay can match one completed event. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-execution-trace"></a>
 **execution trace** — evidence. Ordered model states connected by named actions; read the action first, then reconcile input reflection, explanation fields, changed state, and unchanged state. **Declared at:** Quint run output and ITF traces. **Related terms:** [Observation](#qnt-observation), [correspondence](#def-correspondence). **Runtime correspondence:** exact/sampled traces are replayed separately through the real interpreter.
 
 <a id="def-exhaustive-check"></a>
-**exhaustive check** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**exhaustive check** — evidence. A property evaluation over every reachable state within declared finite bounds, unlike a sampled execution. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [claim boundary](#def-claim-boundary), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="stat-expected-damage"></a>
 **expected damage** — stat. Raw base damage multiplied by trace probability and clamped armor retention before conversion to whole damage points; representative raw value `200000` becomes `20`. **Declared at:** `expectedDamageRaw`. **Related terms:** [base damage](#stat-base-damage), [trace probability](#stat-trace-probability), [armor retention](#stat-armor-retention). **Runtime correspondence:** fixed-point damage path in `CombatRules`.
@@ -1449,112 +1462,112 @@ cross-references, and enforcement.
 **expectedDamageRaw** — function. Performs the two scale-preserving fixed multiplications `base × trace × retainedEffect(retention)`. **Declared at:** `SirCombat.expectedDamageRaw`. **Related terms:** [multiplyFixed](#qnt-multiply-fixed), [retainedEffect](#qnt-retained-effect), [roundedDamage](#qnt-rounded-damage). **Runtime correspondence:** model-side counterpart of fixed-point damage composition.
 
 <a id="concept-explanation-order"></a>
-**explanation order** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**explanation order** — concept. The deterministic ordered rule-ID list explaining which stable rules contributed to an observation. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-external-algorithm-contract"></a>
-**external algorithm contract** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**external algorithm contract** — evidence. A modeled input/output boundary whose implementation is owned outside this Quint model and needs separate evidence. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [claim boundary](#def-claim-boundary), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="concept-faction-neutral-consequence"></a>
-**faction-neutral consequence** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**faction-neutral consequence** — concept. The rule that allied and opposing attacks with equal physical inputs receive equal damage and suppression treatment. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Aliases:** `friendly fire`. **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="property-faction-neutral-collateral"></a>
-**factionNeutralCollateral** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**factionNeutralCollateral** — property. The property for faction neutral collateral, declared authoritatively as `val factionNeutralCollateral` in the literate Quint model. **Declared at:** literate model `SirCombat.factionNeutralCollateral`. **Related terms:** [property](#def-property), [bounded verification](#def-bounded-verification). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="catalogue-property-faction-neutral-collateral"></a>
-**FactionNeutralCollateral** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**FactionNeutralCollateral** — catalogue property. The catalogue identity for the `factionNeutralCollateral` model property, including its declared subjects. **Declared at:** `SirCombat.propertyCatalogue`. **Related terms:** [propertyCatalogue](#qnt-property-catalogue), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="concept-first-collision"></a>
-**first collision** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**first collision** — concept. The earliest blocking contact selected by the registered trace implementation for projectile resolution. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-first-divergence"></a>
 **first divergence** — evidence. Earliest ordered model/runtime field mismatch, reported with fixture, JSON pointer, transition, action, expected/actual values, adapter, and implementation. **Declared at:** chapter 41; `QuintQ4ReplayFixtures.firstDifference`. **Related terms:** [ITF trace](#def-itf-trace), [correspondence](#def-correspondence). **Runtime correspondence:** three Q4 inversion controls must report it before untouched replay restores green.
 
 <a id="unit-fixed-point-ratio"></a>
-**fixed-point ratio** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**fixed-point ratio** — unit. A dimensionless ratio encoded as an integer whose denominator is `SCALE` (10,000). **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [scale 10,000](#unit-scale-10-000), [AttackInput](#qnt-attack-input). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-from-ratio"></a>
-**fromRatio** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**fromRatio** — function. The function for from ratio, declared authoritatively as `pure def fromRatio(numerator: int, denominator: int): int` in the literate Quint model. **Declared at:** literate model `SirCombat.fromRatio`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-full-damage-attack"></a>
-**fullDamageAttack** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**fullDamageAttack** — function. The function for full damage attack, declared authoritatively as `pure def fullDamageAttack(damage: int, eventId: str): AttackInput = {` in the literate Quint model. **Declared at:** literate model `SirCombat.fullDamageAttack`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-generated-projection"></a>
 **generated projection** — evidence. Deterministic disposable output derived from an authored authority for tools to consume; it must be regenerated, never edited as authority. **Declared at:** chapter 39; `scripts/qualify-quint-q4-sir-combat.sh`. **Related terms:** [claim boundary](#def-claim-boundary), [ITF trace](#def-itf-trace). **Runtime correspondence:** extracted `.qnt` and normalized ITF are mechanically checked inputs to replay.
 
 <a id="def-guard"></a>
-**guard** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**guard** — keyword. A Boolean precondition that must hold before a Quint action may participate in a transition. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="stat-health"></a>
-**health** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**health** — stat. A bounded 0–100 durable combat value reduced by completed damage. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="unit-hit-points"></a>
-**hit points** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**hit points** — unit. Whole-number units used for actor health; zero means incapacitated in this bounded model. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [scale 10,000](#unit-scale-10-000), [AttackInput](#qnt-attack-input). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="stat-hp"></a>
-**HP** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**HP** — stat. A conventional abbreviation for hit points and the handbook's canonical health stat. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-human-armor-retention-raw"></a>
-**humanArmorRetentionRaw** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**humanArmorRetentionRaw** — value. The value for human armor retention raw, declared authoritatively as `pure val humanArmorRetentionRaw = SCALE` in the literate Quint model. **Declared at:** literate model `SirCombat.humanArmorRetentionRaw`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-import"></a>
-**import** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**import** — keyword. A Quint declaration that brings names from another module into the current module's scope. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="concept-incapacitation"></a>
-**incapacitation** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**incapacitation** — concept. The durable state derived exactly from successor health being zero. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="property-incapacity-matches-health"></a>
-**incapacityMatchesHealth** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**incapacityMatchesHealth** — property. The property for incapacity matches health, declared authoritatively as `val incapacityMatchesHealth = combat.incapacitated == (combat.health == 0)` in the literate Quint model. **Declared at:** literate model `SirCombat.incapacityMatchesHealth`. **Related terms:** [property](#def-property), [bounded verification](#def-bounded-verification). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="catalogue-property-incapacity-matches-health"></a>
-**IncapacityMatchesHealth** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**IncapacityMatchesHealth** — catalogue property. The catalogue identity for the `incapacityMatchesHealth` model property, including its declared subjects. **Declared at:** `SirCombat.propertyCatalogue`. **Related terms:** [propertyCatalogue](#qnt-property-catalogue), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-init"></a>
-**init** — action. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**init** — action. The action for init, declared authoritatively as `action init = all {` in the literate Quint model. **Declared at:** literate model `SirCombat.init`. **Related terms:** [state transition](#def-state-transition), [CombatState](#qnt-combat-state). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-initial-combat"></a>
 **initialCombat** — value. Fully specified starting state: health 100, suppression 0, cover integrity 100, blocking true, incapacitated false. **Declared at:** `SirCombat.initialCombat`. **Related terms:** [CombatState](#qnt-combat-state), [initialization](#def-initialization). **Runtime correspondence:** bounded review fixture, not a universal runtime spawn state.
 
 <a id="def-initialization"></a>
-**initialization** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**initialization** — keyword. The action that supplies the first values for all model state variables. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-int32-max"></a>
-**INT32_MAX** — constant. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**INT32_MAX** — constant. The constant for int32 max, declared authoritatively as `pure val INT32_MAX = 2147483647` in the literate Quint model. **Declared at:** literate model `SirCombat.INT32_MAX`. **Related terms:** [constant](#def-constant), [scale 10,000](#unit-scale-10-000). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-int32-min"></a>
-**INT32_MIN** — constant. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**INT32_MIN** — constant. The constant for int32 min, declared authoritatively as `pure val INT32_MIN = -2147483648` in the literate Quint model. **Declared at:** literate model `SirCombat.INT32_MIN`. **Related terms:** [constant](#def-constant), [scale 10,000](#unit-scale-10-000). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="unit-integrity-points"></a>
-**integrity points** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**integrity points** — unit. Whole-number units used for cover durability from 0 through 100. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [scale 10,000](#unit-scale-10-000), [AttackInput](#qnt-attack-input). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-invariant"></a>
-**invariant** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**invariant** — keyword. A state predicate expected to hold in every reachable state within the checked boundary. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="def-itf-trace"></a>
 **ITF trace** — evidence. Quint's ordered state projection used here with variables `combat` and `last`, normalized to remove volatile metadata before replay. **Declared at:** chapter 40; Q4 fixtures. **Related terms:** [execution trace](#def-execution-trace), [first divergence](#def-first-divergence). **Runtime correspondence:** one committed exact trace and sixteen deterministic sampled traces replay through the real F# interpreter.
 
 <a id="qnt-last"></a>
-**last** — variable. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**last** — variable. The variable for last, declared authoritatively as `var last: Observation` in the literate Quint model. **Declared at:** literate model `SirCombat.last`. **Related terms:** [state variable](#def-state-variable), [CombatState](#qnt-combat-state). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-list"></a>
-**list** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**list** — keyword. An ordered Quint collection; explanation rule IDs use a list because order is observable. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-major-wound"></a>
-**MajorWound** — variant. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**MajorWound** — variant. The `MajorWound` case of the authoritative `Wound` sum type used in completed observations. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [variant](#def-variant), [Wound](#qnt-wound). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-maximum"></a>
-**maximum** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**maximum** — function. The function for maximum, declared authoritatively as `pure def maximum(left: int, right: int): int = if (left > right) left else right` in the literate Quint model. **Declared at:** literate model `SirCombat.maximum`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-minimum"></a>
-**minimum** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**minimum** — function. The function for minimum, declared authoritatively as `pure def minimum(left: int, right: int): int = if (left < right) left else right` in the literate Quint model. **Declared at:** literate model `SirCombat.minimum`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-minor-wound"></a>
-**MinorWound** — variant. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**MinorWound** — variant. The `MinorWound` case of the authoritative `Wound` sum type used in completed observations. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [variant](#def-variant), [Wound](#qnt-wound). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-missed-attack"></a>
-**missedAttack** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**missedAttack** — value. The value for missed attack, declared authoritatively as `pure val missedAttack: AttackInput = {` in the literate Quint model. **Declared at:** literate model `SirCombat.missedAttack`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-module"></a>
-**module** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**module** — keyword. A named Quint namespace containing declarations and an explicit public surface. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-multiply-fixed"></a>
 **multiplyFixed** — function. Multiplies two raw fixed-point integers, divides by `SCALE` with half-away rounding, then saturates to signed int32 bounds. **Declared at:** `SirCombat.multiplyFixed`. **Related terms:** [scale 10,000](#unit-scale-10-000), [round-half-away-from-zero](#unit-round-half-away-from-zero), [saturateInt32](#qnt-saturate-int32). **Runtime correspondence:** mirrors `SIR.Domain.FixedPoint` multiplication semantics.
@@ -1566,16 +1579,16 @@ cross-references, and enforcement.
 **nextConsequences** — function. Purely computes health, eligible suppression, and incapacitation while preserving cover fields for the aggregate consequence action. **Declared at:** `SirCombat.nextConsequences`. **Related terms:** [CombatState](#qnt-combat-state), [damageForAttack](#qnt-damage-for-attack), [resolveConsequences](#qnt-resolve-consequences). **Runtime correspondence:** completed consequence result in `CombatRules`.
 
 <a id="qnt-next-cover-impact"></a>
-**nextCoverImpact** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**nextCoverImpact** — function. The function for next cover impact, declared authoritatively as `pure def nextCoverImpact(current: CombatState, baseDamage: int): CombatState = {` in the literate Quint model. **Declared at:** literate model `SirCombat.nextCoverImpact`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-next-recovery"></a>
-**nextRecovery** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**nextRecovery** — function. The function for next recovery, declared authoritatively as `pure def nextRecovery(current: CombatState): CombatState = {` in the literate Quint model. **Declared at:** literate model `SirCombat.nextRecovery`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-nondeterminism"></a>
-**nondeterminism** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**nondeterminism** — keyword. A deliberate choice among enabled actions or values; different valid traces need not be failures. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-no-wound"></a>
-**NoWound** — variant. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**NoWound** — variant. The `NoWound` case of the authoritative `Wound` sum type used in completed observations. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [variant](#def-variant), [Wound](#qnt-wound). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-observation"></a>
 **Observation** — type. Explanatory projection of the last completed action, including damage arithmetic, wound/contact, suppression/cover outcomes, rule order, event identity, and factions. **Declared at:** `SirCombat.Observation`. **Related terms:** [CombatState](#qnt-combat-state), [AttackInput](#qnt-attack-input), [execution trace](#def-execution-trace). **Runtime correspondence:** compared field by field by the Q4 replay adapter.
@@ -1584,64 +1597,64 @@ cross-references, and enforcement.
 **observed-red control** — evidence. Recorded failure of a named check after a deliberate mutation; M2 requires the retention mutation to make `representativeDamageIsTwenty` fail with actual damage `18`. **Declared at:** chapter 35 and focused audit. **Related terms:** [mutation](#def-mutation), [restored green](#def-restored-green). **Runtime correspondence:** the full Q4 gate has independent runtime-boundary controls.
 
 <a id="concept-penetration"></a>
-**penetration** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**penetration** — concept. Armor interaction represented here by retained effect and completed observations rather than an invented intermediate transition. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="concept-physical-shot-trace"></a>
-**physical shot trace** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**physical shot trace** — concept. The registered geometry process that produces visible and total samples before the model consumes their ratio. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-prediction"></a>
 **prediction** — evidence. Expected inputs, intermediate values, and successor fields written before execution so trace reading tests understanding rather than hindsight. **Declared at:** chapter 24. **Related terms:** [execution trace](#def-execution-trace), [expected damage](#stat-expected-damage). **Runtime correspondence:** predictions remain model claims until separately replayed.
 
 <a id="stat-preparation-time"></a>
-**preparation time** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**preparation time** — stat. The fixed-point engagement delay derived from range cells and the registered range slope. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-preparation-raw"></a>
-**preparationRaw** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**preparationRaw** — function. The function for preparation raw, declared authoritatively as `pure def preparationRaw(rangeCells: int): int = addFixed(SCALE, multiplyFixed(fromRatio(rangeCells, 1), rangeSlopeRaw))` in the literate Quint model. **Declared at:** literate model `SirCombat.preparationRaw`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-primed-assignment"></a>
-**primed assignment** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**primed assignment** — keyword. A Quint action assignment such as `combat' = ...` that names a variable's next-state value. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="concept-projectile-contact"></a>
-**projectile contact** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**projectile contact** — concept. The collision event through which trace and cover rules enter completed combat resolution. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-property"></a>
-**property** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**property** — evidence. A Boolean claim evaluated over model behavior; its strength depends on whether evidence is sampled or exhaustive. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [claim boundary](#def-claim-boundary). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-property-catalogue"></a>
-**propertyCatalogue** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**propertyCatalogue** — value. The value for property catalogue, declared authoritatively as `pure val propertyCatalogue = Set(` in the literate Quint model. **Declared at:** literate model `SirCombat.propertyCatalogue`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-property-entry"></a>
-**PropertyEntry** — type. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**PropertyEntry** — type. The type for property entry, declared authoritatively as `type PropertyEntry = { id: str, kind: str, subjects: Set[str] }` in the literate Quint model. **Declared at:** literate model `SirCombat.PropertyEntry`. **Related terms:** [record](#def-record), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="def-pure-function"></a>
-**pure function** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**pure function** — keyword. A Quint definition whose result depends only on its arguments and immutable declarations, without changing model state. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="def-pure-value"></a>
-**pure value** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**pure value** — keyword. An immutable Quint value computed without changing model state. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="unit-q4-raw-integer"></a>
-**Q4 raw integer** — unit. Signed integer encoding of a fixed-point value at scale 10,000; multiply a human value by 10,000, so `25 → 250000` and `0.8 → 8000`. **Declared at:** raw fields and fixed-point helpers. **Related terms:** [scale 10,000](#unit-scale-10-000), [multiplyFixed](#qnt-multiply-fixed). **Runtime correspondence:** mirrors `SIR.Domain.FixedPoint` raw representation.
+**Q4 raw integer** — unit. Signed integer encoding of a fixed-point value at scale 10,000; multiply a human value by 10,000, so `25 → 250000` and `0.8 → 8000`. **Declared at:** raw fields and fixed-point helpers. **Related terms:** [scale 10,000](#unit-scale-10-000), [multiplyFixed](#qnt-multiply-fixed). **Aliases:** `Q4`. **Runtime correspondence:** mirrors `SIR.Domain.FixedPoint` raw representation.
 
 <a id="stat-range-cells"></a>
-**range cells** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**range cells** — stat. The non-negative cell distance used to derive engagement preparation time. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-range-slope-raw"></a>
-**rangeSlopeRaw** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**rangeSlopeRaw** — value. The value for range slope raw, declared authoritatively as `pure val rangeSlopeRaw = 1000` in the literate Quint model. **Declared at:** literate model `SirCombat.rangeSlopeRaw`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-reachable-state"></a>
-**reachable state** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**reachable state** — keyword. A state produced from initialization by zero or more enabled transitions. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="def-record"></a>
-**record** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**record** — keyword. A Quint value with named fields, used for rules, inputs, state, and observations. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-recovered-suppression"></a>
-**recoveredSuppression** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**recoveredSuppression** — function. The function for recovered suppression, declared authoritatively as `pure def recoveredSuppression(currentSuppression: int): int = minimum(5, maximum(0, currentSuppression))` in the literate Quint model. **Declared at:** literate model `SirCombat.recoveredSuppression`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-recovery-observation"></a>
-**recoveryObservation** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**recoveryObservation** — function. The function for recovery observation, declared authoritatively as `pure def recoveryObservation(current: CombatState, eventId: str): Observation = {` in the literate Quint model. **Declared at:** literate model `SirCombat.recoveryObservation`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="concept-registered-line-of-sight-implementation"></a>
-**registered line-of-sight implementation** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**registered line-of-sight implementation** — concept. The pinned external supercover implementation that owns geometry while Quint owns only its declared sample contract. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Aliases:** `line of sight`, `LoS`. **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-representative-attack"></a>
 **representativeAttack** — value. Bounded teaching input with rifle raw damage `250000`, full `10/10` trace, range 3, retention `8000`, and suppression delta 12. **Declared at:** `SirCombat.representativeAttack`. **Related terms:** [AttackInput](#qnt-attack-input), [representativeDamageIsTwenty](#run-representative-damage-is-twenty). **Runtime correspondence:** exercised by exact and seeded sampled Q4 replay.
@@ -1653,22 +1666,22 @@ cross-references, and enforcement.
 **resolveConsequences** — action. Guarded atomic transition assigning both the next combat state and completed consequence observation. **Declared at:** `SirCombat.resolveConsequences`. **Related terms:** [validAttack](#qnt-valid-attack), [nextConsequences](#qnt-next-consequences), [Observation](#qnt-observation). **Runtime correspondence:** aggregate completed-consequence entry point in `CombatRules`.
 
 <a id="qnt-resolve-cover-impact"></a>
-**resolveCoverImpact** — action. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**resolveCoverImpact** — action. The action for resolve cover impact, declared authoritatively as `action resolveCoverImpact(` in the literate Quint model. **Declared at:** literate model `SirCombat.resolveCoverImpact`. **Related terms:** [state transition](#def-state-transition), [CombatState](#qnt-combat-state). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-resolve-recovery"></a>
-**resolveRecovery** — action. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**resolveRecovery** — action. The action for resolve recovery, declared authoritatively as `action resolveRecovery(eventId: str): bool = all {` in the literate Quint model. **Declared at:** literate model `SirCombat.resolveRecovery`. **Related terms:** [state transition](#def-state-transition), [CombatState](#qnt-combat-state). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-restored-green"></a>
 **restored green** — evidence. Successful re-execution against the untouched authority after the disposable mutated subject has failed and been discarded. **Declared at:** chapter 35 and focused audit. **Related terms:** [observed-red control](#def-observed-red-control), [mutation](#def-mutation). **Runtime correspondence:** full Q4 qualification returns green after its independent controls.
 
 <a id="concept-retained-effect"></a>
-**retained effect** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**retained effect** — concept. The clamped 0–1 fixed-point share of traced damage left after armor. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-retained-effect"></a>
 **retainedEffect** — function. Clamps raw armor retention to `0..SCALE` before damage multiplication. **Declared at:** `SirCombat.retainedEffect`. **Related terms:** [armor retention](#stat-armor-retention), [expectedDamageRaw](#qnt-expected-damage-raw). **Runtime correspondence:** bounded retained-effect handling in damage resolution.
 
 <a id="qnt-rifle-damage-raw"></a>
-**rifleDamageRaw** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**rifleDamageRaw** — value. The value for rifle damage raw, declared authoritatively as `pure val rifleDamageRaw = 250000` in the literate Quint model. **Declared at:** literate model `SirCombat.rifleDamageRaw`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="unit-round-half-away-from-zero"></a>
 **round-half-away-from-zero** — unit. Tie-breaking rule in which an exact half advances one integer away from zero; `17.5 → 18` and `-17.5 → -18`. **Declared at:** `divideRoundedAwayFromZero`; positive final whole damage uses the `+SCALE/2` path. **Related terms:** [multiplyFixed](#qnt-multiply-fixed), [roundedDamage](#qnt-rounded-damage). **Runtime correspondence:** mirrors fixed-point rounding, subject to the named final-wrap boundary.
@@ -1677,153 +1690,159 @@ cross-references, and enforcement.
 **roundedDamage** — function. Converts positive raw damage to whole points after applying signed int32 wrap to `rawDamage + SCALE/2`; representative raw `200000` becomes `20`. **Declared at:** `SirCombat.roundedDamage`. **Related terms:** [expectedDamageRaw](#qnt-expected-damage-raw), [round-half-away-from-zero](#unit-round-half-away-from-zero), [claim boundary](#def-claim-boundary). **Runtime correspondence:** preserves the runtime's explicit pre-division int32-wrap behavior.
 
 <a id="qnt-rule-catalogue"></a>
-**ruleCatalogue** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**ruleCatalogue** — value. The value for rule catalogue, declared authoritatively as `pure val ruleCatalogue = Set(` in the literate Quint model. **Declared at:** literate model `SirCombat.ruleCatalogue`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-rule-entry"></a>
-**RuleEntry** — type. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**RuleEntry** — type. The type for rule entry, declared authoritatively as `type RuleEntry = {` in the literate Quint model. **Declared at:** literate model `SirCombat.RuleEntry`. **Related terms:** [record](#def-record), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="def-run"></a>
-**run** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**run** — keyword. A named executable Quint scenario that asks for a concrete satisfying trace or value. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="def-safety-property"></a>
-**safety property** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**safety property** — evidence. A property stating that an unwanted state is never reachable inside the checked boundary. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [claim boundary](#def-claim-boundary), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="def-sampled-run"></a>
-**sampled run** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**sampled run** — evidence. A deterministic but non-exhaustive set of executions identified by seed, count, and step bound. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [claim boundary](#def-claim-boundary), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="unit-samples"></a>
-**samples** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**samples** — unit. Integer trace observations counted as visible and total before conversion to a fixed-point ratio. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [scale 10,000](#unit-scale-10-000), [AttackInput](#qnt-attack-input). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-saturate-int32"></a>
-**saturateInt32** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**saturateInt32** — function. The function for saturate int32, declared authoritatively as `pure def saturateInt32(value: int): int` in the literate Quint model. **Declared at:** literate model `SirCombat.saturateInt32`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-scale"></a>
-**SCALE** — constant. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**SCALE** — constant. The constant for scale, declared authoritatively as `pure val SCALE = 10000` in the literate Quint model. **Declared at:** literate model `SirCombat.SCALE`. **Related terms:** [constant](#def-constant), [scale 10,000](#unit-scale-10-000). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="unit-scale-10-000"></a>
 **scale 10,000** — unit. Fixed-point denominator named `SCALE`; raw `10000` represents `1.0`, and raw/human conversion moves the decimal four places. **Declared at:** `SirCombat.SCALE`. **Related terms:** [Q4 raw integer](#unit-q4-raw-integer), [multiplyFixed](#qnt-multiply-fixed). **Runtime correspondence:** shared raw fixed-point scale in `SIR.Domain.FixedPoint`.
 
 <a id="unit-seconds"></a>
-**seconds** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**seconds** — unit. The human-facing time unit represented by the model's fixed-point preparation value. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [scale 10,000](#unit-scale-10-000), [AttackInput](#qnt-attack-input). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-set"></a>
-**set** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**set** — keyword. An unordered Quint collection with unique members, used for catalogue identity and dependency membership. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="unit-signed-32-bit-saturation"></a>
-**signed 32-bit saturation** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**signed 32-bit saturation** — unit. Clamping a mathematical integer to `INT32_MIN..INT32_MAX` at the model boundaries where runtime arithmetic saturates. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [scale 10,000](#unit-scale-10-000), [AttackInput](#qnt-attack-input). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-sir-combat"></a>
-**SirCombat** — module. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**SirCombat** — module. The module for sir combat, declared authoritatively as `module SirCombat {` in the literate Quint model. **Declared at:** literate model `SirCombat.SirCombat`. **Related terms:** [module](#def-module), [type](#def-type). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-sir-combat-tests"></a>
-**SirCombatTests** — module. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**SirCombatTests** — module. The module for sir combat tests, declared authoritatively as `module SirCombatTests {` in the literate Quint model. **Declared at:** literate model `SirCombatTests.SirCombatTests`. **Related terms:** [module](#def-module), [type](#def-type). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="property-sixteen-rules-declared"></a>
-**sixteenRulesDeclared** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**sixteenRulesDeclared** — property. The property for sixteen rules declared, declared authoritatively as `val sixteenRulesDeclared = ruleCatalogue.size() == 16` in the literate Quint model. **Declared at:** literate model `SirCombat.sixteenRulesDeclared`. **Related terms:** [property](#def-property), [bounded verification](#def-bounded-verification). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="catalogue-property-sixteen-rules-declared"></a>
-**SixteenRulesDeclared** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**SixteenRulesDeclared** — catalogue property. The catalogue identity for the `sixteenRulesDeclared` model property, including its declared subjects. **Declared at:** `SirCombat.propertyCatalogue`. **Related terms:** [propertyCatalogue](#qnt-property-catalogue), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="def-source-digest"></a>
-**source digest** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**source digest** — evidence. A cryptographic identity of an authoritative input used to bind generated projections and evidence to exact content. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [claim boundary](#def-claim-boundary), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="def-state-transition"></a>
-**state transition** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**state transition** — keyword. One atomic step from current variable bindings to their primed successor bindings. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="def-state-variable"></a>
-**state variable** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**state variable** — keyword. A mutable Quint declaration whose current and next values define model state. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-step"></a>
-**step** — action. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**step** — action. The action for step, declared authoritatively as `action step = any {` in the literate Quint model. **Declared at:** literate model `SirCombat.step`. **Related terms:** [state transition](#def-state-transition), [CombatState](#qnt-combat-state). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-stuttering"></a>
-**stuttering** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**stuttering** — keyword. A behavior step that leaves relevant state unchanged; it must not be confused with a completed combat action. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="stat-suppression"></a>
-**suppression** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**suppression** — stat. A bounded 0–100 durable combat pressure value changed by damaging attacks and recovery. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="stat-suppression-delta"></a>
-**suppression delta** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**suppression delta** — stat. The requested or applied whole-number change in suppression for one observation. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="concept-suppression-eligibility"></a>
-**suppression eligibility** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**suppression eligibility** — concept. The rule that requested suppression applies only when completed damage is positive. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="unit-suppression-points"></a>
-**suppression points** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**suppression points** — unit. Whole-number units used for accumulated suppression from 0 through 100. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [scale 10,000](#unit-scale-10-000), [AttackInput](#qnt-attack-input). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="concept-suppression-recovery"></a>
-**suppression recovery** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**suppression recovery** — concept. The focused transition that removes at most five current suppression points. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-suppression-for-damage"></a>
-**suppressionForDamage** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**suppressionForDamage** — function. The function for suppression for damage, declared authoritatively as `pure def suppressionForDamage(damage: int, requestedDelta: int): int` in the literate Quint model. **Declared at:** literate model `SirCombat.suppressionForDamage`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="run-suppression-needs-positive-damage-and-recovers-five"></a>
-**suppressionNeedsPositiveDamageAndRecoversFive** — run. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**suppressionNeedsPositiveDamageAndRecoversFive** — run. The run for suppression needs positive damage and recovers five, declared authoritatively as `run suppressionNeedsPositiveDamageAndRecoversFive` in the literate Quint model. **Declared at:** literate model `SirCombatTests.suppressionNeedsPositiveDamageAndRecoversFive`. **Related terms:** [run](#def-run), [witness](#def-witness). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="property-suppression-requires-damage"></a>
-**suppressionRequiresDamage** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**suppressionRequiresDamage** — property. The property for suppression requires damage, declared authoritatively as `val suppressionRequiresDamage` in the literate Quint model. **Declared at:** literate model `SirCombat.suppressionRequiresDamage`. **Related terms:** [property](#def-property), [bounded verification](#def-bounded-verification). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="catalogue-property-suppression-requires-damage"></a>
-**SuppressionRequiresDamage** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**SuppressionRequiresDamage** — catalogue property. The catalogue identity for the `suppressionRequiresDamage` model property, including its declared subjects. **Declared at:** `SirCombat.propertyCatalogue`. **Related terms:** [propertyCatalogue](#qnt-property-catalogue), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="concept-target-footprint"></a>
-**target footprint** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**target footprint** — concept. The Boolean input asserting that a trace intersects a valid target area before attack resolution. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-terminal-state"></a>
-**terminal state** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**terminal state** — keyword. A state after which the modeled execution has no required successor; evidence must distinguish it from bounded trace termination. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="stat-total-samples"></a>
-**total samples** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**total samples** — stat. The positive denominator of a valid trace ratio. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="stat-trace-probability"></a>
 **trace probability** — stat. Ratio of visible to total samples after trace validity; representative `10/10` is raw `10000` (`1.0`). **Declared at:** `traceRaw`. **Related terms:** [traceRaw](#qnt-trace-raw), [samples](#unit-samples), [expected damage](#stat-expected-damage). **Runtime correspondence:** trace counts come from the registered external line-of-sight boundary.
 
 <a id="qnt-trace-algorithm"></a>
-**traceAlgorithm** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**traceAlgorithm** — value. The value for trace algorithm, declared authoritatively as `pure val traceAlgorithm = {` in the literate Quint model. **Declared at:** literate model `SirCombat.traceAlgorithm`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-trace-raw"></a>
 **traceRaw** — function. Converts valid visible/total integer samples into a scale-10,000 ratio with fixed-point rounding. **Declared at:** `SirCombat.traceRaw`. **Related terms:** [trace probability](#stat-trace-probability), [validTrace](#qnt-valid-trace), [fromRatio](#qnt-from-ratio). **Runtime correspondence:** models the output contract, not the external supercover traversal.
 
 <a id="def-type"></a>
-**type** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**type** — keyword. A Quint declaration defining the shape and allowed values of model data. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
+
+<a id="qnt-uint32-range"></a>
+**UINT32_RANGE** — constant. The constant for uint32 range, declared authoritatively as `pure val UINT32_RANGE = 4294967296` in the literate Quint model. **Declared at:** literate model `SirCombat.UINT32_RANGE`. **Related terms:** [constant](#def-constant), [scale 10,000](#unit-scale-10-000). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-valid-attack"></a>
 **validAttack** — function. Guard requiring a target footprint and a valid visible/total sample pair before consequence resolution can fire. **Declared at:** `SirCombat.validAttack`. **Related terms:** [AttackInput](#qnt-attack-input), [validTrace](#qnt-valid-trace), [resolveConsequences](#qnt-resolve-consequences). **Runtime correspondence:** bounded precondition for the modeled aggregate transition.
 
 <a id="qnt-valid-trace"></a>
-**validTrace** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**validTrace** — function. The function for valid trace, declared authoritatively as `pure def validTrace(visible: int, total: int): bool = and { total > 0, visible >= 0, visible <= total }` in the literate Quint model. **Declared at:** literate model `SirCombat.validTrace`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="property-valid-trace-observation"></a>
-**validTraceObservation** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**validTraceObservation** — property. The property for valid trace observation, declared authoritatively as `val validTraceObservation` in the literate Quint model. **Declared at:** literate model `SirCombat.validTraceObservation`. **Related terms:** [property](#def-property), [bounded verification](#def-bounded-verification). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="catalogue-property-valid-trace-observation"></a>
-**ValidTraceObservation** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**ValidTraceObservation** — catalogue property. The catalogue identity for the `validTraceObservation` model property, including its declared subjects. **Declared at:** `SirCombat.propertyCatalogue`. **Related terms:** [propertyCatalogue](#qnt-property-catalogue), [property](#def-property). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="def-variant"></a>
-**variant** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**variant** — keyword. One named case of a Quint sum type, such as `NoWound`, `MinorWound`, or `MajorWound`. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="stat-visible-samples"></a>
-**visible samples** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**visible samples** — stat. The non-negative numerator of a valid trace ratio, never greater than total samples. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-witness"></a>
-**witness** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**witness** — keyword. A concrete execution demonstrating that at least one behavior or state is reachable; it is not a universal proof. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="concept-wound"></a>
-**wound** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**wound** — concept. The completed damage classification `NoWound`, `MinorWound`, or `MajorWound` at exact thresholds. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [CombatState](#qnt-combat-state), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-wound"></a>
-**Wound** — type. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**Wound** — type. The type for wound, declared authoritatively as `type Wound = NoWound | MinorWound | MajorWound` in the literate Quint model. **Declared at:** literate model `SirCombat.Wound`. **Related terms:** [record](#def-record), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="stat-wound-threshold"></a>
-**wound threshold** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**wound threshold** — stat. A whole-damage boundary: 25 begins a minor wound and 50 begins a major wound. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="qnt-wound-for-damage"></a>
-**woundForDamage** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**woundForDamage** — function. The function for wound for damage, declared authoritatively as `pure def woundForDamage(damage: int): Wound` in the literate Quint model. **Declared at:** literate model `SirCombat.woundForDamage`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="run-wound-thresholds-are-exact"></a>
-**woundThresholdsAreExact** — run. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**woundThresholdsAreExact** — run. The run for wound thresholds are exact, declared authoritatively as `run woundThresholdsAreExact` in the literate Quint model. **Declared at:** literate model `SirCombatTests.woundThresholdsAreExact`. **Related terms:** [run](#def-run), [witness](#def-witness). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
+
+<a id="qnt-wrap-int32"></a>
+**wrapInt32** — function. The function for wrap int32, declared authoritatively as `pure def wrapInt32(value: int): int` in the literate Quint model. **Declared at:** literate model `SirCombat.wrapInt32`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="run-zero-health-means-incapacitated"></a>
-**zeroHealthMeansIncapacitated** — run. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**zeroHealthMeansIncapacitated** — run. The run for zero health means incapacitated, declared authoritatively as `run zeroHealthMeansIncapacitated` in the literate Quint model. **Declared at:** literate model `SirCombatTests.zeroHealthMeansIncapacitated`. **Related terms:** [run](#def-run), [witness](#def-witness). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 [Back to the table of contents](#table-of-contents)

@@ -50,6 +50,8 @@ done
 cd "$repo_root"
 
 build_site_projection() {
+  node work/375-handbook-m6/audit-handbook-structure.mjs
+
   if [[ -d "$repo_root/.fsdocs" ]]; then
     rm -rf -- "$repo_root/.fsdocs"
   fi

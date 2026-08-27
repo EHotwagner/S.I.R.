@@ -286,7 +286,7 @@ Completion evidence (2026-08-27):
 - M6, M6V, and M7 remain pending. M6V retains authoritative SVG mechanics/theory visuals, progressive
   animation/shader enhancement, accessibility/fallbacks, visual regression, and performance qualification.
 
-### - [ ] M6 — Complete definition index and enforced linkability
+### - [x] M6 — Complete definition index and enforced linkability
 
 **Outcome:** every controlled term is one click from its definition.
 
@@ -304,6 +304,30 @@ Exit criteria:
 - zero unindexed controlled terms;
 - zero unlinked controlled occurrences outside documented exemptions; and
 - all deliberate link defects are detected.
+
+Completion evidence (2026-08-27):
+
+- Chapter 50 now contains 188 canonical definitions with declaration loci, related canonical links,
+  scoped runtime-correspondence statements, and no planned/Pending placeholders. The schema-v2 vocabulary
+  manifest adds five canonical aliases and reconciles the original 185 terms with the three authoritative
+  declarations discovered since M0: `UINT32_RANGE`, `wrapInt32`, and
+  `damageRoundingPreservesInt32Wrap`.
+- `work/375-handbook-m6/audit-handbook-structure.mjs` parses Markdown block/inline structure and proves
+  exact coverage for 74 top-level Quint declarations, all sixteen stable rules, fifty chapters, three
+  reading paths, 188 index targets, five canonical aliases, internal fragments, and eligible controlled
+  prose. Structural exemptions are explicit in the manifest rather than inferred from text.
+- Four isolated controls observe red for missing fragments, duplicate anchors, absent index entries, and
+  unlinked controlled occurrences before untouched input restores green. `scripts/build-docs.sh` now runs
+  the audit before every site projection; dedicated qualification and JUnit receipts live under
+  `work/375-handbook-m6/` and `readiness/375-handbook-m6/`.
+- Lifecycle evidence: `work/375-handbook-m6/` and `readiness/375-handbook-m6/`; feedback cycle:
+  `roadmap-sir-combat-quint-handbook-m6-index-link-enforcement`; delivery issue: #375; delivery PR: #376.
+- Delivery boundary: this checked entry is the merge-candidate ledger update. Independent exact-head
+  acceptance, green relevant hosted CI, merge, exact-main validation, Pages proof, issue closure, and
+  project status Done remain required before it becomes landed completion history.
+- M6V and M7 remain pending. M6V retains authoritative mechanics/theory SVG reuse, progressive
+  animation/shaders, accessibility, reduced-motion/static/print/non-WebGL fallbacks, mechanical
+  derivation, visual regression, rendered inspection, and performance qualification.
 
 ### - [ ] M6V — Authoritative mechanics and theory diagrams
 
