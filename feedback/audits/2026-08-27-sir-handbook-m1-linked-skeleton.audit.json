@@ -91,7 +91,7 @@
         }
       ],
       "confidenceLimits": [
-        "Local exact-head commands prove semantic anchors become empty anchored blocks beside definitions, raw HTML is absent, and navigation excludes them; final hosted rerun remains a separate merge gate."
+        "Generator and qualification verify that explicit anchors become empty anchored heading blocks, raw anchor HTML is omitted, and semantic anchors stay outside navigation headings; renderer inspection confirms heading blocks map to DOM ids, but the cited commands do not perform a browser interaction."
       ]
     }
   ]
