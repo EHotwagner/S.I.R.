@@ -77,6 +77,34 @@ module SirCombatM4Detectors {
   import SirCombat.*
 
   run boundedInitialState = init.expect(boundedCombatState)
+
+  run resolveConsequencesReachability =
+    init
+      .then(resolveConsequences(representativeAttack))
+      .expect(and {
+        last.lastAction == "ResolveConsequences",
+        combat.health == 80,
+        combat.suppression == 12,
+      })
+
+  run resolveCoverImpactReachability =
+    init
+      .then(resolveCoverImpact(250, true, true, "cover:destroy"))
+      .expect(and {
+        last.lastAction == "ResolveCoverImpact",
+        combat.coverIntegrity == 0,
+        not(combat.coverBlocking),
+      })
+
+  run resolveRecoveryReachability =
+    init
+      .then(resolveConsequences(representativeAttack))
+      .expect(combat.suppression == 12)
+      .then(resolveRecovery("recovery:target"))
+      .expect(and {
+        last.lastAction == "ResolveRecovery",
+        combat.suppression == 7,
+      })
 }
 `;
 
@@ -151,14 +179,53 @@ try {
   }
 
   const actionWitnesses = [
-    { action: "resolveConsequences", module: "SirCombatTests", run: "representativeDamageIsTwenty" },
-    { action: "resolveCoverImpact", module: "SirCombatTests", run: "destroyingCoverConsumesCurrentCollision" },
-    { action: "resolveRecovery", module: "SirCombatTests", run: "suppressionNeedsPositiveDamageAndRecoversFive" },
+    {
+      action: "resolveConsequences",
+      witness: "representativeDamageIsTwenty",
+      detector: { module: "SirCombatM4Detectors", run: "resolveConsequencesReachability" },
+      identitySubject: 'lastAction: "ResolveConsequences"',
+      deltaSubject: "combat' = nextConsequences(combat, input)",
+    },
+    {
+      action: "resolveCoverImpact",
+      witness: "destroyingCoverConsumesCurrentCollision",
+      detector: { module: "SirCombatM4Detectors", run: "resolveCoverImpactReachability" },
+      identitySubject: 'lastAction: "ResolveCoverImpact"',
+      deltaSubject: "combat' = nextCoverImpact(combat, baseDamage)",
+    },
+    {
+      action: "resolveRecovery",
+      witness: "suppressionNeedsPositiveDamageAndRecoversFive",
+      detector: { module: "SirCombatM4Detectors", run: "resolveRecoveryReachability" },
+      identitySubject: 'lastAction: "ResolveRecovery"',
+      deltaSubject: "combat' = nextRecovery(combat)",
+    },
   ];
   for (const witness of actionWitnesses) {
-    const result = run("quint", detectorArgs(cleanPath, witness));
-    check(`reachable:${witness.action}`, result.output.includes("1 passing"), `${witness.run} did not pass`);
-    check(`reachable-doc:${witness.action}`, part.includes(witness.action) && part.includes(witness.run), "witness mapping absent from handbook");
+    const result = run("quint", detectorArgs(cleanPath, witness.detector));
+    check(`reachable:${witness.action}`, result.output.includes("1 passing"), `${witness.detector.run} did not pass`);
+    check(`reachable-doc:${witness.action}`, part.includes(witness.action) && part.includes(witness.witness), "witness mapping absent from handbook");
+  }
+
+  const actionWitnessMutations = actionWitnesses.flatMap(witness => [
+    {
+      family: `${witness.action}:identity`,
+      detector: witness.detector,
+      apply: text => replaceUnique(text, witness.identitySubject, 'lastAction: "M4WrongAction"', `${witness.action}:identity`),
+    },
+    {
+      family: `${witness.action}:delta`,
+      detector: witness.detector,
+      apply: text => replaceUnique(text, witness.deltaSubject, "combat' = combat", `${witness.action}:delta`),
+    },
+  ]);
+  for (const mutation of actionWitnessMutations) {
+    const mutantPath = join(temporary, `sir-combat-${mutation.family.replaceAll(":", "-")}.qnt`);
+    writeFileSync(mutantPath, mutation.apply(model) + detectorModule);
+    const red = run("quint", detectorArgs(mutantPath, mutation.detector), "nonzero");
+    check(`action-observed-red:${mutation.family}`, red.output.includes(mutation.detector.run), `${mutation.detector.run} was not named in red output`);
+    const restored = run("quint", detectorArgs(cleanPath, mutation.detector));
+    check(`action-restored-green:${mutation.family}`, restored.output.includes("1 passing"), `${mutation.detector.run} did not restore green`);
   }
 
   const mutations = [
@@ -213,7 +280,7 @@ try {
   mkdirSync("readiness/365-handbook-m4", { recursive: true });
   const xmlCases = cases.map(name => `  <testcase classname="SIR.HandbookM4" name="${name.replaceAll("&", "and").replaceAll('"', "'")}"/>`).join("\n");
   writeFileSync(receiptPath, `<?xml version="1.0" encoding="UTF-8"?>\n<testsuite name="sir-combat-quint-handbook-m4" tests="${cases.length}" failures="0" errors="0" skipped="0">\n${xmlCases}\n</testsuite>\n`);
-  console.log(`handbook-m4 formal reasoning: PASS (${mutations.length} semantic mutation pairs; ${bindingMutationCount} binding mutation pairs; ${actionWitnesses.length} major-action witnesses; ${invariantBindings.size} property bindings; ${cases.length} checks)`);
+  console.log(`handbook-m4 formal reasoning: PASS (${mutations.length} semantic mutation pairs; ${actionWitnessMutations.length} action-witness mutation pairs; ${bindingMutationCount} binding mutation pairs; ${actionWitnesses.length} major-action witnesses; ${invariantBindings.size} property bindings; ${cases.length} checks)`);
 } finally {
   rmSync(temporary, { recursive: true, force: true });
 }

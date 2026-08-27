@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="sir-combat-quint-handbook-m4" tests="124" failures="0" errors="0" skipped="0">
+<testsuite name="sir-combat-quint-handbook-m4" tests="142" failures="0" errors="0" skipped="0">
   <testcase classname="SIR.HandbookM4" name="authority-projection"/>
   <testcase classname="SIR.HandbookM4" name="pinned-quint"/>
   <testcase classname="SIR.HandbookM4" name="authoritative-typecheck"/>
@@ -104,6 +104,24 @@
   <testcase classname="SIR.HandbookM4" name="reachable-doc:resolveCoverImpact"/>
   <testcase classname="SIR.HandbookM4" name="reachable:resolveRecovery"/>
   <testcase classname="SIR.HandbookM4" name="reachable-doc:resolveRecovery"/>
+  <testcase classname="SIR.HandbookM4" name="mutation-subject:resolveConsequences:identity"/>
+  <testcase classname="SIR.HandbookM4" name="action-observed-red:resolveConsequences:identity"/>
+  <testcase classname="SIR.HandbookM4" name="action-restored-green:resolveConsequences:identity"/>
+  <testcase classname="SIR.HandbookM4" name="mutation-subject:resolveConsequences:delta"/>
+  <testcase classname="SIR.HandbookM4" name="action-observed-red:resolveConsequences:delta"/>
+  <testcase classname="SIR.HandbookM4" name="action-restored-green:resolveConsequences:delta"/>
+  <testcase classname="SIR.HandbookM4" name="mutation-subject:resolveCoverImpact:identity"/>
+  <testcase classname="SIR.HandbookM4" name="action-observed-red:resolveCoverImpact:identity"/>
+  <testcase classname="SIR.HandbookM4" name="action-restored-green:resolveCoverImpact:identity"/>
+  <testcase classname="SIR.HandbookM4" name="mutation-subject:resolveCoverImpact:delta"/>
+  <testcase classname="SIR.HandbookM4" name="action-observed-red:resolveCoverImpact:delta"/>
+  <testcase classname="SIR.HandbookM4" name="action-restored-green:resolveCoverImpact:delta"/>
+  <testcase classname="SIR.HandbookM4" name="mutation-subject:resolveRecovery:identity"/>
+  <testcase classname="SIR.HandbookM4" name="action-observed-red:resolveRecovery:identity"/>
+  <testcase classname="SIR.HandbookM4" name="action-restored-green:resolveRecovery:identity"/>
+  <testcase classname="SIR.HandbookM4" name="mutation-subject:resolveRecovery:delta"/>
+  <testcase classname="SIR.HandbookM4" name="action-observed-red:resolveRecovery:delta"/>
+  <testcase classname="SIR.HandbookM4" name="action-restored-green:resolveRecovery:delta"/>
   <testcase classname="SIR.HandbookM4" name="mutation-subject:threshold"/>
   <testcase classname="SIR.HandbookM4" name="observed-red:threshold"/>
   <testcase classname="SIR.HandbookM4" name="restored-green:threshold"/>
