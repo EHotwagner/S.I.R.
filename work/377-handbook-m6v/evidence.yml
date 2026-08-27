@@ -11,7 +11,7 @@ sourceAnalysis: readiness/377-handbook-m6v/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/377-handbook-m6v/analysis.json
-    digest: 871450c500369b665e3a181f105918a2ff8efcbecaa77e68dfa8166490a0f424
+    digest: 3ff59bd5c34e7251a4bb72eb129430d9538d21a19c80b4761e7a83ae2288a13f
     schemaVersion: 1
   - label: checklist
     path: work/377-handbook-m6v/checklist.md

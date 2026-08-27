@@ -6,12 +6,12 @@
   "sources": [
     {
       "path": "readiness/377-handbook-m6v/ship.json",
-      "digest": "sha256:9533d0b630fd810d299b28bf940696c964298e5b5476cf2189f2bf03d64756bf",
+      "digest": "sha256:d9743dfe08efa9c68f8a986abb2ff73d50b37c8c030e1e67abad117265a3fd37",
       "schemaVersion": 1
     },
     {
       "path": "readiness/377-handbook-m6v/verify.json",
-      "digest": "sha256:8272b2e69683bf2589e604f1174c18fddc9a8eaff96d63fa4801deefc8d0570d",
+      "digest": "sha256:ce23cb63ba50cfaec2433597723ac7b26a7680841d2a60bb8e073bc96cce3500",
       "schemaVersion": 1
     },
     {

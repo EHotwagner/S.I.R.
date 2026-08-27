@@ -81,7 +81,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "daa39d7bc366c3b6fc3a5b804a0910d764e5a284de81cefec92005a00fd7d6ef"
+        "value": "d4d23cb364cb7e56c34092f6d757ea25bcfa5d3dac8b5b7e6bfc3686e4f761c0"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -1725,22 +1725,6 @@
   "findings": [
     {
       "id": "VF001",
-      "severity": "warning",
-      "category": "warning",
-      "path": "work/377-handbook-m6v/evidence.yml",
-      "relatedIds": [
-        "analysis",
-        "checklist",
-        "clarifications",
-        "plan",
-        "spec",
-        "tasks"
-      ],
-      "message": "One or more evidence source snapshots no longer match current source digests.",
-      "correction": "Rerun the evidence command after reviewing the changed source artifacts."
-    },
-    {
-      "id": "VF002",
       "severity": "advisory",
       "category": "advisory",
       "path": "work/377-handbook-m6v/evidence.yml",
@@ -1777,21 +1761,6 @@
     }
   ],
   "diagnostics": [
-    {
-      "id": "evidence.staleEvidenceSource",
-      "severity": "warning",
-      "artifact": "work/377-handbook-m6v/evidence.yml",
-      "message": "One or more evidence source snapshots no longer match current source digests.",
-      "correction": "Rerun the evidence command after reviewing the changed source artifacts.",
-      "relatedIds": [
-        "analysis",
-        "checklist",
-        "clarifications",
-        "plan",
-        "spec",
-        "tasks"
-      ]
-    },
     {
       "id": "evidence.performanceBudgetPassed",
       "severity": "info",
