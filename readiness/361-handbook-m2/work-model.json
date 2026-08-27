@@ -1,0 +1,1298 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "361-handbook-m2",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/361-handbook-m2/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "455a461651b128524fdc548bfbaa1b0dfbd98ac91cf7392db79ad3fbab95dfb5"
+      }
+    },
+    {
+      "path": "work/361-handbook-m2/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "5033519f19f00ab49faa4264b2044b282ad9dabac0e8fbf8a727c9b345746f91"
+      }
+    },
+    {
+      "path": "work/361-handbook-m2/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "4cf0ea58dca2f9cda0e110015decd3f45820ed38e4e63bcb5a3a2babe1019af4"
+      }
+    },
+    {
+      "path": "work/361-handbook-m2/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "a2ed6d92ba30c5b21abc7122e82c04f202c5d564ed95a4825269a44c9b7275cc"
+      }
+    },
+    {
+      "path": "work/361-handbook-m2/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "9c116950fb1c871bf288183e06224bf851d64f2b0632a00f646b54b2e7932c1a"
+      }
+    },
+    {
+      "path": "work/361-handbook-m2/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "69b72af2a45aab8a4f781e09ac7d1d97e314820bbea7dec87769d5f103123125"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "361-handbook-m2",
+    "title": "Handbook M2",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "The handbook MUST teach the representative attack pipeline, weapon fact, full trace, armor retention, expected-damage multiplication, and final rounding, including \u0060250000 x 10000 / 10000 x 8000 / 10000 = 200000\u0060 and \u0060200000 / 10000 = 20\u0060. (covers AC-001)",
+      "text": "The handbook MUST teach the representative attack pipeline, weapon fact, full trace, armor retention, expected-damage multiplication, and final rounding, including \u0060250000 x 10000 / 10000 x 8000 / 10000 = 200000\u0060 and \u0060200000 / 10000 = 20\u0060. (covers AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/361-handbook-m2/spec.md",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "The handbook MUST explain \u0060CombatState\u0060, \u0060AttackInput\u0060, \u0060Observation\u0060, \u0060initialCombat\u0060, \u0060representativeAttack\u0060, \u0060validAttack\u0060, \u0060resolveConsequences\u0060, and the atomic completed-consequence boundary without inventing runtime-visible intermediate states. (covers AC-002)",
+      "text": "The handbook MUST explain \u0060CombatState\u0060, \u0060AttackInput\u0060, \u0060Observation\u0060, \u0060initialCombat\u0060, \u0060representativeAttack\u0060, \u0060validAttack\u0060, \u0060resolveConsequences\u0060, and the atomic completed-consequence boundary without inventing runtime-visible intermediate states. (covers AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/361-handbook-m2/spec.md",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "The handbook MUST provide a prediction prompt, an authoritative command, a two-state trace-reading workflow, and an observe/explain reconciliation for \u0060representativeDamageIsTwenty\u0060. (covers AC-003)",
+      "text": "The handbook MUST provide a prediction prompt, an authoritative command, a two-state trace-reading workflow, and an observe/explain reconciliation for \u0060representativeDamageIsTwenty\u0060. (covers AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/361-handbook-m2/spec.md",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "The verification MUST change only the representative \u0060armorRetentionRaw\u0060 from \u00608000\u0060 to \u00607000\u0060 in a disposable extracted model, observe the named run fail from \u006020\u0060 to \u006018\u0060, and then re-run the untouched extraction green. (covers AC-004)",
+      "text": "The verification MUST change only the representative \u0060armorRetentionRaw\u0060 from \u00608000\u0060 to \u00607000\u0060 in a disposable extracted model, observe the named run fail from \u006020\u0060 to \u006018\u0060, and then re-run the untouched extraction green. (covers AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/361-handbook-m2/spec.md",
+      "sourceLocation": {
+        "line": 43,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004"
+      ],
+      "linkedEvidenceIds": [
+        "EV004"
+      ]
+    },
+    {
+      "id": "FR-005",
+      "title": "Runtime correspondence MUST cite \u0060SIR.Domain.FixedPoint\u0060, \u0060CombatRules\u0060, and Q4 replay evidence while stating that Quint execution proves model behavior and real-interpreter correspondence is separate, scoped evidence rather than exhaustive implementation equivalence. (covers AC-005)",
+      "text": "Runtime correspondence MUST cite \u0060SIR.Domain.FixedPoint\u0060, \u0060CombatRules\u0060, and Q4 replay evidence while stating that Quint execution proves model behavior and real-interpreter correspondence is separate, scoped evidence rather than exhaustive implementation equivalence. (covers AC-005)",
+      "acceptanceCriteria": [
+        "AC-005"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/361-handbook-m2/spec.md",
+      "sourceLocation": {
+        "line": 44,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T005"
+      ],
+      "linkedEvidenceIds": [
+        "EV005"
+      ]
+    },
+    {
+      "id": "FR-006",
+      "title": "Executable handbook excerpts MUST be extracted from or mechanically matched against \u0060docs/rules/sir-combat.md\u0060; focused audits MUST cover code provenance, expected text/arithmetic, links/vocabulary, pinned Quint execution, observed-red/restored-green, and rendered documentation. (covers AC-006)",
+      "text": "Executable handbook excerpts MUST be extracted from or mechanically matched against \u0060docs/rules/sir-combat.md\u0060; focused audits MUST cover code provenance, expected text/arithmetic, links/vocabulary, pinned Quint execution, observed-red/restored-green, and rendered documentation. (covers AC-006)",
+      "acceptanceCriteria": [
+        "AC-006"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/361-handbook-m2/spec.md",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T006"
+      ],
+      "linkedEvidenceIds": [
+        "EV006"
+      ]
+    },
+    {
+      "id": "FR-007",
+      "title": "The roadmap MUST preserve all prior text/history, mark only M2 complete after the gates pass, and append concise evidence paths for work, readiness, feedback, review, PR, and merge. (covers AC-007)",
+      "text": "The roadmap MUST preserve all prior text/history, mark only M2 complete after the gates pass, and append concise evidence paths for work, readiness, feedback, review, PR, and merge. (covers AC-007)",
+      "acceptanceCriteria": [
+        "AC-007"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/361-handbook-m2/spec.md",
+      "sourceLocation": {
+        "line": 46,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T007"
+      ],
+      "linkedEvidenceIds": [
+        "EV007"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Describe Q4 scale/rounding layer by layer and explicitly distinguish saturation helpers from \u0060roundedDamage\u0060\u0027s signed int32 wrap at its pre-division addition.",
+      "decision": "Describe Q4 scale/rounding layer by layer and explicitly distinguish saturation helpers from \u0060roundedDamage\u0060\u0027s signed int32 wrap at its pre-division addition.",
+      "requirementRefs": [
+        "FR-001",
+        "FR-006"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/361-handbook-m2/clarifications.md",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T008"
+      ]
+    },
+    {
+      "id": "DEC-002",
+      "title": "M2 maps only representative damage subjects and cites exact/scoped Q4 qualification; M5 retains full correspondence and replay teaching.",
+      "decision": "M2 maps only representative damage subjects and cites exact/scoped Q4 qualification; M5 retains full correspondence and replay teaching.",
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/361-handbook-m2/clarifications.md",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T009"
+      ]
+    },
+    {
+      "id": "DEC-003",
+      "title": "Every \u0060quint authority=sir-combat\u0060 handbook fence must exactly match the deterministic extraction from \u0060docs/rules/sir-combat.md\u0060, and that extraction is the only model executed.",
+      "decision": "Every \u0060quint authority=sir-combat\u0060 handbook fence must exactly match the deterministic extraction from \u0060docs/rules/sir-combat.md\u0060, and that extraction is the only model executed.",
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/361-handbook-m2/clarifications.md",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T010"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Implement requirement FR-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-002"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-002",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Implement requirement FR-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-003"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-003",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Implement requirement FR-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "FR-004",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Implement requirement FR-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-005"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "FR-005",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "T006",
+      "title": "Implement requirement FR-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-006"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-006",
+        "FR-006",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV006"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "T007",
+      "title": "Implement requirement FR-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-007"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "FR-007",
+        "PD-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV007"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "T008",
+      "title": "Implement clarification decision DEC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-001"
+      ],
+      "sourceIds": [
+        "DEC-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV008"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "T009",
+      "title": "Implement clarification decision DEC-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-002"
+      ],
+      "sourceIds": [
+        "DEC-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV009"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "T010",
+      "title": "Implement clarification decision DEC-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-003"
+      ],
+      "sourceIds": [
+        "DEC-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV010"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "T011",
+      "title": "Update contract surface PC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV011"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "T012",
+      "title": "Record verification evidence VO-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-004",
+        "PD-006",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV012"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "T013",
+      "title": "Handle migration posture PM-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV013"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "T014",
+      "title": "Refresh generated view impact GV-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV014"
+      ],
+      "source": "work/361-handbook-m2/tasks.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/361-handbook-m2/docs-build.junit.xml",
+        "readiness/361-handbook-m2/handbook-m2.junit.xml",
+        "readiness/361-handbook-m2/link-audit.junit.xml",
+        "readiness/361-handbook-m2/qualification.junit.xml",
+        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/361-handbook-m2/audit-representative-attack.mjs",
+        "work/361-handbook-m2/qualify-handbook-m2.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/361-handbook-m2/docs-build.junit.xml",
+        "readiness/361-handbook-m2/handbook-m2.junit.xml",
+        "readiness/361-handbook-m2/link-audit.junit.xml",
+        "readiness/361-handbook-m2/qualification.junit.xml",
+        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/361-handbook-m2/audit-representative-attack.mjs",
+        "work/361-handbook-m2/qualify-handbook-m2.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/361-handbook-m2/docs-build.junit.xml",
+        "readiness/361-handbook-m2/handbook-m2.junit.xml",
+        "readiness/361-handbook-m2/link-audit.junit.xml",
+        "readiness/361-handbook-m2/qualification.junit.xml",
+        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/361-handbook-m2/audit-representative-attack.mjs",
+        "work/361-handbook-m2/qualify-handbook-m2.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/361-handbook-m2/docs-build.junit.xml",
+        "readiness/361-handbook-m2/handbook-m2.junit.xml",
+        "readiness/361-handbook-m2/link-audit.junit.xml",
+        "readiness/361-handbook-m2/qualification.junit.xml",
+        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/361-handbook-m2/audit-representative-attack.mjs",
+        "work/361-handbook-m2/qualify-handbook-m2.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/361-handbook-m2/docs-build.junit.xml",
+        "readiness/361-handbook-m2/handbook-m2.junit.xml",
+        "readiness/361-handbook-m2/link-audit.junit.xml",
+        "readiness/361-handbook-m2/qualification.junit.xml",
+        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/361-handbook-m2/audit-representative-attack.mjs",
+        "work/361-handbook-m2/qualify-handbook-m2.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV006",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T006",
+      "taskRefs": [
+        "T006"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/361-handbook-m2/docs-build.junit.xml",
+        "readiness/361-handbook-m2/handbook-m2.junit.xml",
+        "readiness/361-handbook-m2/link-audit.junit.xml",
+        "readiness/361-handbook-m2/qualification.junit.xml",
+        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/361-handbook-m2/audit-representative-attack.mjs",
+        "work/361-handbook-m2/qualify-handbook-m2.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV007",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T007",
+      "taskRefs": [
+        "T007"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "feedback/2026-08-27-sir-handbook-m2-representative-attack.md",
+        "feedback/audits/2026-08-27-sir-handbook-m2-representative-attack.audit.json",
+        "readiness/361-handbook-m2/roadmap-ledger.junit.xml",
+        "work/361-handbook-m2/audit-roadmap-ledger.mjs"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV008",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T008",
+      "taskRefs": [
+        "T008"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/361-handbook-m2/docs-build.junit.xml",
+        "readiness/361-handbook-m2/handbook-m2.junit.xml",
+        "readiness/361-handbook-m2/link-audit.junit.xml",
+        "readiness/361-handbook-m2/qualification.junit.xml",
+        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/361-handbook-m2/audit-representative-attack.mjs",
+        "work/361-handbook-m2/qualify-handbook-m2.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV009",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T009",
+      "taskRefs": [
+        "T009"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/361-handbook-m2/docs-build.junit.xml",
+        "readiness/361-handbook-m2/handbook-m2.junit.xml",
+        "readiness/361-handbook-m2/link-audit.junit.xml",
+        "readiness/361-handbook-m2/qualification.junit.xml",
+        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/361-handbook-m2/audit-representative-attack.mjs",
+        "work/361-handbook-m2/qualify-handbook-m2.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV010",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T010",
+      "taskRefs": [
+        "T010"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/361-handbook-m2/docs-build.junit.xml",
+        "readiness/361-handbook-m2/handbook-m2.junit.xml",
+        "readiness/361-handbook-m2/link-audit.junit.xml",
+        "readiness/361-handbook-m2/qualification.junit.xml",
+        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/361-handbook-m2/audit-representative-attack.mjs",
+        "work/361-handbook-m2/qualify-handbook-m2.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV011",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T011",
+      "taskRefs": [
+        "T011"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/361-handbook-m2/docs-build.junit.xml",
+        "readiness/361-handbook-m2/handbook-m2.junit.xml",
+        "readiness/361-handbook-m2/link-audit.junit.xml",
+        "readiness/361-handbook-m2/qualification.junit.xml",
+        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/361-handbook-m2/audit-representative-attack.mjs",
+        "work/361-handbook-m2/qualify-handbook-m2.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV012",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T012",
+      "taskRefs": [
+        "T012"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/361-handbook-m2/docs-build.junit.xml",
+        "readiness/361-handbook-m2/handbook-m2.junit.xml",
+        "readiness/361-handbook-m2/link-audit.junit.xml",
+        "readiness/361-handbook-m2/qualification.junit.xml",
+        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/361-handbook-m2/audit-representative-attack.mjs",
+        "work/361-handbook-m2/qualify-handbook-m2.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV013",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T013",
+      "taskRefs": [
+        "T013"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/361-handbook-m2/docs-build.junit.xml",
+        "readiness/361-handbook-m2/handbook-m2.junit.xml",
+        "readiness/361-handbook-m2/link-audit.junit.xml",
+        "readiness/361-handbook-m2/qualification.junit.xml",
+        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/361-handbook-m2/audit-representative-attack.mjs",
+        "work/361-handbook-m2/qualify-handbook-m2.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV014",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T014",
+      "taskRefs": [
+        "T014"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/361-handbook-m2/analysis.json",
+        "readiness/361-handbook-m2/lifecycle.junit.xml",
+        "readiness/361-handbook-m2/ship-verdict.json",
+        "readiness/361-handbook-m2/ship.json",
+        "readiness/361-handbook-m2/verify.json",
+        "readiness/361-handbook-m2/work-model.json",
+        "work/361-handbook-m2/evidence.yml",
+        "work/361-handbook-m2/qualify-sdd-lifecycle.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/361-handbook-m2/evidence.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/361-handbook-m2/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.4.0"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/361-handbook-m2/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "455a461651b128524fdc548bfbaa1b0dfbd98ac91cf7392db79ad3fbab95dfb5"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/361-handbook-m2/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5033519f19f00ab49faa4264b2044b282ad9dabac0e8fbf8a727c9b345746f91"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/361-handbook-m2/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "4cf0ea58dca2f9cda0e110015decd3f45820ed38e4e63bcb5a3a2babe1019af4"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/361-handbook-m2/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a2ed6d92ba30c5b21abc7122e82c04f202c5d564ed95a4825269a44c9b7275cc"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/361-handbook-m2/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "9c116950fb1c871bf288183e06224bf851d64f2b0632a00f646b54b2e7932c1a"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/361-handbook-m2/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "69b72af2a45aab8a4f781e09ac7d1d97e314820bbea7dec87769d5f103123125"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "af4c3bd12be9d4fcdb9253ec2f21847c3a0de46d4b570deb4272de0c9af19e84"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}

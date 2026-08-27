@@ -1,0 +1,82 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-handbook-m2-representative-attack.md",
+  "reportSha256": "c6badcf2255091ed82c940beed46ebd4a1a6ed4d928fc0bd41ceee6810a56f28",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:./scripts/qualify-quint-q4-sir-combat.sh", "result": "verified" },
+        { "locator": "file:readiness/361-handbook-m2/sir-combat-q4.junit.xml", "result": "verified", "sha256": "a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1" },
+        { "locator": "file:docs/rules/sir-combat.md", "result": "verified", "sha256": "f121c201a6f77d0cfc4c86fe72455e8d821b3d941bf012ab0e3482db103e43e7" }
+      ],
+      "confidenceLimits": [
+        "The command reproduced Quint 0.32.0, seven witnesses, eight mutations, sixteen traces, and 144 runtime-compared states.",
+        "The prior Q4 report supports recurrence as a broader adoption pattern, not an identically scoped handbook finding."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:work/361-handbook-m2/clarifications.md", "result": "verified", "sha256": "5033519f19f00ab49faa4264b2044b282ad9dabac0e8fbf8a727c9b345746f91" },
+        { "locator": "command:fsgg-sdd analyze --work 361-handbook-m2 --json", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "Analyze reproduced 45 ready findings, zero blockers, zero stale sources, and three resolved decisions.",
+        "Chronology is inferred from lifecycle relationships rather than a separately retained pre-checklist run."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m2-representative-attack.jsonl", "result": "verified", "sha256": "0135e99cac97ac5c9a82f2ca0c8fba2e5e46c4f9b781625a67d9a1e785f4c700" },
+        { "locator": "file:work/361-handbook-m2/qualify-handbook-m2.sh", "result": "verified", "sha256": "a0dc2fc473f6a206dd2b6bade75564ead6ff4340aa118c4f0837dce22b58578c" },
+        { "locator": "file:readiness/361-handbook-m2/docs-build.junit.xml", "result": "verified", "sha256": "56a039a0dc31b18fc37b04683e90901e80424c281b8ee129e5a14a65410fe37e" }
+      ],
+      "confidenceLimits": [
+        "The docs command reproduced exit 1 under the inherited /usr/share/dotnet resolver variables because pinned SDK 10.0.302 was unavailable there.",
+        "This directly recurs from the M0 and M1 handbook reports."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m2-representative-attack.jsonl", "result": "verified", "sha256": "0135e99cac97ac5c9a82f2ca0c8fba2e5e46c4f9b781625a67d9a1e785f4c700" },
+        { "locator": "file:work/361-handbook-m2/qualify-handbook-m2.sh", "result": "verified", "sha256": "a0dc2fc473f6a206dd2b6bade75564ead6ff4340aa118c4f0837dce22b58578c" },
+        { "locator": "file:readiness/361-handbook-m2/qualification.junit.xml", "result": "verified", "sha256": "2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388" },
+        { "locator": "file:work/361-handbook-m2/evidence.yml", "result": "verified", "sha256": "d9ea08e3d41752b72446151ccfd1860b1985a4dd9b5f7c8e97fd849d523cb72b" },
+        { "locator": "command:fsgg-sdd verify --work 361-handbook-m2 --json", "result": "verified" },
+        { "locator": "issue:FS-GG/FS.GG.SDD#839", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The committed checkpoint is the durable review locator for the narrowed pre-correction observation; pre-correction file bytes are not claimed.",
+        "Committed evidence independently verifies the corrected aggregate and observed state."
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head origin/main --root .", "result": "verified" },
+        { "locator": "issue:EHotwagner/S.I.R.#258", "result": "verified" },
+        { "locator": "issue:FS-GG/.github#2856", "result": "verified" },
+        { "locator": "issue:FS-GG/.github#2852", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The unchanged-branch command reproduced exit 1 with exactly seventeen historical exception errors.",
+        "The first two issues are closed after rerouting; FS-GG/.github#2852 is the open successor."
+      ]
+    }
+  ]
+}

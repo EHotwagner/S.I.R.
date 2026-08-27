@@ -1,0 +1,176 @@
+schemaVersion: 1
+work:
+  id: 361-handbook-m2
+  title: "Handbook M2"
+  stage: tasks
+  status: tasksReady
+  sourceSpec: work/361-handbook-m2/spec.md
+  sourceClarifications: work/361-handbook-m2/clarifications.md
+  sourceChecklist: work/361-handbook-m2/checklist.md
+  sourcePlan: work/361-handbook-m2/plan.md
+  publicOrToolFacingImpact: true
+
+sources:
+  - label: spec
+    path: work/361-handbook-m2/spec.md
+    digest: 9c116950fb1c871bf288183e06224bf851d64f2b0632a00f646b54b2e7932c1a
+    schemaVersion: 1
+  - label: clarifications
+    path: work/361-handbook-m2/clarifications.md
+    digest: 5033519f19f00ab49faa4264b2044b282ad9dabac0e8fbf8a727c9b345746f91
+    schemaVersion: 1
+  - label: checklist
+    path: work/361-handbook-m2/checklist.md
+    digest: 455a461651b128524fdc548bfbaa1b0dfbd98ac91cf7392db79ad3fbab95dfb5
+    schemaVersion: 1
+  - label: plan
+    path: work/361-handbook-m2/plan.md
+    digest: a2ed6d92ba30c5b21abc7122e82c04f202c5d564ed95a4825269a44c9b7275cc
+    schemaVersion: 1
+tasks:
+  - id: T001
+    title: Implement requirement FR-001
+    status: done
+    owner: sdd
+    dependencies: []
+    requirements: [FR-001]
+    decisions: []
+    sourceIds: [AC-001, FR-001, PD-001]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV001]
+  - id: T002
+    title: Implement requirement FR-002
+    status: done
+    owner: sdd
+    dependencies: []
+    requirements: [FR-002]
+    decisions: []
+    sourceIds: [AC-002, FR-002, PD-002]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV002]
+  - id: T003
+    title: Implement requirement FR-003
+    status: done
+    owner: sdd
+    dependencies: []
+    requirements: [FR-003]
+    decisions: []
+    sourceIds: [AC-003, FR-003, PD-003]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV003]
+  - id: T004
+    title: Implement requirement FR-004
+    status: done
+    owner: sdd
+    dependencies: []
+    requirements: [FR-004]
+    decisions: []
+    sourceIds: [AC-004, FR-004, PD-004]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV004]
+  - id: T005
+    title: Implement requirement FR-005
+    status: done
+    owner: sdd
+    dependencies: []
+    requirements: [FR-005]
+    decisions: []
+    sourceIds: [AC-005, FR-005, PD-005]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV005]
+  - id: T006
+    title: Implement requirement FR-006
+    status: done
+    owner: sdd
+    dependencies: []
+    requirements: [FR-006]
+    decisions: []
+    sourceIds: [AC-006, FR-006, PD-006]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV006]
+  - id: T007
+    title: Implement requirement FR-007
+    status: done
+    owner: sdd
+    dependencies: []
+    requirements: [FR-007]
+    decisions: []
+    sourceIds: [AC-007, FR-007, PD-007]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV007]
+  - id: T008
+    title: Implement clarification decision DEC-001
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: [DEC-001]
+    sourceIds: [DEC-001]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV008]
+  - id: T009
+    title: Implement clarification decision DEC-002
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: [DEC-002]
+    sourceIds: [DEC-002]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV009]
+  - id: T010
+    title: Implement clarification decision DEC-003
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: [DEC-003]
+    sourceIds: [DEC-003]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV010]
+  - id: T011
+    title: Update contract surface PC-001
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PD-001]
+    requiredSkills: [fsharp]
+    requiredEvidence: [EV011]
+  - id: T012
+    title: Record verification evidence VO-001
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PD-004, PD-006, VO-001]
+    requiredSkills: [automated-tests, readiness-evidence]
+    requiredEvidence: [EV012]
+  - id: T013
+    title: Handle migration posture PM-001
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PM-001]
+    requiredSkills: [schema-versioning]
+    requiredEvidence: [EV013]
+  - id: T014
+    title: Refresh generated view impact GV-001
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [GV-001, PD-006]
+    requiredSkills: [deterministic-json]
+    requiredEvidence: [EV014]
+acceptedDeferrals: []
+findings: []
+advisoryNotes:
+  - "Optional Governance pointers remain compatibility facts only."
+lifecycleNotes:
+  - "Next lifecycle action: fsgg-sdd analyze --work 361-handbook-m2."

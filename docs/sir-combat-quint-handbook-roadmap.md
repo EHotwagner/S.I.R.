@@ -101,7 +101,7 @@ Completion evidence (2026-08-27):
 - Lifecycle evidence: `work/359-handbook-m1/` and `readiness/359-handbook-m1/`; feedback cycle:
   `roadmap-sir-combat-quint-handbook-m1-linked-skeleton`; delivery: PR #360.
 
-### - [ ] M2 — Representative attack learning spine
+### - [x] M2 — Representative attack learning spine
 
 **Outcome:** a Quint beginner can follow one attack end to end.
 
@@ -119,6 +119,22 @@ Exit criteria:
 - `25 x 1.0 x 0.8 = 20` is explained at every modeling layer;
 - all shown executable code runs under the pinned toolchain; and
 - the learner can explain why the model uses raw scale-10,000 integers.
+
+Completion evidence (2026-08-27):
+
+- `docs/sir-combat-quint-handbook.md` teaches one representative attack through the domain
+  pipeline, Q4 facts, pure helpers, records, guarded action, named run, two-state trace, and the
+  predict-run-observe-explain loop. It derives `25 × 1.0 × 0.8 = 20` at raw scale 10,000 and
+  distinguishes saturating helpers from the signed-int32 pre-division wrap boundary.
+- `work/361-handbook-m2/qualify-handbook-m2.sh` owns dedicated strict-docs, structural-link,
+  focused mutation/restoration, and full Q4/runtime receipts before emitting their aggregate;
+  the negative mutation observes 18 and the untouched authority restores 20.
+- Lifecycle evidence: `work/361-handbook-m2/` and `readiness/361-handbook-m2/`; feedback:
+  `feedback/2026-08-27-sir-handbook-m2-representative-attack.md`; delivery: PR #362.
+- Delivery boundary: this checked entry is the merge-candidate ledger update. Independent
+  exact-head acceptance and green exact-head hosted CI are required before merge. It becomes
+  landed completion history only when PR #362 merges; post-merge validation must confirm main,
+  issue #361 closure, and project status Done.
 
 ### - [ ] M3 — Complete combat-rule walkthroughs
 
