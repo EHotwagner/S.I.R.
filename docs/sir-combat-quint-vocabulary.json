@@ -1,0 +1,988 @@
+{
+  "schemaVersion": 1,
+  "handbook": "docs/sir-combat-quint-handbook.md",
+  "anchorContract": "semantic-explicit-v1",
+  "exemptRegions": [
+    "front-matter",
+    "fenced-code",
+    "headings",
+    "canonical-index"
+  ],
+  "terms": [
+    {
+      "term": "absolute",
+      "kind": "function",
+      "anchor": "qnt-absolute"
+    },
+    {
+      "term": "action",
+      "kind": "keyword",
+      "anchor": "def-action"
+    },
+    {
+      "term": "addFixed",
+      "kind": "function",
+      "anchor": "qnt-add-fixed"
+    },
+    {
+      "term": "aggregate attack resolution",
+      "kind": "concept",
+      "anchor": "concept-aggregate-attack-resolution"
+    },
+    {
+      "term": "AlgorithmEntry",
+      "kind": "type",
+      "anchor": "qnt-algorithm-entry"
+    },
+    {
+      "term": "alliedAttack",
+      "kind": "value",
+      "anchor": "qnt-allied-attack"
+    },
+    {
+      "term": "armor retention",
+      "kind": "stat",
+      "anchor": "stat-armor-retention"
+    },
+    {
+      "term": "AttackInput",
+      "kind": "type",
+      "anchor": "qnt-attack-input"
+    },
+    {
+      "term": "base damage",
+      "kind": "stat",
+      "anchor": "stat-base-damage"
+    },
+    {
+      "term": "bounded verification",
+      "kind": "evidence",
+      "anchor": "def-bounded-verification"
+    },
+    {
+      "term": "bounded100",
+      "kind": "function",
+      "anchor": "qnt-bounded100"
+    },
+    {
+      "term": "boundedCombatState",
+      "kind": "property",
+      "anchor": "property-bounded-combat-state"
+    },
+    {
+      "term": "BoundedCombatState",
+      "kind": "catalogue property",
+      "anchor": "catalogue-property-bounded-combat-state"
+    },
+    {
+      "term": "cells",
+      "kind": "unit",
+      "anchor": "unit-cells"
+    },
+    {
+      "term": "claim boundary",
+      "kind": "evidence",
+      "anchor": "def-claim-boundary"
+    },
+    {
+      "term": "collateral consequence",
+      "kind": "concept",
+      "anchor": "concept-collateral-consequence"
+    },
+    {
+      "term": "collateralOutcomeIgnoresFaction",
+      "kind": "run",
+      "anchor": "run-collateral-outcome-ignores-faction"
+    },
+    {
+      "term": "combat",
+      "kind": "variable",
+      "anchor": "qnt-combat"
+    },
+    {
+      "term": "COMBAT-ARMOR-004",
+      "kind": "rule",
+      "anchor": "rule-combat-armor-004"
+    },
+    {
+      "term": "COMBAT-ATTACK-RESOLUTION-001",
+      "kind": "rule",
+      "anchor": "rule-combat-attack-resolution-001"
+    },
+    {
+      "term": "COMBAT-COLLATERAL-001",
+      "kind": "rule",
+      "anchor": "rule-combat-collateral-001"
+    },
+    {
+      "term": "COMBAT-COLLISION-001",
+      "kind": "rule",
+      "anchor": "rule-combat-collision-001"
+    },
+    {
+      "term": "COMBAT-COVER-003",
+      "kind": "rule",
+      "anchor": "rule-combat-cover-003"
+    },
+    {
+      "term": "COMBAT-COVER-DESTRUCTION-001",
+      "kind": "rule",
+      "anchor": "rule-combat-cover-destruction-001"
+    },
+    {
+      "term": "COMBAT-DAMAGE-001",
+      "kind": "rule",
+      "anchor": "rule-combat-damage-001"
+    },
+    {
+      "term": "COMBAT-ENGAGEMENT-001",
+      "kind": "rule",
+      "anchor": "rule-combat-engagement-001"
+    },
+    {
+      "term": "COMBAT-HEALTH-001",
+      "kind": "rule",
+      "anchor": "rule-combat-health-001"
+    },
+    {
+      "term": "COMBAT-PENETRATION-001",
+      "kind": "rule",
+      "anchor": "rule-combat-penetration-001"
+    },
+    {
+      "term": "COMBAT-SUPPRESSION-001",
+      "kind": "rule",
+      "anchor": "rule-combat-suppression-001"
+    },
+    {
+      "term": "COMBAT-SUPPRESSION-RECOVERY-001",
+      "kind": "rule",
+      "anchor": "rule-combat-suppression-recovery-001"
+    },
+    {
+      "term": "COMBAT-TRACE-002",
+      "kind": "rule",
+      "anchor": "rule-combat-trace-002"
+    },
+    {
+      "term": "COMBAT-WOUND-001",
+      "kind": "rule",
+      "anchor": "rule-combat-wound-001"
+    },
+    {
+      "term": "CombatState",
+      "kind": "type",
+      "anchor": "qnt-combat-state"
+    },
+    {
+      "term": "consequenceExplanationOrder",
+      "kind": "value",
+      "anchor": "qnt-consequence-explanation-order"
+    },
+    {
+      "term": "consequenceObservation",
+      "kind": "function",
+      "anchor": "qnt-consequence-observation"
+    },
+    {
+      "term": "constant",
+      "kind": "keyword",
+      "anchor": "def-constant"
+    },
+    {
+      "term": "CONTENT-BODY-HUMAN-001",
+      "kind": "rule",
+      "anchor": "rule-content-body-human-001"
+    },
+    {
+      "term": "CONTENT-WEAPON-RIFLE-001",
+      "kind": "rule",
+      "anchor": "rule-content-weapon-rifle-001"
+    },
+    {
+      "term": "correspondence",
+      "kind": "evidence",
+      "anchor": "def-correspondence"
+    },
+    {
+      "term": "counterexample",
+      "kind": "evidence",
+      "anchor": "def-counterexample"
+    },
+    {
+      "term": "cover blocking",
+      "kind": "concept",
+      "anchor": "concept-cover-blocking"
+    },
+    {
+      "term": "cover damage",
+      "kind": "stat",
+      "anchor": "stat-cover-damage"
+    },
+    {
+      "term": "cover integrity",
+      "kind": "stat",
+      "anchor": "stat-cover-integrity"
+    },
+    {
+      "term": "coverDamage",
+      "kind": "function",
+      "anchor": "qnt-cover-damage"
+    },
+    {
+      "term": "coverObservation",
+      "kind": "function",
+      "anchor": "qnt-cover-observation"
+    },
+    {
+      "term": "current-collision consumption",
+      "kind": "concept",
+      "anchor": "concept-current-collision-consumption"
+    },
+    {
+      "term": "damage",
+      "kind": "stat",
+      "anchor": "stat-damage"
+    },
+    {
+      "term": "damage points",
+      "kind": "unit",
+      "anchor": "unit-damage-points"
+    },
+    {
+      "term": "damageForAttack",
+      "kind": "function",
+      "anchor": "qnt-damage-for-attack"
+    },
+    {
+      "term": "destroyed cover",
+      "kind": "concept",
+      "anchor": "concept-destroyed-cover"
+    },
+    {
+      "term": "destroyedCoverIsPermeable",
+      "kind": "property",
+      "anchor": "property-destroyed-cover-is-permeable"
+    },
+    {
+      "term": "DestroyedCoverIsPermeable",
+      "kind": "catalogue property",
+      "anchor": "catalogue-property-destroyed-cover-is-permeable"
+    },
+    {
+      "term": "destroyingCoverConsumesCurrentCollision",
+      "kind": "run",
+      "anchor": "run-destroying-cover-consumes-current-collision"
+    },
+    {
+      "term": "divideRoundedAwayFromZero",
+      "kind": "function",
+      "anchor": "qnt-divide-rounded-away-from-zero"
+    },
+    {
+      "term": "event identity",
+      "kind": "concept",
+      "anchor": "concept-event-identity"
+    },
+    {
+      "term": "execution trace",
+      "kind": "evidence",
+      "anchor": "def-execution-trace"
+    },
+    {
+      "term": "exhaustive check",
+      "kind": "evidence",
+      "anchor": "def-exhaustive-check"
+    },
+    {
+      "term": "expected damage",
+      "kind": "stat",
+      "anchor": "stat-expected-damage"
+    },
+    {
+      "term": "expectedDamageRaw",
+      "kind": "function",
+      "anchor": "qnt-expected-damage-raw"
+    },
+    {
+      "term": "explanation order",
+      "kind": "concept",
+      "anchor": "concept-explanation-order"
+    },
+    {
+      "term": "external algorithm contract",
+      "kind": "evidence",
+      "anchor": "def-external-algorithm-contract"
+    },
+    {
+      "term": "faction-neutral consequence",
+      "kind": "concept",
+      "anchor": "concept-faction-neutral-consequence"
+    },
+    {
+      "term": "factionNeutralCollateral",
+      "kind": "property",
+      "anchor": "property-faction-neutral-collateral"
+    },
+    {
+      "term": "FactionNeutralCollateral",
+      "kind": "catalogue property",
+      "anchor": "catalogue-property-faction-neutral-collateral"
+    },
+    {
+      "term": "first collision",
+      "kind": "concept",
+      "anchor": "concept-first-collision"
+    },
+    {
+      "term": "first divergence",
+      "kind": "evidence",
+      "anchor": "def-first-divergence"
+    },
+    {
+      "term": "fixed-point ratio",
+      "kind": "unit",
+      "anchor": "unit-fixed-point-ratio"
+    },
+    {
+      "term": "fromRatio",
+      "kind": "function",
+      "anchor": "qnt-from-ratio"
+    },
+    {
+      "term": "fullDamageAttack",
+      "kind": "function",
+      "anchor": "qnt-full-damage-attack"
+    },
+    {
+      "term": "generated projection",
+      "kind": "evidence",
+      "anchor": "def-generated-projection"
+    },
+    {
+      "term": "guard",
+      "kind": "keyword",
+      "anchor": "def-guard"
+    },
+    {
+      "term": "health",
+      "kind": "stat",
+      "anchor": "stat-health"
+    },
+    {
+      "term": "hit points",
+      "kind": "unit",
+      "anchor": "unit-hit-points"
+    },
+    {
+      "term": "HP",
+      "kind": "stat",
+      "anchor": "stat-hp"
+    },
+    {
+      "term": "humanArmorRetentionRaw",
+      "kind": "value",
+      "anchor": "qnt-human-armor-retention-raw"
+    },
+    {
+      "term": "import",
+      "kind": "keyword",
+      "anchor": "def-import"
+    },
+    {
+      "term": "incapacitation",
+      "kind": "concept",
+      "anchor": "concept-incapacitation"
+    },
+    {
+      "term": "incapacityMatchesHealth",
+      "kind": "property",
+      "anchor": "property-incapacity-matches-health"
+    },
+    {
+      "term": "IncapacityMatchesHealth",
+      "kind": "catalogue property",
+      "anchor": "catalogue-property-incapacity-matches-health"
+    },
+    {
+      "term": "init",
+      "kind": "action",
+      "anchor": "qnt-init"
+    },
+    {
+      "term": "initialCombat",
+      "kind": "value",
+      "anchor": "qnt-initial-combat"
+    },
+    {
+      "term": "initialization",
+      "kind": "keyword",
+      "anchor": "def-initialization"
+    },
+    {
+      "term": "INT32_MAX",
+      "kind": "constant",
+      "anchor": "qnt-int32-max"
+    },
+    {
+      "term": "INT32_MIN",
+      "kind": "constant",
+      "anchor": "qnt-int32-min"
+    },
+    {
+      "term": "integrity points",
+      "kind": "unit",
+      "anchor": "unit-integrity-points"
+    },
+    {
+      "term": "invariant",
+      "kind": "keyword",
+      "anchor": "def-invariant"
+    },
+    {
+      "term": "ITF trace",
+      "kind": "evidence",
+      "anchor": "def-itf-trace"
+    },
+    {
+      "term": "last",
+      "kind": "variable",
+      "anchor": "qnt-last"
+    },
+    {
+      "term": "list",
+      "kind": "keyword",
+      "anchor": "def-list"
+    },
+    {
+      "term": "MajorWound",
+      "kind": "variant",
+      "anchor": "qnt-major-wound"
+    },
+    {
+      "term": "maximum",
+      "kind": "function",
+      "anchor": "qnt-maximum"
+    },
+    {
+      "term": "minimum",
+      "kind": "function",
+      "anchor": "qnt-minimum"
+    },
+    {
+      "term": "MinorWound",
+      "kind": "variant",
+      "anchor": "qnt-minor-wound"
+    },
+    {
+      "term": "missedAttack",
+      "kind": "value",
+      "anchor": "qnt-missed-attack"
+    },
+    {
+      "term": "module",
+      "kind": "keyword",
+      "anchor": "def-module"
+    },
+    {
+      "term": "multiplyFixed",
+      "kind": "function",
+      "anchor": "qnt-multiply-fixed"
+    },
+    {
+      "term": "mutation",
+      "kind": "evidence",
+      "anchor": "def-mutation"
+    },
+    {
+      "term": "nextConsequences",
+      "kind": "function",
+      "anchor": "qnt-next-consequences"
+    },
+    {
+      "term": "nextCoverImpact",
+      "kind": "function",
+      "anchor": "qnt-next-cover-impact"
+    },
+    {
+      "term": "nextRecovery",
+      "kind": "function",
+      "anchor": "qnt-next-recovery"
+    },
+    {
+      "term": "nondeterminism",
+      "kind": "keyword",
+      "anchor": "def-nondeterminism"
+    },
+    {
+      "term": "NoWound",
+      "kind": "variant",
+      "anchor": "qnt-no-wound"
+    },
+    {
+      "term": "Observation",
+      "kind": "type",
+      "anchor": "qnt-observation"
+    },
+    {
+      "term": "observed-red control",
+      "kind": "evidence",
+      "anchor": "def-observed-red-control"
+    },
+    {
+      "term": "penetration",
+      "kind": "concept",
+      "anchor": "concept-penetration"
+    },
+    {
+      "term": "physical shot trace",
+      "kind": "concept",
+      "anchor": "concept-physical-shot-trace"
+    },
+    {
+      "term": "prediction",
+      "kind": "evidence",
+      "anchor": "def-prediction"
+    },
+    {
+      "term": "preparation time",
+      "kind": "stat",
+      "anchor": "stat-preparation-time"
+    },
+    {
+      "term": "preparationRaw",
+      "kind": "function",
+      "anchor": "qnt-preparation-raw"
+    },
+    {
+      "term": "primed assignment",
+      "kind": "keyword",
+      "anchor": "def-primed-assignment"
+    },
+    {
+      "term": "projectile contact",
+      "kind": "concept",
+      "anchor": "concept-projectile-contact"
+    },
+    {
+      "term": "property",
+      "kind": "evidence",
+      "anchor": "def-property"
+    },
+    {
+      "term": "propertyCatalogue",
+      "kind": "value",
+      "anchor": "qnt-property-catalogue"
+    },
+    {
+      "term": "PropertyEntry",
+      "kind": "type",
+      "anchor": "qnt-property-entry"
+    },
+    {
+      "term": "pure function",
+      "kind": "keyword",
+      "anchor": "def-pure-function"
+    },
+    {
+      "term": "pure value",
+      "kind": "keyword",
+      "anchor": "def-pure-value"
+    },
+    {
+      "term": "Q4 raw integer",
+      "kind": "unit",
+      "anchor": "unit-q4-raw-integer"
+    },
+    {
+      "term": "range cells",
+      "kind": "stat",
+      "anchor": "stat-range-cells"
+    },
+    {
+      "term": "rangeSlopeRaw",
+      "kind": "value",
+      "anchor": "qnt-range-slope-raw"
+    },
+    {
+      "term": "reachable state",
+      "kind": "keyword",
+      "anchor": "def-reachable-state"
+    },
+    {
+      "term": "record",
+      "kind": "keyword",
+      "anchor": "def-record"
+    },
+    {
+      "term": "recoveredSuppression",
+      "kind": "function",
+      "anchor": "qnt-recovered-suppression"
+    },
+    {
+      "term": "recoveryObservation",
+      "kind": "function",
+      "anchor": "qnt-recovery-observation"
+    },
+    {
+      "term": "registered line-of-sight implementation",
+      "kind": "concept",
+      "anchor": "concept-registered-line-of-sight-implementation"
+    },
+    {
+      "term": "representativeAttack",
+      "kind": "value",
+      "anchor": "qnt-representative-attack"
+    },
+    {
+      "term": "representativeDamageIsTwenty",
+      "kind": "run",
+      "anchor": "run-representative-damage-is-twenty"
+    },
+    {
+      "term": "resolveConsequences",
+      "kind": "action",
+      "anchor": "qnt-resolve-consequences"
+    },
+    {
+      "term": "resolveCoverImpact",
+      "kind": "action",
+      "anchor": "qnt-resolve-cover-impact"
+    },
+    {
+      "term": "resolveRecovery",
+      "kind": "action",
+      "anchor": "qnt-resolve-recovery"
+    },
+    {
+      "term": "restored green",
+      "kind": "evidence",
+      "anchor": "def-restored-green"
+    },
+    {
+      "term": "retained effect",
+      "kind": "concept",
+      "anchor": "concept-retained-effect"
+    },
+    {
+      "term": "retainedEffect",
+      "kind": "function",
+      "anchor": "qnt-retained-effect"
+    },
+    {
+      "term": "rifleDamageRaw",
+      "kind": "value",
+      "anchor": "qnt-rifle-damage-raw"
+    },
+    {
+      "term": "round-half-away-from-zero",
+      "kind": "unit",
+      "anchor": "unit-round-half-away-from-zero"
+    },
+    {
+      "term": "roundedDamage",
+      "kind": "function",
+      "anchor": "qnt-rounded-damage"
+    },
+    {
+      "term": "ruleCatalogue",
+      "kind": "value",
+      "anchor": "qnt-rule-catalogue"
+    },
+    {
+      "term": "RuleEntry",
+      "kind": "type",
+      "anchor": "qnt-rule-entry"
+    },
+    {
+      "term": "run",
+      "kind": "keyword",
+      "anchor": "def-run"
+    },
+    {
+      "term": "safety property",
+      "kind": "evidence",
+      "anchor": "def-safety-property"
+    },
+    {
+      "term": "sampled run",
+      "kind": "evidence",
+      "anchor": "def-sampled-run"
+    },
+    {
+      "term": "samples",
+      "kind": "unit",
+      "anchor": "unit-samples"
+    },
+    {
+      "term": "saturateInt32",
+      "kind": "function",
+      "anchor": "qnt-saturate-int32"
+    },
+    {
+      "term": "SCALE",
+      "kind": "constant",
+      "anchor": "qnt-scale"
+    },
+    {
+      "term": "scale 10,000",
+      "kind": "unit",
+      "anchor": "unit-scale-10-000"
+    },
+    {
+      "term": "seconds",
+      "kind": "unit",
+      "anchor": "unit-seconds"
+    },
+    {
+      "term": "set",
+      "kind": "keyword",
+      "anchor": "def-set"
+    },
+    {
+      "term": "signed 32-bit saturation",
+      "kind": "unit",
+      "anchor": "unit-signed-32-bit-saturation"
+    },
+    {
+      "term": "SirCombat",
+      "kind": "module",
+      "anchor": "qnt-sir-combat"
+    },
+    {
+      "term": "SirCombatTests",
+      "kind": "module",
+      "anchor": "qnt-sir-combat-tests"
+    },
+    {
+      "term": "sixteenRulesDeclared",
+      "kind": "property",
+      "anchor": "property-sixteen-rules-declared"
+    },
+    {
+      "term": "SixteenRulesDeclared",
+      "kind": "catalogue property",
+      "anchor": "catalogue-property-sixteen-rules-declared"
+    },
+    {
+      "term": "source digest",
+      "kind": "evidence",
+      "anchor": "def-source-digest"
+    },
+    {
+      "term": "state transition",
+      "kind": "keyword",
+      "anchor": "def-state-transition"
+    },
+    {
+      "term": "state variable",
+      "kind": "keyword",
+      "anchor": "def-state-variable"
+    },
+    {
+      "term": "step",
+      "kind": "action",
+      "anchor": "qnt-step"
+    },
+    {
+      "term": "stuttering",
+      "kind": "keyword",
+      "anchor": "def-stuttering"
+    },
+    {
+      "term": "suppression",
+      "kind": "stat",
+      "anchor": "stat-suppression"
+    },
+    {
+      "term": "suppression delta",
+      "kind": "stat",
+      "anchor": "stat-suppression-delta"
+    },
+    {
+      "term": "suppression eligibility",
+      "kind": "concept",
+      "anchor": "concept-suppression-eligibility"
+    },
+    {
+      "term": "suppression points",
+      "kind": "unit",
+      "anchor": "unit-suppression-points"
+    },
+    {
+      "term": "suppression recovery",
+      "kind": "concept",
+      "anchor": "concept-suppression-recovery"
+    },
+    {
+      "term": "suppressionForDamage",
+      "kind": "function",
+      "anchor": "qnt-suppression-for-damage"
+    },
+    {
+      "term": "suppressionNeedsPositiveDamageAndRecoversFive",
+      "kind": "run",
+      "anchor": "run-suppression-needs-positive-damage-and-recovers-five"
+    },
+    {
+      "term": "suppressionRequiresDamage",
+      "kind": "property",
+      "anchor": "property-suppression-requires-damage"
+    },
+    {
+      "term": "SuppressionRequiresDamage",
+      "kind": "catalogue property",
+      "anchor": "catalogue-property-suppression-requires-damage"
+    },
+    {
+      "term": "target footprint",
+      "kind": "concept",
+      "anchor": "concept-target-footprint"
+    },
+    {
+      "term": "terminal state",
+      "kind": "keyword",
+      "anchor": "def-terminal-state"
+    },
+    {
+      "term": "total samples",
+      "kind": "stat",
+      "anchor": "stat-total-samples"
+    },
+    {
+      "term": "trace probability",
+      "kind": "stat",
+      "anchor": "stat-trace-probability"
+    },
+    {
+      "term": "traceAlgorithm",
+      "kind": "value",
+      "anchor": "qnt-trace-algorithm"
+    },
+    {
+      "term": "traceRaw",
+      "kind": "function",
+      "anchor": "qnt-trace-raw"
+    },
+    {
+      "term": "type",
+      "kind": "keyword",
+      "anchor": "def-type"
+    },
+    {
+      "term": "validAttack",
+      "kind": "function",
+      "anchor": "qnt-valid-attack"
+    },
+    {
+      "term": "validTrace",
+      "kind": "function",
+      "anchor": "qnt-valid-trace"
+    },
+    {
+      "term": "validTraceObservation",
+      "kind": "property",
+      "anchor": "property-valid-trace-observation"
+    },
+    {
+      "term": "ValidTraceObservation",
+      "kind": "catalogue property",
+      "anchor": "catalogue-property-valid-trace-observation"
+    },
+    {
+      "term": "variant",
+      "kind": "keyword",
+      "anchor": "def-variant"
+    },
+    {
+      "term": "visible samples",
+      "kind": "stat",
+      "anchor": "stat-visible-samples"
+    },
+    {
+      "term": "witness",
+      "kind": "keyword",
+      "anchor": "def-witness"
+    },
+    {
+      "term": "wound",
+      "kind": "concept",
+      "anchor": "concept-wound"
+    },
+    {
+      "term": "Wound",
+      "kind": "type",
+      "anchor": "qnt-wound"
+    },
+    {
+      "term": "wound threshold",
+      "kind": "stat",
+      "anchor": "stat-wound-threshold"
+    },
+    {
+      "term": "woundForDamage",
+      "kind": "function",
+      "anchor": "qnt-wound-for-damage"
+    },
+    {
+      "term": "woundThresholdsAreExact",
+      "kind": "run",
+      "anchor": "run-wound-thresholds-are-exact"
+    },
+    {
+      "term": "zeroHealthMeansIncapacitated",
+      "kind": "run",
+      "anchor": "run-zero-health-means-incapacitated"
+    }
+  ],
+  "mandatoryTraceability": {
+    "ruleIds": [
+      "CONTENT-WEAPON-RIFLE-001",
+      "CONTENT-BODY-HUMAN-001",
+      "COMBAT-ENGAGEMENT-001",
+      "COMBAT-TRACE-002",
+      "COMBAT-ARMOR-004",
+      "COMBAT-DAMAGE-001",
+      "COMBAT-COLLISION-001",
+      "COMBAT-COVER-003",
+      "COMBAT-PENETRATION-001",
+      "COMBAT-HEALTH-001",
+      "COMBAT-WOUND-001",
+      "COMBAT-SUPPRESSION-001",
+      "COMBAT-SUPPRESSION-RECOVERY-001",
+      "COMBAT-COLLATERAL-001",
+      "COMBAT-COVER-DESTRUCTION-001",
+      "COMBAT-ATTACK-RESOLUTION-001"
+    ],
+    "decisions": [
+      "DEC-001",
+      "DEC-002",
+      "DEC-003",
+      "DEC-004",
+      "DEC-005",
+      "DEC-006",
+      "DEC-007"
+    ],
+    "coverage": [
+      "Representative damage 20",
+      "Wound boundary 24",
+      "Wound boundary 25",
+      "Wound boundary 50",
+      "Zero-health incapacitation",
+      "Suppression eligibility",
+      "Five-point suppression recovery",
+      "Cover destruction",
+      "Destroyed-cover permeability",
+      "Current-collision blocking",
+      "Faction-neutral collateral",
+      "Valid trace ratios",
+      "External line-of-sight boundary",
+      "Catalogue size and identity",
+      "Catalogue dependencies",
+      "Explanation order",
+      "Exact runtime replay correspondence",
+      "Sampled runtime replay correspondence"
+    ]
+  }
+}
+

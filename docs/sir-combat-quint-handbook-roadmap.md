@@ -70,7 +70,7 @@ Completion evidence (2026-08-27):
 - Lifecycle evidence: `work/356-handbook-m0/` and `readiness/356-handbook-m0/`; feedback cycle:
   `roadmap-sir-combat-quint-handbook-m0-authority-inventory`.
 
-### - [ ] M1 — Linked handbook skeleton
+### - [x] M1 — Linked handbook skeleton
 
 **Outcome:** the publication file exists with its complete hierarchy and navigation.
 
@@ -89,6 +89,17 @@ Exit criteria:
 - every table-of-contents link resolves;
 - every controlled term in the skeleton links; and
 - the document builds in the S.I.R. documentation pipeline.
+
+Completion evidence (2026-08-27):
+
+- `docs/sir-combat-quint-handbook.md` fixes the complete fifty-chapter hierarchy, table of contents,
+  three reading paths, 185 semantic definition anchors, seed alphabetical index, and every mandatory
+  traceability row without adding M2 walkthrough substance.
+- `docs/sir-combat-quint-vocabulary.json` and `work/359-handbook-m1/audit-handbook-links.mjs` provide a
+  checked manifest and structurally aware positive/negative link audit; the focused audit and rendered
+  S.I.R. docs build pass.
+- Lifecycle evidence: `work/359-handbook-m1/` and `readiness/359-handbook-m1/`; feedback cycle:
+  `roadmap-sir-combat-quint-handbook-m1-linked-skeleton`.
 
 ### - [ ] M2 — Representative attack learning spine
 
