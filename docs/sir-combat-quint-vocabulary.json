@@ -2,6 +2,7 @@
   "schemaVersion": 2,
   "handbook": "docs/sir-combat-quint-handbook.md",
   "anchorContract": "semantic-explicit-v2",
+  "embeddedLinkLabelPolicy": "destination-disambiguates-one-controlled-component-v1",
   "inventoryContract": "literate-declarations-rules-chapters-index-v1",
   "exemptRegions": [
     "front-matter",

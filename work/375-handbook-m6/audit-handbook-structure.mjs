@@ -54,8 +54,8 @@ function markdownAst(markdown) {
       children.push({ type: "fencedCode", line: index + 1, value: line });
       continue;
     }
-    if (/<a id="table-of-contents"/.test(line)) inNavigation = true;
-    if (/<a id="reading-paths"/.test(line)) inNavigation = false;
+    if (line === "## Table of contents" || /<a id="table-of-contents"/.test(line)) inNavigation = true;
+    if (line === "## Reading paths" || /<a id="reading-paths"/.test(line)) inNavigation = false;
     if (/<a id="chapter-50-/.test(line)) inIndex = true;
     const heading = line.match(/^(#{1,6})\s+(.+)$/);
     if (heading) {
@@ -112,6 +112,7 @@ export function audit(markdown, modelMarkdown = authoritativeModel, inventory = 
   const add = (code, detail) => errors.push({ code, detail });
   if (inventory.schemaVersion !== 2) add("manifest-schema", `expected schemaVersion 2, got ${inventory.schemaVersion}`);
   if (inventory.anchorContract !== "semantic-explicit-v2") add("manifest-anchor-contract", "semantic-explicit-v2 is required");
+  if (inventory.embeddedLinkLabelPolicy !== "destination-disambiguates-one-controlled-component-v1") add("manifest-embedded-link-policy", "explicit embedded-label ambiguity policy is required");
   if (inventory.inventoryContract !== "literate-declarations-rules-chapters-index-v1") add("manifest-inventory-contract", "inventory contract is absent");
   for (const region of ["front-matter", "fenced-code", "headings", "inline-code", "canonical-index"])
     if (!inventory.exemptRegions?.includes(region)) add("manifest-exemption-missing", region);
@@ -237,7 +238,13 @@ export function audit(markdown, modelMarkdown = authoritativeModel, inventory = 
       if (node.type === "link") {
         const label = node.label.replace(/[`*_]/g, "").trim();
         const target = exactTargets.get(label) ?? foldedTargets.get(label.toLowerCase());
-        if (target && node.destination !== `#${target}`) add("controlled-occurrence-wrong-target", `line ${block.line}: ${label} -> ${node.destination}, expected #${target}`);
+        if (target) {
+          if (node.destination !== `#${target}`) add("controlled-occurrence-wrong-target", `line ${block.line}: ${label} -> ${node.destination}, expected #${target}`);
+        } else {
+          const embedded = controlled.filter(term => occurrencePattern(term.label).test(label));
+          if (embedded.length && !embedded.some(term => node.destination === `#${term.anchor}`))
+            add("controlled-occurrence-wrong-target", `line ${block.line}: controlled term inside link label '${label}' -> ${node.destination}, expected one of ${embedded.map(term => `#${term.anchor}`).join(", ")}`);
+        }
         continue;
       }
       if (node.type !== "text") continue;
@@ -264,6 +271,7 @@ const mutations = [
   ["controlled-occurrence-unlinked", "controlled-occurrence-unlinked", handbook.replace('<a id="chapter-50-', 'A counterexample is deliberately unlinked.\n\n<a id="chapter-50-')],
   ["controlled-symbol-occurrence-unlinked", "controlled-occurrence-unlinked", handbook.replace('<a id="chapter-50-', 'CombatState is deliberately unlinked.\n\n<a id="chapter-50-')],
   ["controlled-occurrence-wrong-target", "controlled-occurrence-wrong-target", handbook.replace("[CombatState](#qnt-combat-state)", "[CombatState](#chapter-20-variables-initialization-and-cohesive-combat-sta)")],
+  ["controlled-occurrence-embedded-wrong-target", "controlled-occurrence-wrong-target", handbook.replace("[CombatState](#qnt-combat-state)", "[CombatState record](#chapter-49-exercises-and-solutions)")],
   ["index-definition-insubstantial", "index-definition-insubstantial", handbook.replace(/(\*\*absolute\*\* — function\. )[\s\S]*?( \*\*Declared at:\*\*)/, "$1TODO.$2")],
   ["authoritative-declaration-removed", "declaration-inventory-cardinality", handbook, authoritativeModel.replace(/^  run damageRoundingPreservesInt32Wrap.*\n/m, "")],
   ["authoritative-rule-id-drift", "authoritative-rule-inventory-mismatch", handbook, authoritativeModel.replace("CONTENT-WEAPON-RIFLE-001", "CONTENT-WEAPON-RIFLE-DRIFT")],

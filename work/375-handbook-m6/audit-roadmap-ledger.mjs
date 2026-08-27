@@ -14,6 +14,7 @@ const required = [
   "missing fragments, duplicate anchors, absent index entries",
   "unlinked controlled occurrences and model symbols",
   "wrong canonical targets",
+  "wrong targets hidden inside extended link labels",
   "insubstantial definitions",
   "missing authoritative declarations",
   "rule-ID drift across model/runtime",

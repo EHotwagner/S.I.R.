@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/375-handbook-m6/ship.json",
-      "digest": "sha256:f3f5a8e985f9e84c2a451d45785d93d53ff80962ecb579c1badb3f572d6b0f36",
+      "digest": "sha256:f6551985af8d937bf6146641b92433c1fe074355760cf29a512d820d8fd7355f",
       "schemaVersion": 1
     },
     {
       "path": "readiness/375-handbook-m6/verify.json",
-      "digest": "sha256:cc5941c8c887f0d5c727f73cb75ff41fcc40c22507ef3e7ac1474302fbc2f9ba",
+      "digest": "sha256:2cb5ab93acc6d70f5c655eb3c232fd886b666969ddec33f56c5a2228c23423ef",
       "schemaVersion": 1
     },
     {
       "path": "readiness/375-handbook-m6/work-model.json",
-      "digest": "sha256:44d79907ccc32f62d33a2666c69689bf62d492b4f80feabb72929a45f8e637f7",
+      "digest": "sha256:9076fc78845bf864528bc97d641586e42bf91240244c3e3692d956b48c19d591",
       "schemaVersion": 1
     }
   ],
