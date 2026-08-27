@@ -5,7 +5,7 @@ workspace: S.I.R-roadmap-m3
 cycle: roadmap-sir-combat-quint-handbook-m3-complete-rules
 lane: sdd
 toolVersion: 1.4.0
-commit: 0a22a776cdbf38b9cb0e148f7f442995d6f5aeda
+commit: 12f2a99010cbfb95347e5f8be822dec2c9f2896a
 ---
 
 # Development feedback — combat Quint handbook M3 complete rules
@@ -14,20 +14,20 @@ commit: 0a22a776cdbf38b9cb0e148f7f442995d6f5aeda
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring, implementation-test-evidence, verify-ship-pr
-- **material events:** 5
+- **material events:** 6
 - **zero-event reason:** n/a
 
-This cycle covers issue #363 and PR #364 from base `b109fd2` through the full commit named above. Five checkpoint events are recorded in `feedback/checkpoints/roadmap-sir-combat-quint-handbook-m3-complete-rules.jsonl`. Evidence covers worker onboarding, lifecycle decisions, focused and full qualification, verify/ship, PR creation, and invalidation inspection. The onboarding checkpoint preserves the claim friction but is not a first-build receipt, and the potentially mutating claim command was not repeated during cold critique. Exact-head independent review, final hosted CI, merge, and board completion were pending at draft time.
+This cycle covers issue #363 and PR #364 from base `b109fd2` through the full commit named above. Six checkpoint events are recorded in `feedback/checkpoints/roadmap-sir-combat-quint-handbook-m3-complete-rules.jsonl`. Evidence covers worker onboarding, lifecycle decisions, focused and full qualification, verify/ship, PR creation, invalidation inspection, and the first exact-head review repair. The onboarding checkpoint preserves the claim friction but is not a first-build receipt, and the potentially mutating claim command was not repeated during cold critique. Replacement exact-head acceptance, final hosted CI, merge, and board completion were pending at draft time.
 
 The existing product came from the `fable-game` provider recorded by `config/scaffold-provenance.json` and `.fsgg/scaffold-provenance.json`; no scaffold parameter changed in M3. Repository tools pin Fable 5.13.0, fsdocs-tool 22.1.0, and `FS.GG.SDD.Cli` 1.0.1 in `.config/dotnet-tools.json`. Lifecycle commands resolved global `fsgg-sdd` 1.4.0. Quint remained pinned at 0.32.0 by the existing Q4 gate.
 
 ## §2 What worked
 
-Explicit action-granularity decisions kept the sixteen-rule teaching model faithful: pure helpers and observations expose focused effects while aggregate attack resolution remains one atomic action. Exact excerpt extraction and a dedicated audit made all sixteen catalogue, reference, traceability, and definition entries mechanically accountable. The user-added visual requirement fit cleanly as pending M6V without expanding M3.
+Explicit action-granularity decisions kept the sixteen-rule teaching model faithful: pure helpers and observations expose focused effects while aggregate attack resolution remains one atomic action. Exact excerpt extraction and a dedicated audit made all sixteen catalogue, reference, traceability, and definition entries mechanically accountable. Independent review caught three documentation/evidence defects before merge, and the user-added visual requirement fit cleanly as pending M6V without expanding M3.
 
 ## §3 What did not
 
-The issue lacked the structured delivery-route receipt required by the coordination claim command, although the host assignment explicitly excluded the pnext gate. The required feedback invalidation command also remains red because of seventeen historical audit-exception findings that reproduce independently of M3.
+The issue lacked the structured delivery-route receipt required by the coordination claim command, although the host assignment explicitly excluded the pnext gate. Initial exact-head review found a nonexistent recovery subject, stale forward-looking M3 wording, and ambiguous aggregate-receipt language. The required feedback invalidation command also remains red because of seventeen historical audit-exception findings that reproduce independently of M3.
 
 ## §4 Findings
 
@@ -70,7 +70,20 @@ The issue lacked the structured delivery-route receipt required by the coordinat
 - **Avoidable cost:** none
 - **Disposition:** accepted
 
-#### §4.4 Feedback invalidation is still red on historical audit exceptions
+#### §4.4 Exact-head review caught three documentation/evidence defects before merge
+
+- **Kind:** quality-gap
+- **Impact:** A learner could read completed cover/recovery walkthroughs as still pending, while maintainers saw one nonexistent model subject and a receipt policy that appeared to contradict the actual aggregate evidence binding.
+- **Expected:** The plan names authoritative Quint subjects exactly, completed M3 prose is current, and aggregate evidence wording matches its six scoped component cases.
+- **Observed:** Review found `recoverSuppression` instead of `recoveredSuppression`/`resolveRecovery`, a sentence saying completed walkthroughs remained M3 work, and “never cited as narrower proof” beside aggregate-bound evidence. Commit `12f2a99` repaired all three and resealed qualification and lifecycle evidence.
+- **Evidence:** file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m3-complete-rules.jsonl; file:work/363-handbook-m3/plan.md; file:docs/sir-combat-quint-handbook.md; command:git diff 1a060c8..12f2a99 -- work/363-handbook-m3/plan.md docs/sir-combat-quint-handbook.md
+- **Version:** S.I.R. repaired commit `12f2a99`; authoritative Quint model digest `f121c201…`.
+- **Owner:** EHotwagner/S.I.R. handbook and SDD plan
+- **Recurrence:** new in M3.
+- **Avoidable cost:** one focused documentation repair, two qualification attempts after lifecycle refresh, and one replacement exact-head review.
+- **Disposition:** doc fix
+
+#### §4.5 Feedback invalidation is still red on historical audit exceptions
 
 - **Kind:** defect
 - **Impact:** The mandatory check cannot establish an M3-specific invalidation verdict from the repository baseline.
@@ -97,7 +110,7 @@ The bounded qualification clears inherited SDK resolver variables around strict 
 
 ## §8 Friction and avoidable cost
 
-One coordination claim failed before write. One proposed non-contiguous excerpt was repaired into exact source excerpts. The invalidation check required one baseline attribution. The user-added visual milestone required one scoped roadmap and ledger-audit update, without an M3 implementation reroute.
+One coordination claim failed before write. One proposed non-contiguous excerpt was repaired into exact source excerpts. Independent review required a three-part documentation correction; the first requalification refreshed analysis and stopped before aggregate emission, and the converged rerun passed. The invalidation check required one baseline attribution. The user-added visual milestone required one scoped roadmap and ledger-audit update, without an M3 implementation reroute.
 
 ## §9 Skill value and gaps
 
@@ -110,14 +123,15 @@ One coordination claim failed before write. One proposed non-contiguous excerpt 
 - Full semantic gate: seven witnesses and eight mutations passed under Quint 0.32.0; the focused receipt separately passed six named runs.
 - First green verification: 17/17 evidence obligations observed, with zero missing, stale, synthetic, or invalid evidence.
 - Ship readiness: `shipReady`; two-pass lifecycle convergence passed.
-- PR: #364 opened against `main`; exact-head independent review, hosted CI, merge, and board completion remain pending.
+- PR: #364 opened against `main`; first exact-head review supplied the repaired §4.4 findings, while replacement acceptance, replacement hosted CI, merge, and board completion remain pending.
 
 ## §11 Falsifiable improvements
 
 - Preserve §4.1 by requiring explicit decisions whenever multiple rule IDs share one action or a rule is visible only through helpers/observations. Acceptance: analyze is blocker-free and the focused audit maps all sixteen rules without adding state variables or actions.
 - Preserve §4.2 by retaining exact authority extraction, complete 16-row audits, named runs, and structural negative controls. Acceptance: deleting one reference row, making one trace row pending, or changing an exact excerpt makes the focused command fail.
 - Preserve §4.3 by emitting the aggregate only after all six scoped receipts pass and requiring two-pass lifecycle convergence. Acceptance: verify reports 17 observed obligations with zero stale/synthetic evidence and ship reports `shipReady`.
-- No new action for duplicate §4.4; resolve the established historical-audit baseline before treating product-head invalidation errors as milestone-specific.
+- Preserve §4.4 by checking every named Quint subject and temporal milestone statement at exact head. Acceptance: no plan identifier is absent from authority, completed walkthrough prose has no pending-M3 claim, and aggregate wording names its six component cases.
+- No new action for duplicate §4.5; resolve the established historical-audit baseline before treating product-head invalidation errors as milestone-specific.
 
 ## §12 Development-surface coverage
 
@@ -133,6 +147,6 @@ One coordination claim failed before write. One proposed non-contiguous excerpt 
 | evidence | exercised | Six scoped receipts compose into seventeen observed obligations; invalidation baseline defect is disclosed. |
 | runtime-playtest | not-exercised | Headless correspondence stayed under testing; no user-facing play journey was run. |
 | performance | not-exercised | Reserved for pending M6V; no performance claim changed. |
-| documentation | exercised | Complete catalogue, walkthroughs, references, traceability, definitions, and exercises rendered. |
+| documentation | exercised | Complete catalogue, walkthroughs, references, traceability, definitions, and exercises rendered; exact-head review corrected three documentation/evidence defects. |
 | packaging-upgrade | not-exercised | No package or lock change. |
 | worker-git-pr | partial | Isolated branch and PR #364 exist; exact-head review, CI, merge, and board completion were pending at draft time. |

@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-27-sir-handbook-m3-complete-rules.md",
-  "reportSha256": "399ceb7099946c6fb077f5b14cc38e613ec8dd56bf56de76a979af2623f60831",
+  "reportSha256": "dbabe314951595b61fdf8b440e5b9d5cd01c9bb31fbadeb4bad3580e05b29546",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -11,7 +11,7 @@
       "missingFacts": [],
       "checkedEvidence": [
         { "locator": "file:work/363-handbook-m3/clarifications.md", "result": "verified", "sha256": "a1a75bbc33ab2f8d50949ea5c5666df32cb977bd79ccdb9018f2dce6c0c729eb" },
-        { "locator": "file:readiness/363-handbook-m3/analysis.json", "result": "verified", "sha256": "e99e6653afa243004e4e0717383f5443dc43d98f357ffaabe261702e92c49972" }
+        { "locator": "file:readiness/363-handbook-m3/analysis.json", "result": "verified", "sha256": "ed35d310cf56efc7b4f8440e985f04c6e99210ff03474d8f487a2c2bf376d1e2" }
       ],
       "confidenceLimits": [
         "Evidence verifies DEC-001 through DEC-003, 50 ready relationships, and zero blockers; it does not prove the decisions alone caused readiness.",
@@ -40,7 +40,7 @@
       "checkedEvidence": [
         { "locator": "file:readiness/363-handbook-m3/qualification.junit.xml", "result": "verified", "sha256": "efbcdd72da0bb3607ba2983847de44b3f4154474d6da26dae3b4ab68ba013e9c" },
         { "locator": "file:readiness/363-handbook-m3/lifecycle.junit.xml", "result": "verified", "sha256": "51b325c73f628bf8c5771a5d1f7adcd61a1dd9cc2fe95ce2ca916da47331290c" },
-        { "locator": "file:readiness/363-handbook-m3/ship.json", "result": "verified", "sha256": "429046278dbdf688e9e9ded07ab47a8e7748d7ebc7c30424b596db3aa5dfbfc4" },
+        { "locator": "file:readiness/363-handbook-m3/ship.json", "result": "verified", "sha256": "893a2a3834fff2cbb163a193e13aa9697c2fa59134c3c064ef730d930a3e4e84" },
         { "locator": "command:gh pr view 364 --repo EHotwagner/S.I.R. --json headRefOid,state,url", "result": "verified" }
       ],
       "confidenceLimits": [
@@ -50,12 +50,27 @@
     },
     {
       "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m3-complete-rules.jsonl", "result": "verified", "sha256": "c1505a4e3782a939fe4da054e20cc39993c7e379a098a9961589113353d058f9" },
+        { "locator": "file:work/363-handbook-m3/plan.md", "result": "verified", "sha256": "45d75fd8ee6410673e74e5da8dda85ec46dc7a154cdb4704938afa9014a5ae00" },
+        { "locator": "file:docs/sir-combat-quint-handbook.md", "result": "verified", "sha256": "190676ebf022fc73de6a0a10c72e981d336077e4988db1de3b67ac5874cdac67" },
+        { "locator": "command:git diff 1a060c8..12f2a99 -- work/363-handbook-m3/plan.md docs/sir-combat-quint-handbook.md", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The exact-head source reviewer identified all three defects and the cited diff verifies their repair.",
+        "Replacement exact-head acceptance and hosted CI were pending at report time."
+      ]
+    },
+    {
+      "id": "§4.5",
       "status": "duplicate",
       "missingFacts": [
         "A correct existing-issue locator for the historical audit-exception invalidation failures."
       ],
       "checkedEvidence": [
-        { "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m3-complete-rules.jsonl", "result": "claim-only", "sha256": "4e2c01eaa593cc16d2370c5eafd888cdd96d5079cef79ccc45eb8eaf764f4a3c" },
+        { "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m3-complete-rules.jsonl", "result": "claim-only", "sha256": "c1505a4e3782a939fe4da054e20cc39993c7e379a098a9961589113353d058f9" },
         { "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head HEAD --root .", "result": "verified" }
       ],
       "confidenceLimits": [
