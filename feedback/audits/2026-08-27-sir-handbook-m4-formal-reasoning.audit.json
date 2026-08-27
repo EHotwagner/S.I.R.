@@ -1,0 +1,58 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-handbook-m4-formal-reasoning.md",
+  "reportSha256": "d9d9411ca3ca6e8ab7b19ae16af4cc3301462253c0ead372d4db83e730175579",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:work/365-handbook-m4/audit-formal-reasoning.mjs",
+          "result": "verified",
+          "sha256": "4775103413100a285c38eda37e64602d64a6636956336fa0b90d5fe8871c0048"
+        },
+        {
+          "locator": "file:readiness/365-handbook-m4/formal-reasoning.junit.xml",
+          "result": "verified",
+          "sha256": "92185224754e9984433e2ebee079638526c5891015f54e5badd477cb55f95a30"
+        },
+        {
+          "locator": "command:node work/365-handbook-m4/audit-formal-reasoning.mjs --require-rendered",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Verified: six detector-specific red/restored-green pairs, three reachable major-action witnesses, seven state bindings, and 76 rendered-inclusive checks.",
+        "This validates the detector pattern, not Apalache-backed exhaustive verification or production runtime equivalence."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:test ! -e docs/examples/lifecycle-artifacts/spec.md",
+          "result": "verified"
+        },
+        {
+          "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m4-formal-reasoning.jsonl",
+          "result": "claim-only",
+          "sha256": "ea24e84fa364c3010b7555a20574ddbfd182cae3c62c631602b7e20a9ecdd049"
+        },
+        {
+          "locator": "issue:FS-GG/FS.GG.SDD#539",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The missing consumer-relative example path reproduces and prior reports establish the same finding; the checkpoint alone only repeats the current-cycle observation.",
+        "The cycle exercised global fsgg-sdd 1.4.0 and repository pin 1.0.1; latest available 1.5.0 was not reverified."
+      ]
+    }
+  ]
+}
