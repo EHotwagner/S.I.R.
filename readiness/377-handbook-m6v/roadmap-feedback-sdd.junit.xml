@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sir-handbook-m6v-roadmap-feedback-sdd" tests="3" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.HandbookM6V" name="roadmap-only-m6v-checked-m7-pending"/>
+  <testcase classname="SIR.HandbookM6V" name="feedback-checkpoint-state-valid"/>
+  <testcase classname="SIR.HandbookM6V" name="sdd-analysis-current-and-implementation-ready"/>
+</testsuite>

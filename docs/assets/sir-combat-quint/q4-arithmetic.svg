@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 230" role="img" aria-labelledby="arithmetic-title arithmetic-desc" data-diagram="q4-arithmetic" data-effects="progressive">
+  <title id="arithmetic-title">Scale-ten-thousand arithmetic yields twenty damage</title>
+  <desc id="arithmetic-desc">Twenty-five base damage is encoded as 250000 raw. Multiplication by range retention 10000 and armor retention 8000 divides by scale after each fixed-point product and rounds half away from zero, producing 200000 raw or twenty damage.</desc>
+  <defs><filter id="math-glow"><feGaussianBlur stdDeviation="2"/></filter></defs>
+  <style>svg{background:#10161d;font:15px system-ui}.box{fill:#28343d;stroke:#71808b;stroke-width:2}.value{fill:#f7f9fa;font-weight:700}.note{fill:#ffd166}.edge{stroke:#53b7ff;stroke-width:3}.motion{animation:reveal 2.2s ease-in-out infinite}.fx{filter:url(#math-glow);opacity:.25}[data-effects="off"] .fx{display:none}@keyframes reveal{50%{stroke-width:7}}@media(prefers-reduced-motion:reduce){.motion{animation:none}}@media print{svg{background:#fff}.value{fill:#000}.note{fill:#000}.motion{animation:none}.fx{display:none}}</style>
+  <path class="edge fx" d="M40 105 H680"/><path class="edge motion" d="M40 105 H680"/>
+  <g aria-label="Base damage"><rect class="box" x="28" y="62" width="120" height="86" rx="8"/><text class="value" x="57" y="95">25 HP</text><text class="note" x="42" y="124">250000 raw</text></g>
+  <text class="value" x="163" y="110">×</text>
+  <g aria-label="Full range retention"><rect class="box" x="194" y="62" width="132" height="86" rx="8"/><text class="value" x="222" y="95">1.0000</text><text class="note" x="215" y="124">10000 raw</text></g>
+  <text class="value" x="340" y="110">×</text>
+  <g aria-label="Armor retention"><rect class="box" x="370" y="62" width="132" height="86" rx="8"/><text class="value" x="404" y="95">0.8000</text><text class="note" x="392" y="124">8000 raw</text></g>
+  <text class="value" x="516" y="110">=</text>
+  <g aria-label="Rounded damage result"><rect class="box" x="550" y="48" width="142" height="114" rx="12" stroke="#ff6b6b"/><text class="value" x="589" y="87">20 HP</text><text class="note" x="575" y="116">200000 raw</text><text class="note" x="565" y="141">half-away round</text></g>
+  <text class="note" x="95" y="196">Each fixed-point multiplication divides by SCALE = 10,000; raw integers keep replay arithmetic deterministic.</text>
+</svg>

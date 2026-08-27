@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 240" role="img" aria-labelledby="state-title state-desc" data-diagram="state-action" data-effects="progressive">
+  <title id="state-title">CombatState changes only through guarded atomic actions</title>
+  <desc id="state-desc">A pre-state record and AttackInput enter resolveConsequences. A valid-attack guard permits one atomic transition to a post-state and Observation; an invalid input stutters.</desc>
+  <defs><filter id="state-shadow"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#53b7ff" flood-opacity=".55"/></filter></defs>
+  <style>svg{background:#10161d;font:14px system-ui}.box{fill:#28343d;stroke:#71808b;stroke-width:3}.action{fill:#183b50;stroke:#53b7ff;stroke-width:3}.label{fill:#f7f9fa}.edge{stroke:#53b7ff;stroke-width:3;fill:none;marker-end:url(#arrow)}.motion{stroke-dasharray:8 6;animation:flow 2s linear infinite}.fx{filter:url(#state-shadow)}[data-effects="off"] .fx{filter:none}@keyframes flow{to{stroke-dashoffset:-28}}@media(prefers-reduced-motion:reduce){.motion{animation:none}}@media print{svg{background:#fff}.label{fill:#000}.motion{animation:none}.fx{filter:none}}</style>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#53b7ff"/></marker></defs>
+  <g aria-label="Pre-state CombatState"><rect class="box" x="28" y="42" width="156" height="132" rx="10"/><text class="label" x="50" y="72">CombatState</text><text class="label" x="50" y="102">health = 100</text><text class="label" x="50" y="126">suppression = 0</text><text class="label" x="50" y="150">cover = 40</text></g>
+  <g aria-label="Guarded action"><rect class="action fx" x="270" y="58" width="180" height="100" rx="50"/><text class="label" x="298" y="93">resolveConsequences</text><text class="label" x="309" y="122">validAttack guard</text><text class="label" x="324" y="143">atomic step</text></g>
+  <g aria-label="Post-state and Observation"><rect class="box" x="536" y="42" width="156" height="132" rx="10"/><text class="label" x="558" y="72">CombatState′</text><text class="label" x="558" y="102">health = 80</text><text class="label" x="558" y="126">wound = Minor</text><text class="label" x="558" y="150">Observation = 20</text></g>
+  <path class="edge motion" d="M184 108 H270"/><path class="edge motion" d="M450 108 H536"/>
+  <text class="label" x="198" y="92">AttackInput</text><text class="label" x="278" y="200">invalid input → stutter, not a hidden state</text>
+</svg>

@@ -1,0 +1,76 @@
+{
+  "schema": "sir.handbook.visual-qualification/v1",
+  "workloadId": "handbook-m6v-six-diagram-render-v1",
+  "workloadDefinitionDigest": "sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df",
+  "sourceTreeDigest": "3639e4c151bd3759616a3177ffd85e607b4e5f111cf38ae28aa3d052f8ccb336",
+  "result": "pass",
+  "counters": {
+    "diagrams": 6,
+    "elements": 138,
+    "bytes": 16561,
+    "animatedElements": 8
+  },
+  "budgets": {
+    "diagrams": 6,
+    "elementsPerDiagram": 30,
+    "aggregateElements": 180,
+    "bytesPerDiagram": 20480,
+    "aggregateBytes": 122880,
+    "animatedElements": 24
+  },
+  "capability": {
+    "headlessBrowser": true,
+    "liveCompositor": false,
+    "framePacingMeasured": false
+  },
+  "diagrams": [
+    {
+      "id": "attack-pipeline",
+      "kind": "concrete-mechanics",
+      "elements": 27,
+      "bytes": 3268,
+      "animatedElements": 1,
+      "sha256": "0347b4e7cdfb98d892f8acb94e12a67dda8ff0bcbd4fe1169fcadf0fd36dfd53"
+    },
+    {
+      "id": "state-action",
+      "kind": "abstract-state",
+      "elements": 21,
+      "bytes": 2548,
+      "animatedElements": 2,
+      "sha256": "9089f96fe5b56218e5c0a33de90896a4f641b2640dcf56712a5a456645319f43"
+    },
+    {
+      "id": "rule-dependency",
+      "kind": "abstract-dependency",
+      "elements": 26,
+      "bytes": 3156,
+      "animatedElements": 1,
+      "sha256": "d4266bc9394fb2de4cc24ab8aa761545a9eeec3360480591511851a2b6fcc08e"
+    },
+    {
+      "id": "q4-arithmetic",
+      "kind": "abstract-arithmetic",
+      "elements": 23,
+      "bytes": 2439,
+      "animatedElements": 1,
+      "sha256": "8ef00b1896250af714bc7c6cad231731a5a525b7044b4609af199a7c104dd0f1"
+    },
+    {
+      "id": "trace-counterexample",
+      "kind": "abstract-trace",
+      "elements": 22,
+      "bytes": 2581,
+      "animatedElements": 2,
+      "sha256": "b9d255588f27575081994ef60e9f99f8c587a518c83978512a48c107721365c9"
+    },
+    {
+      "id": "invariant-boundary",
+      "kind": "abstract-invariant",
+      "elements": 19,
+      "bytes": 2569,
+      "animatedElements": 1,
+      "sha256": "06e4098ff51db35575e54fd85d7096538b92ff181aef8587876ce90b95e68b22"
+    }
+  ]
+}

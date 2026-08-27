@@ -134,6 +134,9 @@ rifle fact 25
 
 The first five arrows calculate a completed consequence. The final arrow is one [aggregate attack resolution](#concept-aggregate-attack-resolution): the production interpreter exposes the completed result, so the model does not invent observable intermediate states between [health](#stat-health), [wound](#concept-wound), or [suppression](#stat-suppression) updates. [Cover impact](#concept-cover-blocking) and [suppression recovery](#concept-suppression-recovery) are separate runtime entry points and therefore separate [actions](#def-action); their focused walkthroughs appear in chapters 28 and 29.
 
+<figure class="combat-quint-diagram" data-diagram-embed="attack-pipeline"><img src="assets/sir-combat-quint/attack-pipeline.svg" alt="Attack pipeline from production rifleman glyph and trace through cover, armor, twenty-point result, and atomic consequences"/><figcaption>The established battlefield glyph vocabulary carries one representative attack from footprint and trace to atomic consequences. Motion and glow are optional emphasis.</figcaption></figure>
+<details id="diagram-transcript-attack-pipeline"><summary>Attack pipeline diagram transcript</summary><p>A production rifleman glyph occupies a one-cell footprint. Its shot trace reaches first contact, cover consumes the collision, armor retains eighty percent, and the resulting twenty-point harm total leads to injury, stress, and bystander fields in one atomic consequence. Static geometry, labels, caption, and this transcript carry the complete meaning.</p></details>
+
 <a id="part-ii"></a>
 ## Part II: S.I.R. combat domain
 
@@ -218,6 +221,9 @@ should a completed observation cite participating rules? [consequenceExplanation
 starts with collision, then engagement, trace, armor, [damage](#stat-damage), cover, [penetration](#concept-penetration), [health](#stat-health), [wound](#concept-wound),
 [suppression](#stat-suppression), and collateral. That [list](#def-list) is deterministic explanatory metadata. It is neither a queue of
 runtime calls nor evidence that the aggregate [action](#def-action) exposed eleven intermediate states.
+
+<figure class="combat-quint-diagram" data-diagram-embed="rule-dependency"><img src="assets/sir-combat-quint/rule-dependency.svg" alt="Directed rule dependencies converge on the final composite attack result"/><figcaption>Direct dependencies converge on the final composite result; explanatory sequencing remains a separate deterministic sequence.</figcaption></figure>
+<details id="diagram-transcript-rule-dependency"><summary>Rule dependency diagram transcript</summary><p>Trace and engagement feed collision, cover, retained-impact, harm, injury, stress, and bystander nodes. Their direct dependency arrows converge on the final composite result. The arrows do not claim execution order or hidden intermediate states.</p></details>
 
 <a id="chapter-09-combat-state-inputs-observations-and-units"></a>
 ### 9. Combat state, inputs, observations, and units
@@ -346,6 +352,9 @@ Action boundaries follow production entry points:
 Pure next-state helpers let learners inspect each calculation without adding observable states. This is
 the central rule: explanation may be fine-grained; [state transition](#def-state-transition) granularity must remain honest.
 
+<figure class="combat-quint-diagram" data-diagram-embed="state-action"><img src="assets/sir-combat-quint/state-action.svg" alt="Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation"/><figcaption>A checked transition maps one cohesive pre-state and input to one post-state and observation; invalid input stutters.</figcaption></figure>
+<details id="diagram-transcript-state-action"><summary>State and transition diagram transcript</summary><p>The pre-state has vitality one hundred, stress zero, and barrier strength forty. Attack input enters a validity predicate. The atomic consequence produces vitality eighty, a minor injury, and an observed harm total of twenty. Invalid input does not create a hidden partial state.</p></details>
+
 <a id="chapter-14-fixed-point-q4-arithmetic-and-rounding"></a>
 ### 14. Fixed-point Q4 arithmetic and rounding
 
@@ -361,6 +370,9 @@ The ordinary representative path is:
 | retained [armor retention](#stat-armor-retention) | `8000` | `0.8` |
 | second fixed multiply | `250000 × 8000 / 10000 = 200000` | `25 × 0.8 = 20` |
 | final whole-point rounding | `(200000 + 5000) / 10000 = 20` | `20` |
+
+<figure class="combat-quint-diagram" data-diagram-embed="q4-arithmetic"><img src="assets/sir-combat-quint/q4-arithmetic.svg" alt="Twenty-five times full trace retention times eighty-percent armor retention equals twenty"/><figcaption>Raw scale-ten-thousand operands make the representative twenty-point calculation visible without floating point.</figcaption></figure>
+<details id="diagram-transcript-q4-arithmetic"><summary>Q4 arithmetic diagram transcript</summary><p>The rifle starts at twenty-five, encoded as 250000 raw. Full trace retention is 10000 raw and protective retention is 8000 raw. Each fixed-point multiplication divides by scale 10000; the declared tie-breaking rule produces 200000 raw, which is a twenty-point result.</p></details>
 
 The authority uses [round-half-away-from-zero](#unit-round-half-away-from-zero) inside fixed-point conversion and multiplication:
 
@@ -803,6 +815,9 @@ Use a concrete calculation to teach arithmetic, a [witness](#def-witness) to est
 to learn why a universal claim failed. When reporting results, always name the initializer, transition
 relation, bound or sample count, seed when applicable, and exact model revision.
 
+<figure class="combat-quint-diagram" data-diagram-embed="invariant-boundary"><img src="assets/sir-combat-quint/invariant-boundary.svg" alt="Reachable states remain inside a safety boundary until a mutated transition escapes"/><figcaption>The safety boundary encloses checked reachable states; one mutated transition escapes to a concrete violating path.</figcaption></figure>
+<details id="diagram-transcript-invariant-boundary"><summary>Safety-boundary diagram transcript</summary><p>The safe region contains reachable combat states from one hundred vitality through zero vitality with incapacity aligned. A deliberately mutated bound permits vitality minus one, placing the successor outside the boundary. The diagram explains a checked predicate and adds no model state.</p></details>
+
 <a id="chapter-33-reading-an-execution-trace"></a>
 ### 33. Reading an execution trace
 
@@ -843,6 +858,9 @@ history. Read each edge with the same five questions:
 Do not reinterpret [consequenceExplanationOrder](#qnt-consequence-explanation-order) as hidden [state transitions](#def-state-transition).
 It orders explanatory rule IDs inside one completed aggregate [action](#def-action); the only observable
 successor is the finished [CombatState](#qnt-combat-state) plus [Observation](#qnt-observation).
+
+<figure class="combat-quint-diagram" data-diagram-embed="trace-counterexample"><img src="assets/sir-combat-quint/trace-counterexample.svg" alt="A nondeterministic trace branches into a safe path and a violating path at their earliest split"/><figcaption>Two reachable branches separate a successful path from a violating path; the red edge marks their earliest split.</figcaption></figure>
+<details id="diagram-transcript-trace-counterexample"><summary>Trace comparison diagram transcript</summary><p>Initial state zero branches nondeterministically. The upper path reaches a harm total of twenty and remains safe. The lower branch first splits at a mutated armor step and reaches a harm total of eighteen. That one reachable violating path refutes the checked universal claim without describing every execution.</p></details>
 
 <a id="chapter-34-reading-and-minimizing-a-counterexample"></a>
 ### 34. Reading and minimizing a counterexample

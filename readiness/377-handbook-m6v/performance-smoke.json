@@ -1,0 +1,33 @@
+{
+  "schema": "sir.handbook.visual-performance-smoke/v1",
+  "phase": "PERF-SMOKE",
+  "workloadId": "handbook-m6v-six-diagram-render-v1",
+  "workloadDefinitionDigest": "sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df",
+  "sourceRevision": "c47286a2961cb50720714bad6e17115c05117dc5",
+  "route": "DOTNET_ROOT=/home/developer/.dotnet DOTNET_HOST_PATH=/home/developer/.dotnet/dotnet ./scripts/build-docs.sh --prepare-site-only",
+  "declaredMaximumScale": {
+    "diagrams": 6,
+    "elementsPerDiagram": 30,
+    "aggregateElements": 180,
+    "bytesPerDiagram": 20480,
+    "aggregateBytes": 122880,
+    "animatedElements": 24
+  },
+  "baseline": {
+    "diagramCount": 0,
+    "diagramElements": 0,
+    "diagramBytes": 0,
+    "animatedElements": 0,
+    "strictDocsBuildElapsedSeconds": 44,
+    "result": "pass"
+  },
+  "hostCapabilities": {
+    "dotnetSdk": "10.0.302",
+    "fsdocs": "22.1.0",
+    "headlessChromium": true,
+    "liveCompositor": false,
+    "framePacingMeasured": false
+  },
+  "replan": {"reason": "The first browser attempt mixed a fresh context/site startup and one 5321 ms cold/GC tail into the warm diagram-readiness subject. The route was corrected to observe cold startup separately, warm three times, then measure repeated complete handbook navigations without changing the original 100/200 ms budget."},
+  "limits": "Iteration smoke plus one measurement-subject correction. The baseline proves the real pre-change strict-docs route; neither smoke nor cold-start observation is release evidence or a compositor/FPS claim."
+}

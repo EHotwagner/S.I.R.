@@ -32,6 +32,7 @@ M0 authority inventory
   -> M4 formal reasoning and mutation laboratory
   -> M5 runtime correspondence and evidence
   -> M6 definition index and link enforcement
+  -> M6V authoritative mechanics and theory diagrams
   -> M7 review, publication, and maintenance handoff
 ```
 
@@ -333,7 +334,7 @@ Completion evidence (2026-08-27):
   animation/shaders, accessibility, reduced-motion/static/print/non-WebGL fallbacks, mechanical
   derivation, visual regression, rendered inspection, and performance qualification.
 
-### - [ ] M6V — Authoritative mechanics and theory diagrams
+### - [x] M6V — Authoritative mechanics and theory diagrams
 
 **Outcome:** concrete combat mechanics and formal explanations gain trustworthy, accessible visuals
 without creating a second semantic authority.
@@ -355,6 +356,35 @@ Exit criteria:
 - labels and descriptions expose the visual's meaning accessibly;
 - authoritative rule/model changes invalidate or mechanically recheck affected diagrams; and
 - visual regression, rendered inspection, and performance qualification pass.
+
+Completion evidence:
+
+- The handbook embeds six source-bound figures: one concrete attack pipeline reuses the production
+  rifleman paths, battlefield footprint, and palette; five pure abstract SVGs explain state/action,
+  direct rule dependency, Q4 arithmetic, a safe/violating trace split, and an invariant boundary.
+  Each figure has a caption and adjacent text transcript, while each standalone asset carries a
+  linked `title`/`desc`, image role, and labeled semantic groups.
+- `docs/sir-combat-quint-diagrams.json` is the checked schema-v1 projection over current glyph,
+  battlefield, runtime-rule, Quint-model, and controlled-vocabulary sources. The owning audit
+  re-derives those bindings and fingerprints, denies independent authority, and observed red before
+  restored green for authority, glyph, accessibility, fallback, fingerprint, and performance-budget
+  mutations.
+- Static geometry and text own meaning. CSS dash motion and SVG-filter glow are progressive only;
+  the same six diagrams passed actual Chromium inspection in normal, reduced-motion, print, and
+  effects-off modes with stable semantic fingerprints, zero console/page errors, and retained
+  non-WebGL meaning. Screenshot inspection also repaired a clipped caption and print-contrast defect.
+- Typed performance evidence covers the declared six-diagram, 138-element, 16,561-byte,
+  eight-animated-element workload. Thirty warm, no-store navigations reached browser-native decoded
+  diagram readiness at p95 62.7 ms and p99 64.1 ms within the independently fixed 100/200 ms
+  budgets. Browser launch (155.452 ms), cold-site decode (207.6 ms), unrelated template completion,
+  and the lack of a live compositor are reported separately; no frame-pacing claim is made.
+- Focused receipts, screenshots, and qualification live under `work/377-handbook-m6v/` and
+  `readiness/377-handbook-m6v/`; feedback cycle:
+  `roadmap-sir-combat-quint-handbook-m6v-visual-explanations`; delivery issue: #377.
+- Delivery boundary: this checked entry is the merge-candidate ledger update. Independent exact-head
+  implementation and feedback acceptance, green relevant hosted CI, merge, exact-main validation,
+  Pages proof, issue closure, and project status Done remain required before it becomes landed
+  completion history. M7 remains pending unchanged.
 
 ### - [ ] M7 — Review, publication, and maintenance handoff
 

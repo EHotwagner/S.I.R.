@@ -1,0 +1,408 @@
+{
+  "schema": "sir.handbook.render-inspection/v1",
+  "workloadId": "handbook-m6v-six-diagram-render-v1",
+  "workloadDefinitionDigest": "sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df",
+  "route": "strict FsDocs output /sir-combat-quint-handbook.html from a pinned no-store loopback host in pinned headless Chromium",
+  "result": "pass",
+  "timings": {
+    "subject": "warm same-browser navigation start until the six external SVG image resources are loaded and decoded with non-zero intrinsic dimensions; unrelated template CDN load is observed but is not diagram readiness",
+    "gatingClock": "browser performance timeline; decodedReadyAtMs after HTMLImageElement.decode()",
+    "browserLaunchObservationMs": 155.452,
+    "coldSiteNavigationObservation": {
+      "readinessMs": 207.6,
+      "wallObservationMs": 641.803
+    },
+    "warmupNavigations": 3,
+    "samples": [
+      {
+        "readinessMs": 52.7,
+        "wallObservationMs": 165.616,
+        "loadEventEndMs": 132.8,
+        "slowestSvgResponseEndMs": 37.7
+      },
+      {
+        "readinessMs": 47.7,
+        "wallObservationMs": 162.31,
+        "loadEventEndMs": 125.6,
+        "slowestSvgResponseEndMs": 32.9
+      },
+      {
+        "readinessMs": 47,
+        "wallObservationMs": 158.398,
+        "loadEventEndMs": 125.6,
+        "slowestSvgResponseEndMs": 31.2
+      },
+      {
+        "readinessMs": 52.5,
+        "wallObservationMs": 166.93,
+        "loadEventEndMs": 130.1,
+        "slowestSvgResponseEndMs": 36.4
+      },
+      {
+        "readinessMs": 46.2,
+        "wallObservationMs": 154.831,
+        "loadEventEndMs": 123.4,
+        "slowestSvgResponseEndMs": 31.2
+      },
+      {
+        "readinessMs": 52.2,
+        "wallObservationMs": 167.595,
+        "loadEventEndMs": 135.7,
+        "slowestSvgResponseEndMs": 36.4
+      },
+      {
+        "readinessMs": 47.6,
+        "wallObservationMs": 161.936,
+        "loadEventEndMs": 131.2,
+        "slowestSvgResponseEndMs": 32.1
+      },
+      {
+        "readinessMs": 52.1,
+        "wallObservationMs": 162.466,
+        "loadEventEndMs": 131.7,
+        "slowestSvgResponseEndMs": 36.4
+      },
+      {
+        "readinessMs": 44.9,
+        "wallObservationMs": 163.255,
+        "loadEventEndMs": 128.3,
+        "slowestSvgResponseEndMs": 29.6
+      },
+      {
+        "readinessMs": 45.4,
+        "wallObservationMs": 161.862,
+        "loadEventEndMs": 132.9,
+        "slowestSvgResponseEndMs": 30
+      },
+      {
+        "readinessMs": 51,
+        "wallObservationMs": 167.675,
+        "loadEventEndMs": 138.1,
+        "slowestSvgResponseEndMs": 35.6
+      },
+      {
+        "readinessMs": 49.1,
+        "wallObservationMs": 166.119,
+        "loadEventEndMs": 136,
+        "slowestSvgResponseEndMs": 33.2
+      },
+      {
+        "readinessMs": 51.1,
+        "wallObservationMs": 167.582,
+        "loadEventEndMs": 134.8,
+        "slowestSvgResponseEndMs": 35.6
+      },
+      {
+        "readinessMs": 50.7,
+        "wallObservationMs": 173.628,
+        "loadEventEndMs": 134.2,
+        "slowestSvgResponseEndMs": 34.5
+      },
+      {
+        "readinessMs": 47.5,
+        "wallObservationMs": 180.638,
+        "loadEventEndMs": 141.8,
+        "slowestSvgResponseEndMs": 31.2
+      },
+      {
+        "readinessMs": 64.1,
+        "wallObservationMs": 190.254,
+        "loadEventEndMs": 157.5,
+        "slowestSvgResponseEndMs": 46
+      },
+      {
+        "readinessMs": 51.8,
+        "wallObservationMs": 169.624,
+        "loadEventEndMs": 134.2,
+        "slowestSvgResponseEndMs": 35.2
+      },
+      {
+        "readinessMs": 53.7,
+        "wallObservationMs": 168.282,
+        "loadEventEndMs": 137.8,
+        "slowestSvgResponseEndMs": 36.5
+      },
+      {
+        "readinessMs": 46.8,
+        "wallObservationMs": 152.657,
+        "loadEventEndMs": 123.1,
+        "slowestSvgResponseEndMs": 31
+      },
+      {
+        "readinessMs": 50.9,
+        "wallObservationMs": 159.072,
+        "loadEventEndMs": 128.7,
+        "slowestSvgResponseEndMs": 34.9
+      },
+      {
+        "readinessMs": 49.9,
+        "wallObservationMs": 158.827,
+        "loadEventEndMs": 128.5,
+        "slowestSvgResponseEndMs": 32.4
+      },
+      {
+        "readinessMs": 46.4,
+        "wallObservationMs": 155.084,
+        "loadEventEndMs": 124.6,
+        "slowestSvgResponseEndMs": 29.8
+      },
+      {
+        "readinessMs": 53.9,
+        "wallObservationMs": 162.54,
+        "loadEventEndMs": 133.1,
+        "slowestSvgResponseEndMs": 37.5
+      },
+      {
+        "readinessMs": 50.2,
+        "wallObservationMs": 160.805,
+        "loadEventEndMs": 131.9,
+        "slowestSvgResponseEndMs": 34.2
+      },
+      {
+        "readinessMs": 50.7,
+        "wallObservationMs": 162.842,
+        "loadEventEndMs": 132.9,
+        "slowestSvgResponseEndMs": 34.6
+      },
+      {
+        "readinessMs": 53.9,
+        "wallObservationMs": 180.018,
+        "loadEventEndMs": 140.6,
+        "slowestSvgResponseEndMs": 35.6
+      },
+      {
+        "readinessMs": 51.7,
+        "wallObservationMs": 167.715,
+        "loadEventEndMs": 136,
+        "slowestSvgResponseEndMs": 34.4
+      },
+      {
+        "readinessMs": 53.4,
+        "wallObservationMs": 173.14,
+        "loadEventEndMs": 141.5,
+        "slowestSvgResponseEndMs": 35.8
+      },
+      {
+        "readinessMs": 57.9,
+        "wallObservationMs": 189.896,
+        "loadEventEndMs": 153.7,
+        "slowestSvgResponseEndMs": 39.1
+      },
+      {
+        "readinessMs": 62.7,
+        "wallObservationMs": 188.153,
+        "loadEventEndMs": 150.4,
+        "slowestSvgResponseEndMs": 43.7
+      }
+    ],
+    "p95LoadMs": 62.7,
+    "p99LoadMs": 64.1,
+    "maxP95Ms": 100,
+    "maxP99Ms": 200
+  },
+  "capability": {
+    "executablePath": "/home/developer/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome",
+    "browserVersion": "151.0.7922.34",
+    "headless": true,
+    "liveCompositor": false,
+    "framePacingMeasured": false
+  },
+  "observations": [
+    {
+      "mode": "normal",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "diagrams": [
+        {
+          "id": "attack-pipeline",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Attack pipeline from production rifleman glyph and trace through cover, armor, twenty-point result, and atomic consequences",
+          "semanticFingerprint": "cf01822ebc87e53de653f121ff78a4ce871709d3fa16c009dae56941d307c26e"
+        },
+        {
+          "id": "state-action",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Directed rule dependencies converge on the final composite attack result",
+          "semanticFingerprint": "b684255b12d506b3a7986cd6cf0c0247742bb23ef506ad1c9fd2f45ef21f5e3e"
+        },
+        {
+          "id": "rule-dependency",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
+          "semanticFingerprint": "af7edafc30aed5ef6e13880a39f1a6129bfb598b5faf0cc8a96e0a9f43e08659"
+        },
+        {
+          "id": "q4-arithmetic",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Twenty-five times full trace retention times eighty-percent armor retention equals twenty",
+          "semanticFingerprint": "6db48b2f457a6e05edf799bc30adb2c9e2c880c4423fa2f4051db863a6cf427c"
+        },
+        {
+          "id": "trace-counterexample",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
+          "semanticFingerprint": "102cdce1baea1ed4f7df5cc92e3752de313001949b1b37e40f853a0cc6b1ff60"
+        },
+        {
+          "id": "invariant-boundary",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "A nondeterministic trace branches into a safe path and a violating path at their earliest split",
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5"
+        }
+      ]
+    },
+    {
+      "mode": "reduced-motion",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "diagrams": [
+        {
+          "id": "attack-pipeline",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Attack pipeline from production rifleman glyph and trace through cover, armor, twenty-point result, and atomic consequences",
+          "semanticFingerprint": "cf01822ebc87e53de653f121ff78a4ce871709d3fa16c009dae56941d307c26e"
+        },
+        {
+          "id": "state-action",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Directed rule dependencies converge on the final composite attack result",
+          "semanticFingerprint": "b684255b12d506b3a7986cd6cf0c0247742bb23ef506ad1c9fd2f45ef21f5e3e"
+        },
+        {
+          "id": "rule-dependency",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
+          "semanticFingerprint": "af7edafc30aed5ef6e13880a39f1a6129bfb598b5faf0cc8a96e0a9f43e08659"
+        },
+        {
+          "id": "q4-arithmetic",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Twenty-five times full trace retention times eighty-percent armor retention equals twenty",
+          "semanticFingerprint": "6db48b2f457a6e05edf799bc30adb2c9e2c880c4423fa2f4051db863a6cf427c"
+        },
+        {
+          "id": "trace-counterexample",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
+          "semanticFingerprint": "102cdce1baea1ed4f7df5cc92e3752de313001949b1b37e40f853a0cc6b1ff60"
+        },
+        {
+          "id": "invariant-boundary",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "A nondeterministic trace branches into a safe path and a violating path at their earliest split",
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5"
+        }
+      ]
+    },
+    {
+      "mode": "print",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "diagrams": [
+        {
+          "id": "attack-pipeline",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Attack pipeline from production rifleman glyph and trace through cover, armor, twenty-point result, and atomic consequences",
+          "semanticFingerprint": "cf01822ebc87e53de653f121ff78a4ce871709d3fa16c009dae56941d307c26e"
+        },
+        {
+          "id": "state-action",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Directed rule dependencies converge on the final composite attack result",
+          "semanticFingerprint": "b684255b12d506b3a7986cd6cf0c0247742bb23ef506ad1c9fd2f45ef21f5e3e"
+        },
+        {
+          "id": "rule-dependency",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
+          "semanticFingerprint": "af7edafc30aed5ef6e13880a39f1a6129bfb598b5faf0cc8a96e0a9f43e08659"
+        },
+        {
+          "id": "q4-arithmetic",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Twenty-five times full trace retention times eighty-percent armor retention equals twenty",
+          "semanticFingerprint": "6db48b2f457a6e05edf799bc30adb2c9e2c880c4423fa2f4051db863a6cf427c"
+        },
+        {
+          "id": "trace-counterexample",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
+          "semanticFingerprint": "102cdce1baea1ed4f7df5cc92e3752de313001949b1b37e40f853a0cc6b1ff60"
+        },
+        {
+          "id": "invariant-boundary",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "A nondeterministic trace branches into a safe path and a violating path at their earliest split",
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5"
+        }
+      ]
+    },
+    {
+      "mode": "effects-off",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "diagrams": [
+        {
+          "id": "attack-pipeline",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Attack pipeline from production rifleman glyph and trace through cover, armor, twenty-point result, and atomic consequences",
+          "semanticFingerprint": "cf01822ebc87e53de653f121ff78a4ce871709d3fa16c009dae56941d307c26e"
+        },
+        {
+          "id": "state-action",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Directed rule dependencies converge on the final composite attack result",
+          "semanticFingerprint": "b684255b12d506b3a7986cd6cf0c0247742bb23ef506ad1c9fd2f45ef21f5e3e"
+        },
+        {
+          "id": "rule-dependency",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
+          "semanticFingerprint": "af7edafc30aed5ef6e13880a39f1a6129bfb598b5faf0cc8a96e0a9f43e08659"
+        },
+        {
+          "id": "q4-arithmetic",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Twenty-five times full trace retention times eighty-percent armor retention equals twenty",
+          "semanticFingerprint": "6db48b2f457a6e05edf799bc30adb2c9e2c880c4423fa2f4051db863a6cf427c"
+        },
+        {
+          "id": "trace-counterexample",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
+          "semanticFingerprint": "102cdce1baea1ed4f7df5cc92e3752de313001949b1b37e40f853a0cc6b1ff60"
+        },
+        {
+          "id": "invariant-boundary",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "A nondeterministic trace branches into a safe path and a violating path at their earliest split",
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sir-handbook-m6v-docs-render" tests="4" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.HandbookM6V" name="locked-release-strict-fsdocs-build"/>
+  <testcase classname="SIR.HandbookM6V" name="six-diagram-source-svg-accessibility-fallback-audit"/>
+  <testcase classname="SIR.HandbookM6V" name="twenty-four-rendered-mode-inspections-and-nine-screenshots"/>
+  <testcase classname="SIR.HandbookM6V" name="thirty-sample-browser-native-performance-budget"/>
+</testsuite>

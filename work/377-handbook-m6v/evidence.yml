@@ -1,0 +1,1014 @@
+schemaVersion: 1
+workId: 377-handbook-m6v
+stage: evidence
+status: evidenceReady
+sourceSpec: work/377-handbook-m6v/spec.md
+sourceClarifications: work/377-handbook-m6v/clarifications.md
+sourceChecklist: work/377-handbook-m6v/checklist.md
+sourcePlan: work/377-handbook-m6v/plan.md
+sourceTasks: work/377-handbook-m6v/tasks.yml
+sourceAnalysis: readiness/377-handbook-m6v/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/377-handbook-m6v/analysis.json
+    digest: 52376397daec4a6083f8f5c572af720598d88d4622db9e594fe80a5ef5806bad
+    schemaVersion: 1
+  - label: checklist
+    path: work/377-handbook-m6v/checklist.md
+    digest: 3273a2335bc8ff1f7cdf9d5caa66818b7448b88e98682d974fd7cb89aabcb6ee
+    schemaVersion: 1
+  - label: clarifications
+    path: work/377-handbook-m6v/clarifications.md
+    digest: 7051c8f60eb2ad7443fc73d5b7b54773c81e1ac722b356950ed4a0a0996e838f
+    schemaVersion: 1
+  - label: plan
+    path: work/377-handbook-m6v/plan.md
+    digest: 83a6286fc0e9d5e463a63ef5be0446f784ddd7582900ebc2f0a90f8ee3cf6e74
+    schemaVersion: 1
+  - label: spec
+    path: work/377-handbook-m6v/spec.md
+    digest: 3c503cbcc7ee4e4440f3d0c76c3debe1477f935ab82352ea0773288fe4d1a61d
+    schemaVersion: 1
+  - label: tasks
+    path: work/377-handbook-m6v/tasks.yml
+    digest: 24003b5ef50b0e9df45946e5649e998b646adead99f2c0a66fb48fcbc6e58ccf
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: [AC-001]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: [docs/assets/sir-combat-quint/attack-pipeline.svg, docs/sir-combat-quint-diagrams.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: [AC-002]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: [docs/assets/sir-combat-quint/invariant-boundary.svg, docs/assets/sir-combat-quint/q4-arithmetic.svg, docs/assets/sir-combat-quint/rule-dependency.svg, docs/assets/sir-combat-quint/state-action.svg, docs/assets/sir-combat-quint/trace-counterexample.svg]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: [AC-003]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV003]
+    artifacts: [docs/sir-combat-quint-handbook.md]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/audit-visual-explanations.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: [AC-004]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/inspect-rendered-visuals.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: [AC-005]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: [docs/sir-combat-quint-diagrams.json, readiness/377-handbook-m6v/visual-qualification.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/audit-visual-explanations.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: [AC-006]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/inspect-rendered-visuals.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: [AC-007]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json, readiness/377-handbook-m6v/visual-qualification.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV008]
+    artifacts: [readiness/377-handbook-m6v/qualification.junit.xml]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/audit-visual-explanations.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: [AC-009]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV009]
+    artifacts: [docs/sir-combat-quint-handbook-roadmap.md, readiness/377-handbook-m6v/qualification.junit.xml]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-001]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: [docs/sir-combat-quint-diagrams.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/audit-visual-explanations.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-002]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/inspect-rendered-visuals.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-003]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/inspect-rendered-visuals.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-004]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/inspect-rendered-visuals.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: [AC-001]
+    clarificationDecisionRefs: [DEC-001]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV014]
+    artifacts: [docs/assets/sir-combat-quint/attack-pipeline.svg]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: [AC-002]
+    clarificationDecisionRefs: [DEC-001]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV015]
+    artifacts: [docs/assets/sir-combat-quint/invariant-boundary.svg, docs/assets/sir-combat-quint/state-action.svg]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: [AC-004]
+    clarificationDecisionRefs: [DEC-002]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV016]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/inspect-rendered-visuals.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: [AC-005]
+    clarificationDecisionRefs: [DEC-001]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV017]
+    artifacts: [docs/sir-combat-quint-diagrams.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/audit-visual-explanations.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: [AC-006]
+    clarificationDecisionRefs: [DEC-004]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV018]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/inspect-rendered-visuals.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: [AC-007]
+    clarificationDecisionRefs: [DEC-003]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV019]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json, readiness/377-handbook-m6v/visual-qualification.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-005]
+    obligationRefs: [EV020]
+    artifacts: [docs/sir-combat-quint-diagrams.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/audit-visual-explanations.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-004]
+    obligationRefs: [EV021]
+    artifacts: [docs/assets/sir-combat-quint/attack-pipeline.svg, docs/sir-combat-quint-handbook.md]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV022]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/inspect-rendered-visuals.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV023]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json, readiness/377-handbook-m6v/visual-qualification.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-005]
+    obligationRefs: [EV024]
+    artifacts: [readiness/377-handbook-m6v/visual-qualification.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/audit-visual-explanations.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-004]
+    obligationRefs: [EV025]
+    artifacts: [readiness/377-handbook-m6v/docs-render.junit.xml]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV026
+    kind: verification
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV026]
+    artifacts: [readiness/377-handbook-m6v/visual-qualification.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/audit-visual-explanations.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV027
+    kind: verification
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV027]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/inspect-rendered-visuals.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV028
+    kind: verification
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV028]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json, readiness/377-handbook-m6v/visual-qualification.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV029
+    kind: verification
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV029]
+    artifacts: [readiness/377-handbook-m6v/qualification.junit.xml]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/audit-visual-explanations.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV030
+    kind: verification
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV030]
+    artifacts: [readiness/377-handbook-m6v/analysis.json, readiness/377-handbook-m6v/qualification.junit.xml]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV031
+    kind: verification
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV031]
+    artifacts: [docs/sir-combat-quint-diagrams.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/audit-visual-explanations.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV032
+    kind: verification
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV032]
+    artifacts: [docs/sir-combat-quint-handbook.md, readiness/377-handbook-m6v/rendered/inspection.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/inspect-rendered-visuals.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV033
+    kind: verification
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005, PD-006]
+    obligationRefs: [EV033]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json, readiness/377-handbook-m6v/visual-qualification.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV034
+    kind: verification
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV034]
+    artifacts: [readiness/377-handbook-m6v/analysis.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/qualify-handbook-m6v.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV035
+    kind: verification
+    subject:
+      type: task
+      id: T035
+    taskRefs: [T035]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV035]
+    artifacts: [readiness/377-handbook-m6v/rendered/inspection.json, readiness/377-handbook-m6v/visual-qualification.json]
+    sourceRefs:
+      - kind: verification
+        path: work/377-handbook-m6v/inspect-rendered-visuals.mjs
+      - kind: verification
+        path: work/377-handbook-m6v/audit-visual-explanations.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/377-handbook-m6v/qualification.junit.xml
+      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    performanceBudget:
+      artifactPath: readiness/377-handbook-m6v/performance-evidence.json
+      intent:
+        id: handbook-m6v-visuals-v1
+        disposition: active
+        targetFps: 60
+        workloadIds: [handbook-m6v-six-diagram-render-v1]
+        workloadDefinitionDigests: ["handbook-m6v-six-diagram-render-v1=sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df"]
+        maximumExpectedScale: "six diagrams; 180 SVG elements; 120 KiB; 24 animated elements"
+        maxP95Ms: 100
+        maxP99Ms: 200
+        maxCatchUpFrames: 0
+        structuralCostBudgets: ["aggregate-bytes<=122880", "aggregate-elements<=180", "animated-elements<=24", "diagram-bytes<=20480", "diagram-elements<=30"]
+        requiredCapability: headless-browser
+        liveCompositorRequired: false
+        evidenceRefs: [docs/performance-budget.md]
+        rationale: "The real strict-FsDocs/headless-browser route measures warm navigation until all six diagrams are visible plus deterministic structural counters; cold browser/context startup is separately observed, 60 Hz is progressive-animation intent only, and the host lacks a live compositor and cannot claim frame pacing."
+      targetFps: 60
+      workloadIds: [handbook-m6v-six-diagram-render-v1]
+      stressWorkloadIds: []
+      workloadDefinitionDigests: ["handbook-m6v-six-diagram-render-v1=sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df"]
+      currencyToken: "sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df"
+      capturedAfterUtc: "2026-08-28T00:00:00Z"
+      maxP95Ms: 100
+      maxP99Ms: 200
+      maxCatchUpFrames: 0
+      measurementScope: "warm same-browser navigation start until the six external SVG image resources are loaded and decoded with non-zero intrinsic dimensions; unrelated template CDN load is observed but is not diagram readiness"
+      requiredCapability: headless-browser
+      liveCompositorRequired: false
+    notes: []
+lifecycleNotes:
+  - "Next lifecycle action: verify."
