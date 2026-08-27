@@ -12,6 +12,7 @@ assert.match(pages, /^  select-qualified-site:$/mu);
 assert.match(pages, /outputs:\n      deploy: \$\{\{ steps\.route\.outputs\.deploy \}\}/u);
 assert.match(pages, /ci-route\.mjs verify-route[\s\S]*selectedGates \| index\("documentation"\)[\s\S]*deploy=true[\s\S]*deploy=false/u);
 assert.match(pages, /^  deploy-qualified-site:\n    if: needs\.select-qualified-site\.outputs\.deploy == 'true'\n    needs: select-qualified-site/mu);
+assert.match(pages, /^  deploy-qualified-site:[\s\S]*?^    timeout-minutes: 30$/mu);
 assert.match(pages, /ref: \$\{\{ github\.event\.workflow_run\.head_sha \}\}/u);
 assert.match(pages, /name: protected-qualified-site/u);
 assert.match(pages, /run-id: \$\{\{ github\.event\.workflow_run\.id \}\}/u);
