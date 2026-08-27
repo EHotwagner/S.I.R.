@@ -126,6 +126,21 @@ async function main(argv) {
     if (routed?.routeDigest !== route?.digest) failures.push({ code: "routed-route-mismatch", subject: "routed" });
     if (routed?.classification !== route?.classification) failures.push({ code: "routed-classification-mismatch", subject: "routed" });
     if (JSON.stringify(routed?.selectedGates) !== JSON.stringify(route?.selectedGates)) failures.push({ code: "routed-gates-mismatch", subject: "routed" });
+    let siteHandoff = null;
+    if (route?.selectedGates?.includes("documentation")) {
+      if (one("site-handoff-status", "") !== "success") failures.push({ code: "site-handoff-step-failed", subject: "site-handoff" });
+      try {
+        siteHandoff = JSON.parse(await readFile(resolve(one("site-handoff", "")), "utf8"));
+        const handoffBody = Object.fromEntries(Object.entries(siteHandoff).filter(([key]) => key !== "digest"));
+        if (siteHandoff?.schema !== "sir.qualified-site-handoff/v1" || siteHandoff?.result !== "pass") failures.push({ code: "site-handoff-malformed-or-not-pass", subject: "site-handoff" });
+        if (!/^[0-9a-f]{64}$/u.test(siteHandoff?.documentationGateSha256 ?? "") || !/^[0-9a-f]{64}$/u.test(siteHandoff?.siteReceiptSha256 ?? "") || siteHandoff?.archive?.name !== "protected-qualified-site.tar" || !/^[0-9a-f]{64}$/u.test(siteHandoff?.archive?.sha256 ?? "")) failures.push({ code: "site-handoff-malformed-bindings", subject: "site-handoff" });
+        if (siteHandoff?.digest !== sha256(canonical(handoffBody))) failures.push({ code: "site-handoff-digest-mismatch", subject: "site-handoff" });
+        if (siteHandoff?.source?.commit !== source.commit || siteHandoff?.source?.tree !== source.tree) failures.push({ code: "site-handoff-source-mismatch", subject: "site-handoff" });
+        if (siteHandoff?.routeDigest !== route?.digest) failures.push({ code: "site-handoff-route-mismatch", subject: "site-handoff" });
+      } catch {
+        failures.push({ code: "site-handoff-missing-or-unreadable", subject: "site-handoff" });
+      }
+    }
     const body = {
       schema: joinSchema,
       mode: "focused",
@@ -141,6 +156,12 @@ async function main(argv) {
         schema: routed?.schema ?? null,
         result: routed?.result ?? null,
         routeDigest: routed?.routeDigest ?? null,
+      },
+      siteHandoff: siteHandoff === null ? null : {
+        schema: siteHandoff.schema ?? null,
+        result: siteHandoff.result ?? null,
+        digest: siteHandoff.digest ?? null,
+        routeDigest: siteHandoff.routeDigest ?? null,
       },
       failures,
       firstFailure: failures[0] ?? null,

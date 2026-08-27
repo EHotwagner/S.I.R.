@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/366-main-ci-routing/ship.json",
-      "digest": "sha256:16837606cd5e943673ae2bfb33e81d24df861b8f2e82da4bba7d9c88b4be30c6",
+      "digest": "sha256:d4ce503cc4973f18aa51b9d26d3a87d2f01cf7064a9013d98f25a33ad354413c",
       "schemaVersion": 1
     },
     {
       "path": "readiness/366-main-ci-routing/verify.json",
-      "digest": "sha256:cf25a3f3879c5144c8d3918ee8ea6acfe3793e2f7e478eeee5074e67fe6a79b5",
+      "digest": "sha256:8edc8edc658296e93cbc7ac2c0ac3e40645e2dd785aca1c6dc8f928cde325d29",
       "schemaVersion": 1
     },
     {
       "path": "readiness/366-main-ci-routing/work-model.json",
-      "digest": "sha256:08dbfcb9c1546d4a3688ae5da88c44b87d0bdf39f7014b0bb6d3c8081212c8c6",
+      "digest": "sha256:10a52a142032f2d1fde0e3f6982fb0e2c452b802830e0ae8d65b106a7623bc32",
       "schemaVersion": 1
     }
   ],

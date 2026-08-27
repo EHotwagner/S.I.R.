@@ -381,6 +381,21 @@ NODE
       --web-manifest "$web_manifest" --server-manifest "$server_manifest" \
       --client artifacts/client --publish artifacts/publish --output "$ci_root/browser-composition.json"
     ;;
+  seal-qualified-site)
+    [[ -f artifacts/site/index.html ]] || {
+      echo "qualify-pr: qualified site is missing index.html" >&2
+      exit 1
+    }
+    receipt_dir="$ci_root/routed-site-receipts"
+    node scripts/production-build-receipt.mjs create \
+      --owner-command scripts/qualify-pr.sh \
+      --input src --input scripts --input tests --input .github/workflows/ci.yml \
+      --input package.json --input package-lock.json --input global.json --input .config/dotnet-tools.json \
+      --input Directory.Build.props --input Directory.Packages.props --input SIR.slnx \
+      --output qualified-site=artifacts/site \
+      --receipt-directory "$receipt_dir" \
+      --pointer "$ci_root/routed-site.receipt.path"
+    ;;
   gate)
     gate=${1:?qualify-pr gate requires a gate id}
     gate_parts=()

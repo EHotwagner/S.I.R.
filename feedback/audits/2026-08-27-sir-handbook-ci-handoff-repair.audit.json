@@ -1,0 +1,53 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-handbook-ci-handoff-repair.md",
+  "reportSha256": "84c038af106f22c07be44f10b318aca1d4cb3d5973f35eaeb46fd49015574c19",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#368",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The issue and hosted run establish the red-before behavior; replacement PR/main and Pages proof remained pending at report finalization."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/qualified-site-handoff.mjs",
+          "result": "verified",
+          "sha256": "832352a734eb364852e06caa61631aa0bce8513835a3fc6a373b08e9e6ac8385"
+        },
+        {
+          "locator": "file:scripts/test-qualified-site-handoff.mjs",
+          "result": "verified",
+          "sha256": "1685ea5cc506a3daf80bc1d9ac2135a95a6a1a8edb428b138b38a88a2434544f"
+        },
+        {
+          "locator": "file:scripts/test-protected-stage-receipts.mjs",
+          "result": "verified",
+          "sha256": "cfdddaf5e5bbf02c9256a622198edd681648746bf375d6d873c08a741eb835b0"
+        },
+        {
+          "locator": "file:scripts/test-pages-qualified-handoff.mjs",
+          "result": "verified",
+          "sha256": "33c6de60b0aab86b94033236b0155843a057a47024e26f872e6758fbd7a91308"
+        }
+      ],
+      "confidenceLimits": [
+        "The cited focused tests do not constitute hosted Pages deployment proof; replacement hosted PR/main and Pages verification remained pending."
+      ]
+    }
+  ]
+}

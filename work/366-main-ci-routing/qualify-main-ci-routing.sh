@@ -9,6 +9,7 @@ run_suite() {
     ./scripts/test-ci-route-mutations.sh &&
     node scripts/test-ci-integrity-plan.mjs &&
     node scripts/test-protected-stage-receipts.mjs &&
+    node scripts/test-qualified-site-handoff.mjs &&
     node scripts/test-pages-qualified-handoff.mjs &&
     node scripts/test-ci-cost-report.mjs &&
     node scripts/test-workflow-action-contract.mjs &&
