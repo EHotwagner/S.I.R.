@@ -1,5 +1,5 @@
 ---
-title: S.I.R. Combat in Quint handbook roadmap
+title: Combat in Quint handbook roadmap
 category: Battlefield Systems
 categoryindex: 4
 index: 47
