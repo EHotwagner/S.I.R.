@@ -11,7 +11,7 @@ sourceAnalysis: readiness/377-handbook-m6v/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/377-handbook-m6v/analysis.json
-    digest: 52376397daec4a6083f8f5c572af720598d88d4622db9e594fe80a5ef5806bad
+    digest: 871450c500369b665e3a181f105918a2ff8efcbecaa77e68dfa8166490a0f424
     schemaVersion: 1
   - label: checklist
     path: work/377-handbook-m6v/checklist.md
@@ -54,7 +54,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -81,7 +81,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -108,7 +108,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -135,7 +135,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -162,7 +162,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -189,7 +189,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -216,7 +216,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -243,7 +243,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -270,7 +270,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -297,7 +297,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -324,7 +324,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -351,7 +351,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -378,7 +378,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -405,7 +405,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -432,7 +432,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -459,7 +459,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -486,7 +486,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -513,7 +513,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -540,7 +540,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -567,7 +567,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -594,7 +594,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -621,7 +621,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -648,7 +648,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -675,7 +675,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -702,7 +702,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -729,7 +729,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -756,7 +756,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -783,7 +783,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -810,7 +810,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -837,7 +837,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -864,7 +864,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -891,7 +891,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -918,7 +918,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -945,7 +945,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
@@ -974,7 +974,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/377-handbook-m6v/qualification.junit.xml
-      digest: "sha256:7a3a81218926bd32514f506b9ad25c006c9bfb588606873a25534a43221eb22a"
+      digest: "sha256:bd4dade00f60d06b78e7cd10b0179745f71b694acf5a4f749969ca35cc772d65"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8

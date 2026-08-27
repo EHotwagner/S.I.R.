@@ -53,7 +53,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "5832cf4a077734ef5b29a0f809f6b2d5d9d6c195fd8eec88d115acaf3a28ca21"
+        "value": "6947e52f8197dbccb8c02d90264c62509301e1ad5a8c5f77c6108883074a77da"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "ad78801af62b849320a23b13f5b2808ba5e1e476326c315b462d73ecbb68677e"
+        "value": "928f6a9af36611a61a22941a3cd4e8d47e016f81c68f450d12a5eb3457a84100"
       }
     },
     {
@@ -2351,36 +2351,36 @@
             "currencyToken": "sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df",
             "probeReadbackContaminated": false,
             "durationSamplesMs": [
-              52.7,
-              47.7,
-              47,
-              52.5,
-              46.2,
-              52.2,
-              47.6,
-              52.1,
-              44.9,
-              45.4,
-              51,
-              49.1,
-              51.1,
-              50.7,
+              48.5,
+              48.7,
+              45.5,
+              48.7,
+              50.6,
+              48.5,
+              42.9,
+              48.2,
+              43.3,
+              48.6,
+              46.3,
+              42.4,
+              47.2,
+              45.1,
+              49.7,
+              47.4,
+              53.1,
+              49.2,
               47.5,
-              64.1,
-              51.8,
-              53.7,
+              49.7,
+              48.4,
+              53.6,
               46.8,
-              50.9,
-              49.9,
-              46.4,
-              53.9,
-              50.2,
-              50.7,
-              53.9,
-              51.7,
-              53.4,
-              57.9,
-              62.7
+              48.5,
+              52,
+              47.5,
+              48.8,
+              56.1,
+              53.5,
+              46.8
             ],
             "catchUpFrames": [
               0
@@ -2391,8 +2391,8 @@
       "performanceMeasurements": [
         {
           "workloadId": "handbook-m6v-six-diagram-render-v1",
-          "p95Ms": 62.7,
-          "p99Ms": 64.1,
+          "p95Ms": 53.6,
+          "p99Ms": 56.1,
           "maxCatchUpFrames": 0
         }
       ],
@@ -2442,7 +2442,7 @@
           "path": "readiness/377-handbook-m6v/performance-evidence.json",
           "digest": {
             "algorithm": "sha256",
-            "value": "5832cf4a077734ef5b29a0f809f6b2d5d9d6c195fd8eec88d115acaf3a28ca21"
+            "value": "6947e52f8197dbccb8c02d90264c62509301e1ad5a8c5f77c6108883074a77da"
           },
           "schemaVersion": 1
         },
@@ -2466,7 +2466,7 @@
           "path": "work/377-handbook-m6v/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "ad78801af62b849320a23b13f5b2808ba5e1e476326c315b462d73ecbb68677e"
+            "value": "928f6a9af36611a61a22941a3cd4e8d47e016f81c68f450d12a5eb3457a84100"
           },
           "schemaVersion": 1
         },
@@ -2497,7 +2497,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "14d2f12a9fcec6e56759e989909345fca64cd1ee1239adefc93c34e693597ca7"
+        "value": "b9497289793a76398c2737327261027e36299394f42866d156663fc9c0075969"
       },
       "currency": "current"
     }

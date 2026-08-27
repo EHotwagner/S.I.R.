@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/377-handbook-m6v/ship.json",
-      "digest": "sha256:68360e71fdd6e6d362ceecdfcc84be0559312e8c22d298ca3cacde1bc6339dd1",
+      "digest": "sha256:9533d0b630fd810d299b28bf940696c964298e5b5476cf2189f2bf03d64756bf",
       "schemaVersion": 1
     },
     {
       "path": "readiness/377-handbook-m6v/verify.json",
-      "digest": "sha256:a6374ec67c010702949ee08d11a155e43e2ed1077602b8ad8688469348d89984",
+      "digest": "sha256:8272b2e69683bf2589e604f1174c18fddc9a8eaff96d63fa4801deefc8d0570d",
       "schemaVersion": 1
     },
     {
       "path": "readiness/377-handbook-m6v/work-model.json",
-      "digest": "sha256:2b22057116f63c0c69d47ebe4c3565c596e3a6a43d94a69400734e404d669a00",
+      "digest": "sha256:ab8e3183f1ece908856fb99ecfe1b5b7de5398b9edb9d214ca71cde5c9f49e83",
       "schemaVersion": 1
     }
   ],
@@ -822,36 +822,36 @@
             "currencyToken": "sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df",
             "probeReadbackContaminated": false,
             "durationSamplesMs": [
-              52.7,
-              47.7,
-              47,
-              52.5,
-              46.2,
-              52.2,
-              47.6,
-              52.1,
-              44.9,
-              45.4,
-              51,
-              49.1,
-              51.1,
-              50.7,
+              48.5,
+              48.7,
+              45.5,
+              48.7,
+              50.6,
+              48.5,
+              42.9,
+              48.2,
+              43.3,
+              48.6,
+              46.3,
+              42.4,
+              47.2,
+              45.1,
+              49.7,
+              47.4,
+              53.1,
+              49.2,
               47.5,
-              64.1,
-              51.8,
-              53.7,
+              49.7,
+              48.4,
+              53.6,
               46.8,
-              50.9,
-              49.9,
-              46.4,
-              53.9,
-              50.2,
-              50.7,
-              53.9,
-              51.7,
-              53.4,
-              57.9,
-              62.7
+              48.5,
+              52,
+              47.5,
+              48.8,
+              56.1,
+              53.5,
+              46.8
             ],
             "catchUpFrames": [
               0
@@ -862,8 +862,8 @@
       "measurements": [
         {
           "workloadId": "handbook-m6v-six-diagram-render-v1",
-          "p95Ms": 62.7,
-          "p99Ms": 64.1,
+          "p95Ms": 53.6,
+          "p99Ms": 56.1,
           "maxCatchUpFrames": 0
         }
       ]

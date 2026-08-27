@@ -7,196 +7,196 @@
   "timings": {
     "subject": "warm same-browser navigation start until the six external SVG image resources are loaded and decoded with non-zero intrinsic dimensions; unrelated template CDN load is observed but is not diagram readiness",
     "gatingClock": "browser performance timeline; decodedReadyAtMs after HTMLImageElement.decode()",
-    "browserLaunchObservationMs": 155.452,
+    "browserLaunchObservationMs": 125.142,
     "coldSiteNavigationObservation": {
-      "readinessMs": 207.6,
-      "wallObservationMs": 641.803
+      "readinessMs": 141.2,
+      "wallObservationMs": 562.617
     },
     "warmupNavigations": 3,
     "samples": [
       {
-        "readinessMs": 52.7,
-        "wallObservationMs": 165.616,
-        "loadEventEndMs": 132.8,
-        "slowestSvgResponseEndMs": 37.7
-      },
-      {
-        "readinessMs": 47.7,
-        "wallObservationMs": 162.31,
-        "loadEventEndMs": 125.6,
-        "slowestSvgResponseEndMs": 32.9
-      },
-      {
-        "readinessMs": 47,
-        "wallObservationMs": 158.398,
-        "loadEventEndMs": 125.6,
-        "slowestSvgResponseEndMs": 31.2
-      },
-      {
-        "readinessMs": 52.5,
-        "wallObservationMs": 166.93,
-        "loadEventEndMs": 130.1,
-        "slowestSvgResponseEndMs": 36.4
-      },
-      {
-        "readinessMs": 46.2,
-        "wallObservationMs": 154.831,
-        "loadEventEndMs": 123.4,
-        "slowestSvgResponseEndMs": 31.2
-      },
-      {
-        "readinessMs": 52.2,
-        "wallObservationMs": 167.595,
-        "loadEventEndMs": 135.7,
-        "slowestSvgResponseEndMs": 36.4
-      },
-      {
-        "readinessMs": 47.6,
-        "wallObservationMs": 161.936,
-        "loadEventEndMs": 131.2,
-        "slowestSvgResponseEndMs": 32.1
-      },
-      {
-        "readinessMs": 52.1,
-        "wallObservationMs": 162.466,
-        "loadEventEndMs": 131.7,
-        "slowestSvgResponseEndMs": 36.4
-      },
-      {
-        "readinessMs": 44.9,
-        "wallObservationMs": 163.255,
-        "loadEventEndMs": 128.3,
-        "slowestSvgResponseEndMs": 29.6
-      },
-      {
-        "readinessMs": 45.4,
-        "wallObservationMs": 161.862,
-        "loadEventEndMs": 132.9,
-        "slowestSvgResponseEndMs": 30
-      },
-      {
-        "readinessMs": 51,
-        "wallObservationMs": 167.675,
-        "loadEventEndMs": 138.1,
-        "slowestSvgResponseEndMs": 35.6
-      },
-      {
-        "readinessMs": 49.1,
-        "wallObservationMs": 166.119,
-        "loadEventEndMs": 136,
-        "slowestSvgResponseEndMs": 33.2
-      },
-      {
-        "readinessMs": 51.1,
-        "wallObservationMs": 167.582,
-        "loadEventEndMs": 134.8,
-        "slowestSvgResponseEndMs": 35.6
-      },
-      {
-        "readinessMs": 50.7,
-        "wallObservationMs": 173.628,
-        "loadEventEndMs": 134.2,
-        "slowestSvgResponseEndMs": 34.5
-      },
-      {
-        "readinessMs": 47.5,
-        "wallObservationMs": 180.638,
-        "loadEventEndMs": 141.8,
-        "slowestSvgResponseEndMs": 31.2
-      },
-      {
-        "readinessMs": 64.1,
-        "wallObservationMs": 190.254,
-        "loadEventEndMs": 157.5,
-        "slowestSvgResponseEndMs": 46
-      },
-      {
-        "readinessMs": 51.8,
-        "wallObservationMs": 169.624,
-        "loadEventEndMs": 134.2,
-        "slowestSvgResponseEndMs": 35.2
-      },
-      {
-        "readinessMs": 53.7,
-        "wallObservationMs": 168.282,
-        "loadEventEndMs": 137.8,
-        "slowestSvgResponseEndMs": 36.5
-      },
-      {
-        "readinessMs": 46.8,
-        "wallObservationMs": 152.657,
-        "loadEventEndMs": 123.1,
-        "slowestSvgResponseEndMs": 31
-      },
-      {
-        "readinessMs": 50.9,
-        "wallObservationMs": 159.072,
-        "loadEventEndMs": 128.7,
-        "slowestSvgResponseEndMs": 34.9
-      },
-      {
-        "readinessMs": 49.9,
-        "wallObservationMs": 158.827,
-        "loadEventEndMs": 128.5,
-        "slowestSvgResponseEndMs": 32.4
-      },
-      {
-        "readinessMs": 46.4,
-        "wallObservationMs": 155.084,
-        "loadEventEndMs": 124.6,
-        "slowestSvgResponseEndMs": 29.8
-      },
-      {
-        "readinessMs": 53.9,
-        "wallObservationMs": 162.54,
-        "loadEventEndMs": 133.1,
-        "slowestSvgResponseEndMs": 37.5
-      },
-      {
-        "readinessMs": 50.2,
-        "wallObservationMs": 160.805,
-        "loadEventEndMs": 131.9,
+        "readinessMs": 48.5,
+        "wallObservationMs": 150.563,
+        "loadEventEndMs": 121.2,
         "slowestSvgResponseEndMs": 34.2
       },
       {
-        "readinessMs": 50.7,
-        "wallObservationMs": 162.842,
-        "loadEventEndMs": 132.9,
-        "slowestSvgResponseEndMs": 34.6
+        "readinessMs": 48.7,
+        "wallObservationMs": 152.605,
+        "loadEventEndMs": 124.1,
+        "slowestSvgResponseEndMs": 34.5
       },
       {
-        "readinessMs": 53.9,
-        "wallObservationMs": 180.018,
-        "loadEventEndMs": 140.6,
-        "slowestSvgResponseEndMs": 35.6
+        "readinessMs": 45.5,
+        "wallObservationMs": 147.188,
+        "loadEventEndMs": 118,
+        "slowestSvgResponseEndMs": 31.1
       },
       {
-        "readinessMs": 51.7,
-        "wallObservationMs": 167.715,
-        "loadEventEndMs": 136,
-        "slowestSvgResponseEndMs": 34.4
+        "readinessMs": 48.7,
+        "wallObservationMs": 154.746,
+        "loadEventEndMs": 124.4,
+        "slowestSvgResponseEndMs": 34.2
       },
       {
-        "readinessMs": 53.4,
-        "wallObservationMs": 173.14,
-        "loadEventEndMs": 141.5,
-        "slowestSvgResponseEndMs": 35.8
+        "readinessMs": 50.6,
+        "wallObservationMs": 160.385,
+        "loadEventEndMs": 128.5,
+        "slowestSvgResponseEndMs": 35.4
       },
       {
-        "readinessMs": 57.9,
-        "wallObservationMs": 189.896,
-        "loadEventEndMs": 153.7,
-        "slowestSvgResponseEndMs": 39.1
+        "readinessMs": 48.5,
+        "wallObservationMs": 159.199,
+        "loadEventEndMs": 125.8,
+        "slowestSvgResponseEndMs": 33.7
       },
       {
-        "readinessMs": 62.7,
-        "wallObservationMs": 188.153,
-        "loadEventEndMs": 150.4,
-        "slowestSvgResponseEndMs": 43.7
+        "readinessMs": 42.9,
+        "wallObservationMs": 149.199,
+        "loadEventEndMs": 119.3,
+        "slowestSvgResponseEndMs": 27.9
+      },
+      {
+        "readinessMs": 48.2,
+        "wallObservationMs": 161.569,
+        "loadEventEndMs": 132.6,
+        "slowestSvgResponseEndMs": 33.5
+      },
+      {
+        "readinessMs": 43.3,
+        "wallObservationMs": 147.714,
+        "loadEventEndMs": 120.1,
+        "slowestSvgResponseEndMs": 28.5
+      },
+      {
+        "readinessMs": 48.6,
+        "wallObservationMs": 153.517,
+        "loadEventEndMs": 124.9,
+        "slowestSvgResponseEndMs": 33.4
+      },
+      {
+        "readinessMs": 46.3,
+        "wallObservationMs": 158.17,
+        "loadEventEndMs": 122.7,
+        "slowestSvgResponseEndMs": 31.3
+      },
+      {
+        "readinessMs": 42.4,
+        "wallObservationMs": 148.623,
+        "loadEventEndMs": 120.7,
+        "slowestSvgResponseEndMs": 26.9
+      },
+      {
+        "readinessMs": 47.2,
+        "wallObservationMs": 157.026,
+        "loadEventEndMs": 126.5,
+        "slowestSvgResponseEndMs": 31.8
+      },
+      {
+        "readinessMs": 45.1,
+        "wallObservationMs": 154.304,
+        "loadEventEndMs": 124.7,
+        "slowestSvgResponseEndMs": 29.7
+      },
+      {
+        "readinessMs": 49.7,
+        "wallObservationMs": 161.338,
+        "loadEventEndMs": 131.1,
+        "slowestSvgResponseEndMs": 34
+      },
+      {
+        "readinessMs": 47.4,
+        "wallObservationMs": 155.791,
+        "loadEventEndMs": 126.8,
+        "slowestSvgResponseEndMs": 31.3
+      },
+      {
+        "readinessMs": 53.1,
+        "wallObservationMs": 163.732,
+        "loadEventEndMs": 133.7,
+        "slowestSvgResponseEndMs": 36.6
+      },
+      {
+        "readinessMs": 49.2,
+        "wallObservationMs": 159.329,
+        "loadEventEndMs": 131.3,
+        "slowestSvgResponseEndMs": 33.6
+      },
+      {
+        "readinessMs": 47.5,
+        "wallObservationMs": 158.543,
+        "loadEventEndMs": 128.4,
+        "slowestSvgResponseEndMs": 31.3
+      },
+      {
+        "readinessMs": 49.7,
+        "wallObservationMs": 162.516,
+        "loadEventEndMs": 132.1,
+        "slowestSvgResponseEndMs": 33.5
+      },
+      {
+        "readinessMs": 48.4,
+        "wallObservationMs": 160.183,
+        "loadEventEndMs": 128.4,
+        "slowestSvgResponseEndMs": 32.3
+      },
+      {
+        "readinessMs": 53.6,
+        "wallObservationMs": 164.701,
+        "loadEventEndMs": 133.4,
+        "slowestSvgResponseEndMs": 37.4
+      },
+      {
+        "readinessMs": 46.8,
+        "wallObservationMs": 166.649,
+        "loadEventEndMs": 129.8,
+        "slowestSvgResponseEndMs": 30.7
+      },
+      {
+        "readinessMs": 48.5,
+        "wallObservationMs": 160.591,
+        "loadEventEndMs": 130,
+        "slowestSvgResponseEndMs": 31.2
+      },
+      {
+        "readinessMs": 52,
+        "wallObservationMs": 164.865,
+        "loadEventEndMs": 135.5,
+        "slowestSvgResponseEndMs": 35.5
+      },
+      {
+        "readinessMs": 47.5,
+        "wallObservationMs": 148.594,
+        "loadEventEndMs": 128.2,
+        "slowestSvgResponseEndMs": 31.2
+      },
+      {
+        "readinessMs": 48.8,
+        "wallObservationMs": 156.287,
+        "loadEventEndMs": 126.5,
+        "slowestSvgResponseEndMs": 31.9
+      },
+      {
+        "readinessMs": 56.1,
+        "wallObservationMs": 169.694,
+        "loadEventEndMs": 139.6,
+        "slowestSvgResponseEndMs": 39
+      },
+      {
+        "readinessMs": 53.5,
+        "wallObservationMs": 169.661,
+        "loadEventEndMs": 137,
+        "slowestSvgResponseEndMs": 36.7
+      },
+      {
+        "readinessMs": 46.8,
+        "wallObservationMs": 158.694,
+        "loadEventEndMs": 128.1,
+        "slowestSvgResponseEndMs": 29.7
       }
     ],
-    "p95LoadMs": 62.7,
-    "p99LoadMs": 64.1,
+    "p95LoadMs": 53.6,
+    "p99LoadMs": 56.1,
     "maxP95Ms": 100,
     "maxP99Ms": 200
   },

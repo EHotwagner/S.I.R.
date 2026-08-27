@@ -19,7 +19,29 @@ dotnet build SIR.slnx --configuration Release --no-restore
 
 node work/377-handbook-m6v/audit-visual-explanations.mjs --self-test --write-receipt
 ./scripts/build-docs.sh --prepare-site-only
+timing_mutation_log="$(mktemp)"
+if SIR_M6V_DIAGRAM_RESPONSE_DELAY_MS=350 \
+  SIR_M6V_TIMING_MUTATION_RECEIPT="$receipt_root/timing-overflow-mutation.json" \
+  node work/377-handbook-m6v/inspect-rendered-visuals.mjs >"$timing_mutation_log" 2>&1; then
+  rm -f "$timing_mutation_log"
+  printf 'handbook-m6v qualification: expected timing-overflow mutation to fail\n' >&2
+  exit 1
+fi
+if ! jq -e '.result == "observed-red" and .mutation == "svg-response-delay-inside-decoded-image-readiness-subject" and .observation.diagramResponseDelayMs == 350 and .observation.p95LoadMs > .observation.maxP95Ms and .observation.p99LoadMs > .observation.maxP99Ms' "$receipt_root/timing-overflow-mutation.json" >/dev/null; then
+  rm -f "$timing_mutation_log"
+  printf 'handbook-m6v qualification: timing-overflow receipt did not bind the in-subject budget failure\n' >&2
+  exit 1
+fi
+if ! grep -q 'render timing budget exceeded' "$timing_mutation_log"; then
+  sed -n '1,120p' "$timing_mutation_log" >&2
+  rm -f "$timing_mutation_log"
+  printf 'handbook-m6v qualification: timing-overflow mutation failed through the wrong detector\n' >&2
+  exit 1
+fi
+printf 'observed red: timing-overflow (render timing budget exceeded at 350 ms SVG response delay)\n'
+rm -f "$timing_mutation_log"
 node work/377-handbook-m6v/inspect-rendered-visuals.mjs
+printf 'restored green: timing-overflow (untouched decoded-image readiness route)\n'
 
 dotnet run \
   --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj \
@@ -35,6 +57,10 @@ dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- \
 
 analysis_report="$(mktemp)"
 trap 'rm -f "$analysis_report"' EXIT
+# The observed performance sample set is intentionally regenerated above and is
+# part of the generated work model. The first analysis pass refreshes that view;
+# the second must then prove the exact refreshed view implementation-ready.
+fsgg-sdd analyze --work 377-handbook-m6v --json >/dev/null
 fsgg-sdd analyze --work 377-handbook-m6v --json > "$analysis_report"
 jq -e '.analysis.readiness == "implementationReady" and .analysis.blockingCount == 0 and .analysis.staleSourceCount == 0' "$analysis_report" >/dev/null
 
@@ -60,7 +86,7 @@ XML
 cat > "$receipt_root/qualification.junit.xml" <<'XML'
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuite name="sir-handbook-m6v-qualification" tests="8" failures="0" errors="0" skipped="0">
-  <testcase classname="SIR.HandbookM6V" name="source-bound-svg-and-six-observed-red-restored-green-mutations"/>
+  <testcase classname="SIR.HandbookM6V" name="source-bound-svg-and-seven-observed-red-restored-green-mutations"/>
   <testcase classname="SIR.HandbookM6V" name="strict-fsdocs-production-route"/>
   <testcase classname="SIR.HandbookM6V" name="normal-reduced-motion-print-effects-off-rendering"/>
   <testcase classname="SIR.HandbookM6V" name="typed-structural-and-warm-decode-performance"/>

@@ -367,16 +367,16 @@ Completion evidence:
 - `docs/sir-combat-quint-diagrams.json` is the checked schema-v1 projection over current glyph,
   battlefield, runtime-rule, Quint-model, and controlled-vocabulary sources. The owning audit
   re-derives those bindings and fingerprints, denies independent authority, and observed red before
-  restored green for authority, glyph, accessibility, fallback, fingerprint, and performance-budget
-  mutations.
+  restored green for authority, glyph, accessibility, fallback, fingerprint, structural-budget, and
+  decoded-readiness timing mutations.
 - Static geometry and text own meaning. CSS dash motion and SVG-filter glow are progressive only;
   the same six diagrams passed actual Chromium inspection in normal, reduced-motion, print, and
   effects-off modes with stable semantic fingerprints, zero console/page errors, and retained
   non-WebGL meaning. Screenshot inspection also repaired a clipped caption and print-contrast defect.
 - Typed performance evidence covers the declared six-diagram, 138-element, 16,561-byte,
   eight-animated-element workload. Thirty warm, no-store navigations reached browser-native decoded
-  diagram readiness at p95 62.7 ms and p99 64.1 ms within the independently fixed 100/200 ms
-  budgets. Browser launch (155.452 ms), cold-site decode (207.6 ms), unrelated template completion,
+  diagram readiness at p95 53.6 ms and p99 56.1 ms within the typed-spec 100/200 ms
+  budgets. Browser launch (125.142 ms), cold-site decode (141.2 ms), unrelated template completion,
   and the lack of a live compositor are reported separately; no frame-pacing claim is made.
 - Focused receipts, screenshots, and qualification live under `work/377-handbook-m6v/` and
   `readiness/377-handbook-m6v/`; feedback cycle:

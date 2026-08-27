@@ -13,8 +13,8 @@ const required = [
   "effects-off modes",
   "138-element",
   "16,561-byte",
-  "p95 62.7 ms",
-  "p99 64.1 ms",
+  "p95 53.6 ms",
+  "p99 56.1 ms",
   "100/200 ms",
   "no frame-pacing claim is made",
   "M7 remains pending unchanged"
@@ -31,7 +31,7 @@ if (process.argv.includes("--self-test")) {
   const mutations = [
     ["m6v-unchecked", roadmap.replace("### - [x] M6V", "### - [ ] M6V")],
     ["m7-premature", roadmap.replace("### - [ ] M7", "### - [x] M7")],
-    ["timing-evidence-removed", roadmap.replace("p95 62.7 ms", "p95 unavailable")]
+    ["timing-evidence-removed", roadmap.replace("p95 53.6 ms", "p95 unavailable")]
   ];
   for (const [name, mutated] of mutations) {
     if (validate(mutated).length === 0) throw new Error(`${name} mutation remained green`);

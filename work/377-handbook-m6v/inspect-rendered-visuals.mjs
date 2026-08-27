@@ -11,6 +11,9 @@ const output = path.join(root, "readiness/377-handbook-m6v/rendered");
 const manifest = JSON.parse(fs.readFileSync(path.join(root, "docs/sir-combat-quint-diagrams.json"), "utf8"));
 const sha256 = text => crypto.createHash("sha256").update(text).digest("hex");
 const round = value => Math.round(value * 1000) / 1000;
+const diagramResponseDelayMs = Number(process.env.SIR_M6V_DIAGRAM_RESPONSE_DELAY_MS ?? "0");
+const timingMutationReceiptPath = process.env.SIR_M6V_TIMING_MUTATION_RECEIPT;
+if (!Number.isInteger(diagramResponseDelayMs) || diagramResponseDelayMs < 0 || diagramResponseDelayMs > 5000) throw new Error("SIR_M6V_DIAGRAM_RESPONSE_DELAY_MS must be an integer from 0 through 5000");
 fs.mkdirSync(output, { recursive: true });
 
 const mime = new Map([[".html", "text/html; charset=utf-8"], [".svg", "image/svg+xml"], [".css", "text/css"], [".js", "text/javascript"], [".json", "application/json"]]);
@@ -28,7 +31,9 @@ const server = http.createServer((request, response) => {
   // Exercise every real FsDocs artifact on every navigation. Browser-process and
   // font warm-up are still separated from the measured route below.
   response.setHeader("cache-control", "no-store");
-  response.end(fs.readFileSync(target));
+  const send = () => response.end(fs.readFileSync(target));
+  if (path.extname(target) === ".svg" && diagramResponseDelayMs > 0) setTimeout(send, diagramResponseDelayMs);
+  else send();
 });
 await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
 const address = server.address();
@@ -97,6 +102,34 @@ try {
   for (let sample = 0; sample < 30; sample += 1) samples.push(await navigateToDecodedHandbook(performancePage));
   await performanceContext.close();
 
+  const readinessValues = samples.map(sample => sample.readinessMs);
+  const measuredP95LoadMs = round(percentile(readinessValues, .95));
+  const measuredP99LoadMs = round(percentile(readinessValues, .99));
+  if (measuredP95LoadMs > manifest.workload.timing.maxP95LoadMs || measuredP99LoadMs > manifest.workload.timing.maxP99LoadMs) {
+    const overflow = {
+      subject: "warm same-browser navigation start until the six external SVG image resources are loaded and decoded with non-zero intrinsic dimensions",
+      diagramResponseDelayMs,
+      p95LoadMs: measuredP95LoadMs,
+      p99LoadMs: measuredP99LoadMs,
+      maxP95Ms: manifest.workload.timing.maxP95LoadMs,
+      maxP99Ms: manifest.workload.timing.maxP99LoadMs
+    };
+    if (timingMutationReceiptPath) {
+      const receiptPath = path.resolve(root, timingMutationReceiptPath);
+      fs.mkdirSync(path.dirname(receiptPath), { recursive: true });
+      fs.writeFileSync(receiptPath, JSON.stringify({
+        schema: "sir.handbook.timing-mutation/v1",
+        workloadId: manifest.workload.id,
+        workloadDefinitionDigest: manifest.workload.definitionDigest,
+        mutation: "svg-response-delay-inside-decoded-image-readiness-subject",
+        detector: "render timing budget exceeded",
+        result: "observed-red",
+        observation: overflow
+      }, null, 2) + "\n");
+    }
+    throw new Error(`render timing budget exceeded: ${JSON.stringify(overflow)}`);
+  }
+
   for (const mode of modes) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: mode.reducedMotion });
     const page = await context.newPage();
@@ -149,7 +182,6 @@ try {
     await context.close();
   }
 
-  const readinessValues = samples.map(sample => sample.readinessMs);
   const receipt = {
     schema: "sir.handbook.render-inspection/v1",
     workloadId: manifest.workload.id,
@@ -163,15 +195,14 @@ try {
       coldSiteNavigationObservation: { readinessMs: round(coldSiteObservation.readinessMs), wallObservationMs: round(coldSiteObservation.wallObservationMs) },
       warmupNavigations: 3,
       samples: samples.map(sample => ({ readinessMs: round(sample.readinessMs), wallObservationMs: round(sample.wallObservationMs), loadEventEndMs: round(sample.loadEventEndMs), slowestSvgResponseEndMs: round(Math.max(...sample.svgResources.map(resource => resource.responseEndMs))) })),
-      p95LoadMs: round(percentile(readinessValues, .95)),
-      p99LoadMs: round(percentile(readinessValues, .99)),
+      p95LoadMs: measuredP95LoadMs,
+      p99LoadMs: measuredP99LoadMs,
       maxP95Ms: manifest.workload.timing.maxP95LoadMs,
       maxP99Ms: manifest.workload.timing.maxP99LoadMs
     },
     capability: { executablePath, browserVersion: await browser.version(), headless: true, liveCompositor: false, framePacingMeasured: false },
     observations
   };
-  if (receipt.timings.p95LoadMs > receipt.timings.maxP95Ms || receipt.timings.p99LoadMs > receipt.timings.maxP99Ms) throw new Error(`render timing budget exceeded: ${JSON.stringify(receipt.timings)}`);
   fs.writeFileSync(path.join(output, "inspection.json"), JSON.stringify(receipt, null, 2) + "\n");
   const performanceEvidence = {
     schemaVersion: 1,

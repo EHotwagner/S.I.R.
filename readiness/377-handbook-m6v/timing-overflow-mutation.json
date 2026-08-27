@@ -1,0 +1,16 @@
+{
+  "schema": "sir.handbook.timing-mutation/v1",
+  "workloadId": "handbook-m6v-six-diagram-render-v1",
+  "workloadDefinitionDigest": "sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df",
+  "mutation": "svg-response-delay-inside-decoded-image-readiness-subject",
+  "detector": "render timing budget exceeded",
+  "result": "observed-red",
+  "observation": {
+    "subject": "warm same-browser navigation start until the six external SVG image resources are loaded and decoded with non-zero intrinsic dimensions",
+    "diagramResponseDelayMs": 350,
+    "p95LoadMs": 399.5,
+    "p99LoadMs": 409.9,
+    "maxP95Ms": 100,
+    "maxP99Ms": 200
+  }
+}

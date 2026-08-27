@@ -115,7 +115,7 @@ function selfTest() {
     ["accessibility-loss", "accessibility-semantics-missing", () => { const p = baseManifest.diagrams[1].asset; return { overrides: new Map([[p, read(p).replace(' role="img"', "")]]) }; }],
     ["fallback-loss", "fallback-contract-missing", () => { const p = baseManifest.diagrams[3].asset; return { overrides: new Map([[p, read(p).replace("@media print", "@media screen")]]) }; }],
     ["visual-fingerprint-drift", "asset-fingerprint-mismatch", () => { const p = baseManifest.diagrams[4].asset; return { overrides: new Map([[p, read(p).replace("damage 18", "damage 17")]]) }; }],
-    ["performance-overflow", "element-budget-exceeded", () => { const p = baseManifest.diagrams[5].asset; const extra = Array.from({length: 31}, (_, i) => `<circle cx="${i}" cy="1" r="1"/>`).join(""); return { overrides: new Map([[p, read(p).replace("</svg>", `${extra}</svg>`) ]]) }; }]
+    ["structural-overflow", "element-budget-exceeded", () => { const p = baseManifest.diagrams[5].asset; const extra = Array.from({length: 31}, (_, i) => `<circle cx="${i}" cy="1" r="1"/>`).join(""); return { overrides: new Map([[p, read(p).replace("</svg>", `${extra}</svg>`) ]]) }; }]
   ];
   for (const [name, detector, mutate] of cases) {
     const result = validate(mutate());
