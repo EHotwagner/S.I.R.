@@ -3,9 +3,9 @@
      sources:
        - readiness/356-handbook-m0/agent-commands/claude/guidance.json  digest:9a90505ec0dad95b0955fad9b67fa2d27e133aa53ae9b237afb13516d44ca7b2  schema:1(current)
        - readiness/356-handbook-m0/agent-commands/codex/guidance.json  digest:812499101e24c16c72704c441660f26edcbaee207e517f192ba1e3d50d5c0122  schema:1(current)
-       - readiness/356-handbook-m0/analysis.json  digest:5e2ff1542aba40013281f2fffcdc8b07a48e6a5b054af87f2c8730c0f07249c6  schema:1(current)
-       - readiness/356-handbook-m0/ship.json  digest:d2ac88cd62582357bdb12e2138ae46486213fa81a7c5e00f52c7e3c26869f94f  schema:1(current)
-       - readiness/356-handbook-m0/verify.json  digest:685ee88ea5707d826d3515a0d2ccbd50e005b97579ac62662ea62dca81a6c51e  schema:1(current)
+       - readiness/356-handbook-m0/analysis.json  digest:a81b09d3a786f7a0e6339062700162a4c43afa2c549a9bba30daaa975d0d5afc  schema:1(current)
+       - readiness/356-handbook-m0/ship.json  digest:cb5db1bd0fa581233607531604a9fa48a52b3831db1eb02b008df874bc6a153d  schema:1(current)
+       - readiness/356-handbook-m0/verify.json  digest:2c8e315f2a15be624b67ca78863aae240aa41867bd0bdc5cdf6f40947a0fc5ed  schema:1(current)
        - readiness/356-handbook-m0/work-model.json  digest:92182fb7e8b4488c0bab8ed925a953d3868ef6ab01d5f4a7397b7a29bfe4ce7f  schema:1(current)
      outputDigest: ec9497d0c0ac9b640e8f5ff105a07b4f4be8bff1c79670e36b9c5ba52b8ff3ac -->
 

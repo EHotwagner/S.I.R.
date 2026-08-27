@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-27-sir-handbook-m0-authority-inventory.md",
-  "reportSha256": "d580a0612be3966d56ff6275bb1a610c1495b33cc160d8dee6967d3a073dca1b",
+  "reportSha256": "9f92ae3b6805a8b83348a51599e7d6c5dfdd9513c528b506617dcddc245a4480",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -18,17 +18,17 @@
         {
           "locator": "file:readiness/356-handbook-m0/ship-verdict.json",
           "result": "verified",
-          "sha256": "41b72cceb6935a0ef0f7272dc7508f2c816ae45d0a76e4a94affa4cebae80272"
+          "sha256": "8ade7b6ec26b0201e4831fb80ca63746ac4b624e7e2ea5cffaa87e0acf388259"
         },
         {
           "locator": "file:work/356-handbook-m0/verify-roadmap.mjs",
           "result": "verified",
-          "sha256": "004e6ac8fc07c35a9df65cbce8fae13fe2631d09a2e838b7286018c3c2f2466c"
+          "sha256": "a62923dfa3287f94fe7845addb4df1ac4490f0b2c945100ba9f335ed88ee8ac7"
         }
       ],
       "confidenceLimits": [
         "All 17 obligations reuse one shared JUnit case; this proves lifecycle observability, not independently distinct executions.",
-        "The negative-control execution is claim-only because no committed mutation receipt exists."
+        "The dependency and declaration negative controls execute inside the shared verifier, so their pass/fail detail is not split into distinct JUnit cases."
       ]
     },
     {

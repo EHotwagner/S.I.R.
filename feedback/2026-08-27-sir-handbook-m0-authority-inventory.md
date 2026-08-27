@@ -5,7 +5,7 @@ workspace: S.I.R-roadmap-m0
 cycle: roadmap-sir-combat-quint-handbook-m0-authority-inventory
 lane: sdd
 toolVersion: 1.4.0
-commit: 9dd2afecb91ad6a4a886b80c9c275cf981cb242a
+commit: 013ce813436479f08a1926281abf756238c5700e
 ---
 
 # Development feedback — combat Quint handbook M0 authority inventory
@@ -14,7 +14,7 @@ commit: 9dd2afecb91ad6a4a886b80c9c275cf981cb242a
 
 This cycle ran in the existing S.I.R. scaffold on issue #356 and branch `item/356-handbook-m0`, from
 base `77e56d11867a5e2e7ad99f4d61b0f0c9fff61a5f` through reviewed cycle commit
-`9dd2afecb91ad6a4a886b80c9c275cf981cb242a`. The lifecycle tool reported version 1.4.0. The cycle's
+`013ce813436479f08a1926281abf756238c5700e`. The lifecycle tool reported version 1.4.0. The cycle's
 four phase checkpoints are in
 `feedback/checkpoints/roadmap-sir-combat-quint-handbook-m0-authority-inventory.jsonl`; the final checkpoint
 records PR #357 opening and the baseline invalidation limitation. Evidence covers SDD stages charter through ship,
@@ -46,9 +46,9 @@ using `Combat in Quint handbook roadmap` as its navigation title restored the ch
 - **Kind:** positive-pattern
 - **Impact:** All 17 generated evidence and test obligations were independently classified as observed, allowing verify and ship to close without synthetic or self-attested passes.
 - **Expected:** Documentation tasks produce a real test receipt that the lifecycle reads.
-- **Observed:** The focused roadmap verifier emitted one passing JUnit case after checking milestone state, the exact sixteen-rule inventory, authority status, required sections, and target path; its missing-rule mutation failed through the exact-registry assertion.
+- **Observed:** The focused roadmap verifier emitted one passing JUnit case after checking milestone state, all sixteen exact rule ID/kind/dependency rows, all 79 categorized candidate declarations, both modules, authority status, required sections, and target path. Built-in dependency-removal and declaration-removal controls failed through their intended assertions.
 - **Evidence:** file:readiness/356-handbook-m0/handbook-m0.junit.xml; file:readiness/356-handbook-m0/ship-verdict.json; file:work/356-handbook-m0/verify-roadmap.mjs
-- **Version:** fsgg-sdd 1.4.0 at commit `9dd2afecb91ad6a4a886b80c9c275cf981cb242a`.
+- **Version:** fsgg-sdd 1.4.0 at commit `013ce813436479f08a1926281abf756238c5700e`.
 - **Owner:** FS-GG/FS.GG.SDD evidence contract and EHotwagner/S.I.R. documentation verification pattern
 - **Recurrence:** new for this roadmap cycle; no matching prior handbook-roadmap verifier found.
 - **Avoidable cost:** none
@@ -61,7 +61,7 @@ using `Combat in Quint handbook roadmap` as its navigation title restored the ch
 - **Expected:** An empty base/head diff passes, and a candidate diff fails only when the candidate touches digest-bound evidence without resealing its audit.
 - **Observed:** Both `--base origin/main --head HEAD` and `--base origin/main --head origin/main` report the same 17 `overbroad or mismatched exception` errors.
 - **Evidence:** file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m0-authority-inventory.jsonl; command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head origin/main; issue:FS-GG/.github#2856; issue:FS-GG/.github#2852
-- **Version:** feedback tool committed at `9dd2afecb91ad6a4a886b80c9c275cf981cb242a`; FS-GG/.github#2856 is closed but the S.I.R. distributed copy still reproduces.
+- **Version:** feedback tool committed at `013ce813436479f08a1926281abf756238c5700e`; FS-GG/.github#2856 is closed but the S.I.R. distributed copy still reproduces.
 - **Owner:** FS-GG feedback invalidation semantics plus EHotwagner/S.I.R. audit-binding exception ledger
 - **Recurrence:** duplicate of the cause and exact 17-error empty-diff behavior documented in `feedback/2026-08-23-sir-item-277-agent-env-dotnet-root.md`; FS-GG/.github#2856 was folded into open distribution-authority issue FS-GG/.github#2852.
 - **Avoidable cost:** one candidate check and one baseline comparison.
@@ -101,7 +101,7 @@ documentation ledger and lifecycle evidence.
 
 ## §10 Outcome markers
 
-- First meaningful focused test: ledger verifier passed with 16 unique rules; missing-rule mutation red.
+- First meaningful focused test: ledger verifier passed with 16 exact rule rows and 79 exact declaration entries; dependency-removal and declaration-removal controls red.
 - First green SDD verification: 34/34 obligations ready, 17/17 evidence and test obligations observed.
 - Ship readiness: `shipReady`, no blocking findings, no synthetic or missing evidence.
 - Documentation: strict fsdocs generated the roadmap with the pinned host after broader browser/docs prerequisites passed.
@@ -127,7 +127,7 @@ documentation ledger and lifecycle evidence.
 | sdd-authoring | exercised | Charter through tasks and analysis reached implementation readiness. |
 | implementation-apis | not-exercised | No production API changed. |
 | dependencies-build | exercised | Locked npm bootstrap and pinned .NET host led to green strict fsdocs. |
-| testing | exercised | Focused pass plus missing-rule mutation; JUnit consumed by SDD. |
+| testing | exercised | Focused pass plus built-in dependency/declaration mutations; JUnit consumed by SDD. |
 | evidence | exercised | 17/17 evidence and test obligations observed; ship ready. |
 | runtime-playtest | not-exercised | Documentation-only milestone. |
 | performance | not-exercised | No runtime/performance claim or gate changed. |
