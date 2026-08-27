@@ -465,6 +465,17 @@ async function main(argv) {
     process.stdout.write(canonical(route));
     return;
   }
+  if (mode === "verify-route") {
+    const route = JSON.parse(await readFile(one("route", ""), "utf8"));
+    const expected = routePaths(route.paths, route.source ?? {});
+    if (canonical(route) !== canonical(expected)) throw new Error("ci-route: route-receipt-mismatch");
+    const expectedCommit = one("commit", undefined);
+    const expectedTree = one("tree", undefined);
+    if (expectedCommit && route.source.commit !== expectedCommit) throw new Error("ci-route: route-source-commit-mismatch");
+    if (expectedTree && route.source.tree !== expectedTree) throw new Error("ci-route: route-source-tree-mismatch");
+    process.stdout.write(canonical({ schema: routeSchema, result: "pass", source: route.source, digest: route.digest }));
+    return;
+  }
   if (mode === "gate") {
     const gate = one("gate", "");
     const status = one("status", "pass");
@@ -527,7 +538,34 @@ async function main(argv) {
     if (joined.result !== "pass") process.exitCode = 1;
     return;
   }
-  throw new Error("ci-route: usage route|gate|join [options]");
+  if (mode === "verify-join") {
+    const route = JSON.parse(await readFile(one("route", ""), "utf8"));
+    const joined = JSON.parse(await readFile(one("join", ""), "utf8"));
+    const expectedRoute = routePaths(route.paths, route.source ?? {});
+    if (canonical(route) !== canonical(expectedRoute)) throw new Error("ci-route: route-receipt-mismatch");
+    if (joined?.schema !== joinSchema || joined.result !== "pass" || !Array.isArray(joined.gateResults)) {
+      throw new Error("ci-route: routed-join-malformed-or-not-pass");
+    }
+    const started = joined.timing?.startedAtMilliseconds;
+    const completed = joined.timing?.completedAtMilliseconds;
+    const total = joined.timing?.totalMilliseconds;
+    if (!Number.isSafeInteger(started) || !Number.isSafeInteger(completed) || completed < started
+      || !Number.isSafeInteger(total) || total !== completed - started) {
+      throw new Error("ci-route: routed-join-timing-invalid");
+    }
+    const recomputed = joinRoute(route, joined.gateResults, {
+      startedAtMilliseconds: started,
+      completedAtMilliseconds: completed,
+    });
+    if (canonical(recomputed) !== canonical(joined)) throw new Error("ci-route: routed-join-mismatch");
+    const expectedCommit = one("commit", undefined);
+    const expectedTree = one("tree", undefined);
+    if (expectedCommit && route.source.commit !== expectedCommit) throw new Error("ci-route: routed-join-source-commit-mismatch");
+    if (expectedTree && route.source.tree !== expectedTree) throw new Error("ci-route: routed-join-source-tree-mismatch");
+    process.stdout.write(canonical({ schema: joinSchema, result: "pass", source: route.source, routeDigest: route.digest }));
+    return;
+  }
+  throw new Error("ci-route: usage route|verify-route|gate|join|verify-join [options]");
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) main(process.argv.slice(2)).catch((error) => { console.error(error.message); process.exitCode = 1; });

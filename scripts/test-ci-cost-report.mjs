@@ -150,21 +150,33 @@ const overAndRefused = summarize(run, overRunnerBudget, artifacts, withVerdict(2
 assert.equal(overAndRefused.baselineComparison.result, "fail");
 assert.equal(overAndRefused.result, "incomplete");
 
-// A protected run has no PR feedback verdict to grade: `sir.protected-join/v1` carries stage
+// A complete protected run has no routed feedback verdict to grade: `sir.protected-join/v2` carries stage
 // results, not feedback timing. The comparison is not applicable rather than failed. The previous
 // verdict term was `verdictMilliseconds > 0`, which made every protected run record `fail` against
 // a ceiling that was never applied to it.
 const protectedReceipts = [
   { path: "core.json", sha256: "1".repeat(64), value: { schema: "sir.protected-stage/v1", stage: "core", status: "pass", source: { commit: head }, timingMilliseconds: { total: 4_000 } } },
-  { path: "join.json", sha256: "2".repeat(64), value: { schema: "sir.protected-join/v1", result: "pass", source: { commit: head } } },
+  { path: "join.json", sha256: "2".repeat(64), value: { schema: "sir.protected-join/v2", mode: "complete", result: "pass", source: { commit: head } } },
   { path: "preflight.json", sha256: "3".repeat(64), value: { schema: "sir.protected-stage/v1", stage: "preflight", status: "pass", source: { commit: head }, timingMilliseconds: { total: 3_000 } } },
 ];
-const protectedReport = summarize({ ...run, event: "push" }, jobs, artifacts, protectedReceipts);
+const protectedReport = summarize({ ...run, event: "schedule" }, jobs, artifacts, protectedReceipts);
 assert.equal(protectedReport.reconciliation.expectedReceiptShape, true);
 assert.equal(protectedReport.baselineComparison.verdict.result, "not-applicable");
 assert.deepEqual(protectedReport.baselineComparison.verdict.receipts, []);
 assert.equal(protectedReport.baselineComparison.result, "pass");
 assert.equal(protectedReport.result, "complete");
+
+const focusedProtectedReceipts = [
+  ...receipts,
+  { path: "protected.json", sha256: "4".repeat(64), value: { schema: "sir.protected-join/v2", mode: "focused", result: "pass", source: { commit: head } } },
+];
+const focusedProtectedReport = summarize({ ...run, event: "push" }, jobs, artifacts, focusedProtectedReceipts);
+assert.equal(focusedProtectedReport.reconciliation.expectedReceiptShape, true);
+assert.equal(focusedProtectedReport.baselineComparison.verdict.result, "pass");
+assert.equal(focusedProtectedReport.result, "complete");
+const focusedWithoutWrapper = summarize({ ...run, event: "push" }, jobs, artifacts, receipts);
+assert.equal(focusedWithoutWrapper.reconciliation.expectedReceiptShape, false);
+assert.equal(focusedWithoutWrapper.result, "incomplete");
 
 // `not-applicable` cannot launder a pull_request run into a pass: with no PR feedback join the
 // expected receipt shape already refuses, so the run is incomplete whatever the grade says.

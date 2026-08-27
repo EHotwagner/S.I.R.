@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   route:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
@@ -50,7 +50,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0, cache: npm }
       - id: route
@@ -59,11 +59,18 @@ jobs:
         run: |
           mkdir -p artifacts/ci
           echo "$SIR_CI_RUNNER_START_MS" > artifacts/ci/started-ms
-          git diff --name-only '${{ github.event.pull_request.base.sha }}' '${{ github.event.pull_request.head.sha }}' > artifacts/ci/changed-paths.txt
+          if [[ '${{ github.event_name }}' == pull_request ]]; then
+            git diff --name-only '${{ github.event.pull_request.base.sha }}' '${{ github.event.pull_request.head.sha || github.sha }}' > artifacts/ci/changed-paths.txt
+          else
+            # Ordinary protected pushes are classified from exactly what landed. Missing-parent and
+            # empty inventories fail instead of borrowing an arbitrary tracked path.
+            git diff --name-only HEAD^ HEAD > artifacts/ci/changed-paths.txt
+          fi
+          test -s artifacts/ci/changed-paths.txt
           node scripts/ci-route.mjs route \
             --paths-file artifacts/ci/changed-paths.txt \
-            --commit '${{ github.event.pull_request.head.sha }}' \
-            --tree "$(git rev-parse '${{ github.event.pull_request.head.sha }}^{tree}')" \
+            --commit "$(git rev-parse HEAD)" \
+            --tree "$(git rev-parse 'HEAD^{tree}')" \
             --output artifacts/ci/route.json \
             --github-output "$GITHUB_OUTPUT"
       # S.I.R.#311. For a `pull_request` GitHub runs THIS workflow from the base branch while
@@ -173,7 +180,7 @@ jobs:
         with: { name: ci-route, path: artifacts/ci, retention-days: 1 }
 
   integrity:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
     needs: route
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -181,7 +188,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with: { global-json-file: global.json }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -206,13 +213,12 @@ jobs:
           retention-days: 1
           path: artifacts/ci/results
 
-  # Per-PR integrity selection is path-conditional (#248), so a subject that no changed path selects
-  # can stay red on the default branch indefinitely with every PR truthfully reporting
-  # `measured-omission` (#252). This job is the unconditional counterpart: it never runs on a pull
-  # request, so it adds nothing to ordinary PR cost, and it runs every integrity subject on the
-  # schedule, on every push to main, and on demand.
+  # Focused PR/main integrity selection is path-conditional (#248), so a subject no changed path
+  # selects can remain red while each route truthfully reports `measured-omission` (#252). This
+  # exhaustive counterpart runs on the nightly schedule and on demand; ordinary main pushes use
+  # the integrity floor plus their selected route instead of repeating the complete sweep.
   integrity-sweep:
-    if: github.event_name != 'pull_request'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -262,7 +268,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with: { global-json-file: global.json }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -289,7 +295,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with: { global-json-file: global.json }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -318,7 +324,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with: { global-json-file: global.json }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -359,7 +365,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with: { global-json-file: global.json }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -400,7 +406,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with: { global-json-file: global.json }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -442,7 +448,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with: { global-json-file: global.json }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -509,7 +515,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with: { global-json-file: global.json }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -592,7 +598,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with: { global-json-file: global.json }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -627,7 +633,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0 }
       - name: Verify hosted .NET 10 runtime
@@ -665,7 +671,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0 }
       - name: Verify hosted .NET 10 runtime
@@ -703,7 +709,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0 }
       - name: Verify hosted .NET 10 runtime
@@ -735,7 +741,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with: { global-json-file: global.json }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -748,6 +754,29 @@ jobs:
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with: { name: prepared-part-docs, path: artifacts/ci/parts }
       - run: ./scripts/run-ci-gate.sh documentation artifacts/ci/results/documentation.json
+      - name: Stage routed qualified site
+        if: success() && github.event_name == 'push'
+        shell: bash
+        run: |
+          receipt=$(<artifacts/ci/parts/docs.receipt.path)
+          case "$receipt" in artifacts/ci/parts/receipts/*.json) ;; *) echo "Unexpected docs receipt path: $receipt" >&2; exit 1 ;; esac
+          test -f "$receipt"
+          node scripts/ci-route.mjs verify-route \
+            --route artifacts/ci/route.json \
+            --commit "$(git rev-parse HEAD)" \
+            --tree "$(git rev-parse 'HEAD^{tree}')"
+          node scripts/production-build-receipt.mjs verify \
+            --owner-command scripts/qualify-pr.sh \
+            --receipt "$receipt"
+          handoff=artifacts/qualified-site-handoff
+          rm -rf -- "$handoff"
+          mkdir -p "$handoff"
+          tar -cf "$handoff/protected-qualified-site.tar" -- \
+            artifacts/site \
+            artifacts/ci/route.json \
+            artifacts/ci/results/documentation.json \
+            artifacts/ci/parts/docs.receipt.path \
+            "$receipt"
       - if: always()
         name: Record produced gate results
         shell: bash
@@ -757,6 +786,12 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with: { name: gate-documentation, path: artifacts/ci/results, retention-days: 1 }
+      - if: success() && github.event_name == 'push'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: protected-qualified-site
+          retention-days: 30
+          path: artifacts/qualified-site-handoff
 
   # S.I.R.#263. The collection-strategy regression gate, which until this row no CI route selected.
   # Modelled on `cross-runtime`: a wave-2 gate whose one producer is `native`, so its `needs:` is
@@ -771,7 +806,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with: { global-json-file: global.json }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -795,7 +830,7 @@ jobs:
         with: { name: gate-collection-strategies, path: artifacts/ci/results, retention-days: 1 }
 
   pr-verdict:
-    if: always() && github.event_name == 'pull_request'
+    if: always() && (github.event_name == 'pull_request' || github.event_name == 'push')
     needs: [route, integrity, prepare-native, prepare-fable, prepare-web, prepare-docs, spatial-mutations, cancellation-mutations, browser-general-helper, browser-delivery, domain-conformance, cross-runtime, browser, documentation, collection-strategies]
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -803,7 +838,7 @@ jobs:
       - name: Capture runner start
         run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0 }
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -1082,7 +1117,7 @@ jobs:
         with: { name: pr-verdict, path: artifacts/ci/pr-verdict.json, retention-days: 30 }
 
   protected-preflight:
-    if: github.event_name != 'pull_request'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -1118,7 +1153,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha || github.sha }}" }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0 }
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -1136,7 +1171,7 @@ jobs:
           node scripts/ci-cost-report.mjs observe \
             --repository '${{ github.repository }}' \
             --run-id '${{ github.run_id }}' \
-            --expected-head '${{ github.event.pull_request.head.sha }}' \
+            --expected-head '${{ github.event.pull_request.head.sha || github.sha }}' \
             --expected-attempt '${{ github.run_attempt }}' \
             --active-observer-job-name cost-observer \
             --receipts artifacts/observed \
@@ -1146,7 +1181,7 @@ jobs:
         with: { name: ci-cost-report, path: artifacts/ci-cost/report.json, retention-days: 90 }
 
   full-qualification:
-    if: github.event_name != 'pull_request'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     needs: protected-preflight
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -1200,7 +1235,7 @@ jobs:
 
   protected-verdict:
     if: always() && github.event_name != 'pull_request'
-    needs: [protected-preflight, full-qualification]
+    needs: [route, pr-verdict, protected-preflight, full-qualification]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -1211,15 +1246,36 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with: { node-version: 26.5.0 }
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        if: github.event_name == 'push'
+        continue-on-error: true
+        with: { name: ci-route, path: artifacts/ci }
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        if: github.event_name == 'push'
+        continue-on-error: true
+        with: { name: pr-verdict, path: artifacts/ci }
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        if: github.event_name != 'push'
         continue-on-error: true
         with: { pattern: protected-stage-*, path: artifacts/qualification/stages, merge-multiple: true }
       - name: Join protected stage receipts
         run: |
-          args=()
-          for stage in preflight core; do
-            if [[ -f "artifacts/qualification/stages/$stage.json" ]]; then args+=(--receipt "$stage=artifacts/qualification/stages/$stage.json"); fi
-          done
-          node scripts/protected-stage-receipt.mjs join "${args[@]}" --output artifacts/qualification/protected-verdict.json
+          if [[ '${{ github.event_name }}' == push ]]; then
+            node scripts/ci-route.mjs verify-join \
+              --route artifacts/ci/route.json \
+              --join artifacts/ci/pr-verdict.json \
+              --commit "$(git rev-parse HEAD)" \
+              --tree "$(git rev-parse 'HEAD^{tree}')"
+            node scripts/protected-stage-receipt.mjs join-focused \
+              --route artifacts/ci/route.json \
+              --routed artifacts/ci/pr-verdict.json \
+              --output artifacts/qualification/protected-verdict.json
+          else
+            args=()
+            for stage in preflight core; do
+              if [[ -f "artifacts/qualification/stages/$stage.json" ]]; then args+=(--receipt "$stage=artifacts/qualification/stages/$stage.json"); fi
+            done
+            node scripts/protected-stage-receipt.mjs join "${args[@]}" --output artifacts/qualification/protected-verdict.json
+          fi
       - if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with: { name: protected-verdict, path: artifacts/qualification/protected-verdict.json, retention-days: 90 }

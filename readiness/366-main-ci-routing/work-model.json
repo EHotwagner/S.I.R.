@@ -1,0 +1,1367 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "366-main-ci-routing",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/366-main-ci-routing/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "550ad2b58ff0ff5e251c8283df973f5e92d4a5bc9cf5830006ff59dd45d7785d"
+      }
+    },
+    {
+      "path": "work/366-main-ci-routing/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "8ecef7cbfc257e0930843aa4c8636e17339a4fd78da13c0d58695bce057f5121"
+      }
+    },
+    {
+      "path": "work/366-main-ci-routing/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "a2d7849f0a39942755e375aa1dd8e4cb72dee284346fc7973796742719c51c8e"
+      }
+    },
+    {
+      "path": "work/366-main-ci-routing/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "d56fc97c9990f74d26a078a2abeb5860d241a9ea0e9fd344140f5a0f436b97ef"
+      }
+    },
+    {
+      "path": "work/366-main-ci-routing/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "4e06af2ee12524a10f0649d30e32f1e5c9f86f575573f32c1ae18c055270d131"
+      }
+    },
+    {
+      "path": "work/366-main-ci-routing/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "2add4fbd73eb3cf9929886c0ebc38942231824c83ad08f50c99e93f3e7b52869"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "366-main-ci-routing",
+    "title": "Route main-push CI by relevant changes",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "Ordinary main pushes MUST classify the exact landed \u0060HEAD^..HEAD\u0060 path set with the existing canonical route policy and exact commit/tree identity. (Stories: US-001; Acceptance: AC-001)",
+      "text": "Ordinary main pushes MUST classify the exact landed \u0060HEAD^..HEAD\u0060 path set with the existing canonical route policy and exact commit/tree identity. (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/366-main-ci-routing/spec.md",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "Ordinary main pushes MUST run the integrity floor and exactly the route-selected producers, helpers, and gates; PR events MUST retain their existing classification and join semantics. (Stories: US-001; Acceptance: AC-001)",
+      "text": "Ordinary main pushes MUST run the integrity floor and exactly the route-selected producers, helpers, and gates; PR events MUST retain their existing classification and join semantics. (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/366-main-ci-routing/spec.md",
+      "sourceLocation": {
+        "line": 43,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "Unknown, mixed/cross-cutting, workflow, router, protected-receipt, Pages-contract, and otherwise unclassifiable paths MUST select the conservative complete route. (Stories: US-001, US-004; Acceptance: AC-002)",
+      "text": "Unknown, mixed/cross-cutting, workflow, router, protected-receipt, Pages-contract, and otherwise unclassifiable paths MUST select the conservative complete route. (Stories: US-001, US-004; Acceptance: AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/366-main-ci-routing/spec.md",
+      "sourceLocation": {
+        "line": 44,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "The stable protected verdict MUST join typed exact-source receipts and fail on missing, stale, malformed, cancelled, failed, unexpected, digest-mismatched, route-mismatched, or source-mismatched required results. (Stories: US-004; Acceptance: AC-002)",
+      "text": "The stable protected verdict MUST join typed exact-source receipts and fail on missing, stale, malformed, cancelled, failed, unexpected, digest-mismatched, route-mismatched, or source-mismatched required results. (Stories: US-004; Acceptance: AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/366-main-ci-routing/spec.md",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004"
+      ],
+      "linkedEvidenceIds": [
+        "EV004"
+      ]
+    },
+    {
+      "id": "FR-005",
+      "title": "Scheduled and \u0060workflow_dispatch\u0060 runs MUST retain complete protected preflight and clean-room production qualification, including their existing subjects and site handoff. (Stories: US-002; Acceptance: AC-003)",
+      "text": "Scheduled and \u0060workflow_dispatch\u0060 runs MUST retain complete protected preflight and clean-room production qualification, including their existing subjects and site handoff. (Stories: US-002; Acceptance: AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/366-main-ci-routing/spec.md",
+      "sourceLocation": {
+        "line": 46,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T005"
+      ],
+      "linkedEvidenceIds": [
+        "EV005"
+      ]
+    },
+    {
+      "id": "FR-006",
+      "title": "A focused main route MUST create a qualified-site handoff only when selected authoritative inputs require documentation and browser delivery, and that handoff MUST bind the exact source and qualification receipts. (Stories: US-003; Acceptance: AC-004)",
+      "text": "A focused main route MUST create a qualified-site handoff only when selected authoritative inputs require documentation and browser delivery, and that handoff MUST bind the exact source and qualification receipts. (Stories: US-003; Acceptance: AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/366-main-ci-routing/spec.md",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T006"
+      ],
+      "linkedEvidenceIds": [
+        "EV006"
+      ]
+    },
+    {
+      "id": "FR-007",
+      "title": "Pages MUST deploy only when the triggering successful main-push CI run exposes and verifies the exact qualified-site handoff; unrelated merges and schedule/manual runs MUST not deploy. (Stories: US-003; Acceptance: AC-004)",
+      "text": "Pages MUST deploy only when the triggering successful main-push CI run exposes and verifies the exact qualified-site handoff; unrelated merges and schedule/manual runs MUST not deploy. (Stories: US-003; Acceptance: AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/366-main-ci-routing/spec.md",
+      "sourceLocation": {
+        "line": 48,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T007"
+      ],
+      "linkedEvidenceIds": [
+        "EV007"
+      ]
+    },
+    {
+      "id": "FR-008",
+      "title": "Documentation plus strong positive and negative tests MUST prove event routing, exact diff/source binding, conservative fallback, full periodic coverage, protected joining, site handoff selection, and PR behavior retention. (Stories: US-001, US-004; Acceptance: AC-005)",
+      "text": "Documentation plus strong positive and negative tests MUST prove event routing, exact diff/source binding, conservative fallback, full periodic coverage, protected joining, site handoff selection, and PR behavior retention. (Stories: US-001, US-004; Acceptance: AC-005)",
+      "acceptanceCriteria": [
+        "AC-005"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/366-main-ci-routing/spec.md",
+      "sourceLocation": {
+        "line": 49,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T008"
+      ],
+      "linkedEvidenceIds": [
+        "EV008"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Extend the existing route/DAG/join across \u0060pull_request\u0060 and ordinary \u0060push\u0060 events; compute PR paths from base/head and main paths from exact \u0060HEAD^..HEAD\u0060.",
+      "decision": "Extend the existing route/DAG/join across \u0060pull_request\u0060 and ordinary \u0060push\u0060 events; compute PR paths from base/head and main paths from exact \u0060HEAD^..HEAD\u0060.",
+      "requirementRefs": [
+        "FR-001",
+        "FR-002"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/366-main-ci-routing/clarifications.md",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T009"
+      ]
+    },
+    {
+      "id": "DEC-002",
+      "title": "Introduce a versioned protected-run manifest whose mode selects either the focused route verdict or the complete preflight/core receipts; every input remains exact-source and digest-bound.",
+      "decision": "Introduce a versioned protected-run manifest whose mode selects either the focused route verdict or the complete preflight/core receipts; every input remains exact-source and digest-bound.",
+      "requirementRefs": [
+        "FR-004",
+        "FR-005"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/366-main-ci-routing/clarifications.md",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T010"
+      ]
+    },
+    {
+      "id": "DEC-003",
+      "title": "Stage a qualified-site handoff in the routed documentation job only on main push, bind it to the route and documentation receipts, and let Pages remain deploy-only.",
+      "decision": "Stage a qualified-site handoff in the routed documentation job only on main push, bind it to the route and documentation receipts, and let Pages remain deploy-only.",
+      "requirementRefs": [
+        "FR-006",
+        "FR-007"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/366-main-ci-routing/clarifications.md",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T011"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Implement requirement FR-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-002"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-002",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Implement requirement FR-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-003"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-003",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Implement requirement FR-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-004",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Implement requirement FR-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-005"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-005",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "T006",
+      "title": "Implement requirement FR-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-006"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "FR-006",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV006"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "T007",
+      "title": "Implement requirement FR-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-007"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "FR-007",
+        "PD-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV007"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "T008",
+      "title": "Implement requirement FR-008",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-008"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "FR-008",
+        "PD-008"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV008"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "T009",
+      "title": "Implement clarification decision DEC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-001"
+      ],
+      "sourceIds": [
+        "DEC-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV009"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "T010",
+      "title": "Implement clarification decision DEC-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-002"
+      ],
+      "sourceIds": [
+        "DEC-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV010"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "T011",
+      "title": "Implement clarification decision DEC-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-003"
+      ],
+      "sourceIds": [
+        "DEC-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV011"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "T012",
+      "title": "Update contract surface PC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "PD-004",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV012"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "T013",
+      "title": "Record verification evidence VO-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "PD-008",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV013"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "T014",
+      "title": "Handle migration posture PM-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV014"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "T015",
+      "title": "Refresh generated view impact GV-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-001",
+        "PD-008"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV015"
+      ],
+      "source": "work/366-main-ci-routing/tasks.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV006",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T006",
+      "taskRefs": [
+        "T006"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV007",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T007",
+      "taskRefs": [
+        "T007"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV008",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T008",
+      "taskRefs": [
+        "T008"
+      ],
+      "requirementRefs": [
+        "FR-008"
+      ],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV009",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T009",
+      "taskRefs": [
+        "T009"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV010",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T010",
+      "taskRefs": [
+        "T010"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV011",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T011",
+      "taskRefs": [
+        "T011"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV012",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T012",
+      "taskRefs": [
+        "T012"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV013",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T013",
+      "taskRefs": [
+        "T013"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV014",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T014",
+      "taskRefs": [
+        "T014"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV015",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T015",
+      "taskRefs": [
+        "T015"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml",
+        "docs/ci-qualification.md",
+        "scripts/ci-route.mjs",
+        "scripts/protected-stage-receipt.mjs",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-pages-qualified-handoff.mjs",
+        "scripts/test-protected-stage-receipts.mjs",
+        "work/366-main-ci-routing/qualify-main-ci-routing.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/366-main-ci-routing/evidence.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/366-main-ci-routing/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.4.0"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/366-main-ci-routing/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "550ad2b58ff0ff5e251c8283df973f5e92d4a5bc9cf5830006ff59dd45d7785d"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/366-main-ci-routing/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "8ecef7cbfc257e0930843aa4c8636e17339a4fd78da13c0d58695bce057f5121"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/366-main-ci-routing/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a2d7849f0a39942755e375aa1dd8e4cb72dee284346fc7973796742719c51c8e"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/366-main-ci-routing/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d56fc97c9990f74d26a078a2abeb5860d241a9ea0e9fd344140f5a0f436b97ef"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/366-main-ci-routing/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "4e06af2ee12524a10f0649d30e32f1e5c9f86f575573f32c1ae18c055270d131"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/366-main-ci-routing/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "2add4fbd73eb3cf9929886c0ebc38942231824c83ad08f50c99e93f3e7b52869"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "24da1e218c4407495cc57fa153e5d497ddec634c91d55f1924bad23a3c84be9d"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}
