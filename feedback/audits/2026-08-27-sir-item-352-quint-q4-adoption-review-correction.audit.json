@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-27-sir-item-352-quint-q4-adoption-review-correction.md",
-  "reportSha256": "86e5beb06e89bb05e6e07e2862318f06edda55fcbb903e69ae6dd9a305485dc0",
+  "reportSha256": "8526485692fbe34bf3ba42c119392ab46d02437b6db90725b12ea70c13922933",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -44,12 +44,12 @@
         {
           "locator": "file:work/352-quint-q4-sir-adoption/evidence.yml",
           "result": "verified",
-          "sha256": "cc77b52d16fbb70f32e38e053456028f687167a4c43dcdbc1b82aa6b7c61a89e"
+          "sha256": "79ec82b8af189ce46c9f8ab7465372ad48ff125a890109f2283cbcaa1dc7066d"
         },
         {
           "locator": "file:readiness/352-quint-q4-sir-adoption/ship-verdict.json",
           "result": "verified",
-          "sha256": "b521a8ad0f5715f009ab336d0a7389474869ac3c6602880761f7084ed8a4b54b"
+          "sha256": "8b300debc91ab522734f2f2890a84cad360263146d8279fdf21cc48ccd135349"
         }
       ],
       "confidenceLimits": [

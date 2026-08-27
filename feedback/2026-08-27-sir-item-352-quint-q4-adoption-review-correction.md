@@ -5,14 +5,14 @@ workspace: S.I.R-352
 cycle: item-352-quint-q4-sir-adoption
 lane: sdd
 toolVersion: 1.0.1
-commit: 60eff02cc49fdbf7e0fcd6d1e4fea8ad9664726d
+commit: 3efeebc22c11ad484740216a331ba6955d2ecd69
 ---
 
 # Quint Q4 review-correction feedback
 
 ## §1 Provenance and confidence
 
-This follow-up report preserves the exact-head review repair after the earlier cycle report was finalized. It covers commit `60eff02cc49fdbf7e0fcd6d1e4fea8ad9664726d`, the third checkpoint event, focused qualification, and regenerated SDD views. Confidence is high for the corrected standalone model and focused receipt. Hosted CI and merge were pending when drafted.
+This follow-up report preserves the exact-head review repair after the earlier cycle report was finalized. It covers commit `3efeebc22c11ad484740216a331ba6955d2ecd69`, the third checkpoint event, focused qualification, and exact-head no-change SDD views. Confidence is high for the corrected standalone model and focused receipt. Hosted CI and merge were pending when drafted.
 
 ## §2 What worked
 
@@ -31,7 +31,7 @@ The previously green focused qualification sampled only ordinary traces, exposed
 - **Expected:** The focused receipt preserves production signed-int rounding, executes both exact and sampled replay, observes generation/identity/contract rejection through the real checks, and claims only results present in its committed report.
 - **Observed:** The earlier head used unbounded Quint addition before damage rounding, ran sampled replay only, tested stale output with bare inequality, and marked frozen-corpus/Fable compatibility observed. Commit `60eff02c` adds int32 wrapping plus a boundary witness, a committed 9-state exact trace, real projection/identity/contract controls, and changes EV007 to an explicit deferral.
 - **Evidence:** command:test "$(git show 3fe6f279e9cdb12b3e7ca3514920e98061bb9fa5:scripts/qualify-quint-q4-sir-combat.sh | grep -c -- '--quint-q4-exact')" -eq 0 && test "$(git show 3fe6f279e9cdb12b3e7ca3514920e98061bb9fa5:docs/rules/sir-combat.md | grep -c 'wrapInt32')" -eq 0; command:git show 3fe6f279e9cdb12b3e7ca3514920e98061bb9fa5:scripts/qualify-quint-q4-sir-combat.sh | grep -Fq 'if cmp -s' && git show 3fe6f279e9cdb12b3e7ca3514920e98061bb9fa5:scripts/qualify-quint-q4-sir-combat.sh | grep -Fq 'stale-generated.qnt'; command:git show 3fe6f279e9cdb12b3e7ca3514920e98061bb9fa5:work/352-quint-q4-sir-adoption/evidence.yml | grep -A30 -F '  - id: EV007' | grep -Fq 'kind: verification' && git show 3fe6f279e9cdb12b3e7ca3514920e98061bb9fa5:work/352-quint-q4-sir-adoption/evidence.yml | grep -A30 -F '  - id: EV007' | grep -Fq 'result: pass'; command:gh run view 33068728390 --json conclusion,headSha; file:docs/rules/sir-combat.md; file:scripts/qualify-quint-q4-sir-combat.sh; file:tests/fixtures/rules-corpus/quint-q4/trace_0.itf.json; file:work/352-quint-q4-sir-adoption/evidence.yml; file:readiness/352-quint-q4-sir-adoption/ship-verdict.json
-- **Version:** Quint 0.32.0 and FS.GG.SDD 1.0.1 at commit 60eff02cc49fdbf7e0fcd6d1e4fea8ad9664726d
+- **Version:** Quint 0.32.0 and FS.GG.SDD 1.0.1 at commit 3efeebc22c11ad484740216a331ba6955d2ecd69
 - **Owner:** S.I.R. Quint qualification and evidence binding
 - **Recurrence:** seen again after feedback/2026-08-12-sir-item-194-executable-rules-corpus.md §4.1 for receipt over-attribution; new for signed-width rounding, exact replay, and real freshness/identity controls
 - **Avoidable cost:** one independent-review repair cycle; elapsed developer time not measured
