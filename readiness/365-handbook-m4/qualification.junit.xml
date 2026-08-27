@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sir-handbook-m4-qualification" tests="6" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.HandbookM4" name="locked-release-strict-docs-build"/>
+  <testcase classname="SIR.HandbookM4" name="structural-link-vocabulary-audit"/>
+  <testcase classname="SIR.HandbookM4" name="formal-claims-six-mutation-pairs-action-reachability-and-state-bindings"/>
+  <testcase classname="SIR.HandbookM4" name="full-q4-model-and-runtime-qualification"/>
+  <testcase classname="SIR.HandbookM4" name="roadmap-ledger-only-m4-checked"/>
+  <testcase classname="SIR.HandbookM4" name="sdd-analysis-current-and-implementation-ready"/>
+</testsuite>

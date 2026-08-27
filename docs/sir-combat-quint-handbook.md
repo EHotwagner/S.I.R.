@@ -785,12 +785,30 @@ starts after geometry has produced the counts.
 <a id="chapter-32-choosing-an-example-witness-or-invariant"></a>
 ### 32. Choosing an example, witness, or invariant
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+Choose the weakest claim that answers the question. A stronger-sounding claim is not automatically a
+better one: it may cost more, require bounds the model does not have, or say something different from
+what the learner needs.
+
+| Evidence form | Precise reading | What it does **not** establish |
+|---|---|---|
+| Example — one concrete calculation | Evaluating `woundForDamage(25)` illustrates one input/output fact. | It says nothing about other inputs or whether an [action](#def-action) can reach that value. |
+| Reachable [witness](#def-witness) — an existential execution | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) shows at least one enabled path from [init](#qnt-init) through [resolveConsequences](#qnt-resolve-consequences) to the expected successor. | It does not say every path has that result. |
+| [Invariant](#def-invariant) — a predicate over every checked state | [boundedCombatState](#property-bounded-combat-state) must hold for each [reachable state](#def-reachable-state) explored by the checker. | Its strength is limited by the declared initializer, [step](#qnt-step), and verification bounds. |
+| [Sampled execution](#def-sampled-run) — search evidence, not proof | A seeded simulation explores concrete nondeterministic choices and is excellent for learning and finding defects. | Passing [samples](#unit-samples) cannot rule out an unvisited failing history. |
+| [Bounded exhaustive verification](#def-bounded-verification) — exhaustive only inside the declared bounds | A checker explores all represented paths within its configured depth/state bounds and either finds a violation or reports none there. | A green bounded check is not an unbounded theorem and does not prove production equivalence. |
+| [Counterexample](#def-counterexample) — one concrete refutation | One trace that violates a claimed [property](#def-property) is enough to disprove that claim in the checked model. | It does not by itself diagnose the intended repair or the production implementation. |
+
+Use a concrete calculation to teach arithmetic, a [witness](#def-witness) to establish reachability, an
+[invariant](#def-invariant) to constrain all checked successors, and a [counterexample](#def-counterexample)
+to learn why a universal claim failed. When reporting results, always name the initializer, transition
+relation, bound or sample count, seed when applicable, and exact model revision.
 
 <a id="chapter-33-reading-an-execution-trace"></a>
 ### 33. Reading an execution trace
 
-Start with [action](#def-action) names, then compare values. In the representative [execution trace](#def-execution-trace), state 0 is `Initialize` and state 1 is `ResolveConsequences`. That tells you which transition to explain before you inspect any number.
+Start with [action](#def-action) names, then compare values. In the representative
+[execution trace](#def-execution-trace), state 0 is `Initialize` and state 1 is
+`ResolveConsequences`. That tells you which transition to explain before you inspect any number.
 
 Next group fields by role:
 
@@ -801,29 +819,150 @@ Next group fields by role:
 
 Finally reconcile the records. The [last](#qnt-last) [damage](#stat-damage) field equals `20`, explaining the [health](#stat-health) delta `100 - 20 = 80`; positive [damage](#stat-damage) explains the [suppression delta](#stat-suppression-delta) `12`; [health](#stat-health) above zero explains why [incapacitation](#concept-incapacitation) remains false. A trace is useful when these relationships agree, not merely when it contains many fields.
 
+The transition relation is deliberately nondeterministic:
+
+```quint authority=sir-combat
+  action step = any {
+    resolveConsequences(representativeAttack),
+    resolveConsequences(missedAttack),
+    resolveCoverImpact(25, true, true, "cover:sample"),
+    resolveRecovery("recovery:sample"),
+  }
+```
+
+At each successor, `any` may choose any enabled branch. A cover-impact trace followed by recovery and a
+representative attack followed by recovery can both be valid. No sampled trace is the canonical combat
+history. Read each edge with the same five questions:
+
+1. Which [action](#def-action) did `last.lastAction` identify?
+2. Which fields changed between predecessor and successor?
+3. Which input and [guard](#def-guard) enabled that branch?
+4. Which authoritative pure helpers explain the changed values?
+5. Which fields stayed unchanged, confirming the [action](#def-action) boundary?
+
+Do not reinterpret [consequenceExplanationOrder](#qnt-consequence-explanation-order) as hidden [state transitions](#def-state-transition).
+It orders explanatory rule IDs inside one completed aggregate [action](#def-action); the only observable
+successor is the finished [CombatState](#qnt-combat-state) plus [Observation](#qnt-observation).
+
 <a id="chapter-34-reading-and-minimizing-a-counterexample"></a>
 ### 34. Reading and minimizing a counterexample
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+Use this fixed path: **Property → earliest bad state → producing [action](#def-action) → changed fields → [guard](#def-guard) and input → authority seam**.
+
+1. Name the failed [property](#def-property) exactly. “The model failed” is too broad.
+2. Start at the initialized [record](#def-record) and find the first state where the predicate is false. Later states may
+   be consequences, not causes.
+3. Read [last](#qnt-last)`.lastAction` on that state and compare only fields its [action](#def-action) may assign.
+4. Reconstruct the [guard](#def-guard) and input values. A disabled transition cannot have produced the state.
+5. Reduce the trace: keep the shortest prefix that still reaches the violation and the smallest input
+   boundary that still fails.
+6. Inspect the narrowest literate-authority helper that calculates the bad field. Do not patch the
+   generated `.qnt` projection or infer an intermediate production transition.
+7. After repair, rerun the unchanged detector and the broader regression suite.
+
+For the threshold defect in the next chapter, changing the minor-[wound](#concept-wound) comparison from `>= 25` to
+`> 25` makes [woundThresholdsAreExact](#run-wound-thresholds-are-exact) fail at the [step](#qnt-step) whose input [damage](#stat-damage) is exactly `25`. The earliest
+bad field is [`last.wound`](#qnt-last): it is [NoWound](#qnt-no-wound) instead of [MinorWound](#qnt-minor-wound). [Damage](#stat-damage) `24` still passes and [damage](#stat-damage)
+`50` still becomes [MajorWound](#qnt-major-wound), so neither belongs in the minimal refutation. The one-step boundary
+case is the useful [counterexample](#def-counterexample); a longer trace would add noise.
+
+A minimized [counterexample](#def-counterexample) disproves the checked claim. It does not decide
+whether the authority, the detector, or the requirement is wrong. That judgment still comes from the
+source-precedence map and the rule's accepted semantics.
 
 <a id="chapter-35-mutation-laboratory"></a>
 ### 35. Mutation laboratory
 
-M2 uses one deliberately narrow [mutation](#def-mutation): in a disposable extracted model, change the representative `armorRetentionRaw` from `8000` to `7000`. Do not edit the literate authority.
+The laboratory never edits `docs/rules/sir-combat.md`. It extracts the authoritative [module](#def-module) into a
+temporary file, applies exactly one [mutation](#def-mutation), runs the named detector, requires a
+non-zero result, discards the fixture, re-extracts the untouched authority, and reruns the identical
+detector. This pairs an [observed-red control](#def-observed-red-control) with
+[restored green](#def-restored-green), rather than merely showing that the repaired tree happens to pass.
 
-[Prediction](#def-prediction): the model now calculates `25 × 1.0 × 0.7 = 17.5`, and [round-half-away-from-zero](#unit-round-half-away-from-zero) yields `18`. The unchanged [witness](#def-witness) still expects `20`, so [representativeDamageIsTwenty](#run-representative-damage-is-twenty) must fail. That failure is the [observed-red control](#def-observed-red-control): it demonstrates that the named [run](#def-run) detects the semantic defect rather than merely returning success for any input.
+| Family | Deliberate defect in the temporary fixture | Primary detector | Expected red | Restored-green claim |
+|---|---|---|---|---|
+| threshold | Make minor [wound](#concept-wound) require [damage](#stat-damage) `> 25`. | [woundThresholdsAreExact](#run-wound-thresholds-are-exact) | The exact-25 expectation fails. | Exact 24/25/50 boundaries pass again. |
+| bounds | Initialize [health](#stat-health) at `101`. | `boundedInitialState` over [boundedCombatState](#property-bounded-combat-state) | The initialized [health](#stat-health) bound fails. | The same bound accepts authoritative `100`. |
+| [suppression](#stat-suppression) | Remove the positive-[damage](#stat-damage) condition from [suppressionForDamage](#qnt-suppression-for-damage). | [suppressionNeedsPositiveDamageAndRecoversFive](#run-suppression-needs-positive-damage-and-recovers-five) | A miss applies [suppression](#stat-suppression). | Miss, hit, and five-point recovery expectations all pass. |
+| cover | Keep `coverBlocking = true` when integrity reaches zero. | [destroyingCoverConsumesCurrentCollision](#run-destroying-cover-consumes-current-collision) | Destroyed cover is still blocking. | Destruction is permeable while the current projectile still stops. |
+| collateral | Make same-faction input suppress [damage](#stat-damage) in [nextConsequences](#qnt-next-consequences). | [collateralOutcomeIgnoresFaction](#run-collateral-outcome-ignores-faction) | Allied and opposing outcomes diverge. | Both factions again receive identical physical consequences. |
+| catalogue integrity | Remove one stable rule row. | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) through [sixteenRulesDeclared](#property-sixteen-rules-declared) | The catalogue cardinality expectation fails. | The exact sixteen-rule [set](#def-set) passes again. |
 
-The focused M2 audit performs exactly this [mutation](#def-mutation), requires non-zero Quint test status and an observed `18`, discards the disposable file, extracts the untouched authority again, and requires the same [run](#def-run) green. That [last](#qnt-last) execution is [restored green](#def-restored-green). Broader [mutation](#def-mutation) families and [counterexample](#def-counterexample) minimization remain M4 work.
+For each row, the focused qualification records both statuses under one detector identity. The repair
+is not evidence until the unchanged detector returns green. The aggregate result therefore contains
+six red/green pairs, not six mutations followed by one unrelated successful command.
+
+The earlier `8000 → 7000` retention [mutation](#def-mutation) remains a useful arithmetic lesson:
+[prediction](#def-prediction) says `18`, the unchanged representative [witness](#def-witness) expects
+`20`, and the fixture fails. M4 adds breadth; it does not replace that already-observed control.
 
 <a id="chapter-36-dead-actions-accidental-stuttering-and-terminal-"></a>
 ### 36. Dead actions, accidental stuttering, and terminal states
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+An [action](#def-action) can typecheck yet be unreachable because its [guard](#def-guard) is never true
+from [init](#qnt-init). A broad [step](#qnt-step) can also hide accidental [stuttering](#def-stuttering) if a branch reports
+success while leaving both variables unchanged. Neither problem is demonstrated by a pure helper test.
+
+M4 therefore requires one reachable [witness](#def-witness) per major state-changing
+[action](#def-action):
+
+| Major [action](#def-action) | Named reachable [witness](#def-witness) | Required observable delta |
+|---|---|---|
+| [resolveConsequences](#qnt-resolve-consequences) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | [last](#qnt-last)`.lastAction = "ResolveConsequences"`, [health](#stat-health) `100 → 80`, [suppression](#stat-suppression) `0 → 12`. |
+| [resolveCoverImpact](#qnt-resolve-cover-impact) | [destroyingCoverConsumesCurrentCollision](#run-destroying-cover-consumes-current-collision) | [last](#qnt-last)`.lastAction = "ResolveCoverImpact"`, integrity `100 → 0`, blocking `true → false`. |
+| [resolveRecovery](#qnt-resolve-recovery) | [suppressionNeedsPositiveDamageAndRecoversFive](#run-suppression-needs-positive-damage-and-recovers-five) | [last](#qnt-last)`.lastAction = "ResolveRecovery"`, [suppression](#stat-suppression) `12 → 7`. |
+
+Those traces establish existence, not universal scheduling. The model has no [terminal state](#def-terminal-state):
+after [health](#stat-health) reaches zero, cover impact and recovery remain representable. That is an explicit bounded-model
+choice, not a claim that the production session must continue scheduling all [combat](#qnt-combat) commands.
+
+The properties also expose what they constrain instead of relying on suggestive names:
+
+| Model predicate | Kind and authoritative binding |
+|---|---|
+| [sixteenRulesDeclared](#property-sixteen-rules-declared) | static catalogue integrity over [ruleCatalogue](#qnt-rule-catalogue); it is not a transition-state predicate. |
+| [boundedCombatState](#property-bounded-combat-state) | transition [invariant](#def-invariant) over [`combat.health`](#qnt-combat), [`combat.suppression`](#qnt-combat), and [`combat.coverIntegrity`](#qnt-combat). |
+| [incapacityMatchesHealth](#property-incapacity-matches-health) | transition [invariant](#def-invariant) over [`combat.incapacitated`](#qnt-combat) and [`combat.health`](#qnt-combat). |
+| [destroyedCoverIsPermeable](#property-destroyed-cover-is-permeable) | transition [invariant](#def-invariant) over [`combat.coverIntegrity`](#qnt-combat) and [`combat.coverBlocking`](#qnt-combat). |
+| [validTraceObservation](#property-valid-trace-observation) | observation [invariant](#def-invariant) over [`last.lastAction`](#qnt-last) and [`last.traceRaw`](#qnt-last). |
+| [suppressionRequiresDamage](#property-suppression-requires-damage) | observation [invariant](#def-invariant) over [`last.lastAction`](#qnt-last), [`last.damage`](#qnt-last), and [`last.suppressionDelta`](#qnt-last). |
+| [factionNeutralCollateral](#property-faction-neutral-collateral) | catalogue-classified example comparing [nextConsequences](#qnt-next-consequences)`(initialCombat, alliedAttack)` with [nextConsequences](#qnt-next-consequences)`(initialCombat, representativeAttack)`; it is checked during simulation but is not state-variable reachability. |
+
+Every transition [invariant](#def-invariant) therefore references [combat](#qnt-combat) or [last](#qnt-last) fields directly.
+The catalogue cardinality check and faction-neutral example are labelled separately so their broader
+command-line grouping cannot silently upgrade their logical kind.
 
 <a id="chapter-37-what-sampled-runs-establish-and-what-exhaustive-"></a>
 ### 37. What sampled runs establish and what exhaustive checks add
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+Use simulation first for fast learning and trace variety:
+
+```text
+quint run sir-combat.qnt --main SirCombat --backend rust --seed 352 \
+  --max-samples 64 --max-steps 8 --invariants boundedCombatState
+```
+
+This [sampled run](#def-sampled-run) establishes that 64 attempted executions at seed `352`, up to
+eight steps each, exposed no [boundedCombatState](#property-bounded-combat-state) violation. It does not establish that no other seed,
+choice sequence, or longer history violates the predicate.
+
+Use the model checker when the question is universal inside an explicit finite search:
+
+```text
+quint verify sir-combat.qnt --main SirCombat --init init --step step \
+  --invariant boundedCombatState --max-steps 8
+```
+
+A successful [bounded verification](#def-bounded-verification) establishes that the checker found no
+violation among the represented paths through depth eight under that initializer and transition relation.
+Record the backend and model revision too. Increasing the bound strengthens this result; it never turns
+the bounded [combat](#qnt-combat) abstraction into proof about omitted geometry, production code, or every future rule.
+
+Use named [runs](#def-run) for crisp boundary [witnesses](#def-witness), seeded simulation for diverse
+debugging traces, and [bounded verification](#def-bounded-verification) for universal checked-state
+questions. If either universal route finds one bad history, preserve its minimized
+[counterexample](#def-counterexample), repair the literate authority, and repeat both the focused detector
+and the broader qualification.
 
 <a id="part-vii"></a>
 ## Part VII: Production correspondence
@@ -867,7 +1006,7 @@ For the representative spine, evidence is a three-step sequence, not a permanent
 2. Change only retention `8000 → 7000` in a disposable extraction and observe the named [witness](#def-witness) red because actual [damage](#stat-damage) becomes `18` while [expected damage](#stat-expected-damage) remains `20`.
 3. Re-extract the untouched authority and [run](#def-run) the [witness](#def-witness) green again.
 
-The audit records all three outcomes. The [mutation](#def-mutation) file is temporary and never becomes an authoring source. M4 extends this pattern to other formal subjects; M5 explains the independent runtime-mapping mutations.
+The audit records all three outcomes. The [mutation](#def-mutation) file is temporary and never becomes an authoring source. Chapters 32–37 extend this pattern across the M4 formal subjects; M5 explains the independent runtime-mapping mutations.
 
 <a id="chapter-43-safely-changing-a-combat-rule"></a>
 ### 43. Safely changing a combat rule
@@ -972,8 +1111,8 @@ claim of coverage.
 <a id="chapter-49-exercises-and-solutions"></a>
 ### 49. Exercises and solutions
 
-These exercises use the positive authority as written. Deliberate semantic defects and
-[counterexamples](#def-counterexample) belong to M4.
+These exercises use the positive authority as written. Chapters 34 and 35 now teach deliberate
+semantic defects, minimized [counterexamples](#def-counterexample), and restored-green evidence.
 
 #### Beginner — predict one helper or completed successor
 
@@ -1013,8 +1152,8 @@ metadata and may include participating rules in a reviewer-friendly order.
 2. A reviewer asks for `resolvePenetration`, `resolveWound`, and `resolveIncapacitation` actions. Explain
    why adding them would be dishonest, and propose a helper/observation/[property](#def-property) review route instead.
 3. Design a catalogue query that checks every dependency points at a declared rule. Explain what such
-   an example establishes and what exhaustive verification would add; implementation of that broader
-   formal laboratory remains M4.
+   an example establishes and what exhaustive verification would add; compare it with the bounded
+   catalogue-integrity [mutation](#def-mutation) in chapter 35 and the claim limits in chapter 37.
 4. Classify the claim “the 10/10 trace [run](#def-run) proves supercover is correct.” Identify the authority
    boundary and rewrite the claim accurately.
 
@@ -1031,7 +1170,7 @@ whether supercover produced those counts.
 <a id="chapter-50-alphabetical-definition-index"></a>
 ### 50. Alphabetical definition index
 
-The index preserves the complete M0 address inventory. M2 filled the representative spine and M3 fills
+The index preserves the complete M0 address inventory. M2 filled the representative spine and M3 filled
 all sixteen rule definitions without changing anchors; M6 completes the remaining aliases,
 cross-references, and enforcement.
 

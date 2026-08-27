@@ -205,7 +205,7 @@ Completion evidence (2026-08-27):
   only after independent exact-head review, green PR CI, merge, a first focused post-merge protected verdict,
   issue #366 closure, and project status Done. M4 and the later M6V visual milestone remain unchanged.
 
-### - [ ] M4 — Formal reasoning and mutation laboratory
+### - [x] M4 — Formal reasoning and mutation laboratory
 
 **Outcome:** the handbook teaches how to learn from execution and failure.
 
@@ -223,6 +223,27 @@ Exit criteria:
 - every major action has reachable execution evidence;
 - every required invariant references model state; and
 - each mutation fails through its named detection route before repair.
+
+Completion evidence (2026-08-27):
+
+- `docs/sir-combat-quint-handbook.md` distinguishes concrete examples, existential witnesses,
+  transition/observation invariants, sampled executions, bounded exhaustive verification, and
+  counterexamples; chapters 33–37 teach nondeterministic trace reading, counterexample minimization,
+  reachability, state bindings, and honest claim limits without inventing intermediate runtime state.
+- `work/365-handbook-m4/audit-formal-reasoning.mjs` derives temporary fixtures from the literate
+  authority and proves six detector-specific observed-red/restored-green pairs for threshold, bounds,
+  suppression, cover, collateral, and catalogue-integrity defects. It also checks three major-action
+  witnesses and seven authoritative property bindings; the untouched model and full Q4/runtime suite
+  remain green.
+- Lifecycle evidence: `work/365-handbook-m4/` and `readiness/365-handbook-m4/`; feedback cycle:
+  `roadmap-sir-combat-quint-handbook-m4-formal-reasoning`.
+- Delivery boundary: this checked entry is the merge-candidate ledger update. Independent exact-head
+  acceptance and green exact-head hosted CI are required before merge. It becomes landed completion
+  history only when the M4 PR merges; post-merge validation must confirm main, issue #365 closure, and
+  project status Done.
+- M5, M6, M6V, and M7 remain pending. M6V retains ownership of authoritative mechanics/theory SVGs,
+  progressive animation/shader enhancement, accessible fallbacks, render regression, and performance
+  qualification before M7 publication.
 
 ### - [ ] M5 — Runtime correspondence and evidence
 

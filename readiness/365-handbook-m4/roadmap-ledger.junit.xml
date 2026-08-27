@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sir-handbook-m4-roadmap-ledger" tests="1" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.HandbookM4" name="only-m4-checked-with-conditional-delivery-evidence"/>
+  <properties><property name="roadmapSha256" value="6b9a73d9b0e4cc62c7681e76ffb822735d211f299290370659331298ac77355a"/></properties>
+</testsuite>
