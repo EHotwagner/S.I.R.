@@ -970,32 +970,102 @@ and the broader qualification.
 <a id="chapter-38-mapping-quint-records-and-operations-to-s-i-r-ru"></a>
 ### 38. Mapping Quint records and operations to S.I.R. runtime subjects
 
-This M2 map is intentionally limited to the representative attack. M5 owns the complete [correspondence](#def-correspondence) reference.
+[Correspondence](#def-correspondence) is a checked relation, not shared authority. Use these status words consistently:
+`exact` for a normalized field compared directly; `aggregate` when several model subjects meet one
+production entry point; `external-contract` when only an identity/interface boundary is checked;
+`presentation-only` for review metadata; and `missing` when no runtime comparison exists.
 
-| Modeling layer | Quint subject | Current runtime/corpus subject | M2 claim |
-|---|---|---|---|
-| raw fixed-point values | [SCALE](#qnt-scale), [multiplyFixed](#qnt-multiply-fixed), [roundedDamage](#qnt-rounded-damage) | `SIR.Domain.FixedPoint` and [damage](#stat-damage) helpers used by `src/SIR.Simulation/CombatRules.fs` | The model encodes the documented scale, half-away rounding, saturation helpers, and final int32-wrap boundary explicitly. |
-| representative facts | [rifleDamageRaw](#qnt-rifle-damage-raw), [representativeAttack](#qnt-representative-attack) | stable rifle/body facts and `CombatRules` inputs | The learning input is `25`, full trace, and retention `0.8`; this is a bounded representative fixture, not every weapon/body combination. |
-| completed consequences | [nextConsequences](#qnt-next-consequences), [resolveConsequences](#qnt-resolve-consequences) | `CombatRules` completed physical-[combat](#qnt-combat) consequence resolution | The [action](#def-action) is atomic because the interpreter exposes completed consequences, not intermediate model states. |
-| explanation | [Observation](#qnt-observation), [consequenceExplanationOrder](#qnt-consequence-explanation-order) | [combat](#qnt-combat) facts/events and stable rule metadata | The [observation](#qnt-observation) is a review projection of the completed [action](#def-action); the adapter compares every listed model field for accepted trace actions against its runtime projection. |
-| execution evidence | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) plus sampled ITF traces | `tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs` and `CombatRules` | The committed exact trace and 16 seeded sampled traces have replayed through the real interpreter at the qualification boundary. |
+| Stable rule | Quint subject | Current F# subject | Evidence and scope | Status |
+|---|---|---|---|---|
+| [CONTENT-WEAPON-RIFLE-001](#rule-content-weapon-rifle-001) | [rifleDamageRaw](#qnt-rifle-damage-raw), [representativeAttack](#qnt-representative-attack) | `CombatRules.registry`; `QuintQ4ReplayFixtures.attackInput` | exact representative fixture and sampled attack inputs | exact |
+| [CONTENT-BODY-HUMAN-001](#rule-content-body-human-001) | [humanArmorRetentionRaw](#qnt-human-armor-retention-raw) | `CombatRules.registry`; `attackInput.ArmorRetention` | exact representative/sample projection; not all body types | exact |
+| [COMBAT-ENGAGEMENT-001](#rule-combat-engagement-001) | [preparationRaw](#qnt-preparation-raw) | `CombatRules.resolveAttack`; `AttackOutcome.Preparation` | [`last.preparationRaw`](#qnt-last) in exact and sampled replay | exact |
+| [COMBAT-TRACE-002](#rule-combat-trace-002) | [traceAlgorithm](#qnt-trace-algorithm), [traceRaw](#qnt-trace-raw) | `FS.GG.Game.Core.Los.lineOfSightBy`; `CombatRules.resolveAttack` | fingerprint plus supplied visible/total count replay; geometry generation itself is not replayed | external-contract |
+| [COMBAT-ARMOR-004](#rule-combat-armor-004) | [retainedEffect](#qnt-retained-effect) | `AttackInput.ArmorRetention`; `AttackOutcome.ArmorRetention` | [`last.retentionRaw`](#qnt-last) exact/sample comparison | exact |
+| [COMBAT-DAMAGE-001](#rule-combat-damage-001) | [expectedDamageRaw](#qnt-expected-damage-raw), [roundedDamage](#qnt-rounded-damage), [damageForAttack](#qnt-damage-for-attack) | `SIR.Domain.FixedPoint`; `CombatRules.resolveAttack` | [`last.damage`](#qnt-last), Q4 arithmetic witnesses, and real interpreter replay | exact |
+| [COMBAT-COLLISION-001](#rule-combat-collision-001) | `contact`, [coverObservation](#qnt-cover-observation) | `CombatRules.resolveCoverImpact`; completed attack outcomes | contact is derived from completed [damage](#stat-damage); cover collision uses the focused entry point | aggregate |
+| [COMBAT-COVER-003](#rule-combat-cover-003) | [nextCoverImpact](#qnt-next-cover-impact), [resolveCoverImpact](#qnt-resolve-cover-impact) | `CombatRules.resolveCoverImpact` | integrity, [damage](#stat-damage), destroyed, and current-stop fields replayed | exact |
+| [COMBAT-PENETRATION-001](#rule-combat-penetration-001) | [retainedEffect](#qnt-retained-effect), `retentionRaw` | `AttackInput.ArmorRetention`; `CombatRules.resolveAttack` | visible only inside completed attack input/outcome | aggregate |
+| [COMBAT-HEALTH-001](#rule-combat-health-001) | [nextConsequences](#qnt-next-consequences), [bounded100](#qnt-bounded100) | `CombatRules.resolveConsequences`; `RemainingHealth` | [`combat.health`](#qnt-combat) exact/sample comparison | exact |
+| [COMBAT-WOUND-001](#rule-combat-wound-001) | [woundForDamage](#qnt-wound-for-damage), `incapacitated` | `CombatRules.resolveConsequences`; `WoundSeverityCode`; `Incapacitated` | [`last.wound`](#qnt-last) and [`combat.incapacitated`](#qnt-combat) exact/sample comparison | exact |
+| [COMBAT-SUPPRESSION-001](#rule-combat-suppression-001) | [suppressionForDamage](#qnt-suppression-for-damage), [nextConsequences](#qnt-next-consequences) | `CombatRules.resolveConsequences`; `SuppressionDelta`; `TotalSuppression` | observation and durable state compared together | exact |
+| [COMBAT-SUPPRESSION-RECOVERY-001](#rule-combat-suppression-recovery-001) | [nextRecovery](#qnt-next-recovery), [resolveRecovery](#qnt-resolve-recovery) | `CombatRules.resolveRecovery` | recovery [action](#def-action)/state/observation replay | exact |
+| [COMBAT-COLLATERAL-001](#rule-combat-collateral-001) | [alliedAttack](#qnt-allied-attack), [factionNeutralCollateral](#property-faction-neutral-collateral) | `QuintQ4ReplayFixtures.applyConsequences`; completed consequence resolver | factions are reflected and consequence equality is model-checked; production has no faction branch here | aggregate |
+| [COMBAT-COVER-DESTRUCTION-001](#rule-combat-cover-destruction-001) | [nextCoverImpact](#qnt-next-cover-impact), [destroyedCoverIsPermeable](#property-destroyed-cover-is-permeable) | `CombatRules.resolveCoverImpact`; `Destroyed`; `StopsProjectile` | focused exact/sample cover replay | exact |
+| [COMBAT-ATTACK-RESOLUTION-001](#rule-combat-attack-resolution-001) | [nextConsequences](#qnt-next-consequences), [resolveConsequences](#qnt-resolve-consequences), [Observation](#qnt-observation) | `CombatRules.resolveConsequences`; `QuintQ4ReplayFixtures.applyModelAction` | twenty normalized fields compared after every state | aggregate |
+
+**Missing [correspondence](#def-correspondence) register.** The supercover geometry behind [COMBAT-TRACE-002](#rule-combat-trace-002) is deliberately
+`missing`: Q4 accepts visible/[total samples](#stat-total-samples) and checks the pinned `lineOfSightBy` contract identity, but
+does not replay the geometry algorithm. No other sixteen-rule row is silently missing. A future missing
+row must use the `missing` status, name the absent comparison, and avoid production claims.
 
 [Claim boundary](#def-claim-boundary): a green Quint [run](#def-run) establishes behavior of the extracted model. It does **not** by itself establish production [correspondence](#def-correspondence). The repository qualification separately runs exact and sampled traces through the real interpreter and independently mutates mapping, observable fields, and interpreter results to prove that boundary detects divergence. That evidence is scoped to its pinned source/tool identities and sampled traces; it is neither an exhaustive proof nor automatic equivalence for future changes.
 
 <a id="chapter-39-literate-authority-and-deterministic-qnt-extract"></a>
 ### 39. Literate authority and deterministic .qnt extraction
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+`docs/rules/sir-combat.md` is the authored source. Its two additive
+````text
+```quint sir-combat.qnt +=
+```
+````
+fences are concatenated in document order. `scripts/qualify-quint-q4-sir-combat.sh` extracts twice,
+compares the bytes, typechecks the result with Quint `0.32.0`, and rejects stale projections, wrong [module](#def-module)
+identity, or a changed external-contract fingerprint. The temporary `.qnt` file is a
+[generated projection](#def-generated-projection): inspect it, execute it, and discard it; never edit it
+as authority.
+
+[ITF](#def-itf-trace) is the next [generated projection](#def-generated-projection). Quint serializes the variables [combat](#qnt-combat) and [last](#qnt-last); qualification
+removes volatile timestamp/description metadata and fixes the source label before replay. The projection
+therefore carries executable states, not a new rule definition. Recreate it whenever the literate source,
+Quint version, [run](#def-run) seed, sample count, or step bound changes.
 
 <a id="chapter-40-exact-and-sampled-itf-replay"></a>
 ### 40. Exact and sampled ITF replay
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+The committed exact corpus is `tests/fixtures/rules-corpus/quint-q4/trace_0.itf.json`: one named trace,
+nine states. Run it through the real interpreter with:
+
+```text
+dotnet tests/SIR.Domain.Tests/bin/Release/net10.0/SIR.Domain.Tests.dll \
+  --quint-q4-exact tests/fixtures/rules-corpus/quint-q4 1
+```
+
+`SIR-Q4-EXACT-ACCEPT: traces=1 states=9` means every normalized state field matched. It proves
+[correspondence](#def-correspondence) for that exact committed trace only.
+
+The sampled route uses Quint seed `352`, `16` traces, and at most `8` steps. The current deterministic
+corpus contains `144` states and must include `attack:representative`. Qualification passes its temporary
+directory to `--quint-q4-sampled <directory> 16`; acceptance reads
+`SIR-Q4-SAMPLED-ACCEPT: traces=16 states=144`. This is sampled evidence: it does not cover another seed,
+longer histories, omitted inputs, or the external supercover geometry.
+
+For each ITF state, `QuintQ4ReplayFixtures.expectedState` normalizes model values,
+`applyModelAction` invokes `CombatRules.resolveConsequences`, [resolveCoverImpact](#qnt-resolve-cover-impact), or
+[resolveRecovery](#qnt-resolve-recovery), and `firstDifference` compares five durable `combat.*` fields plus fifteen `last.*`
+observation fields in stable order. The adapter is [correspondence](#def-correspondence) code; it is not a second [combat](#qnt-combat)
+interpreter because every transition delegates to production entry points.
 
 <a id="chapter-41-first-divergence-reporting"></a>
 ### 41. First-divergence reporting
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+Stop at the earliest mismatch. Later differences may be consequences of the first one and are poorer
+debugging evidence. The Q4 comparator reports:
+
+```text
+Q4 first divergence: fixture=<trace> pointer=/states/<n>/<field>
+transition=<n> action=<lastAction> expected=<model> actual=<runtime>
+adapter=tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs:applyModelAction
+implementation=src/SIR.Simulation/CombatRules.fs:CombatRules mutation=<control>
+```
+
+Read it left to right: reproduce the fixture, open the JSON pointer, identify the [action](#def-action)/event at that
+transition, compare the single field, then inspect the named adapter and production implementation.
+Do not repair a later field first. For [`wrong-observable-field`](#def-first-divergence), the first changed projection is
+[`last.traceRaw`](#qnt-last); for [`wrong-action-mapping`](#def-first-divergence), the event is deliberately routed with the wrong visible
+sample count; for [`combat-boundary-defect`](#def-first-divergence), the production result is deliberately wrapped with an
+invalid remaining [health](#stat-health). Each is an independent detector inversion, not evidence that production is
+currently wrong.
 
 <a id="chapter-42-observed-red-controls-and-restored-green-evidenc"></a>
 ### 42. Observed-red controls and restored-green evidence
@@ -1006,12 +1076,39 @@ For the representative spine, evidence is a three-step sequence, not a permanent
 2. Change only retention `8000 → 7000` in a disposable extraction and observe the named [witness](#def-witness) red because actual [damage](#stat-damage) becomes `18` while [expected damage](#stat-expected-damage) remains `20`.
 3. Re-extract the untouched authority and [run](#def-run) the [witness](#def-witness) green again.
 
-The audit records all three outcomes. The [mutation](#def-mutation) file is temporary and never becomes an authoring source. Chapters 32–37 extend this pattern across the M4 formal subjects; M5 explains the independent runtime-mapping mutations.
+The audit records all three outcomes. The [mutation](#def-mutation) file is temporary and never becomes an authoring source. Chapters 32–37 extend this pattern across the M4 formal subjects.
+
+Runtime [correspondence](#def-correspondence) then runs three independent ephemeral controls:
+
+| Control | Changed seam | Required first-divergence evidence |
+|---|---|---|
+| [`wrong-action-mapping`](#def-first-divergence) | adapter chooses a zero-visible representative attack | transition/[action](#def-action) plus earliest differing consequence field |
+| [`wrong-observable-field`](#def-first-divergence) | adapter adds one to [`last.traceRaw`](#qnt-last) | JSON pointer ending in [`last.traceRaw`](#qnt-last), expected, and actual |
+| [`combat-boundary-defect`](#def-first-divergence) | wrapped production result reports invalid remaining [health](#stat-health) | JSON pointer ending in [`combat.health`](#qnt-combat), expected, and actual |
+
+Every control must exit red and name both adapter and implementation. The untouched exact and sampled
+commands then rerun green. A control that merely fails without a structured [first divergence](#def-first-divergence) is not
+accepted evidence; a red left in an authored source is not restored-green evidence.
 
 <a id="chapter-43-safely-changing-a-combat-rule"></a>
 ### 43. Safely changing a combat rule
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+Use this order; it keeps authority, projections, and claims from drifting apart:
+
+1. Identify the stable rule and dependency cone in the registry and handbook [correspondence](#def-correspondence) map.
+2. Change the owning domain/runtime authority and the literate Quint authority intentionally; do not edit generated `.qnt` or ITF.
+3. Re-extract and typecheck the model; inspect the authority/generated byte identities.
+4. Update named model witnesses/properties and [run](#def-run) their observed-red-before/pass-after evidence.
+5. Regenerate exact fixtures only when their reviewed scenario changes; keep the old failure as review evidence.
+6. Regenerate the deterministic sampled corpus with declared Quint version, seed, count, and bound.
+7. Replay exact and sampled ITF through the real interpreter; fix the earliest [divergence](#def-first-divergence) rather than weakening the comparator.
+8. Run all three [correspondence](#def-correspondence) inversions and restore untouched green.
+9. Run the full Q4/runtime and repository documentation qualification; capture scoped receipts and claim limits.
+10. Update [correspondence](#def-correspondence) statuses, source/tool identities, traceability, definitions, and the maintenance handoff.
+
+If only one authority changes, [correspondence](#def-correspondence) should go red. That is the safety signal. Review the
+semantic change; never make the adapter echo whichever side changed or describe a green simulation as
+proof of implementation equivalence.
 
 <a id="part-viii"></a>
 ## Part VIII: Reference
@@ -1056,47 +1153,47 @@ claim of coverage.
 
 | Source decision | Stable rule | Quint declaration | [Scenario/property](#def-property) | Runtime subject | Evidence | Coverage note |
 |---|---|---|---|---|---|---|
-| S.I.R. combat registry | [CONTENT-WEAPON-RIFLE-001](#rule-content-weapon-rifle-001) | [ruleCatalogue](#qnt-rule-catalogue), [rifleDamageRaw](#qnt-rifle-damage-raw) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | stable registry/weapon fact; full M5 map pending | `work/363-handbook-m3/audit-complete-rules.mjs`; focused M3 and full Q4 receipts | fact; no dependencies; [pure value](#def-pure-value) |
-| S.I.R. combat registry | [CONTENT-BODY-HUMAN-001](#rule-content-body-human-001) | [ruleCatalogue](#qnt-rule-catalogue), [humanArmorRetentionRaw](#qnt-human-armor-retention-raw) | catalogue and exact-subject audit | stable registry/body fact; full M5 map pending | focused M3 receipt | fact; no dependencies; [pure value](#def-pure-value) |
-| S.I.R. combat registry | [COMBAT-ENGAGEMENT-001](#rule-combat-engagement-001) | [preparationRaw](#qnt-preparation-raw), [consequenceObservation](#qnt-consequence-observation) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | stable registry/range preparation; full M5 map pending | focused M3 and full Q4 receipts | formula; pure preparation plus completed observation |
-| S.I.R. combat registry | [COMBAT-TRACE-002](#rule-combat-trace-002) | [traceAlgorithm](#qnt-trace-algorithm), [validTrace](#qnt-valid-trace), [traceRaw](#qnt-trace-raw) | [validTraceObservation](#property-valid-trace-observation) | `FS.GG.Game.Core.Los.lineOfSightBy`; broad M5 evidence pending | focused M3 and full Q4 receipts | [external algorithm contract](#def-external-algorithm-contract); ratio adapter only |
-| S.I.R. combat registry | [COMBAT-ARMOR-004](#rule-combat-armor-004) | [retainedEffect](#qnt-retained-effect), [consequenceObservation](#qnt-consequence-observation) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | stable armor-retention subject; full M5 map pending | focused M3 and full Q4 receipts | formula; bounded ratio and observation |
-| S.I.R. combat registry | [COMBAT-DAMAGE-001](#rule-combat-damage-001) | [expectedDamageRaw](#qnt-expected-damage-raw), [roundedDamage](#qnt-rounded-damage), [damageForAttack](#qnt-damage-for-attack) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | `SIR.Domain.FixedPoint`, `CombatRules`; full M5 map pending | focused M3 and full Q4 receipts | formula; pure calculation and completed observation |
-| S.I.R. combat registry | [COMBAT-COLLISION-001](#rule-combat-collision-001) | `contact`, [coverObservation](#qnt-cover-observation) | [destroyingCoverConsumesCurrentCollision](#run-destroying-cover-consumes-current-collision) | stable collision subjects; full M5 map pending | focused M3 and full Q4 receipts | transition participation; no extra collision state |
-| S.I.R. combat registry | [COMBAT-COVER-003](#rule-combat-cover-003) | [coverDamage](#qnt-cover-damage), [nextCoverImpact](#qnt-next-cover-impact), [resolveCoverImpact](#qnt-resolve-cover-impact) | [destroyingCoverConsumesCurrentCollision](#run-destroying-cover-consumes-current-collision) | `CombatRules` cover-impact entry point; full M5 map pending | focused M3 and full Q4 receipts | focused [action](#def-action) and observation |
-| S.I.R. combat registry | [COMBAT-PENETRATION-001](#rule-combat-penetration-001) | [retainedEffect](#qnt-retained-effect), [damageForAttack](#qnt-damage-for-attack), `retentionRaw` | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | stable [penetration](#concept-penetration)/armor subjects; full M5 map pending | focused M3 and full Q4 receipts | formula/observation inside atomic aggregate |
-| S.I.R. combat registry | [COMBAT-HEALTH-001](#rule-combat-health-001) | [nextConsequences](#qnt-next-consequences), [bounded100](#qnt-bounded100) | [boundedCombatState](#property-bounded-combat-state), [zeroHealthMeansIncapacitated](#run-zero-health-means-incapacitated) | `CombatRules` [health](#stat-health) consequence; full M5 map pending | focused M3 and full Q4 receipts | atomic aggregate state field |
-| S.I.R. combat registry | [COMBAT-WOUND-001](#rule-combat-wound-001) | [woundForDamage](#qnt-wound-for-damage), [consequenceObservation](#qnt-consequence-observation) | [woundThresholdsAreExact](#run-wound-thresholds-are-exact), [incapacityMatchesHealth](#property-incapacity-matches-health) | stable [wound](#concept-wound)/incapacity subjects; full M5 map pending | focused M3 and full Q4 receipts | pure classification plus atomic observation/state |
-| S.I.R. combat registry | [COMBAT-SUPPRESSION-001](#rule-combat-suppression-001) | [suppressionForDamage](#qnt-suppression-for-damage), [nextConsequences](#qnt-next-consequences) | [suppressionRequiresDamage](#property-suppression-requires-damage) | `CombatRules` [suppression](#stat-suppression) consequence; full M5 map pending | focused M3 and full Q4 receipts | atomic aggregate state field |
-| S.I.R. combat registry | [COMBAT-SUPPRESSION-RECOVERY-001](#rule-combat-suppression-recovery-001) | [recoveredSuppression](#qnt-recovered-suppression), [nextRecovery](#qnt-next-recovery), [resolveRecovery](#qnt-resolve-recovery) | [suppressionNeedsPositiveDamageAndRecoversFive](#run-suppression-needs-positive-damage-and-recovers-five) | `CombatRules` recovery entry point; full M5 map pending | focused M3 and full Q4 receipts | focused recovery [action](#def-action) |
-| S.I.R. combat registry | [COMBAT-COLLATERAL-001](#rule-combat-collateral-001) | [alliedAttack](#qnt-allied-attack), [nextConsequences](#qnt-next-consequences) | [factionNeutralCollateral](#property-faction-neutral-collateral), [collateralOutcomeIgnoresFaction](#run-collateral-outcome-ignores-faction) | stable faction/consequence subjects; full M5 map pending | focused M3 and full Q4 receipts | aggregate input/observation and pure comparison |
-| S.I.R. combat registry | [COMBAT-COVER-DESTRUCTION-001](#rule-combat-cover-destruction-001) | [nextCoverImpact](#qnt-next-cover-impact), [coverObservation](#qnt-cover-observation) | [destroyedCoverIsPermeable](#property-destroyed-cover-is-permeable), [destroyingCoverConsumesCurrentCollision](#run-destroying-cover-consumes-current-collision) | `CombatRules` destruction/blocking subjects; full M5 map pending | focused M3 and full Q4 receipts | focused cover [action](#def-action); future permeability/current blocking |
-| S.I.R. combat registry | [COMBAT-ATTACK-RESOLUTION-001](#rule-combat-attack-resolution-001) | [nextConsequences](#qnt-next-consequences), [consequenceObservation](#qnt-consequence-observation), [resolveConsequences](#qnt-resolve-consequences) | all consequence runs and state/observation properties | `CombatRules` completed consequence entry point; full M5 map pending | focused M3 and full Q4 receipts | one atomic consequence; no invented intermediates |
-| Q4 DEC-001 | — | Pending | Pending | Pending | Pending | M2-M5 decision mapping |
-| Q4 DEC-002 | — | Pending | Pending | Pending | Pending | M2-M5 decision mapping |
-| Q4 DEC-003 | — | Pending | Pending | Pending | Pending | M2-M5 decision mapping |
-| Q4 DEC-004 | — | Pending | Pending | Pending | Pending | M2-M5 decision mapping |
-| Q4 DEC-005 | — | Pending | Pending | Pending | Pending | M2-M5 decision mapping |
-| Q4 DEC-006 | — | Pending | Pending | Pending | Pending | M2-M5 decision mapping |
-| Q4 DEC-007 | — | Pending | Pending | Pending | Pending | M2-M5 decision mapping |
-| [Representative damage 20](#qnt-representative-attack) | [CONTENT-WEAPON-RIFLE-001](#rule-content-weapon-rifle-001), [COMBAT-TRACE-002](#rule-combat-trace-002), [COMBAT-ARMOR-004](#rule-combat-armor-004), [COMBAT-DAMAGE-001](#rule-combat-damage-001), [COMBAT-ATTACK-RESOLUTION-001](#rule-combat-attack-resolution-001) | [representativeAttack](#qnt-representative-attack), [expectedDamageRaw](#qnt-expected-damage-raw), [damageForAttack](#qnt-damage-for-attack), [resolveConsequences](#qnt-resolve-consequences) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | `SIR.Domain.FixedPoint`; `src/SIR.Simulation/CombatRules.fs`; `tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs` | `work/361-handbook-m2/audit-representative-attack.mjs`; `readiness/361-handbook-m2/handbook-m2.junit.xml`; `scripts/qualify-quint-q4-sir-combat.sh` | M2 model/excerpt/[mutation](#def-mutation) evidence plus bounded representative runtime [correspondence](#def-correspondence); full M5 [correspondence](#def-correspondence) remains pending |
-| [Wound boundary 24](#stat-wound-threshold) | [COMBAT-WOUND-001](#rule-combat-wound-001) | [woundForDamage](#qnt-wound-for-damage), [fullDamageAttack](#qnt-full-damage-attack) | [woundThresholdsAreExact](#run-wound-thresholds-are-exact) | stable [wound](#concept-wound) classification; full M5 map pending | focused M3 and full Q4 receipts | `24` → [NoWound](#qnt-no-wound) |
-| [Wound boundary 25](#stat-wound-threshold) | [COMBAT-WOUND-001](#rule-combat-wound-001) | [woundForDamage](#qnt-wound-for-damage), [fullDamageAttack](#qnt-full-damage-attack) | [woundThresholdsAreExact](#run-wound-thresholds-are-exact) | stable [wound](#concept-wound) classification; full M5 map pending | focused M3 and full Q4 receipts | `25` → [MinorWound](#qnt-minor-wound) |
-| [Wound boundary 50](#stat-wound-threshold) | [COMBAT-WOUND-001](#rule-combat-wound-001) | [woundForDamage](#qnt-wound-for-damage), [fullDamageAttack](#qnt-full-damage-attack) | [woundThresholdsAreExact](#run-wound-thresholds-are-exact) | stable [wound](#concept-wound) classification; full M5 map pending | focused M3 and full Q4 receipts | `50` → [MajorWound](#qnt-major-wound) |
-| [Zero-health incapacitation](#concept-incapacitation) | [COMBAT-HEALTH-001](#rule-combat-health-001), [COMBAT-WOUND-001](#rule-combat-wound-001) | [nextConsequences](#qnt-next-consequences) | [zeroHealthMeansIncapacitated](#run-zero-health-means-incapacitated), [incapacityMatchesHealth](#property-incapacity-matches-health) | stable [health](#stat-health)/incapacity subjects; full M5 map pending | focused M3 and full Q4 receipts | zero and [incapacitation](#concept-incapacitation) appear in one successor |
-| [Suppression eligibility](#concept-suppression-eligibility) | [COMBAT-SUPPRESSION-001](#rule-combat-suppression-001) | [suppressionForDamage](#qnt-suppression-for-damage) | [suppressionRequiresDamage](#property-suppression-requires-damage) | stable [suppression](#stat-suppression) consequence; full M5 map pending | focused M3 and full Q4 receipts | [damage](#stat-damage) must be positive |
-| [Five-point suppression recovery](#concept-suppression-recovery) | [COMBAT-SUPPRESSION-RECOVERY-001](#rule-combat-suppression-recovery-001) | [recoveredSuppression](#qnt-recovered-suppression), [resolveRecovery](#qnt-resolve-recovery) | [suppressionNeedsPositiveDamageAndRecoversFive](#run-suppression-needs-positive-damage-and-recovers-five) | recovery entry point; full M5 map pending | focused M3 and full Q4 receipts | removes `min(5,current)` |
-| Cover destruction | [COMBAT-COVER-DESTRUCTION-001](#rule-combat-cover-destruction-001) | [nextCoverImpact](#qnt-next-cover-impact), [coverObservation](#qnt-cover-observation) | [destroyingCoverConsumesCurrentCollision](#run-destroying-cover-consumes-current-collision) | destruction/blocking subjects; full M5 map pending | focused M3 and full Q4 receipts | `destroyed` at zero integrity |
-| Destroyed-cover permeability | [COMBAT-COVER-DESTRUCTION-001](#rule-combat-cover-destruction-001) | [nextCoverImpact](#qnt-next-cover-impact) | [destroyedCoverIsPermeable](#property-destroyed-cover-is-permeable) | future projectile blocking; full M5 map pending | focused M3 and full Q4 receipts | zero integrity implies non-blocking |
-| Current-collision blocking | [COMBAT-COLLISION-001](#rule-combat-collision-001), [COMBAT-COVER-003](#rule-combat-cover-003) | [coverObservation](#qnt-cover-observation) | [destroyingCoverConsumesCurrentCollision](#run-destroying-cover-consumes-current-collision) | current impact entry point; full M5 map pending | focused M3 and full Q4 receipts | current direct blocking collision still stops |
-| Faction-neutral collateral | [COMBAT-COLLATERAL-001](#rule-combat-collateral-001) | [alliedAttack](#qnt-allied-attack), [nextConsequences](#qnt-next-consequences) | [factionNeutralCollateral](#property-faction-neutral-collateral), [collateralOutcomeIgnoresFaction](#run-collateral-outcome-ignores-faction) | faction/consequence subjects; full M5 map pending | focused M3 and full Q4 receipts | allied and hostile consequences match |
-| Valid trace ratios | [COMBAT-TRACE-002](#rule-combat-trace-002) | [validTrace](#qnt-valid-trace), [traceRaw](#qnt-trace-raw) | [validTraceObservation](#property-valid-trace-observation) | bounded trace adapter; full M5 map pending | focused M3 and full Q4 receipts | emitted ratio stays `0..10000` |
+| S.I.R. combat registry | [CONTENT-WEAPON-RIFLE-001](#rule-content-weapon-rifle-001) | [ruleCatalogue](#qnt-rule-catalogue), [rifleDamageRaw](#qnt-rifle-damage-raw) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | stable registry/weapon fact; see chapter 38 controlled [correspondence](#def-correspondence) status | `work/363-handbook-m3/audit-complete-rules.mjs`; focused M3 and full Q4 receipts | fact; no dependencies; [pure value](#def-pure-value) |
+| S.I.R. combat registry | [CONTENT-BODY-HUMAN-001](#rule-content-body-human-001) | [ruleCatalogue](#qnt-rule-catalogue), [humanArmorRetentionRaw](#qnt-human-armor-retention-raw) | catalogue and exact-subject audit | stable registry/body fact; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 receipt | fact; no dependencies; [pure value](#def-pure-value) |
+| S.I.R. combat registry | [COMBAT-ENGAGEMENT-001](#rule-combat-engagement-001) | [preparationRaw](#qnt-preparation-raw), [consequenceObservation](#qnt-consequence-observation) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | stable registry/range preparation; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | formula; pure preparation plus completed observation |
+| S.I.R. combat registry | [COMBAT-TRACE-002](#rule-combat-trace-002) | [traceAlgorithm](#qnt-trace-algorithm), [validTrace](#qnt-valid-trace), [traceRaw](#qnt-trace-raw) | [validTraceObservation](#property-valid-trace-observation) | `FS.GG.Game.Core.Los.lineOfSightBy`; see chapter 38 external-contract/missing boundary | focused M3 and full Q4 receipts | [external algorithm contract](#def-external-algorithm-contract); ratio adapter only |
+| S.I.R. combat registry | [COMBAT-ARMOR-004](#rule-combat-armor-004) | [retainedEffect](#qnt-retained-effect), [consequenceObservation](#qnt-consequence-observation) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | stable armor-retention subject; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | formula; bounded ratio and observation |
+| S.I.R. combat registry | [COMBAT-DAMAGE-001](#rule-combat-damage-001) | [expectedDamageRaw](#qnt-expected-damage-raw), [roundedDamage](#qnt-rounded-damage), [damageForAttack](#qnt-damage-for-attack) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | `SIR.Domain.FixedPoint`, `CombatRules`; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | formula; pure calculation and completed observation |
+| S.I.R. combat registry | [COMBAT-COLLISION-001](#rule-combat-collision-001) | `contact`, [coverObservation](#qnt-cover-observation) | [destroyingCoverConsumesCurrentCollision](#run-destroying-cover-consumes-current-collision) | stable collision subjects; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | transition participation; no extra collision state |
+| S.I.R. combat registry | [COMBAT-COVER-003](#rule-combat-cover-003) | [coverDamage](#qnt-cover-damage), [nextCoverImpact](#qnt-next-cover-impact), [resolveCoverImpact](#qnt-resolve-cover-impact) | [destroyingCoverConsumesCurrentCollision](#run-destroying-cover-consumes-current-collision) | `CombatRules` cover-impact entry point; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | focused [action](#def-action) and observation |
+| S.I.R. combat registry | [COMBAT-PENETRATION-001](#rule-combat-penetration-001) | [retainedEffect](#qnt-retained-effect), [damageForAttack](#qnt-damage-for-attack), `retentionRaw` | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | stable [penetration](#concept-penetration)/armor subjects; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | formula/observation inside atomic aggregate |
+| S.I.R. combat registry | [COMBAT-HEALTH-001](#rule-combat-health-001) | [nextConsequences](#qnt-next-consequences), [bounded100](#qnt-bounded100) | [boundedCombatState](#property-bounded-combat-state), [zeroHealthMeansIncapacitated](#run-zero-health-means-incapacitated) | `CombatRules` [health](#stat-health) consequence; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | atomic aggregate state field |
+| S.I.R. combat registry | [COMBAT-WOUND-001](#rule-combat-wound-001) | [woundForDamage](#qnt-wound-for-damage), [consequenceObservation](#qnt-consequence-observation) | [woundThresholdsAreExact](#run-wound-thresholds-are-exact), [incapacityMatchesHealth](#property-incapacity-matches-health) | stable [wound](#concept-wound)/incapacity subjects; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | pure classification plus atomic observation/state |
+| S.I.R. combat registry | [COMBAT-SUPPRESSION-001](#rule-combat-suppression-001) | [suppressionForDamage](#qnt-suppression-for-damage), [nextConsequences](#qnt-next-consequences) | [suppressionRequiresDamage](#property-suppression-requires-damage) | `CombatRules` [suppression](#stat-suppression) consequence; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | atomic aggregate state field |
+| S.I.R. combat registry | [COMBAT-SUPPRESSION-RECOVERY-001](#rule-combat-suppression-recovery-001) | [recoveredSuppression](#qnt-recovered-suppression), [nextRecovery](#qnt-next-recovery), [resolveRecovery](#qnt-resolve-recovery) | [suppressionNeedsPositiveDamageAndRecoversFive](#run-suppression-needs-positive-damage-and-recovers-five) | `CombatRules` recovery entry point; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | focused recovery [action](#def-action) |
+| S.I.R. combat registry | [COMBAT-COLLATERAL-001](#rule-combat-collateral-001) | [alliedAttack](#qnt-allied-attack), [nextConsequences](#qnt-next-consequences) | [factionNeutralCollateral](#property-faction-neutral-collateral), [collateralOutcomeIgnoresFaction](#run-collateral-outcome-ignores-faction) | stable faction/consequence subjects; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | aggregate input/observation and pure comparison |
+| S.I.R. combat registry | [COMBAT-COVER-DESTRUCTION-001](#rule-combat-cover-destruction-001) | [nextCoverImpact](#qnt-next-cover-impact), [coverObservation](#qnt-cover-observation) | [destroyedCoverIsPermeable](#property-destroyed-cover-is-permeable), [destroyingCoverConsumesCurrentCollision](#run-destroying-cover-consumes-current-collision) | `CombatRules` destruction/blocking subjects; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | focused cover [action](#def-action); future permeability/current blocking |
+| S.I.R. combat registry | [COMBAT-ATTACK-RESOLUTION-001](#rule-combat-attack-resolution-001) | [nextConsequences](#qnt-next-consequences), [consequenceObservation](#qnt-consequence-observation), [resolveConsequences](#qnt-resolve-consequences) | all consequence runs and state/observation properties | `CombatRules` completed consequence entry point; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | one atomic consequence; no invented intermediates |
+| Q4 DEC-001 | all sixteen rules | [ruleCatalogue](#qnt-rule-catalogue) plus complete model | catalogue, named runs, and properties | `CombatRules.registry` plus mapped entry points | focused M3/M5 and full Q4 receipts | complete bounded sixteen-rule scope |
+| Q4 DEC-002 | all sixteen rules | facts, formulae, external contract, helpers, focused and aggregate actions | subject-appropriate evidence | chapter 38 controlled statuses | focused M3/M4/M5 receipts | smallest faithful abstraction per layer |
+| Q4 DEC-003 | compatibility subjects | model identity and deterministic projections | stale/identity negative controls | exact legacy subjects plus fingerprinted new projections | full Q4 receipt | byte-exact where named; semantic/fingerprint exact for new products |
+| Q4 DEC-004 | [COMBAT-TRACE-002](#rule-combat-trace-002) | [traceAlgorithm](#qnt-trace-algorithm), [traceRaw](#qnt-trace-raw) | contract identity and ratio replay | `FS.GG.Game.Core.Los.lineOfSightBy` | Q4 contract checks; geometry [correspondence](#def-correspondence) classified missing | Quint does not copy supercover traversal |
+| Q4 DEC-005 | aggregate/focused transition rules | [resolveConsequences](#qnt-resolve-consequences), [resolveCoverImpact](#qnt-resolve-cover-impact), [resolveRecovery](#qnt-resolve-recovery) | [action](#def-action) witnesses and ITF replay | corresponding `CombatRules` entry points | M4 reachability plus Q4/M5 replay | completed aggregate remains atomic |
+| Q4 DEC-006 | [combat](#qnt-combat) records and actions | Q4 raw values, [wound](#concept-wound) variants, [CombatState](#qnt-combat-state), [AttackInput](#qnt-attack-input), [Observation](#qnt-observation) | exact/sample normalized fields | `FixedPoint`, `CombatRules`, `QuintQ4ReplayFixtures` | full Q4 and M5 focused receipts | explicit state/observation mapping |
+| Q4 DEC-007 | — | standalone literate model | typecheck/[run](#def-run)/replay only | no canonical Typed SDD consumer-model adoption claim | issue `FS.GG.SDD#932`; Q4/M5 scoped receipts | standalone [correspondence](#def-correspondence) does not impersonate canonical migration |
+| [Representative damage 20](#qnt-representative-attack) | [CONTENT-WEAPON-RIFLE-001](#rule-content-weapon-rifle-001), [COMBAT-TRACE-002](#rule-combat-trace-002), [COMBAT-ARMOR-004](#rule-combat-armor-004), [COMBAT-DAMAGE-001](#rule-combat-damage-001), [COMBAT-ATTACK-RESOLUTION-001](#rule-combat-attack-resolution-001) | [representativeAttack](#qnt-representative-attack), [expectedDamageRaw](#qnt-expected-damage-raw), [damageForAttack](#qnt-damage-for-attack), [resolveConsequences](#qnt-resolve-consequences) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | `SIR.Domain.FixedPoint`; `src/SIR.Simulation/CombatRules.fs`; `tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs` | `work/361-handbook-m2/audit-representative-attack.mjs`; `readiness/361-handbook-m2/handbook-m2.junit.xml`; `scripts/qualify-quint-q4-sir-combat.sh` | M2 model/excerpt/[mutation](#def-mutation) evidence plus bounded representative runtime [correspondence](#def-correspondence); chapter 38 [correspondence](#def-correspondence) is complete and scoped |
+| [Wound boundary 24](#stat-wound-threshold) | [COMBAT-WOUND-001](#rule-combat-wound-001) | [woundForDamage](#qnt-wound-for-damage), [fullDamageAttack](#qnt-full-damage-attack) | [woundThresholdsAreExact](#run-wound-thresholds-are-exact) | stable [wound](#concept-wound) classification; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | `24` → [NoWound](#qnt-no-wound) |
+| [Wound boundary 25](#stat-wound-threshold) | [COMBAT-WOUND-001](#rule-combat-wound-001) | [woundForDamage](#qnt-wound-for-damage), [fullDamageAttack](#qnt-full-damage-attack) | [woundThresholdsAreExact](#run-wound-thresholds-are-exact) | stable [wound](#concept-wound) classification; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | `25` → [MinorWound](#qnt-minor-wound) |
+| [Wound boundary 50](#stat-wound-threshold) | [COMBAT-WOUND-001](#rule-combat-wound-001) | [woundForDamage](#qnt-wound-for-damage), [fullDamageAttack](#qnt-full-damage-attack) | [woundThresholdsAreExact](#run-wound-thresholds-are-exact) | stable [wound](#concept-wound) classification; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | `50` → [MajorWound](#qnt-major-wound) |
+| [Zero-health incapacitation](#concept-incapacitation) | [COMBAT-HEALTH-001](#rule-combat-health-001), [COMBAT-WOUND-001](#rule-combat-wound-001) | [nextConsequences](#qnt-next-consequences) | [zeroHealthMeansIncapacitated](#run-zero-health-means-incapacitated), [incapacityMatchesHealth](#property-incapacity-matches-health) | stable [health](#stat-health)/incapacity subjects; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | zero and [incapacitation](#concept-incapacitation) appear in one successor |
+| [Suppression eligibility](#concept-suppression-eligibility) | [COMBAT-SUPPRESSION-001](#rule-combat-suppression-001) | [suppressionForDamage](#qnt-suppression-for-damage) | [suppressionRequiresDamage](#property-suppression-requires-damage) | stable [suppression](#stat-suppression) consequence; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | [damage](#stat-damage) must be positive |
+| [Five-point suppression recovery](#concept-suppression-recovery) | [COMBAT-SUPPRESSION-RECOVERY-001](#rule-combat-suppression-recovery-001) | [recoveredSuppression](#qnt-recovered-suppression), [resolveRecovery](#qnt-resolve-recovery) | [suppressionNeedsPositiveDamageAndRecoversFive](#run-suppression-needs-positive-damage-and-recovers-five) | recovery entry point; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | removes `min(5,current)` |
+| Cover destruction | [COMBAT-COVER-DESTRUCTION-001](#rule-combat-cover-destruction-001) | [nextCoverImpact](#qnt-next-cover-impact), [coverObservation](#qnt-cover-observation) | [destroyingCoverConsumesCurrentCollision](#run-destroying-cover-consumes-current-collision) | destruction/blocking subjects; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | `destroyed` at zero integrity |
+| Destroyed-cover permeability | [COMBAT-COVER-DESTRUCTION-001](#rule-combat-cover-destruction-001) | [nextCoverImpact](#qnt-next-cover-impact) | [destroyedCoverIsPermeable](#property-destroyed-cover-is-permeable) | future projectile blocking; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | zero integrity implies non-blocking |
+| Current-collision blocking | [COMBAT-COLLISION-001](#rule-combat-collision-001), [COMBAT-COVER-003](#rule-combat-cover-003) | [coverObservation](#qnt-cover-observation) | [destroyingCoverConsumesCurrentCollision](#run-destroying-cover-consumes-current-collision) | current impact entry point; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | current direct blocking collision still stops |
+| Faction-neutral collateral | [COMBAT-COLLATERAL-001](#rule-combat-collateral-001) | [alliedAttack](#qnt-allied-attack), [nextConsequences](#qnt-next-consequences) | [factionNeutralCollateral](#property-faction-neutral-collateral), [collateralOutcomeIgnoresFaction](#run-collateral-outcome-ignores-faction) | faction/consequence subjects; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | allied and hostile consequences match |
+| Valid trace ratios | [COMBAT-TRACE-002](#rule-combat-trace-002) | [validTrace](#qnt-valid-trace), [traceRaw](#qnt-trace-raw) | [validTraceObservation](#property-valid-trace-observation) | bounded trace adapter; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | emitted ratio stays `0..10000` |
 | External line-of-sight boundary | [COMBAT-TRACE-002](#rule-combat-trace-002) | [traceAlgorithm](#qnt-trace-algorithm) | exact contract/excerpt audit | `FS.GG.Game.Core.Los.lineOfSightBy`; behavior evidence remains external/M5 | focused M3 receipt | fingerprint and sample/result units; no copied supercover |
 | Catalogue size and identity | all sixteen registry rules | [ruleCatalogue](#qnt-rule-catalogue) | [sixteenRulesDeclared](#property-sixteen-rules-declared) | stable registry metadata | focused M3 and full Q4 receipts | exactly sixteen unique stable IDs |
 | Catalogue dependencies | all sixteen registry rules | [ruleCatalogue](#qnt-rule-catalogue) | focused dependency audit | stable registry dependency metadata | focused M3 receipt | every target declared; no self/duplicate dependency |
-| Explanation order | eleven consequence participants | [consequenceExplanationOrder](#qnt-consequence-explanation-order), [consequenceObservation](#qnt-consequence-observation) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | stable completed-consequence explanation; full M5 map pending | focused M3 and full Q4 receipts | presentation metadata, not intermediate states |
-| [Exact runtime replay correspondence](#def-correspondence) | — | Pending | Pending | Pending | Pending | Reserved mandatory coverage row |
-| [Sampled runtime replay correspondence](#def-correspondence) | — | Pending | Pending | Pending | Pending | Reserved mandatory coverage row |
+| Explanation order | eleven consequence participants | [consequenceExplanationOrder](#qnt-consequence-explanation-order), [consequenceObservation](#qnt-consequence-observation) | [representativeDamageIsTwenty](#run-representative-damage-is-twenty) | stable completed-consequence explanation; see chapter 38 controlled [correspondence](#def-correspondence) status | focused M3 and full Q4 receipts | presentation metadata, not intermediate states |
+| [Exact runtime replay correspondence](#def-correspondence) | all replayed transition rules | normalized [combat](#qnt-combat) and [last](#qnt-last) ITF | one committed trace, nine states | `QuintQ4ReplayFixtures.replayDirectory`; real `CombatRules` entry points | `scripts/qualify-quint-q4-sir-combat.sh`; M5 focused receipt | exact only for the named committed fixture |
+| [Sampled runtime replay correspondence](#def-correspondence) | all actions reached by the deterministic sample | normalized [combat](#qnt-combat) and [last](#qnt-last) ITF | seed 352; 16 traces; 144 states; max 8 steps | `QuintQ4ReplayFixtures.replayDirectory`; real `CombatRules` entry points | `scripts/qualify-quint-q4-sir-combat.sh`; M5 focused receipt | sampled, deterministic, and explicitly non-exhaustive |
 
 <a id="chapter-47-command-reference"></a>
 ### 47. Command reference
@@ -1229,46 +1326,46 @@ cross-references, and enforcement.
 **combat** — variable. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
 
 <a id="rule-combat-armor-004"></a>
-**COMBAT-ARMOR-004** — rule. Formula that bounds the retained effect after armor. **Declared at:** `ruleCatalogue`; `retainedEffect`. **Related terms:** [armor retention](#stat-armor-retention), [penetration](#concept-penetration). **Runtime correspondence:** stable armor-retention subject; complete map lands in M5.
+**COMBAT-ARMOR-004** — rule. Formula that bounds the retained effect after armor. **Declared at:** `ruleCatalogue`; `retainedEffect`. **Related terms:** [armor retention](#stat-armor-retention), [penetration](#concept-penetration). **Runtime correspondence:** stable armor-retention subject; see the M5 controlled correspondence map.
 
 <a id="rule-combat-attack-resolution-001"></a>
-**COMBAT-ATTACK-RESOLUTION-001** — rule. Atomic transition that publishes completed health, wound/incapacity, suppression, and explanation consequences. **Declared at:** `ruleCatalogue`; `resolveConsequences`. **Related terms:** [aggregate attack resolution](#concept-aggregate-attack-resolution), [Observation](#qnt-observation). **Runtime correspondence:** completed `CombatRules` consequence entry point; complete map lands in M5.
+**COMBAT-ATTACK-RESOLUTION-001** — rule. Atomic transition that publishes completed health, wound/incapacity, suppression, and explanation consequences. **Declared at:** `ruleCatalogue`; `resolveConsequences`. **Related terms:** [aggregate attack resolution](#concept-aggregate-attack-resolution), [Observation](#qnt-observation). **Runtime correspondence:** completed `CombatRules` consequence entry point; see the M5 controlled correspondence map.
 
 <a id="rule-combat-collateral-001"></a>
-**COMBAT-COLLATERAL-001** — rule. Transition semantics that apply the same bounded damage and suppression consequences regardless of faction. **Declared at:** `ruleCatalogue`; `alliedAttack`; `factionNeutralCollateral`. **Related terms:** [collateral consequence](#concept-collateral-consequence), [faction-neutral consequence](#concept-faction-neutral-consequence). **Runtime correspondence:** stable faction/consequence subjects; complete map lands in M5.
+**COMBAT-COLLATERAL-001** — rule. Transition semantics that apply the same bounded damage and suppression consequences regardless of faction. **Declared at:** `ruleCatalogue`; `alliedAttack`; `factionNeutralCollateral`. **Related terms:** [collateral consequence](#concept-collateral-consequence), [faction-neutral consequence](#concept-faction-neutral-consequence). **Runtime correspondence:** stable faction/consequence subjects; see the M5 controlled correspondence map.
 
 <a id="rule-combat-collision-001"></a>
-**COMBAT-COLLISION-001** — rule. Transition participation that relates a trace outcome/current crossing to projectile contact. **Declared at:** `ruleCatalogue`; consequence/cover observations. **Related terms:** [projectile contact](#concept-projectile-contact), [current collision consumption](#concept-current-collision-consumption). **Runtime correspondence:** stable collision subjects; complete map lands in M5.
+**COMBAT-COLLISION-001** — rule. Transition participation that relates a trace outcome/current crossing to projectile contact. **Declared at:** `ruleCatalogue`; consequence/cover observations. **Related terms:** [projectile contact](#concept-projectile-contact), [current collision consumption](#concept-current-collision-consumption). **Runtime correspondence:** stable collision subjects; see the M5 controlled correspondence map.
 
 <a id="rule-combat-cover-003"></a>
-**COMBAT-COVER-003** — rule. Focused cover-impact transition that reduces integrity and explains current projectile blocking. **Declared at:** `ruleCatalogue`; `nextCoverImpact`; `resolveCoverImpact`. **Related terms:** [cover integrity](#stat-cover-integrity), [cover blocking](#concept-cover-blocking). **Runtime correspondence:** `CombatRules` cover-impact entry point; complete map lands in M5.
+**COMBAT-COVER-003** — rule. Focused cover-impact transition that reduces integrity and explains current projectile blocking. **Declared at:** `ruleCatalogue`; `nextCoverImpact`; `resolveCoverImpact`. **Related terms:** [cover integrity](#stat-cover-integrity), [cover blocking](#concept-cover-blocking). **Runtime correspondence:** `CombatRules` cover-impact entry point; see the M5 controlled correspondence map.
 
 <a id="rule-combat-cover-destruction-001"></a>
-**COMBAT-COVER-DESTRUCTION-001** — rule. Transition that makes zero-integrity cover non-blocking for future projectiles while preserving the destroying collision's stop result. **Declared at:** `ruleCatalogue`; `nextCoverImpact`; `coverObservation`. **Related terms:** [destroyed cover](#concept-destroyed-cover), [current collision consumption](#concept-current-collision-consumption). **Runtime correspondence:** stable destruction/blocking subjects; complete map lands in M5.
+**COMBAT-COVER-DESTRUCTION-001** — rule. Transition that makes zero-integrity cover non-blocking for future projectiles while preserving the destroying collision's stop result. **Declared at:** `ruleCatalogue`; `nextCoverImpact`; `coverObservation`. **Related terms:** [destroyed cover](#concept-destroyed-cover), [current collision consumption](#concept-current-collision-consumption). **Runtime correspondence:** stable destruction/blocking subjects; see the M5 controlled correspondence map.
 
 <a id="rule-combat-damage-001"></a>
-**COMBAT-DAMAGE-001** — rule. Formula composing base damage, trace ratio, retained effect, and whole-point rounding. **Declared at:** `ruleCatalogue`; `expectedDamageRaw`; `damageForAttack`. **Related terms:** [expected damage](#stat-expected-damage), [Q4 raw integer](#unit-q4-raw-integer). **Runtime correspondence:** `SIR.Domain.FixedPoint` and `CombatRules`; complete map lands in M5.
+**COMBAT-DAMAGE-001** — rule. Formula composing base damage, trace ratio, retained effect, and whole-point rounding. **Declared at:** `ruleCatalogue`; `expectedDamageRaw`; `damageForAttack`. **Related terms:** [expected damage](#stat-expected-damage), [Q4 raw integer](#unit-q4-raw-integer). **Runtime correspondence:** `SIR.Domain.FixedPoint` and `CombatRules`; see the M5 controlled correspondence map.
 
 <a id="rule-combat-engagement-001"></a>
-**COMBAT-ENGAGEMENT-001** — rule. Formula deriving preparation time from range cells. **Declared at:** `ruleCatalogue`; `preparationRaw`. **Related terms:** [preparation time](#stat-preparation-time), [range cells](#stat-range-cells). **Runtime correspondence:** stable range-preparation subject; complete map lands in M5.
+**COMBAT-ENGAGEMENT-001** — rule. Formula deriving preparation time from range cells. **Declared at:** `ruleCatalogue`; `preparationRaw`. **Related terms:** [preparation time](#stat-preparation-time), [range cells](#stat-range-cells). **Runtime correspondence:** stable range-preparation subject; see the M5 controlled correspondence map.
 
 <a id="rule-combat-health-001"></a>
-**COMBAT-HEALTH-001** — rule. Atomic consequence that subtracts damage and bounds health to 0–100. **Declared at:** `ruleCatalogue`; `nextConsequences`. **Related terms:** [health](#stat-health), [incapacitation](#concept-incapacitation). **Runtime correspondence:** `CombatRules` health consequence; complete map lands in M5.
+**COMBAT-HEALTH-001** — rule. Atomic consequence that subtracts damage and bounds health to 0–100. **Declared at:** `ruleCatalogue`; `nextConsequences`. **Related terms:** [health](#stat-health), [incapacitation](#concept-incapacitation). **Runtime correspondence:** `CombatRules` health consequence; see the M5 controlled correspondence map.
 
 <a id="rule-combat-penetration-001"></a>
-**COMBAT-PENETRATION-001** — rule. Transition semantics represented at retained-effect formula and completed-observation granularity, not as a standalone action. **Declared at:** `ruleCatalogue`; `retainedEffect`; `damageForAttack`; `Observation.retentionRaw`. **Related terms:** [penetration](#concept-penetration), [armor retention](#stat-armor-retention). **Runtime correspondence:** stable armor/penetration subjects; complete map lands in M5.
+**COMBAT-PENETRATION-001** — rule. Transition semantics represented at retained-effect formula and completed-observation granularity, not as a standalone action. **Declared at:** `ruleCatalogue`; `retainedEffect`; `damageForAttack`; `Observation.retentionRaw`. **Related terms:** [penetration](#concept-penetration), [armor retention](#stat-armor-retention). **Runtime correspondence:** stable armor/penetration subjects; see the M5 controlled correspondence map.
 
 <a id="rule-combat-suppression-001"></a>
-**COMBAT-SUPPRESSION-001** — rule. Atomic consequence that applies a non-negative requested suppression delta only when damage is positive. **Declared at:** `ruleCatalogue`; `suppressionForDamage`; `nextConsequences`. **Related terms:** [suppression eligibility](#concept-suppression-eligibility), [suppression delta](#stat-suppression-delta). **Runtime correspondence:** `CombatRules` suppression consequence; complete map lands in M5.
+**COMBAT-SUPPRESSION-001** — rule. Atomic consequence that applies a non-negative requested suppression delta only when damage is positive. **Declared at:** `ruleCatalogue`; `suppressionForDamage`; `nextConsequences`. **Related terms:** [suppression eligibility](#concept-suppression-eligibility), [suppression delta](#stat-suppression-delta). **Runtime correspondence:** `CombatRules` suppression consequence; see the M5 controlled correspondence map.
 
 <a id="rule-combat-suppression-recovery-001"></a>
-**COMBAT-SUPPRESSION-RECOVERY-001** — rule. Focused transition that removes up to five suppression points. **Declared at:** `ruleCatalogue`; `recoveredSuppression`; `resolveRecovery`. **Related terms:** [suppression recovery](#concept-suppression-recovery), [suppression](#stat-suppression). **Runtime correspondence:** `CombatRules` recovery entry point; complete map lands in M5.
+**COMBAT-SUPPRESSION-RECOVERY-001** — rule. Focused transition that removes up to five suppression points. **Declared at:** `ruleCatalogue`; `recoveredSuppression`; `resolveRecovery`. **Related terms:** [suppression recovery](#concept-suppression-recovery), [suppression](#stat-suppression). **Runtime correspondence:** `CombatRules` recovery entry point; see the M5 controlled correspondence map.
 
 <a id="rule-combat-trace-002"></a>
-**COMBAT-TRACE-002** — rule. External algorithm contract relating valid visible/total samples to a fixed-point trace ratio. **Declared at:** `ruleCatalogue`; `traceAlgorithm`; `validTrace`; `traceRaw`. **Related terms:** [physical shot trace](#concept-physical-shot-trace), [external algorithm contract](#def-external-algorithm-contract). **Runtime correspondence:** `FS.GG.Game.Core.Los.lineOfSightBy`; complete evidence map lands in M5.
+**COMBAT-TRACE-002** — rule. External algorithm contract relating valid visible/total samples to a fixed-point trace ratio. **Declared at:** `ruleCatalogue`; `traceAlgorithm`; `validTrace`; `traceRaw`. **Related terms:** [physical shot trace](#concept-physical-shot-trace), [external algorithm contract](#def-external-algorithm-contract). **Runtime correspondence:** `FS.GG.Game.Core.Los.lineOfSightBy`; see the M5 controlled correspondence map.
 
 <a id="rule-combat-wound-001"></a>
-**COMBAT-WOUND-001** — rule. Transition semantics classifying 24/25/50 damage boundaries and deriving incapacitation from successor health. **Declared at:** `ruleCatalogue`; `woundForDamage`; `consequenceObservation`; `nextConsequences`. **Related terms:** [wound](#concept-wound), [wound threshold](#stat-wound-threshold). **Runtime correspondence:** stable wound/incapacity subjects; complete map lands in M5.
+**COMBAT-WOUND-001** — rule. Transition semantics classifying 24/25/50 damage boundaries and deriving incapacitation from successor health. **Declared at:** `ruleCatalogue`; `woundForDamage`; `consequenceObservation`; `nextConsequences`. **Related terms:** [wound](#concept-wound), [wound threshold](#stat-wound-threshold). **Runtime correspondence:** stable wound/incapacity subjects; see the M5 controlled correspondence map.
 
 <a id="qnt-combat-state"></a>
 **CombatState** — type. Cohesive durable combat state containing health, suppression, cover integrity/blocking, and incapacitation. **Declared at:** `SirCombat.CombatState`; initialized by `initialCombat`. **Related terms:** [AttackInput](#qnt-attack-input), [Observation](#qnt-observation), [nextConsequences](#qnt-next-consequences). **Runtime correspondence:** completed state consequences produced by `CombatRules`.
@@ -1283,10 +1380,10 @@ cross-references, and enforcement.
 **constant** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
 
 <a id="rule-content-body-human-001"></a>
-**CONTENT-BODY-HUMAN-001** — rule. Human-body content fact represented by full raw armor retention. **Declared at:** `ruleCatalogue`; `humanArmorRetentionRaw`. **Related terms:** [armor retention](#stat-armor-retention), [scale 10,000](#unit-scale-10-000). **Runtime correspondence:** stable body fact; complete map lands in M5.
+**CONTENT-BODY-HUMAN-001** — rule. Human-body content fact represented by full raw armor retention. **Declared at:** `ruleCatalogue`; `humanArmorRetentionRaw`. **Related terms:** [armor retention](#stat-armor-retention), [scale 10,000](#unit-scale-10-000). **Runtime correspondence:** stable body fact; see the M5 controlled correspondence map.
 
 <a id="rule-content-weapon-rifle-001"></a>
-**CONTENT-WEAPON-RIFLE-001** — rule. Rifle content fact represented as raw base damage `250000`, or 25 points. **Declared at:** `ruleCatalogue`; `rifleDamageRaw`. **Related terms:** [base damage](#stat-base-damage), [representativeAttack](#qnt-representative-attack). **Runtime correspondence:** stable rifle fact; complete map lands in M5.
+**CONTENT-WEAPON-RIFLE-001** — rule. Rifle content fact represented as raw base damage `250000`, or 25 points. **Declared at:** `ruleCatalogue`; `rifleDamageRaw`. **Related terms:** [base damage](#stat-base-damage), [representativeAttack](#qnt-representative-attack). **Runtime correspondence:** stable rifle fact; see the M5 controlled correspondence map.
 
 <a id="def-correspondence"></a>
 **correspondence** — evidence. Checked agreement between model observations and production interpreter outcomes under explicitly identified traces, mappings, versions, and subjects; it is separate from model execution. **Declared at:** chapter 38 and Q4 replay receipts. **Related terms:** [claim boundary](#def-claim-boundary), [execution trace](#def-execution-trace). **Runtime correspondence:** `QuintQ4ReplayFixtures` compares exact and sampled traces with `CombatRules` and reports first divergence.
@@ -1370,7 +1467,7 @@ cross-references, and enforcement.
 **first collision** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
 
 <a id="def-first-divergence"></a>
-**first divergence** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**first divergence** — evidence. Earliest ordered model/runtime field mismatch, reported with fixture, JSON pointer, transition, action, expected/actual values, adapter, and implementation. **Declared at:** chapter 41; `QuintQ4ReplayFixtures.firstDifference`. **Related terms:** [ITF trace](#def-itf-trace), [correspondence](#def-correspondence). **Runtime correspondence:** three Q4 inversion controls must report it before untouched replay restores green.
 
 <a id="unit-fixed-point-ratio"></a>
 **fixed-point ratio** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
@@ -1382,7 +1479,7 @@ cross-references, and enforcement.
 **fullDamageAttack** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
 
 <a id="def-generated-projection"></a>
-**generated projection** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**generated projection** — evidence. Deterministic disposable output derived from an authored authority for tools to consume; it must be regenerated, never edited as authority. **Declared at:** chapter 39; `scripts/qualify-quint-q4-sir-combat.sh`. **Related terms:** [claim boundary](#def-claim-boundary), [ITF trace](#def-itf-trace). **Runtime correspondence:** extracted `.qnt` and normalized ITF are mechanically checked inputs to replay.
 
 <a id="def-guard"></a>
 **guard** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
@@ -1433,7 +1530,7 @@ cross-references, and enforcement.
 **invariant** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
 
 <a id="def-itf-trace"></a>
-**ITF trace** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+**ITF trace** — evidence. Quint's ordered state projection used here with variables `combat` and `last`, normalized to remove volatile metadata before replay. **Declared at:** chapter 40; Q4 fixtures. **Related terms:** [execution trace](#def-execution-trace), [first divergence](#def-first-divergence). **Runtime correspondence:** one committed exact trace and sixteen deterministic sampled traces replay through the real F# interpreter.
 
 <a id="qnt-last"></a>
 **last** — variable. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.

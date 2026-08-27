@@ -245,7 +245,7 @@ Completion evidence (2026-08-27):
   progressive animation/shader enhancement, accessible fallbacks, render regression, and performance
   qualification before M7 publication.
 
-### - [ ] M5 — Runtime correspondence and evidence
+### - [x] M5 — Runtime correspondence and evidence
 
 **Outcome:** model claims connect to production behavior without merging their authorities.
 
@@ -263,6 +263,28 @@ Exit criteria:
 - every production claim cites a runtime subject and evidence;
 - missing correspondence is explicitly classified; and
 - the handbook never describes simulation output as proof of implementation equivalence.
+
+Completion evidence (2026-08-27):
+
+- `docs/sir-combat-quint-handbook.md` now maps all sixteen stable rules through controlled `exact`,
+  `aggregate`, `external-contract`, `presentation-only`, or `missing` correspondence states and names
+  current F# subjects plus scoped evidence for every production claim. Supercover geometry is explicitly
+  missing while the visible/total ratio and pinned external contract remain checked.
+- Chapters 39–43 distinguish the literate authority from disposable `.qnt`/ITF projections; teach the
+  committed exact trace (one trace, nine states) separately from the deterministic sampled corpus
+  (seed 352, sixteen traces, 144 states, at most eight steps); explain structured first-divergence output;
+  and give a dependency-ordered safe rule-change workflow without equivalence overclaims.
+- `work/373-handbook-m5/audit-runtime-correspondence.mjs` owns five structural observed-red/restored-green
+  controls while `scripts/qualify-quint-q4-sir-combat.sh` exercises the real interpreter, exact and sampled
+  replay, and three independent runtime-correspondence inversions. Dedicated aggregate and JUnit receipts
+  are under `readiness/373-handbook-m5/`.
+- Lifecycle evidence: `work/373-handbook-m5/` and `readiness/373-handbook-m5/`; feedback cycle:
+  `roadmap-sir-combat-quint-handbook-m5-runtime-correspondence`; delivery issue: #373.
+- Delivery boundary: this checked entry is the merge-candidate ledger update. Independent feedback
+  critique, independent exact-head acceptance, green hosted PR CI, merge, post-merge protected/Pages
+  proof, issue #373 closure, and project status Done are required before it becomes landed history.
+- M6, M6V, and M7 remain pending. M6V retains authoritative SVG mechanics/theory visuals, progressive
+  animation/shader enhancement, accessibility/fallbacks, visual regression, and performance qualification.
 
 ### - [ ] M6 — Complete definition index and enforced linkability
 

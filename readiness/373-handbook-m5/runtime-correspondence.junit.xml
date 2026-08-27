@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sir-handbook-m5-runtime-correspondence" tests="47" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.HandbookM5" name="section:part-vii"/>
+  <testcase classname="SIR.HandbookM5" name="section:part-vii"/>
+  <testcase classname="SIR.HandbookM5" name="focused-positive"/>
+  <testcase classname="SIR.HandbookM5" name="negative-subject:missing-runtime-subject"/>
+  <testcase classname="SIR.HandbookM5" name="section:part-vii"/>
+  <testcase classname="SIR.HandbookM5" name="observed-red:missing-runtime-subject"/>
+  <testcase classname="SIR.HandbookM5" name="section:part-vii"/>
+  <testcase classname="SIR.HandbookM5" name="restored-green:missing-runtime-subject"/>
+  <testcase classname="SIR.HandbookM5" name="negative-subject:missing-evidence-scope"/>
+  <testcase classname="SIR.HandbookM5" name="section:part-vii"/>
+  <testcase classname="SIR.HandbookM5" name="observed-red:missing-evidence-scope"/>
+  <testcase classname="SIR.HandbookM5" name="section:part-vii"/>
+  <testcase classname="SIR.HandbookM5" name="restored-green:missing-evidence-scope"/>
+  <testcase classname="SIR.HandbookM5" name="negative-subject:missing-status"/>
+  <testcase classname="SIR.HandbookM5" name="section:part-vii"/>
+  <testcase classname="SIR.HandbookM5" name="observed-red:missing-status"/>
+  <testcase classname="SIR.HandbookM5" name="section:part-vii"/>
+  <testcase classname="SIR.HandbookM5" name="restored-green:missing-status"/>
+  <testcase classname="SIR.HandbookM5" name="negative-subject:missing-sample-bound"/>
+  <testcase classname="SIR.HandbookM5" name="section:part-vii"/>
+  <testcase classname="SIR.HandbookM5" name="observed-red:missing-sample-bound"/>
+  <testcase classname="SIR.HandbookM5" name="section:part-vii"/>
+  <testcase classname="SIR.HandbookM5" name="restored-green:missing-sample-bound"/>
+  <testcase classname="SIR.HandbookM5" name="negative-subject:equivalence-overclaim"/>
+  <testcase classname="SIR.HandbookM5" name="section:part-vii"/>
+  <testcase classname="SIR.HandbookM5" name="observed-red:equivalence-overclaim"/>
+  <testcase classname="SIR.HandbookM5" name="section:part-vii"/>
+  <testcase classname="SIR.HandbookM5" name="restored-green:equivalence-overclaim"/>
+  <testcase classname="SIR.HandbookM5" name="runtime:let registry"/>
+  <testcase classname="SIR.HandbookM5" name="runtime:let resolveAttack"/>
+  <testcase classname="SIR.HandbookM5" name="runtime:let resolveConsequences"/>
+  <testcase classname="SIR.HandbookM5" name="runtime:let resolveCoverImpact"/>
+  <testcase classname="SIR.HandbookM5" name="runtime:let resolveRecovery"/>
+  <testcase classname="SIR.HandbookM5" name="adapter:let private expectedState"/>
+  <testcase classname="SIR.HandbookM5" name="adapter:let private applyModelAction"/>
+  <testcase classname="SIR.HandbookM5" name="adapter:let private firstDifference"/>
+  <testcase classname="SIR.HandbookM5" name="adapter:let replayDirectory"/>
+  <testcase classname="SIR.HandbookM5" name="adapter:Q4 first divergence:"/>
+  <testcase classname="SIR.HandbookM5" name="qualifier:--quint-q4-exact"/>
+  <testcase classname="SIR.HandbookM5" name="qualifier:--quint-q4-sampled"/>
+  <testcase classname="SIR.HandbookM5" name="qualifier:wrong-action-mapping"/>
+  <testcase classname="SIR.HandbookM5" name="qualifier:wrong-observable-field"/>
+  <testcase classname="SIR.HandbookM5" name="qualifier:combat-boundary-defect"/>
+  <testcase classname="SIR.HandbookM5" name="qualifier:--seed 352"/>
+  <testcase classname="SIR.HandbookM5" name="qualifier:--max-steps 8"/>
+  <testcase classname="SIR.HandbookM5" name="rendered-exists"/>
+  <testcase classname="SIR.HandbookM5" name="rendered-correspondence"/>
+</testsuite>
