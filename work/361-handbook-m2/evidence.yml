@@ -11,7 +11,7 @@ sourceAnalysis: readiness/361-handbook-m2/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/361-handbook-m2/analysis.json
-    digest: 3215e8385d2503a911a6c8e1ea8361daece4c2bf58ca2331b79cd0f3554d65de
+    digest: 05ab51d281bde050f9e3681f90864c38f918669be1c05e74b5bdb34f23987342
     schemaVersion: 1
   - label: checklist
     path: work/361-handbook-m2/checklist.md
@@ -208,21 +208,21 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-007]
     obligationRefs: [EV007]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    artifacts: [docs/sir-combat-quint-handbook-roadmap.md, feedback/2026-08-27-sir-handbook-m2-representative-attack.md, feedback/audits/2026-08-27-sir-handbook-m2-representative-attack.audit.json, readiness/361-handbook-m2/roadmap-ledger.junit.xml, work/361-handbook-m2/audit-roadmap-ledger.mjs]
     sourceRefs:
       - kind: verification
-        path: work/361-handbook-m2/qualify-handbook-m2.sh
+        path: work/361-handbook-m2/audit-roadmap-ledger.mjs
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/361-handbook-m2/qualification.junit.xml
-      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      source: readiness/361-handbook-m2/roadmap-ledger.junit.xml
+      digest: "sha256:310f350b337f22393abeb1af38bb7aece40624bc77a33c4267901990eaad4dcb"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 4
+      passed: 1
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+    notes: ["The ledger receipt proves that only M2 changed to checked and that the entry names work, readiness, feedback, PR, exact-head review, CI, merge, and post-merge boundaries."]
   - id: EV008
     kind: verification
     subject:
@@ -397,20 +397,20 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-006]
     obligationRefs: [EV014]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    artifacts: [readiness/361-handbook-m2/analysis.json, readiness/361-handbook-m2/lifecycle.junit.xml, readiness/361-handbook-m2/ship-verdict.json, readiness/361-handbook-m2/ship.json, readiness/361-handbook-m2/verify.json, readiness/361-handbook-m2/work-model.json, work/361-handbook-m2/evidence.yml, work/361-handbook-m2/qualify-sdd-lifecycle.sh]
     sourceRefs:
       - kind: verification
-        path: work/361-handbook-m2/qualify-handbook-m2.sh
+        path: work/361-handbook-m2/qualify-sdd-lifecycle.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/361-handbook-m2/qualification.junit.xml
-      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      source: readiness/361-handbook-m2/lifecycle.junit.xml
+      digest: "sha256:7671aa75bc4079669dbae7afd54cd81339c256ac6533664b15315acf5da93801"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 4
+      passed: 1
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+    notes: ["Dedicated two-pass lifecycle receipt proves analyze/evidence/verify/ship convergence with current generated views and zero blocking, stale, or synthetic evidence."]
 lifecycleNotes:
   - "Next lifecycle action: verify."

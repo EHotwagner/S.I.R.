@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "e79a3d58b75d489d39dd842ad54e449ee86919fb3e7f69e40cf40c86ee575c15"
+        "value": "4cf0ea58dca2f9cda0e110015decd3f45820ed38e4e63bcb5a3a2babe1019af4"
       }
     },
     {
@@ -949,17 +949,11 @@
         "FR-007"
       ],
       "artifactRefs": [
-        "docs/rules/sir-combat.md",
         "docs/sir-combat-quint-handbook-roadmap.md",
-        "docs/sir-combat-quint-handbook.md",
-        "readiness/361-handbook-m2/docs-build.junit.xml",
-        "readiness/361-handbook-m2/handbook-m2.junit.xml",
-        "readiness/361-handbook-m2/link-audit.junit.xml",
-        "readiness/361-handbook-m2/qualification.junit.xml",
-        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
-        "work/359-handbook-m1/audit-handbook-links.mjs",
-        "work/361-handbook-m2/audit-representative-attack.mjs",
-        "work/361-handbook-m2/qualify-handbook-m2.sh"
+        "feedback/2026-08-27-sir-handbook-m2-representative-attack.md",
+        "feedback/audits/2026-08-27-sir-handbook-m2-representative-attack.audit.json",
+        "readiness/361-handbook-m2/roadmap-ledger.junit.xml",
+        "work/361-handbook-m2/audit-roadmap-ledger.mjs"
       ],
       "result": "pass",
       "synthetic": false,
@@ -1187,17 +1181,14 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/rules/sir-combat.md",
-        "docs/sir-combat-quint-handbook-roadmap.md",
-        "docs/sir-combat-quint-handbook.md",
-        "readiness/361-handbook-m2/docs-build.junit.xml",
-        "readiness/361-handbook-m2/handbook-m2.junit.xml",
-        "readiness/361-handbook-m2/link-audit.junit.xml",
-        "readiness/361-handbook-m2/qualification.junit.xml",
-        "readiness/361-handbook-m2/sir-combat-q4.junit.xml",
-        "work/359-handbook-m1/audit-handbook-links.mjs",
-        "work/361-handbook-m2/audit-representative-attack.mjs",
-        "work/361-handbook-m2/qualify-handbook-m2.sh"
+        "readiness/361-handbook-m2/analysis.json",
+        "readiness/361-handbook-m2/lifecycle.junit.xml",
+        "readiness/361-handbook-m2/ship-verdict.json",
+        "readiness/361-handbook-m2/ship.json",
+        "readiness/361-handbook-m2/verify.json",
+        "readiness/361-handbook-m2/work-model.json",
+        "work/361-handbook-m2/evidence.yml",
+        "work/361-handbook-m2/qualify-sdd-lifecycle.sh"
       ],
       "result": "pass",
       "synthetic": false,
@@ -1266,7 +1257,7 @@
           "path": "work/361-handbook-m2/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "e79a3d58b75d489d39dd842ad54e449ee86919fb3e7f69e40cf40c86ee575c15"
+            "value": "4cf0ea58dca2f9cda0e110015decd3f45820ed38e4e63bcb5a3a2babe1019af4"
           },
           "schemaVersion": 1
         },
@@ -1297,7 +1288,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "e9dbd905cfe61d926939c2806426440385621a19e710d5342e70c74322eb09a7"
+        "value": "af4c3bd12be9d4fcdb9253ec2f21847c3a0de46d4b570deb4272de0c9af19e84"
       },
       "currency": "current"
     }
