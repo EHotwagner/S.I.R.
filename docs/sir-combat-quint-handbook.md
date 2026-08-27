@@ -1,5 +1,5 @@
 ---
-title: S.I.R. Combat in Quint: From Design Decisions to Executable Models
+title: Combat in Quint: From Design Decisions to Executable Models
 category: Battlefield Systems
 categoryindex: 4
 index: 48
