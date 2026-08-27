@@ -1,0 +1,39 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-handbook-m5-runtime-correspondence.md",
+  "reportSha256": "adb9442b00486b33cc68e36c4d91076ea2c1a84650bfd3696ed3c20e851fda48",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:docs/sir-combat-quint-handbook.md", "result": "verified", "sha256": "a3b2eb1d8f127c49b234a8f5cb71ce5337e1959c4a7c015e35ff0738e52f01fd" },
+        { "locator": "file:work/373-handbook-m5/audit-runtime-correspondence.mjs", "result": "verified", "sha256": "819f29d89aa7c08aa7526fce944a81ec5ee0efb418768cdedba496201f40ebac" },
+        { "locator": "file:readiness/373-handbook-m5/runtime-correspondence.junit.xml", "result": "verified", "sha256": "dcdb0cc604dc2c6891d28453d269f6eae5b9e02d6cd2950ef0fa4683d12edf04" },
+        { "locator": "file:readiness/373-handbook-m5/sir-combat-q4.junit.xml", "result": "verified", "sha256": "c7cb40e17ce7ef10cc651a09a695135840e725d8621d433ccae1ecad2bc36f3c" },
+        { "locator": "command:bash work/373-handbook-m5/qualify-handbook-m5.sh", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The exact and sampled correspondence claims are bounded by the named fixtures, Quint version, seed, trace/state counts, and maximum steps.",
+        "Supercover geometry is explicitly missing and no general implementation-equivalence claim is made."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m5-runtime-correspondence.jsonl", "result": "verified", "sha256": "fac1224410bd8decd85a8309bd6bc28c3b9f3926a6b38958c79da7fffe33d1df" },
+        { "locator": "file:work/365-handbook-m4/qualify-handbook-m4.sh", "result": "verified", "sha256": "3c9c7c8ea1dbfde89e3737dbb4c9c532f7854b02f3821027bb23b14a901e4573" },
+        { "locator": "file:work/365-handbook-m4/audit-roadmap-ledger.mjs", "result": "verified", "sha256": "2b72aff927a798a354446129f3d0894d8af12a0c6d20a04ba2ab993655fc2e80" }
+      ],
+      "confidenceLimits": [
+        "The retained checkpoint records that inherited semantic gates passed before the final milestone-local ledger failure; no separate full transcript was committed.",
+        "The proposed split preserves the standalone M4 ledger detector rather than weakening it."
+      ]
+    }
+  ]
+}
