@@ -6,12 +6,12 @@
   "sources": [
     {
       "path": "readiness/352-quint-q4-sir-adoption/ship.json",
-      "digest": "sha256:91a4a96f61db77a04f4b366507efaa18fc64531d6a172167646a387562b8c5df",
+      "digest": "sha256:0fced993d0de85616cd8a7b12c035463e905e7cb21c2f4a5d4ed258992f69f53",
       "schemaVersion": 1
     },
     {
       "path": "readiness/352-quint-q4-sir-adoption/verify.json",
-      "digest": "sha256:d2794b5d58912cad6158bb95113bfbf2854c59d9593f4df9ee1db5ba8fbb6149",
+      "digest": "sha256:8457bb2c71ed2d686f502cdb5cac41332f184d83900a5c6ab08c55ee218caf52",
       "schemaVersion": 1
     },
     {

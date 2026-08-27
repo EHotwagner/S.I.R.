@@ -11,7 +11,7 @@ sourceAnalysis: readiness/352-quint-q4-sir-adoption/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/352-quint-q4-sir-adoption/analysis.json
-    digest: c14797cb9da408ef32a349102d253fa1f795a3a0efee4d9cad73742b7a44147d
+    digest: 3913d4faf5b0f1e3c496e8e7b5067d0f93300f571e9d6354cb53faad875da4dc
     schemaVersion: 1
   - label: checklist
     path: work/352-quint-q4-sir-adoption/checklist.md
