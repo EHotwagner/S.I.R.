@@ -89,7 +89,7 @@ jobs:
           archive=artifacts/qualified-site-handoff/protected-qualified-site.tar
           while IFS= read -r path; do
             case "$path" in
-              artifacts/site|artifacts/site/*|artifacts/ci/route.json|artifacts/ci/results/documentation.json|artifacts/ci/parts/docs.receipt.path|artifacts/ci/parts/receipts/*.json) ;;
+              artifacts/site|artifacts/site/*|artifacts/ci/route.json|artifacts/ci/results/documentation.json|artifacts/ci/routed-site.receipt.path|artifacts/ci/routed-site-receipts/*.json) ;;
               *) echo "Unexpected qualified-site archive path: $path" >&2; exit 1 ;;
             esac
           done < <(tar -tf "$archive")
@@ -107,7 +107,7 @@ jobs:
             artifacts/ci/results/documentation.json >/dev/null
           node scripts/production-build-receipt.mjs verify \
             --owner-command scripts/qualify-pr.sh \
-            --receipt "$(<artifacts/ci/parts/docs.receipt.path)"
+            --receipt "$(<artifacts/ci/routed-site.receipt.path)"
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:

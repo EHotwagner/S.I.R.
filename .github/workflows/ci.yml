@@ -758,13 +758,14 @@ jobs:
         if: success() && github.event_name == 'push'
         shell: bash
         run: |
-          receipt=$(<artifacts/ci/parts/docs.receipt.path)
-          case "$receipt" in artifacts/ci/parts/receipts/*.json) ;; *) echo "Unexpected docs receipt path: $receipt" >&2; exit 1 ;; esac
-          test -f "$receipt"
           node scripts/ci-route.mjs verify-route \
             --route artifacts/ci/route.json \
             --commit "$(git rev-parse HEAD)" \
             --tree "$(git rev-parse 'HEAD^{tree}')"
+          ./scripts/qualify-pr.sh seal-qualified-site
+          receipt=$(<artifacts/ci/routed-site.receipt.path)
+          case "$receipt" in artifacts/ci/routed-site-receipts/*.json) ;; *) echo "Unexpected routed site receipt path: $receipt" >&2; exit 1 ;; esac
+          test -f "$receipt"
           node scripts/production-build-receipt.mjs verify \
             --owner-command scripts/qualify-pr.sh \
             --receipt "$receipt"
@@ -775,7 +776,7 @@ jobs:
             artifacts/site \
             artifacts/ci/route.json \
             artifacts/ci/results/documentation.json \
-            artifacts/ci/parts/docs.receipt.path \
+            artifacts/ci/routed-site.receipt.path \
             "$receipt"
       - if: always()
         name: Record produced gate results
