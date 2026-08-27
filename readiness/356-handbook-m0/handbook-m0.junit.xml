@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites tests="1" failures="0"><testsuite name="handbook-m0-roadmap" tests="1" failures="0"><testcase classname="SIR.Handbook" name="authority inventory ledger" /></testsuite></testsuites>
