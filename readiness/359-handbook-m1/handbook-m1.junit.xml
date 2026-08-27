@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="handbook-m1" tests="2" failures="0" errors="0" skipped="0">
+<testsuite name="handbook-m1" tests="3" failures="0" errors="0" skipped="0">
   <testcase classname="handbook" name="structural-link-audit" />
   <testcase classname="handbook" name="documentation-render" />
+  <testcase classname="handbook" name="in-app-semantic-anchor-contract" />
 </testsuite>

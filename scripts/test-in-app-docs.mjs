@@ -16,13 +16,15 @@ function decode(text) {
   const slugs = manifest.pages.map((page) => page.slug);
   if (new Set(slugs).size !== slugs.length) throw new Error("Duplicate documentation slug.");
   const known = new Set(slugs);
-  const anchors = new Map(manifest.pages.map((page) => [page.slug, new Set(page.headings.map((heading) => heading.anchor))]));
+  const anchors = new Map(manifest.pages.map((page) => [page.slug, new Set(page.anchors)]));
   for (const page of manifest.pages) {
     if (!allowedStatuses.has(page.status)) throw new Error("Unknown documentation status.");
     if (!Array.isArray(page.blocks) || page.blocks.some((block) => !allowedBlocks.has(block.kind))) throw new Error("Unknown documentation block.");
     if (page.related.some((slug) => !known.has(slug))) throw new Error("Broken documentation cross-link.");
     const blockAnchors = new Set(page.blocks.filter((block) => block.kind === "heading").map((block) => block.anchor));
+    if (!Array.isArray(page.anchors) || page.anchors.some((anchor) => typeof anchor !== "string" || !anchor)) throw new Error("Invalid documentation anchor inventory.");
     if (page.headings.some((heading) => !heading.anchor || !blockAnchors.has(heading.anchor))) throw new Error("Broken documentation heading anchor.");
+    if (page.headings.some((heading) => !anchors.get(page.slug).has(heading.anchor))) throw new Error("Documentation heading missing from anchor inventory.");
     for (const block of page.blocks) {
       if (block.kind === "table" && (!Array.isArray(block.rows) || block.rows.length === 0)) throw new Error("Unrenderable documentation table.");
       if (block.kind === "image" && (!block.imageSource || !block.text)) throw new Error("Unrenderable documentation image.");

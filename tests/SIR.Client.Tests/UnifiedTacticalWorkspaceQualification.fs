@@ -356,6 +356,7 @@ let run () =
           SourcePath = "docs/" + slug + ".md"
           ApiPath = None
           ContentDigest = slug
+          Anchors = [ slug ]
           Headings = [ title, slug ]
           Related = []
           Blocks =

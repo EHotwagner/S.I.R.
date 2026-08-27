@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "1ff928d8e30993b84445a3f09dd0ce908931f21f721f9d58e85c0f64ed9962a1"
+        "value": "96be0b5b17eaf9063e7e1af92bc4dc5b056fff9f3babebab6680ee1ac0e7af74"
       }
     },
     {
@@ -1089,7 +1089,7 @@
           "path": "work/359-handbook-m1/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "1ff928d8e30993b84445a3f09dd0ce908931f21f721f9d58e85c0f64ed9962a1"
+            "value": "96be0b5b17eaf9063e7e1af92bc4dc5b056fff9f3babebab6680ee1ac0e7af74"
           },
           "schemaVersion": 1
         },
@@ -1120,7 +1120,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "ee3fdab68badb85d54713b813dd586137772d2bc57258e4bb6020bee1c9873ca"
+        "value": "8dfa179f971642656900c6299db4c4aed919c54ccad815e1dce72e3b87853894"
       },
       "currency": "current"
     }

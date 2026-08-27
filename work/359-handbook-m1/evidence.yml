@@ -54,10 +54,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
@@ -81,10 +81,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
@@ -108,10 +108,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
@@ -135,10 +135,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
@@ -162,10 +162,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
@@ -189,10 +189,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
@@ -216,10 +216,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
@@ -243,10 +243,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
@@ -270,10 +270,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
@@ -297,10 +297,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
@@ -324,10 +324,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
@@ -351,10 +351,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
@@ -378,10 +378,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/359-handbook-m1/handbook-m1.junit.xml
-      digest: "sha256:bc0fc91aab2e7b9a4e503674c217a157542014dbcb24a985b900421242bbac37"
+      digest: "sha256:21ffd0c0b9e1aebac6eea4a2e9f97ef445ffaf7d6fac7b3f95f9e623c6f81a92"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 3
       failed: 0
       skipped: 0
     notes: ["Focused structural audit and strict rendered documentation build passed; four deliberate link defects failed through their named routes."]
