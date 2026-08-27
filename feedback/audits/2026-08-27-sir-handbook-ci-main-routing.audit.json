@@ -1,0 +1,40 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-handbook-ci-main-routing.md",
+  "reportSha256": "3bcaad4aff2c04060bcf9c90b4bd656e56abac63fd438da053b84b43a92ef59e",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:work/366-main-ci-routing/qualify-main-ci-routing.sh",
+          "result": "verified",
+          "sha256": "22680f4fcc662972d071c170cba79015ff324136cf1bb5ae35b41cb80f0978c8"
+        },
+        {
+          "locator": "file:scripts/test-ci-route.mjs",
+          "result": "verified",
+          "sha256": "53a5eb7d38db745593133a62b609b0a66e2e663e01a292dda14831c4758008e8"
+        },
+        {
+          "locator": "file:scripts/test-protected-stage-receipts.mjs",
+          "result": "verified",
+          "sha256": "23aefde74030c097f338361d1c25952ce39b931e724d8685fa59da9da7f395cb"
+        },
+        {
+          "locator": "file:scripts/test-pages-qualified-handoff.mjs",
+          "result": "verified",
+          "sha256": "9dadf230ac1e03155da49c94453420a7470c7c632f15617c15e1acb81a07241d"
+        }
+      ],
+      "confidenceLimits": [
+        "The focused qualification was rerun at the declared commit, but hosted PR CI, merge, and the first post-merge protected run were still pending at report finalization.",
+        "The two process-friction checkpoint recollections lack preserved failing transcripts and are disclosed outside §4 rather than promoted to actionable findings."
+      ]
+    }
+  ]
+}
