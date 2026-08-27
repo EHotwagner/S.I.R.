@@ -1,0 +1,1379 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "352-quint-q4-sir-adoption",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/352-quint-q4-sir-adoption/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "dd25291d8ad2a2a0eb36eeee73b9969b6ab6132fff5290d57dbfe8c009488911"
+      }
+    },
+    {
+      "path": "work/352-quint-q4-sir-adoption/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "82d64422132539f2e703419ac0a1aa362ba2ffe7ce85c61d0d3f9ad564a74b23"
+      }
+    },
+    {
+      "path": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "00b28f4d153d1987023408fa06a161005833ae102b7ee44f82d26fd2cba85d06"
+      }
+    },
+    {
+      "path": "work/352-quint-q4-sir-adoption/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "30956b2fb4ed472ef75414114f61caae0b072c9a6af52a9a7baf658fd8e157a9"
+      }
+    },
+    {
+      "path": "work/352-quint-q4-sir-adoption/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "323c1a23fb6655c3efc53af84ca3b4a632633d92321992216ea995ef713966ad"
+      }
+    },
+    {
+      "path": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "7f28a212886071df48c93e7e3c045674605bd43fc5b97005bf43f06c2fd13001"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "352-quint-q4-sir-adoption",
+    "title": "Quint Q4 complete SIR combat adoption",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "The repository MUST author the complete sixteen-rule corpus once in literate Markdown with ordered named Quint blocks; embedded Quint owns behavior and extracted \u0060.qnt\u0060 is generated and non-authoritative. (covers AC-001)",
+      "text": "The repository MUST author the complete sixteen-rule corpus once in literate Markdown with ordered named Quint blocks; embedded Quint owns behavior and extracted \u0060.qnt\u0060 is generated and non-authoritative. (covers AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/352-quint-q4-sir-adoption/spec.md",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001",
+        "T010"
+      ],
+      "linkedEvidenceIds": [
+        "EV001",
+        "EV010"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "The authority MUST retain every current rule ID, kind, dependency, read/effect/event contract, and relevant observable explanation order. (covers AC-001, AC-004)",
+      "text": "The authority MUST retain every current rule ID, kind, dependency, read/effect/event contract, and relevant observable explanation order. (covers AC-001, AC-004)",
+      "acceptanceCriteria": [
+        "AC-001",
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/352-quint-q4-sir-adoption/spec.md",
+      "sourceLocation": {
+        "line": 46,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001",
+        "T007"
+      ],
+      "linkedEvidenceIds": [
+        "EV001",
+        "EV007"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "Facts and formulae MUST model the rifle/body constants, engagement preparation, bounded armor retention, fixed-point trace ratio boundary, and expected-damage arithmetic including current rounding semantics. (covers AC-002, AC-004)",
+      "text": "Facts and formulae MUST model the rifle/body constants, engagement preparation, bounded armor retention, fixed-point trace ratio boundary, and expected-damage arithmetic including current rounding semantics. (covers AC-002, AC-004)",
+      "acceptanceCriteria": [
+        "AC-002",
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/352-quint-q4-sir-adoption/spec.md",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "The trace rule MUST remain a registered external algorithm contract with the exact symbol/fingerprint and bounded sample/result observables; Quint MUST NOT claim to implement supercover. (covers AC-002, AC-004)",
+      "text": "The trace rule MUST remain a registered external algorithm contract with the exact symbol/fingerprint and bounded sample/result observables; Quint MUST NOT claim to implement supercover. (covers AC-002, AC-004)",
+      "acceptanceCriteria": [
+        "AC-002",
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/352-quint-q4-sir-adoption/spec.md",
+      "sourceLocation": {
+        "line": 48,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002"
+      ]
+    },
+    {
+      "id": "FR-005",
+      "title": "Stateful actions MUST cover attack/consequences, cover impact/destruction, and suppression recovery while exposing the focused rules through pure helpers, ordered observations, and properties rather than inventing runtime-visible intermediate commits. (covers AC-002, AC-004)",
+      "text": "Stateful actions MUST cover attack/consequences, cover impact/destruction, and suppression recovery while exposing the focused rules through pure helpers, ordered observations, and properties rather than inventing runtime-visible intermediate commits. (covers AC-002, AC-004)",
+      "acceptanceCriteria": [
+        "AC-002",
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/352-quint-q4-sir-adoption/spec.md",
+      "sourceLocation": {
+        "line": 49,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003"
+      ]
+    },
+    {
+      "id": "FR-006",
+      "title": "Invariants MUST include bounded health/suppression/cover integrity, incapacity iff health is zero, cover destruction iff integrity is zero, valid trace ratios, and suppression increase only after positive damage. (covers AC-002)",
+      "text": "Invariants MUST include bounded health/suppression/cover integrity, incapacity iff health is zero, cover destruction iff integrity is zero, valid trace ratios, and suppression increase only after positive damage. (covers AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/352-quint-q4-sir-adoption/spec.md",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003"
+      ]
+    },
+    {
+      "id": "FR-007",
+      "title": "Witnesses/tests MUST include damage 20, wound boundaries 24/25/50, health reaching zero, suppression eligibility and five-point recovery cap, destructive cover impact/current-collision blocking, and faction-neutral collateral consequences. (covers AC-002)",
+      "text": "Witnesses/tests MUST include damage 20, wound boundaries 24/25/50, health reaching zero, suppression eligibility and five-point recovery cap, destructive cover impact/current-collision blocking, and faction-neutral collateral consequences. (covers AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/352-quint-q4-sir-adoption/spec.md",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004",
+        "T005"
+      ],
+      "linkedEvidenceIds": [
+        "EV004",
+        "EV005"
+      ]
+    },
+    {
+      "id": "FR-008",
+      "title": "Generated bindings MUST replace F# \u0060RuleDefinition\u0060/\u0060SpecificationModel\u0060 authoring without replacing the real interpreter and MUST preserve native/Fable/runtime/corpus behavior. (covers AC-001, AC-004)",
+      "text": "Generated bindings MUST replace F# \u0060RuleDefinition\u0060/\u0060SpecificationModel\u0060 authoring without replacing the real interpreter and MUST preserve native/Fable/runtime/corpus behavior. (covers AC-001, AC-004)",
+      "acceptanceCriteria": [
+        "AC-001",
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/352-quint-q4-sir-adoption/spec.md",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T007",
+        "T010"
+      ],
+      "linkedEvidenceIds": [
+        "EV007",
+        "EV010"
+      ]
+    },
+    {
+      "id": "FR-009",
+      "title": "S.I.R. MUST consume the exact stable coherent producer set that implements FS.GG.SDD#932 through package references and locked graphs only; 1.4.0 remains the compatibility floor. (covers AC-003)",
+      "text": "S.I.R. MUST consume the exact stable coherent producer set that implements FS.GG.SDD#932 through package references and locked graphs only; 1.4.0 remains the compatibility floor. (covers AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/352-quint-q4-sir-adoption/spec.md",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T009",
+        "T012"
+      ],
+      "linkedEvidenceIds": [
+        "EV009",
+        "EV012"
+      ]
+    },
+    {
+      "id": "FR-010",
+      "title": "Q4 MUST productionize Q1 correspondence into the expanded state/observation mapping, replay exact and sampled ITF traces, and fail at the first divergence. (covers AC-005)",
+      "text": "Q4 MUST productionize Q1 correspondence into the expanded state/observation mapping, replay exact and sampled ITF traces, and fail at the first divergence. (covers AC-005)",
+      "acceptanceCriteria": [
+        "AC-005"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/352-quint-q4-sir-adoption/spec.md",
+      "sourceLocation": {
+        "line": 54,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T006",
+        "T012"
+      ],
+      "linkedEvidenceIds": [
+        "EV006",
+        "EV012"
+      ]
+    },
+    {
+      "id": "FR-011",
+      "title": "Q4 MUST retain authenticated v1 rollback and prove accepted rollback, crash recovery, retry, and tamper refusal. (covers AC-006)",
+      "text": "Q4 MUST retain authenticated v1 rollback and prove accepted rollback, crash recovery, retry, and tamper refusal. (covers AC-006)",
+      "acceptanceCriteria": [
+        "AC-006"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/352-quint-q4-sir-adoption/spec.md",
+      "sourceLocation": {
+        "line": 55,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T011",
+        "T012"
+      ],
+      "linkedEvidenceIds": [
+        "EV011",
+        "EV012"
+      ]
+    },
+    {
+      "id": "FR-012",
+      "title": "Qualification MUST contain observed-red controls for semantic, generation, identity, contract, and correspondence faults. (covers AC-007)",
+      "text": "Qualification MUST contain observed-red controls for semantic, generation, identity, contract, and correspondence faults. (covers AC-007)",
+      "acceptanceCriteria": [
+        "AC-007"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/352-quint-q4-sir-adoption/spec.md",
+      "sourceLocation": {
+        "line": 56,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T008",
+        "T012"
+      ],
+      "linkedEvidenceIds": [
+        "EV008",
+        "EV012"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Q4 migrates all sixteen current combat registry entries, not only \u0060COMBAT-DAMAGE-001\u0060.",
+      "decision": "Q4 migrates all sixteen current combat registry entries, not only \u0060COMBAT-DAMAGE-001\u0060.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/352-quint-q4-sir-adoption/clarifications.md",
+      "sourceLocation": {
+        "line": 24,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ]
+    },
+    {
+      "id": "DEC-002",
+      "title": "The model will use the smallest faithful abstraction at each layer and document why each Quint construct was chosen.",
+      "decision": "The model will use the smallest faithful abstraction at each layer and document why each Quint construct was chosen.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/352-quint-q4-sir-adoption/clarifications.md",
+      "sourceLocation": {
+        "line": 25,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ]
+    },
+    {
+      "id": "DEC-003",
+      "title": "Compatibility is byte-exact for named legacy subjects and semantic-plus-fingerprint exact for new manifest-v2 products.",
+      "decision": "Compatibility is byte-exact for named legacy subjects and semantic-plus-fingerprint exact for new manifest-v2 products.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/352-quint-q4-sir-adoption/clarifications.md",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001",
+        "T007",
+        "T011"
+      ]
+    },
+    {
+      "id": "DEC-004",
+      "title": "\u0060Los.lineOfSightBy\u0060 stays a registered implementation. Quint owns its bounded contract and visible/total/result relation, not supercover traversal.",
+      "decision": "\u0060Los.lineOfSightBy\u0060 stays a registered implementation. Quint owns its bounded contract and visible/total/result relation, not supercover traversal.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/352-quint-q4-sir-adoption/clarifications.md",
+      "sourceLocation": {
+        "line": 27,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ]
+    },
+    {
+      "id": "DEC-005",
+      "title": "The aggregate consequence resolution is one atomic action because the real interpreter publishes only the completed result; focused rule semantics remain independently readable/testable as pure helpers and ordered observations.",
+      "decision": "The aggregate consequence resolution is one atomic action because the real interpreter publishes only the completed result; focused rule semantics remain independently readable/testable as pure helpers and ordered observations.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/352-quint-q4-sir-adoption/clarifications.md",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ]
+    },
+    {
+      "id": "DEC-006",
+      "title": "Use raw scale-10,000 fixed-point integers; \u0060NoWound | MinorWound | MajorWound\u0060; cohesive \u0060CombatState\u0060, \u0060AttackInput\u0060, and \u0060Observation\u0060 records; one atomic consequence action; and separate cover-impact and suppression-recovery actions.",
+      "decision": "Use raw scale-10,000 fixed-point integers; \u0060NoWound | MinorWound | MajorWound\u0060; cohesive \u0060CombatState\u0060, \u0060AttackInput\u0060, and \u0060Observation\u0060 records; one atomic consequence action; and separate cover-impact and suppression-recovery actions.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/352-quint-q4-sir-adoption/clarifications.md",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001",
+        "T003"
+      ]
+    },
+    {
+      "id": "DEC-007",
+      "title": "FS.GG.SDD#932 owns the general consumer-model profile required for canonical integration. Q4 may author, typecheck, test, and correspondence-check the standalone model before that published dependency lands, but may not impersonate a successful Typed SDD migration.",
+      "decision": "FS.GG.SDD#932 owns the general consumer-model profile required for canonical integration. Q4 may author, typecheck, test, and correspondence-check the standalone model before that published dependency lands, but may not impersonate a successful Typed SDD migration.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/352-quint-q4-sir-adoption/clarifications.md",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T009",
+        "T010"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Author the literate sixteen-rule catalogue and approved Quint types",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-001",
+        "FR-002"
+      ],
+      "decisions": [
+        "DEC-001",
+        "DEC-002",
+        "DEC-003",
+        "DEC-006"
+      ],
+      "sourceIds": [
+        "AC-001",
+        "AC-004",
+        "FR-001",
+        "FR-002",
+        "PC-001",
+        "PD-001",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "quint-lang",
+        "quint-modeling"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Implement exact Q4 fixed-point functions and registered trace contract",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [
+        "FR-003",
+        "FR-004"
+      ],
+      "decisions": [
+        "DEC-004"
+      ],
+      "sourceIds": [
+        "AC-002",
+        "AC-004",
+        "FR-003",
+        "FR-004",
+        "PC-002",
+        "PD-003",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "quint-lang",
+        "quint-modeling"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Implement consequence, cover-impact, and recovery state semantics",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T002"
+      ],
+      "requirements": [
+        "FR-005",
+        "FR-006"
+      ],
+      "decisions": [
+        "DEC-005",
+        "DEC-006"
+      ],
+      "sourceIds": [
+        "AC-002",
+        "AC-004",
+        "FR-005",
+        "FR-006",
+        "PD-005",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "quint-lang",
+        "quint-modeling"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Add named Quint witnesses and property catalogue",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T003"
+      ],
+      "requirements": [
+        "FR-007"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-007",
+        "PD-007",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "quint-lang"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Typecheck, test, and seeded-run the standalone model",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T004"
+      ],
+      "requirements": [
+        "FR-007"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-007",
+        "PD-007",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "quint-lang",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "T006",
+      "title": "Expand the real-interpreter correspondence adapter and ITF replay",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T005"
+      ],
+      "requirements": [
+        "FR-010"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "FR-010",
+        "PC-004",
+        "PD-010",
+        "VO-003"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV006"
+      ],
+      "source": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "T007",
+      "title": "Prove frozen corpus, explanation, native, and Fable compatibility",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T006"
+      ],
+      "requirements": [
+        "FR-002",
+        "FR-008"
+      ],
+      "decisions": [
+        "DEC-003"
+      ],
+      "sourceIds": [
+        "AC-001",
+        "AC-004",
+        "FR-002",
+        "FR-008",
+        "PC-001",
+        "PD-008",
+        "VO-002"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV007"
+      ],
+      "source": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "T008",
+      "title": "Add semantic, freshness, identity, mapping, and interpreter mutation controls",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T005",
+        "T006"
+      ],
+      "requirements": [
+        "FR-012"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "FR-012",
+        "PD-012",
+        "VO-006"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV008"
+      ],
+      "source": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "T009",
+      "title": "Adopt the published FS.GG.SDD#932 coherent package set",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T005"
+      ],
+      "requirements": [
+        "FR-009"
+      ],
+      "decisions": [
+        "DEC-007"
+      ],
+      "sourceIds": [
+        "AC-003",
+        "FR-009",
+        "PC-003",
+        "PD-009",
+        "PM-002",
+        "VO-004"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV009"
+      ],
+      "source": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "T010",
+      "title": "Migrate canonical authority and consume generated F#/Fable bindings",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T007",
+        "T009"
+      ],
+      "requirements": [
+        "FR-001",
+        "FR-008"
+      ],
+      "decisions": [
+        "DEC-007"
+      ],
+      "sourceIds": [
+        "AC-001",
+        "AC-004",
+        "FR-001",
+        "FR-008",
+        "GV-002",
+        "PC-001",
+        "PD-001",
+        "PD-008",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "deterministic-json",
+        "fsharp",
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV010"
+      ],
+      "source": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "T011",
+      "title": "Qualify authenticated rollback and transaction recovery",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T010"
+      ],
+      "requirements": [
+        "FR-011"
+      ],
+      "decisions": [
+        "DEC-003"
+      ],
+      "sourceIds": [
+        "AC-006",
+        "FR-011",
+        "PC-001",
+        "PD-011",
+        "PM-001",
+        "VO-005"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV011"
+      ],
+      "source": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "T012",
+      "title": "Run the complete package-only Q4 gate and publish readiness evidence",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T008",
+        "T010",
+        "T011"
+      ],
+      "requirements": [
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "AC-005",
+        "AC-006",
+        "AC-007",
+        "GV-001",
+        "GV-002",
+        "VO-001",
+        "VO-002",
+        "VO-003",
+        "VO-004",
+        "VO-005",
+        "VO-006"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "deterministic-json",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV012"
+      ],
+      "source": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001",
+        "FR-002"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "scripts/qualify-quint-q4-sir-combat.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [
+        "FR-003",
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "scripts/qualify-quint-q4-sir-combat.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [
+        "FR-005",
+        "FR-006"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "scripts/qualify-quint-q4-sir-combat.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "scripts/qualify-quint-q4-sir-combat.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [
+        "readiness/352-quint-q4-sir-adoption/quint-standalone.json",
+        "readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml",
+        "scripts/qualify-quint-q4-sir-combat.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV006",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T006",
+      "taskRefs": [
+        "T006"
+      ],
+      "requirementRefs": [
+        "FR-010"
+      ],
+      "artifactRefs": [
+        "scripts/qualify-quint-q4-sir-combat.sh",
+        "tests/SIR.Conformance.Shared/Program.fs",
+        "tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV007",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T007",
+      "taskRefs": [
+        "T007"
+      ],
+      "requirementRefs": [
+        "FR-002",
+        "FR-008"
+      ],
+      "artifactRefs": [
+        "readiness/352-quint-q4-sir-adoption/quint-standalone.json",
+        "scripts/qualify-quint-q4-sir-combat.sh",
+        "tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV008",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T008",
+      "taskRefs": [
+        "T008"
+      ],
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "artifactRefs": [
+        "scripts/qualify-quint-q4-sir-combat.sh",
+        "tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV009",
+      "kind": "deferral",
+      "subjectType": "task",
+      "subjectId": "T009",
+      "taskRefs": [
+        "T009"
+      ],
+      "requirementRefs": [
+        "FR-009"
+      ],
+      "artifactRefs": [
+        "readiness/352-quint-q4-sir-adoption/quint-standalone.json"
+      ],
+      "result": "deferred",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": "FS-GG.SDD issue 932 has not yet published the required general consumer-defined Quint model profile.",
+      "source": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV010",
+      "kind": "deferral",
+      "subjectType": "task",
+      "subjectId": "T010",
+      "taskRefs": [
+        "T010"
+      ],
+      "requirementRefs": [
+        "FR-001",
+        "FR-008"
+      ],
+      "artifactRefs": [
+        "readiness/352-quint-q4-sir-adoption/quint-standalone.json"
+      ],
+      "result": "deferred",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": "Generated FSharp and Fable bindings depend on the unpublished general consumer-defined Quint profile.",
+      "source": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV011",
+      "kind": "deferral",
+      "subjectType": "task",
+      "subjectId": "T011",
+      "taskRefs": [
+        "T011"
+      ],
+      "requirementRefs": [
+        "FR-011"
+      ],
+      "artifactRefs": [
+        "readiness/352-quint-q4-sir-adoption/quint-standalone.json"
+      ],
+      "result": "deferred",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": "Authenticated migration rollback cannot run before a canonical migration inventory exists.",
+      "source": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV012",
+      "kind": "deferral",
+      "subjectType": "task",
+      "subjectId": "T012",
+      "taskRefs": [
+        "T012"
+      ],
+      "requirementRefs": [
+        "FR-009",
+        "FR-010",
+        "FR-011",
+        "FR-012"
+      ],
+      "artifactRefs": [
+        "readiness/352-quint-q4-sir-adoption/quint-standalone.json"
+      ],
+      "result": "deferred",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": "The complete package-only Q4 gate depends on the canonical package adoption, generated bindings, and rollback tasks.",
+      "source": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/352-quint-q4-sir-adoption/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.0.1"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/352-quint-q4-sir-adoption/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "dd25291d8ad2a2a0eb36eeee73b9969b6ab6132fff5290d57dbfe8c009488911"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/352-quint-q4-sir-adoption/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "82d64422132539f2e703419ac0a1aa362ba2ffe7ce85c61d0d3f9ad564a74b23"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/352-quint-q4-sir-adoption/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "00b28f4d153d1987023408fa06a161005833ae102b7ee44f82d26fd2cba85d06"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/352-quint-q4-sir-adoption/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "30956b2fb4ed472ef75414114f61caae0b072c9a6af52a9a7baf658fd8e157a9"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/352-quint-q4-sir-adoption/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "323c1a23fb6655c3efc53af84ca3b4a632633d92321992216ea995ef713966ad"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/352-quint-q4-sir-adoption/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7f28a212886071df48c93e7e3c045674605bd43fc5b97005bf43f06c2fd13001"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "399cda882e8c00de54c5b1d1b51ffc4b511b1899d908ab7c87415bbbf19f1cf7"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}

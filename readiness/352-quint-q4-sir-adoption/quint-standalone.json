@@ -2,7 +2,7 @@
   "schema": "sir.quint-standalone-evidence/v1",
   "authority": {
     "path": "docs/rules/sir-combat.md",
-    "sha256": "6d96beaeb055ecacd7d0a8ec821fbfd390cb1e642101594e7922014a1dce15b2"
+    "sha256": "783821bb45837af0df3307f397fb50c4ad6ba4ed34d59f217e84b94bcd336aa2"
   },
   "generatedModule": {
     "target": "sir-combat.qnt",

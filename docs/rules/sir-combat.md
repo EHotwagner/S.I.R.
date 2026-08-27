@@ -1,4 +1,4 @@
-# S.I.R. combat rules in Quint
+# Combat rules in Quint
 
 This document is the reviewer-facing authority for the complete sixteen-rule combat registry. Its
 embedded Quint deliberately uses several modeling scales: catalogue data for rule identity, pure

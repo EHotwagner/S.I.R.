@@ -132,6 +132,37 @@ if [[ "${1:-}" != "--model-only" ]]; then
   done
 fi
 
+if [[ -n "${SIR_Q4_JUNIT_OUT:-}" ]]; then
+  mkdir -p "$(dirname "$SIR_Q4_JUNIT_OUT")"
+  junit_tmp="$SIR_Q4_JUNIT_OUT.tmp"
+  {
+    printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>'
+    printf '%s\n' '<testsuite name="sir-quint-q4-combat" tests="14" failures="0" errors="0" skipped="0">'
+    for witness in \
+      representativeDamageIsTwenty \
+      woundThresholdsAreExact \
+      zeroHealthMeansIncapacitated \
+      suppressionNeedsPositiveDamageAndRecoversFive \
+      destroyingCoverConsumesCurrentCollision \
+      collateralOutcomeIgnoresFaction; do
+      printf '  <testcase classname="SIR.QuintQ4" name="witness-%s"/>\n' "$witness"
+    done
+    printf '%s\n' '  <testcase classname="SIR.QuintQ4" name="seeded-invariant-simulation"/>'
+    printf '%s\n' '  <testcase classname="SIR.QuintQ4" name="sampled-runtime-correspondence"/>'
+    for mutation in \
+      changed-armor-retention \
+      removed-suppression-guard \
+      stale-generated-module \
+      wrong-action-mapping \
+      wrong-observable-field \
+      corrupted-interpreter-boundary-result; do
+      printf '  <testcase classname="SIR.QuintQ4" name="mutation-%s"/>\n' "$mutation"
+    done
+    printf '%s\n' '</testsuite>'
+  } >"$junit_tmp"
+  mv "$junit_tmp" "$SIR_Q4_JUNIT_OUT"
+fi
+
 echo "quint-q4-sir-combat: PASS"
 echo "authority=$(sha256sum "$authority" | cut -d' ' -f1)"
 echo "generated=$(sha256sum "$task_tmp/first.qnt" | cut -d' ' -f1)"

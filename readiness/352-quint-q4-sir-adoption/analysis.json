@@ -37,6 +37,16 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/352-quint-q4-sir-adoption/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "a04f8bbe56ac3d3c2ae9ab9df50b10ce4b46b2768e3093adcc040eada669b019"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/352-quint-q4-sir-adoption/checklist.md",
       "kind": "checklist",
       "digest": {
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "3b986aedc3ea545ed53c523aa7d620ce54005dd796685190c69fa480d8917f2b"
+        "value": "7f28a212886071df48c93e7e3c045674605bd43fc5b97005bf43f06c2fd13001"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -876,7 +886,7 @@
     {
       "path": "readiness/352-quint-q4-sir-adoption/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],
