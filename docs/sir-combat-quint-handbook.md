@@ -10,7 +10,7 @@ document-type: handbook
 ---
 
 <a id="handbook-top"></a>
-# S.I.R. Combat in Quint: From Design Decisions to Executable Models
+# Combat in Quint: From Design Decisions to Executable Models
 
 This first-edition skeleton fixes the handbook's navigation and definition-address contract. Tutorial substance is intentionally reserved for milestones M2-M7; pending entries and chapter notices are honest placeholders, not executable claims.
 
