@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="sir-combat-quint-handbook-m4" tests="76" failures="0" errors="0" skipped="0">
+<testsuite name="sir-combat-quint-handbook-m4" tests="124" failures="0" errors="0" skipped="0">
   <testcase classname="SIR.HandbookM4" name="authority-projection"/>
   <testcase classname="SIR.HandbookM4" name="pinned-quint"/>
   <testcase classname="SIR.HandbookM4" name="authoritative-typecheck"/>
@@ -15,6 +15,9 @@
   <testcase classname="SIR.HandbookM4" name="teaching:earliest bad state"/>
   <testcase classname="SIR.HandbookM4" name="teaching:is not evidence until the unchanged detector returns green"/>
   <testcase classname="SIR.HandbookM4" name="teaching:A green bounded check is not an unbounded theorem"/>
+  <testcase classname="SIR.HandbookM4" name="m4-deferral-discharged:belong to M4"/>
+  <testcase classname="SIR.HandbookM4" name="m4-deferral-discharged:remains M4"/>
+  <testcase classname="SIR.HandbookM4" name="m4-deferral-discharged:M4 extends this pattern"/>
   <testcase classname="SIR.HandbookM4" name="mutation-doc:threshold"/>
   <testcase classname="SIR.HandbookM4" name="mutation-doc:bounds"/>
   <testcase classname="SIR.HandbookM4" name="mutation-doc:suppression"/>
@@ -50,6 +53,51 @@
   <testcase classname="SIR.HandbookM4" name="property-handbook:factionNeutralCollateral"/>
   <testcase classname="SIR.HandbookM4" name="binding:factionNeutralCollateral:nextConsequences"/>
   <testcase classname="SIR.HandbookM4" name="binding:factionNeutralCollateral:initialCombat"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:sixteenRulesDeclared:ruleCatalogue"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:sixteenRulesDeclared:ruleCatalogue"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:sixteenRulesDeclared:ruleCatalogue"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:boundedCombatState:combat.health"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:boundedCombatState:combat.health"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:boundedCombatState:combat.health"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:boundedCombatState:combat.suppression"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:boundedCombatState:combat.suppression"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:boundedCombatState:combat.suppression"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:boundedCombatState:combat.coverIntegrity"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:boundedCombatState:combat.coverIntegrity"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:boundedCombatState:combat.coverIntegrity"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:incapacityMatchesHealth:combat.incapacitated"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:incapacityMatchesHealth:combat.incapacitated"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:incapacityMatchesHealth:combat.incapacitated"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:incapacityMatchesHealth:combat.health"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:incapacityMatchesHealth:combat.health"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:incapacityMatchesHealth:combat.health"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:destroyedCoverIsPermeable:combat.coverIntegrity"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:destroyedCoverIsPermeable:combat.coverIntegrity"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:destroyedCoverIsPermeable:combat.coverIntegrity"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:destroyedCoverIsPermeable:combat.coverBlocking"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:destroyedCoverIsPermeable:combat.coverBlocking"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:destroyedCoverIsPermeable:combat.coverBlocking"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:validTraceObservation:last.lastAction"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:validTraceObservation:last.lastAction"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:validTraceObservation:last.lastAction"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:validTraceObservation:last.traceRaw"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:validTraceObservation:last.traceRaw"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:validTraceObservation:last.traceRaw"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:suppressionRequiresDamage:last.lastAction"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:suppressionRequiresDamage:last.lastAction"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:suppressionRequiresDamage:last.lastAction"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:suppressionRequiresDamage:last.damage"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:suppressionRequiresDamage:last.damage"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:suppressionRequiresDamage:last.damage"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:suppressionRequiresDamage:last.suppressionDelta"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:suppressionRequiresDamage:last.suppressionDelta"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:suppressionRequiresDamage:last.suppressionDelta"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:factionNeutralCollateral:nextConsequences"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:factionNeutralCollateral:nextConsequences"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:factionNeutralCollateral:nextConsequences"/>
+  <testcase classname="SIR.HandbookM4" name="binding-mutation-subject:factionNeutralCollateral:initialCombat"/>
+  <testcase classname="SIR.HandbookM4" name="binding-observed-red:factionNeutralCollateral:initialCombat"/>
+  <testcase classname="SIR.HandbookM4" name="binding-restored-green:factionNeutralCollateral:initialCombat"/>
   <testcase classname="SIR.HandbookM4" name="reachable:resolveConsequences"/>
   <testcase classname="SIR.HandbookM4" name="reachable-doc:resolveConsequences"/>
   <testcase classname="SIR.HandbookM4" name="reachable:resolveCoverImpact"/>

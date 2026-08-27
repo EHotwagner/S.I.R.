@@ -1006,7 +1006,7 @@ For the representative spine, evidence is a three-step sequence, not a permanent
 2. Change only retention `8000 → 7000` in a disposable extraction and observe the named [witness](#def-witness) red because actual [damage](#stat-damage) becomes `18` while [expected damage](#stat-expected-damage) remains `20`.
 3. Re-extract the untouched authority and [run](#def-run) the [witness](#def-witness) green again.
 
-The audit records all three outcomes. The [mutation](#def-mutation) file is temporary and never becomes an authoring source. M4 extends this pattern to other formal subjects; M5 explains the independent runtime-mapping mutations.
+The audit records all three outcomes. The [mutation](#def-mutation) file is temporary and never becomes an authoring source. Chapters 32–37 extend this pattern across the M4 formal subjects; M5 explains the independent runtime-mapping mutations.
 
 <a id="chapter-43-safely-changing-a-combat-rule"></a>
 ### 43. Safely changing a combat rule
@@ -1111,8 +1111,8 @@ claim of coverage.
 <a id="chapter-49-exercises-and-solutions"></a>
 ### 49. Exercises and solutions
 
-These exercises use the positive authority as written. Deliberate semantic defects and
-[counterexamples](#def-counterexample) belong to M4.
+These exercises use the positive authority as written. Chapters 34 and 35 now teach deliberate
+semantic defects, minimized [counterexamples](#def-counterexample), and restored-green evidence.
 
 #### Beginner — predict one helper or completed successor
 
@@ -1152,8 +1152,8 @@ metadata and may include participating rules in a reviewer-friendly order.
 2. A reviewer asks for `resolvePenetration`, `resolveWound`, and `resolveIncapacitation` actions. Explain
    why adding them would be dishonest, and propose a helper/observation/[property](#def-property) review route instead.
 3. Design a catalogue query that checks every dependency points at a declared rule. Explain what such
-   an example establishes and what exhaustive verification would add; implementation of that broader
-   formal laboratory remains M4.
+   an example establishes and what exhaustive verification would add; compare it with the bounded
+   catalogue-integrity [mutation](#def-mutation) in chapter 35 and the claim limits in chapter 37.
 4. Classify the claim “the 10/10 trace [run](#def-run) proves supercover is correct.” Identify the authority
    boundary and rewrite the claim accurately.
 
@@ -1170,7 +1170,7 @@ whether supercover produced those counts.
 <a id="chapter-50-alphabetical-definition-index"></a>
 ### 50. Alphabetical definition index
 
-The index preserves the complete M0 address inventory. M2 filled the representative spine and M3 fills
+The index preserves the complete M0 address inventory. M2 filled the representative spine and M3 filled
 all sixteen rule definitions without changing anchors; M6 completes the remaining aliases,
 cross-references, and enforcement.
 

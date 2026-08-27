@@ -102,4 +102,3 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 - Stage: specify
 - Purpose: Carry out lifecycle task T020 (done) covering GV-001, PD-007, PD-008.
 - Related: GV-001, PD-007, PD-008
-

@@ -49,6 +49,25 @@ function replaceUnique(text, needle, replacement, mutation) {
   return text.replace(needle, replacement);
 }
 
+function propertyExpression(text, property) {
+  const prefix = `  val ${property} =`;
+  const start = text.indexOf(prefix);
+  if (start < 0) throw new Error(`${property} missing from authority`);
+  const expressionStart = start + prefix.length;
+  const remainder = text.slice(expressionStart);
+  const nextDefinition = remainder.search(/\n  (?:(?:pure )?(?:val|def)|action|run|var|const|type|assume)\b|\n}\s*$/m);
+  if (nextDefinition < 0) throw new Error(`${property} has no bounded definition end`);
+  return {
+    start: expressionStart,
+    end: expressionStart + nextDefinition,
+    text: remainder.slice(0, nextDefinition),
+  };
+}
+
+function bindingDetector(text, property, field) {
+  return propertyExpression(text, property).text.includes(field);
+}
+
 function detectorArgs(path, detector) {
   return ["test", path, "--main", detector.module, "--backend", "rust", "--seed", "365", "--match", detector.run, "--verbosity", "3"];
 }
@@ -83,6 +102,9 @@ try {
     "is not evidence until the unchanged detector returns green",
     "A green bounded check is not an unbounded theorem",
   ]) check(`teaching:${marker}`, part.includes(marker), `missing teaching marker: ${marker}`);
+  for (const stale of ["belong to M4", "remains M4", "M4 extends this pattern"]) {
+    check(`m4-deferral-discharged:${stale}`, !handbook.includes(stale), `stale M4 deferral remains: ${stale}`);
+  }
 
   const mutationRows = new Map([
     ["threshold", "woundThresholdsAreExact"],
@@ -105,13 +127,26 @@ try {
     ["suppressionRequiresDamage", ["last.lastAction", "last.damage", "last.suppressionDelta"]],
     ["factionNeutralCollateral", ["nextConsequences", "initialCombat"]],
   ]);
+  const bindingMutationCount = [...invariantBindings.values()].reduce((total, fields) => total + fields.length, 0);
   for (const [property, fields] of invariantBindings) {
-    const authorityLine = model.split("\n").find(line => line.includes(`val ${property} =`)) ?? "";
-    check(`property-authority:${property}`, authorityLine.length > 0, `${property} missing from authority`);
+    const expression = propertyExpression(model, property).text;
+    check(`property-authority:${property}`, expression.length > 0, `${property} missing from authority`);
     check(`property-handbook:${property}`, part.includes(property), `${property} missing from binding table`);
     for (const field of fields) {
-      const authoritative = model.includes(field);
+      const authoritative = bindingDetector(model, property, field);
       check(`binding:${property}:${field}`, authoritative && part.includes(field), `${property} binding ${field} is not authority-backed and documented`);
+    }
+  }
+
+  for (const [property, fields] of invariantBindings) {
+    for (const field of fields) {
+      const subject = propertyExpression(model, property);
+      const occurrences = subject.text.split(field).length - 1;
+      check(`binding-mutation-subject:${property}:${field}`, occurrences > 0, `${property} does not bind ${field}`);
+      const mutantExpression = subject.text.replaceAll(field, "M4_REMOVED_BINDING");
+      const mutant = model.slice(0, subject.start) + mutantExpression + model.slice(subject.end);
+      check(`binding-observed-red:${property}:${field}`, !bindingDetector(mutant, property, field), `binding detector did not reject ${property}:${field}`);
+      check(`binding-restored-green:${property}:${field}`, bindingDetector(model, property, field), `binding detector did not restore ${property}:${field}`);
     }
   }
 
@@ -178,7 +213,7 @@ try {
   mkdirSync("readiness/365-handbook-m4", { recursive: true });
   const xmlCases = cases.map(name => `  <testcase classname="SIR.HandbookM4" name="${name.replaceAll("&", "and").replaceAll('"', "'")}"/>`).join("\n");
   writeFileSync(receiptPath, `<?xml version="1.0" encoding="UTF-8"?>\n<testsuite name="sir-combat-quint-handbook-m4" tests="${cases.length}" failures="0" errors="0" skipped="0">\n${xmlCases}\n</testsuite>\n`);
-  console.log(`handbook-m4 formal reasoning: PASS (${mutations.length} observed-red/restored-green mutation pairs; ${actionWitnesses.length} major-action witnesses; ${invariantBindings.size} property bindings; ${cases.length} checks)`);
+  console.log(`handbook-m4 formal reasoning: PASS (${mutations.length} semantic mutation pairs; ${bindingMutationCount} binding mutation pairs; ${actionWitnesses.length} major-action witnesses; ${invariantBindings.size} property bindings; ${cases.length} checks)`);
 } finally {
   rmSync(temporary, { recursive: true, force: true });
 }
