@@ -5,7 +5,7 @@ import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export const stageSchema = "sir.protected-stage/v1";
-export const joinSchema = "sir.protected-join/v1";
+export const joinSchema = "sir.protected-join/v2";
 export const stageOrder = ["preflight", "core"];
 const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
@@ -102,6 +102,7 @@ async function main(argv) {
     for (const stage of receipts.keys()) if (!stageOrder.includes(stage)) failures.push({ code: "unexpected-stage", stage });
     const body = {
       schema: joinSchema,
+      mode: "complete",
       result: failures.length === 0 ? "pass" : "fail",
       source,
       stages: stageOrder.map((stage) => receipts.get(stage) ?? null),
@@ -114,7 +115,43 @@ async function main(argv) {
     if (failures.length) process.exitCode = 1;
     return;
   }
-  throw new Error("protected-stage: usage create|verify|join");
+  if (mode === "join-focused") {
+    const route = JSON.parse(await readFile(resolve(one("route", "")), "utf8"));
+    const routed = JSON.parse(await readFile(resolve(one("routed", "")), "utf8"));
+    const failures = [];
+    if (route?.schema !== "sir.ci-route/v2" || typeof route.digest !== "string") failures.push({ code: "malformed-route", subject: "route" });
+    if (route?.source?.commit !== source.commit || route?.source?.tree !== source.tree) failures.push({ code: "route-source-mismatch", subject: "route" });
+    if (routed?.schema !== "sir.ci-join/v1") failures.push({ code: "malformed-routed-verdict", subject: "routed" });
+    if (routed?.result !== "pass") failures.push({ code: `routed-verdict-${routed?.result ?? "malformed"}`, subject: "routed" });
+    if (routed?.routeDigest !== route?.digest) failures.push({ code: "routed-route-mismatch", subject: "routed" });
+    if (routed?.classification !== route?.classification) failures.push({ code: "routed-classification-mismatch", subject: "routed" });
+    if (JSON.stringify(routed?.selectedGates) !== JSON.stringify(route?.selectedGates)) failures.push({ code: "routed-gates-mismatch", subject: "routed" });
+    const body = {
+      schema: joinSchema,
+      mode: "focused",
+      result: failures.length === 0 ? "pass" : "fail",
+      source,
+      route: {
+        schema: route?.schema ?? null,
+        digest: route?.digest ?? null,
+        classification: route?.classification ?? null,
+        selectedGates: route?.selectedGates ?? null,
+      },
+      routed: {
+        schema: routed?.schema ?? null,
+        result: routed?.result ?? null,
+        routeDigest: routed?.routeDigest ?? null,
+      },
+      failures,
+      firstFailure: failures[0] ?? null,
+    };
+    const joined = { ...body, digest: sha256(canonical(body)) };
+    await writeCanonical(one("output", ""), joined);
+    console.log(canonical(joined).trim());
+    if (failures.length) process.exitCode = 1;
+    return;
+  }
+  throw new Error("protected-stage: usage create|verify|join|join-focused");
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) main(process.argv.slice(2)).catch((error) => { console.error(error.message); process.exitCode = 1; });

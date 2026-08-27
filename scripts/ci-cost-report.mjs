@@ -128,13 +128,14 @@ export function summarize(run, jobsPayload, artifactsPayload, receiptInventory =
     sha256: digest,
     schema: value.schema,
     status: value.status ?? value.result ?? null,
+    mode: value.mode ?? null,
     source: value.source ?? null,
     durationMilliseconds: value.timingMilliseconds?.total ?? value.timing?.criticalPathMilliseconds ?? value.timing?.criticalPath ?? null,
   }));
   const mismatchedReceipts = candidateReceipts.filter(({ source }) => source?.commit && source.commit !== run.head_sha);
   const gateReceipts = candidateReceipts.filter(({ schema: receiptSchema }) => receiptSchema === "sir.ci-gate-result/v1");
   const protectedStages = candidateReceipts.filter(({ schema: receiptSchema }) => receiptSchema === "sir.protected-stage/v1");
-  const joins = candidateReceipts.filter(({ schema: receiptSchema }) => ["sir.ci-join/v1", "sir.protected-join/v1"].includes(receiptSchema));
+  const joins = candidateReceipts.filter(({ schema: receiptSchema }) => ["sir.ci-join/v1", "sir.protected-join/v2"].includes(receiptSchema));
   // The verdict comparison is defined over the PR feedback join ALONE, and it takes both of its
   // numbers from that one receipt: the attributable critical path the gate measured, and the
   // acceptance target the gate applied to it. The fields are read by name rather than through the
@@ -167,9 +168,15 @@ export function summarize(run, jobsPayload, artifactsPayload, receiptInventory =
       ? "unevaluable"
       : verdicts.every(({ within }) => within) ? "pass" : "fail";
   const pullRequest = run.event === "pull_request";
+  const focusedPush = run.event === "push";
   const expectedReceiptShape = pullRequest
     ? gateReceipts.length > 0 && joins.some(({ schema: receiptSchema }) => receiptSchema === "sir.ci-join/v1")
-    : protectedStages.length === 2 && joins.some(({ schema: receiptSchema }) => receiptSchema === "sir.protected-join/v1");
+    : focusedPush
+      ? gateReceipts.length > 0
+        && joins.some(({ schema: receiptSchema }) => receiptSchema === "sir.ci-join/v1")
+        && joins.some(({ schema: receiptSchema, mode }) => receiptSchema === "sir.protected-join/v2" && mode === "focused")
+      : protectedStages.length === 2
+        && joins.some(({ schema: receiptSchema, mode }) => receiptSchema === "sir.protected-join/v2" && mode === "complete");
   const apiRunnerMilliseconds = jobs.reduce((sum, job) => sum + job.durationMilliseconds, 0);
   const receiptRunnerMilliseconds = [...gateReceipts, ...protectedStages].reduce((sum, receipt) => sum + (Number.isSafeInteger(receipt.durationMilliseconds) ? receipt.durationMilliseconds : 0), 0);
   const verdictMilliseconds = verdicts.reduce((maximum, { observedMilliseconds }) => observedMilliseconds === null ? maximum : Math.max(maximum, observedMilliseconds), 0);

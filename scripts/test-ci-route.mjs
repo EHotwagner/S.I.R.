@@ -306,6 +306,18 @@ for (const job of ["route:", "integrity:", "spatial-mutations:", "cancellation-m
 for (const removedJob of ["browser-general-helper-2", "browser-general-helper-3"]) assert.doesNotMatch(workflow, new RegExp(`^  ${removedJob}:$`, "mu"));
 assert.match(workflow, /if: always\(\)/u);
 assert.match(workflow, /if: always\(\) && github\.event_name == 'pull_request'/u);
+assert.match(jobBody("route"), /if: github\.event_name == 'pull_request' \|\| github\.event_name == 'push'/u);
+assert.match(jobBody("route"), /git diff --name-only HEAD\^ HEAD > artifacts\/ci\/changed-paths\.txt/u);
+assert.match(jobBody("route"), /test -s artifacts\/ci\/changed-paths\.txt/u);
+assert.doesNotMatch(jobBody("route"), /HEAD\^ HEAD[^\n]*\|\| true|git ls-files/u);
+assert.match(jobBody("integrity"), /if: github\.event_name == 'pull_request' \|\| github\.event_name == 'push'/u);
+assert.match(jobBody("pr-verdict"), /if: always\(\) && \(github\.event_name == 'pull_request' \|\| github\.event_name == 'push'\)/u);
+for (const fullJob of ["integrity-sweep", "protected-preflight", "full-qualification"]) {
+  assert.match(jobBody(fullJob), /if: github\.event_name == 'schedule' \|\| github\.event_name == 'workflow_dispatch'/u);
+}
+assert.match(jobBody("protected-verdict"), /needs: \[route, pr-verdict, protected-preflight, full-qualification\]/u);
+assert.match(jobBody("protected-verdict"), /ci-route\.mjs verify-join[\s\S]*protected-stage-receipt\.mjs join-focused[\s\S]*protected-stage-receipt\.mjs join/u);
+assert.doesNotMatch(workflow, /ref: "\$\{\{ github\.event\.pull_request\.head\.sha \}\}"/u);
 assert.match(workflow, /schedule:/u);
 assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/u);
 assert.match(workflow, /hashFiles\('\*\*\/packages\.lock\.json', 'Directory\.Packages\.props', '\.config\/dotnet-tools\.json'\)/u);
@@ -356,6 +368,8 @@ for (const browserJob of ["browser", "browser-general-helper", "browser-delivery
 // sets that output without being classified `documentation` (RP-010), so gating the jobs on the
 // classification would silently drop the documentation gate for exactly those routes.
 assert.match(jobBody("documentation"), /if: needs\.route\.outputs\.documentation == 'true'/u);
+assert.match(jobBody("documentation"), /if: success\(\) && github\.event_name == 'push'[\s\S]*verify-route[\s\S]*protected-qualified-site\.tar/u);
+assert.match(jobBody("documentation"), /- if: success\(\) && github\.event_name == 'push'[\s\S]*name: protected-qualified-site/u);
 // S.I.R.#304 moved `prepare-docs` onto its own derived flag, so the RP-010 property is now stated
 // as the equivalence it always meant: the docs PRODUCER runs exactly when the documentation GATE
 // is selected -- including the production-review-freshness route, which selects that gate without

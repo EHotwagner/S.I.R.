@@ -607,7 +607,8 @@ const jobBody = (name) => {
 };
 
 const sweepJob = jobBody("integrity-sweep");
-assert.match(sweepJob, /^ {4}if: github\.event_name != 'pull_request'$/mu, "the sweep must never run on a pull request");
+assert.match(sweepJob, /^ {4}if: github\.event_name == 'schedule' \|\| github\.event_name == 'workflow_dispatch'$/mu,
+  "the exhaustive sweep belongs only to periodic/manual full qualification, never focused PR or main-push routes");
 assert.match(sweepJob, new RegExp(`^ {10}${sweepEnvironmentVariable}: "true"$`, "mu"), "the sweep job must activate sweep mode");
 assert.match(sweepJob, /run-ci-gate\.sh integrity /u, "the sweep must run the integrity gate, not a private copy of it");
 assert.match(sweepJob, /^ {10}test -s artifacts\/ci\/changed-paths\.txt$/mu, "the sweep must refuse an empty path inventory rather than hand it to the router");
@@ -628,7 +629,7 @@ assert.doesNotMatch(
 //    invokes", which is precisely the case this block exists to prevent.
 assert.deepEqual(
   sweepJob.match(/^\s*-?\s*if:.*$/gmu).map((line) => line.trim()),
-  ["if: github.event_name != 'pull_request'", "- if: always()"],
+  ["if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'", "- if: always()"],
   "unexpected `if:` in the sweep job — a step-level condition can silently stop the gate running",
 );
 
@@ -671,19 +672,19 @@ for (const pipeline of pipelines) {
     `pipefail hazard: \`${consumer}\` stops reading before EOF, so it SIGPIPEs its producer and fails the step with ${probe.status}. Use a consumer that reads to EOF, e.g. \`sed -n '1p'\`.`,
   );
 }
-// Both trigger legs, not just the cron. `push: branches: [main]` is the stronger of the two — it puts
-// a red X on the main-branch commit itself, fires on every merge, and is immune to the 60-day
-// auto-disable that applies to scheduled workflows. Deleting it leaves only the leg GitHub turns off.
+// Keep both trigger legs. Push owns the routed integrity floor and exact selected gates; schedule
+// owns the exhaustive sweep whose purpose is to catch a defect a valid focused route omits.
 assert.match(ci, /^ {2}schedule:\n {4}- cron: "[^"]+"$/mu, "the sweep needs a schedule to be a scheduled signal");
 assert.match(
   ci,
   /^ {2}push:\n {4}branches: \[main\]$/mu,
-  "the sweep needs the push-to-main leg: it is the stronger signal and the one the 60-day scheduled auto-disable cannot remove",
+  "the routed integrity floor needs the push-to-main leg",
 );
 
-// AC4 again, from the other side: the per-PR integrity job must not have acquired sweep mode.
+// AC4 again, from the other side: the shared focused integrity job serves PR and main push but must
+// not acquire sweep mode; exhaustive enumeration stays periodic/manual.
 const prIntegrity = jobBody("integrity");
-assert.match(prIntegrity, /^ {4}if: github\.event_name == 'pull_request'$/mu);
+assert.match(prIntegrity, /^ {4}if: github\.event_name == 'pull_request' \|\| github\.event_name == 'push'$/mu);
 assert.doesNotMatch(prIntegrity, new RegExp(sweepEnvironmentVariable, "u"), "sweeping a pull request would undo #248's cost work");
 
-console.log("Integrity planning preserves an unconditional floor, fails conservative for unknown, topology, workflow, and classifier changes, records explicit measured omissions, and carries an unconditional off-PR sweep so no subject can stay red on the default branch unobserved.");
+console.log("Integrity planning preserves the focused PR/main floor, fails conservative for unknown and CI-contract changes, records omissions, and retains the periodic/manual exhaustive sweep.");

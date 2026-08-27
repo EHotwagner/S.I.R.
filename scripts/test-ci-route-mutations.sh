@@ -117,6 +117,12 @@ expect_red scripts/ci-route.mjs 's/const expectedProducers = expectedProducersFo
 expect_red scripts/ci-route.mjs 's/  documentation: \["web", "docs"\],/  documentation: ["web"],/;'
 expect_red .github/workflows/ci.yml 's/^  full-qualification:/  omitted-full-qualification:/;'
 expect_red .github/workflows/ci.yml 's#\./scripts/qualify-production.sh --protected#./scripts/qualify-production.sh#;'
+# Main-push routing is the same canonical contract, not a permissive parallel lane.
+expect_red .github/workflows/ci.yml "s/if: github.event_name == 'pull_request' || github.event_name == 'push'/if: github.event_name == 'pull_request'/;"
+expect_red .github/workflows/ci.yml 's/git diff --name-only HEAD\^ HEAD/git diff --name-only HEAD~2 HEAD/;'
+expect_red .github/workflows/ci.yml '/node scripts\/ci-route.mjs verify-join/,+5d;'
+expect_red .github/workflows/ci.yml "/if: success() && github.event_name == 'push'/d;"
+expect_red .github/workflows/ci.yml "s/if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'/if: github.event_name != 'pull_request'/;"
 expect_red scripts/qualify-pr.sh '/node_modules\/playwright-core/d;'
 expect_red .github/workflows/ci.yml '/^  browser:/,/^  browser-general-helper:/ s|uses: actions/download-artifact@[0-9a-f]* # v8.0.1|run: npm ci --ignore-scripts|;'
 expect_red .github/workflows/ci.yml '/gates+=(spatial)/d;'

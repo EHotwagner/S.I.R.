@@ -15,8 +15,46 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy-qualified-site:
+  select-qualified-site:
     if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
+    outputs:
+      deploy: ${{ steps.route.outputs.deploy }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26.5.0
+      - name: Download exact route receipt
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ci-route
+          path: artifacts/ci
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - id: route
+        name: Verify route and select deployability
+        shell: bash
+        run: |
+          test '${{ github.event.workflow_run.head_sha }}' = "$(git rev-parse HEAD)"
+          node scripts/ci-route.mjs verify-route \
+            --route artifacts/ci/route.json \
+            --commit '${{ github.event.workflow_run.head_sha }}' \
+            --tree "$(git rev-parse 'HEAD^{tree}')"
+          if jq -e '.selectedGates | index("documentation")' artifacts/ci/route.json >/dev/null; then
+            echo 'deploy=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'deploy=false' >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy-qualified-site:
+    if: needs.select-qualified-site.outputs.deploy == 'true'
+    needs: select-qualified-site
     permissions:
       actions: read
       contents: read
@@ -51,7 +89,7 @@ jobs:
           archive=artifacts/qualified-site-handoff/protected-qualified-site.tar
           while IFS= read -r path; do
             case "$path" in
-              artifacts/site|artifacts/site/*|artifacts/qualification/site-receipt.path|artifacts/qualification/single-pass-timing.json|docs/evidence/production-build-receipt-v1/*.json) ;;
+              artifacts/site|artifacts/site/*|artifacts/ci/route.json|artifacts/ci/results/documentation.json|artifacts/ci/parts/docs.receipt.path|artifacts/ci/parts/receipts/*.json) ;;
               *) echo "Unexpected qualified-site archive path: $path" >&2; exit 1 ;;
             esac
           done < <(tar -tf "$archive")
@@ -59,9 +97,17 @@ jobs:
       - name: Verify protected site receipt
         run: |
           test '${{ github.event.workflow_run.head_sha }}' = "$(git rev-parse HEAD)"
+          node scripts/ci-route.mjs verify-route \
+            --route artifacts/ci/route.json \
+            --commit '${{ github.event.workflow_run.head_sha }}' \
+            --tree "$(git rev-parse 'HEAD^{tree}')"
+          jq -e '.selectedGates | index("documentation")' artifacts/ci/route.json >/dev/null
+          jq -e --arg commit '${{ github.event.workflow_run.head_sha }}' --arg route "$(jq -r .digest artifacts/ci/route.json)" \
+            '.schema == "sir.ci-gate-result/v1" and .gate == "documentation" and .status == "pass" and .source.commit == $commit and .routeDigest == $route' \
+            artifacts/ci/results/documentation.json >/dev/null
           node scripts/production-build-receipt.mjs verify \
-            --owner-command scripts/qualify-production.sh \
-            --receipt "$(<artifacts/qualification/site-receipt.path)"
+            --owner-command scripts/qualify-pr.sh \
+            --receipt "$(<artifacts/ci/parts/docs.receipt.path)"
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:

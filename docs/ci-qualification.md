@@ -3,8 +3,8 @@
 S.I.R. has four explicit qualification routes. They share evidence contracts but not authority.
 
 - Pull requests run the focused lane in `.github/workflows/ci.yml`: changed paths are classified, the always-on integrity floor runs, and route-selected native, Fable, web, server, and documentation producers publish separate narrow content-addressed artifacts. Independent named gates then run concurrently; cancellation mutation proof builds its native fixture and mutated web subject at the same time in isolated output trees. The co-scheduled domain runner consumes only verified prepared runtime inputs, executes browser-delivery without compiler contention, then runs its three short domain checks concurrently; it performs no redundant npm, NuGet-cache, or repository-tool restore. `pr-verdict` joins every typed result. Every omitted gate has a route-policy reason; unknown or mixed product paths select the conservative cross-cutting route.
-- Protected `main` pushes first run `protected-preflight`, then the stable `full-qualification` context runs `./scripts/qualify-production.sh --protected`, and `protected-verdict` joins both exact-source receipts unconditionally. The preflight owns rules-corpus, spatial-static, and cancellation-mutation proof; core verifies that receipt before running the remaining complete clean-room ship-boundary route. Failed stages upload their own receipt, so the join can name a missing, failed, tampered, or source-mismatched stage instead of exposing only an opaque late failure.
-- The nightly schedule uses the same topology and adds the cross-surface full-route mutation to protected preflight, proving that a defect legitimately omitted by a focused route is rejected by the full surface.
+- Ordinary protected `main` pushes reuse that same focused DAG. The route job checks out the exact landed head, classifies literal `HEAD^..HEAD`, refuses a missing parent or empty inventory, and binds every gate to the landed commit/tree. `protected-verdict` then verifies the routed join and wraps it as `sir.protected-join/v2` mode `focused`. Workflow, router, receipt, unknown, and mixed changes remain `cross-cutting`, so they select every routed gate rather than self-exempting.
+- The nightly schedule and manual dispatch retain the complete clean-room topology: `protected-preflight`, `./scripts/qualify-production.sh --protected`, and `protected-verdict` mode `complete`. The nightly preflight additionally runs the cross-surface full-route mutation, proving that a defect legitimately omitted by a focused route is rejected by the periodic full surface. Failed stages still upload exact-source receipts, so the join names missing, failed, tampered, cancelled, or source-mismatched evidence.
 - Local development uses `./scripts/qualify-pr.sh route <changed-path-file>`, then `integrity`, `prepare-part <native|fable|web|server|docs>`, and `gate <id>` for the selected gates. Each prepared producer performs locked restore for only its owned project roots (and their transitive project references); only Fable, web, and documentation producers restore repository tools, while the native producer remains the single whole-solution restore/build boundary. Read-only consumers install only the runtimes or packages their executable command needs. `npm run test:ci-route` is the fast route/join/workflow contract suite. `npm run qualify:production` remains the local full qualification command. The historical baseline comparison is an explicit `./scripts/qualify-production.sh --paired-optimization` experiment, not a forever-growing gate on the normal aggregate.
 
 The route receipt is `sir.ci-route/v2`. It records a typed
@@ -17,13 +17,17 @@ selected `documentation` output rather than inferring it from the coarse route
 class. `npm run test:production-review-freshness-mutations` proves a stale bundle
 hash is rejected and the restored exact bundle is accepted.
 
-Successful protected core qualification uploads `protected-qualified-site` with
-the site, its content-addressed receipt, and the protected timing receipt. The
-GitHub Pages workflow is a restricted `workflow_run` consumer: it accepts only a
-successful `main` push, checks out the triggering SHA, downloads from that exact
-run, verifies the receipt and all site bytes, and deploys without npm, fsdocs, or
-any build command. A failed, PR-originated, wrong-branch, missing, or mismatched
-run cannot reach deployment.
+A successful routed documentation gate on a `main` push uploads
+`protected-qualified-site` with the already-built site, its content-addressed
+docs-producer receipt, canonical route, and documentation gate receipt. The
+GitHub Pages workflow is a restricted `workflow_run` consumer: a permissionless
+selector first checks out the triggering SHA, downloads that run's route,
+recomputes its digest/source binding, and selects deployment only when
+`documentation` was required. Only then does the deploy job receive Pages and
+OIDC permissions, download the exact handoff, verify its allowlisted paths,
+route, gate, build receipt, and all site bytes, and deploy without npm, fsdocs,
+or any build command. An unrelated, failed, PR-originated, scheduled,
+wrong-branch, missing, or mismatched run cannot reach the Pages environment.
 
 `CI Cost Observer` is a read-only reusable workflow and post-run `workflow_run`.
 Pull requests call it after `pr-verdict` so a candidate can qualify the observer
