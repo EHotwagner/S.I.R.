@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-27-sir-handbook-m1-linked-skeleton.md",
-  "reportSha256": "2afff7c31bbf2b36ed70f0a41505009d778a1638af6e12340567aa3e7591624b",
+  "reportSha256": "c460fbe60ce6ce438dada5395df5930943b32fae46fcf9f54e4aec4f4678bccf",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -13,7 +13,7 @@
         {
           "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m1-linked-skeleton.jsonl",
           "result": "verified",
-          "sha256": "17ef7ec04b39d8d347d117c389c555babc4f783a2371fdcd70476b34c31a1c26"
+          "sha256": "3504ac293fdc151cbc0fd7bb1193be50e043f0222b39706234ff5f46c4e677f3"
         },
         {
           "locator": "command:./scripts/build-docs.sh --prepare-site-only",
@@ -74,7 +74,7 @@
         {
           "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m1-linked-skeleton.jsonl",
           "result": "verified",
-          "sha256": "17ef7ec04b39d8d347d117c389c555babc4f783a2371fdcd70476b34c31a1c26"
+          "sha256": "3504ac293fdc151cbc0fd7bb1193be50e043f0222b39706234ff5f46c4e677f3"
         },
         {
           "locator": "command:node scripts/generate-in-app-docs.mjs artifacts/site",
@@ -92,6 +92,38 @@
       ],
       "confidenceLimits": [
         "Generator and qualification verify that explicit anchors become empty anchored heading blocks, raw anchor HTML is omitted, and semantic anchors stay outside navigation headings; renderer inspection confirms heading blocks map to DOM ids, but the cited commands do not perform a browser interaction."
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m1-linked-skeleton.jsonl",
+          "result": "verified",
+          "sha256": "3504ac293fdc151cbc0fd7bb1193be50e043f0222b39706234ff5f46c4e677f3"
+        },
+        {
+          "locator": "command:./scripts/build-docs.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/verify-docs.mjs",
+          "result": "verified",
+          "sha256": "004a6cd379fb1c3956c038f7a0b7ccafa147b3bf06702c4398bd46ee895ff0ba"
+        },
+        {
+          "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/33063489550",
+          "result": "verified"
+        },
+        {
+          "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/33064067657",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The two hosted policy failures and their respective one-line title transitions are verified, and the complete local documentation build passes the final H1 repair; a green hosted run at the final report head is still pending."
       ]
     }
   ]

@@ -5,7 +5,7 @@ workspace: S.I.R-roadmap-m1
 cycle: roadmap-sir-combat-quint-handbook-m1-linked-skeleton
 lane: sdd
 toolVersion: 1.4.0
-commit: c3caae6fab4332b6f08b833ed44f5d683704a94b
+commit: f8c63580728d0e2278f851e0b9fa8f22fb3fb9e7
 ---
 
 # Development feedback — combat Quint handbook M1 linked skeleton
@@ -14,15 +14,15 @@ commit: c3caae6fab4332b6f08b833ed44f5d683704a94b
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring, implementation-test-evidence, verify-ship-pr
-- **material events:** 4
+- **material events:** 5
 - **zero-event reason:** n/a
 
 This cycle ran on issue #359 and branch `item/359-handbook-m1` from base
 `99da2c3d4d014e2aeb7ec525e8623849c793d2c5` through commit
-`c3caae6fab4332b6f08b833ed44f5d683704a94b`. The lifecycle tool reported 1.4.0. The four
+`f8c63580728d0e2278f851e0b9fa8f22fb3fb9e7`. The lifecycle tool reported 1.4.0. The five
 checkpoints are in `feedback/checkpoints/roadmap-sir-combat-quint-handbook-m1-linked-skeleton.jsonl`.
 Evidence covers the complete SDD lifecycle, the focused structural audit and four mutations, strict
-fsdocs rendering, PR #360 creation, and the hosted semantic-anchor defect and repaired `prepare-web` pass. Downstream checks, independent
+fsdocs rendering, PR #360 creation, the hosted semantic-anchor defect, and the later curated-title failures. Downstream checks, independent
 exact-head review, merge, and board completion were still pending at draft time.
 
 ## §2 What worked
@@ -91,11 +91,24 @@ pinned SDK. A command-local pinned host override produced the expected handbook 
 - **Avoidable cost:** one failed hosted `prepare-web` run, one rejected exact-head review, and two parser-contract revisions.
 - **Disposition:** product fix
 
+#### §4.5 Bounded docs preparation omits publication-policy verification
+
+- **Kind:** defect
+- **Impact:** A handbook that rendered successfully still consumed two hosted CI attempts before its sidebar label and H1 satisfied existing documentation curation policy.
+- **Expected:** The bounded documentation route used to qualify an authored page runs the same heading and sidebar policy checks as the hosted documentation gate, or its guidance names those omitted checks.
+- **Observed:** Hosted qualification first rejected the `S.I.R.`-prefixed front-matter title through the curated-sidebar check, then rejected the same prefix in the H1 through the authored-document heading check. `--prepare-site-only` rendered both revisions without running `verify-docs.mjs`.
+- **Evidence:** file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m1-linked-skeleton.jsonl; command:./scripts/build-docs.sh; file:scripts/verify-docs.mjs; run:https://github.com/EHotwagner/S.I.R./actions/runs/33063489550; run:https://github.com/EHotwagner/S.I.R./actions/runs/33064067657
+- **Version:** S.I.R. commit `f8c63580728d0e2278f851e0b9fa8f22fb3fb9e7`; fsdocs-tool 22.1.0.
+- **Owner:** EHotwagner/S.I.R. documentation authoring guidance and bounded qualification
+- **Recurrence:** new for this cycle; §4.1 covers bootstrap prerequisites, while this finding covers a verification-surface mismatch after rendering succeeds.
+- **Avoidable cost:** two failed hosted documentation gates and two one-line title revisions.
+- **Disposition:** product fix
+
 ## §5 Did not exercise
 
 Runtime gameplay, browser interaction, performance qualification, package publication/upgrades,
 exhaustive Quint verification, and M2-M7 handbook substance were outside M1. Hosted downstream checks,
-independent review, merge, and board completion were pending at draft time.
+merge, and board completion were pending at draft time. Independent exact-head review was exercised.
 
 ## §6 Doc-versus-behavior contradictions
 
@@ -112,7 +125,8 @@ None. The SDK resolver override was command-local. Generated site output remains
 One failed bounded render attempt and one explicit restore retry occurred before the correct host
 envelope was used. Hosted `prepare-web` failed once on the missing explicit-anchor inventory, then the
 manifest, decoder, and qualification contract were repaired. Lifecycle authoring also required replacing
-scaffold plan prose with real plan decisions.
+scaffold plan prose with real plan decisions. Two further hosted documentation gates exposed the bounded
+route's omission of existing sidebar-title and authored-heading policy checks.
 
 ## §9 Skill value and gaps
 
@@ -127,7 +141,7 @@ performance skills were not relevant to this documentation-only milestone.
 - First rendered state: strict fsdocs emitted `artifacts/site/sir-combat-quint-handbook.html` after explicit bootstrap.
 - First green verification: 26/26 obligations ready; 13/13 evidence and test obligations observed.
 - Ship readiness: `shipReady`, with no missing, stale, synthetic, or invalid evidence.
-- PR: #360 opened against `main`; the first hosted run exposed §4.4 and repaired `prepare-web` passed; downstream checks remain pending.
+- PR: #360 opened against `main`; hosted runs exposed §4.4 and §4.5, both repaired; final downstream checks remain pending.
 
 ## §11 Falsifiable improvements
 
@@ -140,6 +154,9 @@ performance skills were not relevant to this documentation-only milestone.
 - Preserve the §4.4 fix by materializing explicit anchors as non-navigation blocks. Acceptance: a page
   may link to a semantic HTML anchor, qualification finds a rendered block with that ID beside the definition,
   raw anchor markup is absent from visible text, and the sidebar remains limited to Markdown headings.
+- For §4.5, include `verify-docs.mjs` policy checks in a bounded authored-page qualification route or
+  document the omission beside `--prepare-site-only`. Acceptance: redundant `S.I.R.` prefixes in either
+  front matter or H1 fail locally before a hosted run, while the corrected handbook passes.
 
 ## §12 Development-surface coverage
 
@@ -157,4 +174,4 @@ performance skills were not relevant to this documentation-only milestone.
 | performance | not-exercised | No performance claim or measurement changed. |
 | documentation | exercised | Handbook and README route rendered under strict fsdocs. |
 | packaging-upgrade | not-exercised | No package or pin changed. |
-| worker-git-pr | partial | Isolated branch and PR #360 created; hosted defect repaired and `prepare-web` passed; downstream checks, review, and merge pending. |
+| worker-git-pr | partial | Isolated branch and PR #360 created; hosted defects repaired and independent exact-head review accepted; final downstream checks and merge pending. |
