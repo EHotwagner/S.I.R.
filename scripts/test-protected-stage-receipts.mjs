@@ -56,13 +56,18 @@ try {
     routeDigest: route.digest,
   });
   const routed = joinRoute(route, [resultFor("integrity"), resultFor("evidence")], {
-    startedAtMilliseconds: 0,
-    completedAtMilliseconds: 2,
+    startedAtMilliseconds: 1_900_000_000_000,
+    completedAtMilliseconds: 1_900_000_000_002,
   });
   assert.equal(routed.result, "pass");
   const routedPath = resolve(temporary, "routed.json");
   writeFileSync(routedPath, `${JSON.stringify(routed, null, 2)}\n`);
   run(process.execPath, [resolve(root, "scripts/ci-route.mjs"), "verify-join", "--route", routePath, "--join", routedPath, "--commit", source.commit, "--tree", source.tree]);
+  const invalidTimingPath = resolve(temporary, "invalid-timing-routed.json");
+  writeFileSync(invalidTimingPath, `${JSON.stringify({ ...routed, timing: { ...routed.timing, totalMilliseconds: 3 } }, null, 2)}\n`);
+  const invalidTiming = spawnSync(process.execPath, [resolve(root, "scripts/ci-route.mjs"), "verify-join", "--route", routePath, "--join", invalidTimingPath, "--commit", source.commit, "--tree", source.tree], { cwd: root, encoding: "utf8" });
+  assert.equal(invalidTiming.status, 1);
+  assert.match(invalidTiming.stderr, /routed-join-timing-invalid/u);
   const focusedPath = resolve(temporary, "focused.json");
   run(process.execPath, [receiptTool, "join-focused", "--route", routePath, "--routed", routedPath, "--output", focusedPath]);
   const focused = JSON.parse(readFileSync(focusedPath, "utf8"));

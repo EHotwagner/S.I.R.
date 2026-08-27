@@ -546,11 +546,16 @@ async function main(argv) {
     if (joined?.schema !== joinSchema || joined.result !== "pass" || !Array.isArray(joined.gateResults)) {
       throw new Error("ci-route: routed-join-malformed-or-not-pass");
     }
+    const started = joined.timing?.startedAtMilliseconds;
+    const completed = joined.timing?.completedAtMilliseconds;
     const total = joined.timing?.totalMilliseconds;
-    if (!Number.isSafeInteger(total) || total < 0) throw new Error("ci-route: routed-join-timing-invalid");
+    if (!Number.isSafeInteger(started) || !Number.isSafeInteger(completed) || completed < started
+      || !Number.isSafeInteger(total) || total !== completed - started) {
+      throw new Error("ci-route: routed-join-timing-invalid");
+    }
     const recomputed = joinRoute(route, joined.gateResults, {
-      startedAtMilliseconds: 0,
-      completedAtMilliseconds: total,
+      startedAtMilliseconds: started,
+      completedAtMilliseconds: completed,
     });
     if (canonical(recomputed) !== canonical(joined)) throw new Error("ci-route: routed-join-mismatch");
     const expectedCommit = one("commit", undefined);
