@@ -1,0 +1,98 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-handbook-m1-linked-skeleton.md",
+  "reportSha256": "cc85dbd27d9d018e29be061fc407c45a3ecdd1e5275cfae55c0eaeae064b904b",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m1-linked-skeleton.jsonl",
+          "result": "verified",
+          "sha256": "17ef7ec04b39d8d347d117c389c555babc4f783a2371fdcd70476b34c31a1c26"
+        },
+        {
+          "locator": "command:./scripts/build-docs.sh --prepare-site-only",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet restore SIR.slnx --locked-mode",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Exact-head fresh-worktree reproduction confirmed the unrestored-project failure, successful locked restore, and ambient-host SDK-resolution failure; the cited commands do not rerun the successful command-local host override."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:work/359-handbook-m1/clarifications.md",
+          "result": "verified",
+          "sha256": "6b0c28ce8ee0b19215515bca3dde65b2062baae0c5e97228541b0af5fc2b159a"
+        },
+        {
+          "locator": "command:fsgg-sdd clarify --work 359-handbook-m1 --text",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The exact-head command verifies the durable three-decision outcome and zero remaining or blocking ambiguities, not the earlier rejected prose."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:node work/359-handbook-m1/audit-handbook-links.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "file:work/359-handbook-m1/audit-handbook-links.mjs",
+          "result": "verified",
+          "sha256": "97e2bb3c7af936747425f64ff9fb64a042ba93ca0986de1381f2546c7c4bbc8c"
+        }
+      ],
+      "confidenceLimits": [
+        "The command proves the focused structural contract and four in-memory negative controls, not hosted integration."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m1-linked-skeleton.jsonl",
+          "result": "verified",
+          "sha256": "17ef7ec04b39d8d347d117c389c555babc4f783a2371fdcd70476b34c31a1c26"
+        },
+        {
+          "locator": "command:node scripts/generate-in-app-docs.mjs artifacts/site",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-in-app-docs.mjs artifacts/site",
+          "result": "verified"
+        },
+        {
+          "locator": "file:scripts/generate-in-app-docs.mjs",
+          "result": "verified",
+          "sha256": "23484bb8430d751b5dd0babafd123ca134317fec9eb9123f32c82d0c0d940ead"
+        }
+      ],
+      "confidenceLimits": [
+        "Local repair commands passed against the exact-head generated site; the original hosted failure was corroborated in run 33061805484 and the repaired prepare-web rerun passed after critique."
+      ]
+    }
+  ]
+}

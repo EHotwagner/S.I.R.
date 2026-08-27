@@ -99,7 +99,7 @@ Completion evidence (2026-08-27):
   checked manifest and structurally aware positive/negative link audit; the focused audit and rendered
   S.I.R. docs build pass.
 - Lifecycle evidence: `work/359-handbook-m1/` and `readiness/359-handbook-m1/`; feedback cycle:
-  `roadmap-sir-combat-quint-handbook-m1-linked-skeleton`.
+  `roadmap-sir-combat-quint-handbook-m1-linked-skeleton`; delivery: PR #360.
 
 ### - [ ] M2 — Representative attack learning spine
 

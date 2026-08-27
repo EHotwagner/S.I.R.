@@ -46,7 +46,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV001]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
@@ -73,7 +73,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-002]
     obligationRefs: [EV002]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
@@ -100,7 +100,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-003]
     obligationRefs: [EV003]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
@@ -127,7 +127,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-004]
     obligationRefs: [EV004]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
@@ -154,7 +154,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-005]
     obligationRefs: [EV005]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
@@ -181,7 +181,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-006]
     obligationRefs: [EV006]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
@@ -208,7 +208,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV007]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
@@ -235,7 +235,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV008]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
@@ -262,7 +262,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV009]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
@@ -289,7 +289,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV010]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
@@ -316,7 +316,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV011]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
@@ -343,7 +343,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV012]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
@@ -370,7 +370,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV013]
-    artifacts: [docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
+    artifacts: [README.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, docs/sir-combat-quint-vocabulary.json, readiness/359-handbook-m1/handbook-m1.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs]
     sourceRefs:
       - kind: verification
         path: work/359-handbook-m1/audit-handbook-links.mjs
