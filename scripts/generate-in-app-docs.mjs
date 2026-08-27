@@ -84,6 +84,12 @@ function blocksOf(body, sourcePath) {
   for (const line of body.split("\n")) {
     if (line.startsWith("```")) { if (code) { flush("code"); code = false; } else { flush(); code = true; } continue; }
     if (code) { buffer.push(line); continue; }
+    const explicitAnchor = line.match(/^\s*<a\s+id="([a-z0-9-]+)"\s*><\/a>\s*$/);
+    if (explicitAnchor) {
+      flush();
+      blocks.push({ kind: "heading", level: 6, anchor: explicitAnchor[1], text: "" });
+      continue;
+    }
     const heading = line.match(/^(#{1,6})\s+(.+)$/);
     if (heading) {
       flush();
@@ -116,7 +122,8 @@ for (const path of candidates) {
   const relativePath = relative(resolve("docs"), path).split(sep).join("/");
   const slug = relativePath.replace(new RegExp(`${extname(relativePath)}$`), "").split("/").map(slugify).join("/");
   const blocks = blocksOf(parsed.body, path);
-  const headings = blocks.filter((block) => block.kind === "heading").map(({ text, anchor }) => ({ title: text, anchor }));
+  const headings = blocks.filter((block) => block.kind === "heading" && block.text).map(({ text, anchor }) => ({ title: text, anchor }));
+  const explicitAnchors = [...parsed.body.matchAll(/<a\s+id="([a-z0-9-]+)"\s*><\/a>/g)].map((match) => match[1]);
   const firstHeading = parsed.body.match(/^#\s+(.+)$/m)?.[1]?.replace(/[*_`]/g, "").trim();
   pages.push({
     slug,
@@ -128,6 +135,7 @@ for (const path of candidates) {
     sourcePath,
     contentDigest: sha256(source),
     headings,
+    explicitAnchors,
     related: Array.isArray(parsed.fields.related) ? parsed.fields.related.map((value) => value.replace(/^docs\//, "").replace(/\.(?:md|fsx)$/i, "").split("/").map(slugify).join("/")) : [],
     blocks,
   });
@@ -172,7 +180,10 @@ const duplicates = pages.map((page) => page.slug).filter((slug, index, all) => a
 if (duplicates.length) throw new Error(`Duplicate in-app documentation slug: ${[...new Set(duplicates)].join(", ")}`);
 const slugs = new Set(pages.map((page) => page.slug));
 for (const page of pages) page.related = page.related.filter((related) => slugs.has(related));
-const anchorsBySlug = new Map(pages.map((page) => [page.slug, new Set(page.headings.map((heading) => heading.anchor))]));
+const anchorsBySlug = new Map(pages.map((page) => [page.slug, new Set([
+  ...page.headings.map((heading) => heading.anchor),
+  ...(page.explicitAnchors ?? []),
+])]));
 for (const page of pages) for (const block of page.blocks) for (const segment of block.segments ?? []) {
   if (segment.kind !== "link" || segment.externalUrl) continue;
   if (!slugs.has(segment.targetSlug)) {
@@ -218,7 +229,7 @@ const manifest = {
   limits: { history: limits.history, results: limits.results },
   performance: { maximumDomNodes: limits.domNodes },
   searchTokenCount,
-  pages: pages.map(({ categoryIndex, index, ...page }) => page),
+  pages: pages.map(({ categoryIndex, index, explicitAnchors, ...page }) => page),
   sources,
 };
 await writeFile(output, `${JSON.stringify(manifest, null, 2)}\n`);

@@ -21,6 +21,8 @@ project information belongs in the published documentation.
 
 Start with:
 
+- [S.I.R. Combat in Quint handbook](https://ehotwagner.github.io/S.I.R./sir-combat-quint-handbook.html)
+  — learn Quint through the bounded physical-combat model, or audit its rule and evidence traceability.
 - [Game vision](https://ehotwagner.github.io/S.I.R./game-vision.html) — the
   authoritative living description of the intended game.
 - [Gameplay reference](https://ehotwagner.github.io/S.I.R./gameplay-reference.html)
