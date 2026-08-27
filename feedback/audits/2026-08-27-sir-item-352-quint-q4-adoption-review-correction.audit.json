@@ -1,0 +1,61 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-item-352-quint-q4-adoption-review-correction.md",
+  "reportSha256": "86e5beb06e89bb05e6e07e2862318f06edda55fcbb903e69ae6dd9a305485dc0",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:test \"$(git show 3fe6f279e9cdb12b3e7ca3514920e98061bb9fa5:scripts/qualify-quint-q4-sir-combat.sh | grep -c -- '--quint-q4-exact')\" -eq 0 && test \"$(git show 3fe6f279e9cdb12b3e7ca3514920e98061bb9fa5:docs/rules/sir-combat.md | grep -c 'wrapInt32')\" -eq 0",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git show 3fe6f279e9cdb12b3e7ca3514920e98061bb9fa5:scripts/qualify-quint-q4-sir-combat.sh | grep -Fq 'if cmp -s' && git show 3fe6f279e9cdb12b3e7ca3514920e98061bb9fa5:scripts/qualify-quint-q4-sir-combat.sh | grep -Fq 'stale-generated.qnt'",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git show 3fe6f279e9cdb12b3e7ca3514920e98061bb9fa5:work/352-quint-q4-sir-adoption/evidence.yml | grep -A30 -F '  - id: EV007' | grep -Fq 'kind: verification' && git show 3fe6f279e9cdb12b3e7ca3514920e98061bb9fa5:work/352-quint-q4-sir-adoption/evidence.yml | grep -A30 -F '  - id: EV007' | grep -Fq 'result: pass'",
+          "result": "verified"
+        },
+        {
+          "locator": "command:gh run view 33068728390 --json conclusion,headSha",
+          "result": "verified"
+        },
+        {
+          "locator": "file:docs/rules/sir-combat.md",
+          "result": "verified",
+          "sha256": "f121c201a6f77d0cfc4c86fe72455e8d821b3d941bf012ab0e3482db103e43e7"
+        },
+        {
+          "locator": "file:scripts/qualify-quint-q4-sir-combat.sh",
+          "result": "verified",
+          "sha256": "d4e736ab67efb94a5db5d145e4ba4e1ef95b3334555aeddfd00bb43a69dec89e"
+        },
+        {
+          "locator": "file:tests/fixtures/rules-corpus/quint-q4/trace_0.itf.json",
+          "result": "verified",
+          "sha256": "fddc91cd36eebe3f0ce43f115e4d1666d42ce612f2242551b9f09d856101e98b"
+        },
+        {
+          "locator": "file:work/352-quint-q4-sir-adoption/evidence.yml",
+          "result": "verified",
+          "sha256": "cc77b52d16fbb70f32e38e053456028f687167a4c43dcdbc1b82aa6b7c61a89e"
+        },
+        {
+          "locator": "file:readiness/352-quint-q4-sir-adoption/ship-verdict.json",
+          "result": "verified",
+          "sha256": "b521a8ad0f5715f009ab336d0a7389474869ac3c6602880761f7084ed8a4b54b"
+        }
+      ],
+      "confidenceLimits": [
+        "The exact-head review chronology is not independently cited, but §4.1 does not depend on that claim for its impact or actionability.",
+        "Receipt over-attribution recurs from the item-194 report; signed-width, exact-replay, and freshness/identity manifestations are new."
+      ]
+    }
+  ]
+}
