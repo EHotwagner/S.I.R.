@@ -14,6 +14,7 @@ export DOTNET_ROOT_X64="$DOTNET_ROOT"
 export DOTNET_HOST_PATH="$dotnet_bin"
 
 dotnet tool restore
+npm ci
 dotnet restore SIR.slnx --locked-mode
 dotnet build SIR.slnx --configuration Release --no-restore
 
