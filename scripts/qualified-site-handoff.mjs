@@ -31,7 +31,9 @@ const json = async (path) => JSON.parse(await readFile(resolve(path), "utf8"));
 export function verifyHandoffBody(handoff, { source, route, archiveDigest, gateDigest, siteReceiptSha256 }) {
   const failures = [];
   const body = Object.fromEntries(Object.entries(handoff ?? {}).filter(([key]) => key !== "digest"));
+  const sha256 = /^[0-9a-f]{64}$/u;
   if (handoff?.schema !== handoffSchema || handoff?.result !== "pass") failures.push("malformed-or-not-pass");
+  if (!sha256.test(handoff?.documentationGateSha256 ?? "") || !sha256.test(handoff?.siteReceiptSha256 ?? "") || handoff?.archive?.name !== "protected-qualified-site.tar" || !sha256.test(handoff?.archive?.sha256 ?? "")) failures.push("malformed-bindings");
   if (handoff?.digest !== digest(canonical(body))) failures.push("digest-mismatch");
   if (!sameSource(handoff?.source, source)) failures.push("source-mismatch");
   if (handoff?.routeDigest !== route?.digest || !route?.selectedGates?.includes("documentation")) failures.push("route-mismatch");

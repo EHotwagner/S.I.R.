@@ -37,6 +37,16 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/366-main-ci-routing/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "0a72867bdd47b74782c5ed8952423dc511799792855fe0b6712c2db653a694b4"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/366-main-ci-routing/checklist.md",
       "kind": "checklist",
       "digest": {
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "2ccdb4234d4276e08debaf5cd84c294d2a4ac621234d49e3c964dc8f85f4275d"
+        "value": "2add4fbd73eb3cf9929886c0ebc38942231824c83ad08f50c99e93f3e7b52869"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -556,7 +566,7 @@
     {
       "path": "readiness/366-main-ci-routing/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],

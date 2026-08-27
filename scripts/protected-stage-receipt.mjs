@@ -133,6 +133,7 @@ async function main(argv) {
         siteHandoff = JSON.parse(await readFile(resolve(one("site-handoff", "")), "utf8"));
         const handoffBody = Object.fromEntries(Object.entries(siteHandoff).filter(([key]) => key !== "digest"));
         if (siteHandoff?.schema !== "sir.qualified-site-handoff/v1" || siteHandoff?.result !== "pass") failures.push({ code: "site-handoff-malformed-or-not-pass", subject: "site-handoff" });
+        if (!/^[0-9a-f]{64}$/u.test(siteHandoff?.documentationGateSha256 ?? "") || !/^[0-9a-f]{64}$/u.test(siteHandoff?.siteReceiptSha256 ?? "") || siteHandoff?.archive?.name !== "protected-qualified-site.tar" || !/^[0-9a-f]{64}$/u.test(siteHandoff?.archive?.sha256 ?? "")) failures.push({ code: "site-handoff-malformed-bindings", subject: "site-handoff" });
         if (siteHandoff?.digest !== sha256(canonical(handoffBody))) failures.push({ code: "site-handoff-digest-mismatch", subject: "site-handoff" });
         if (siteHandoff?.source?.commit !== source.commit || siteHandoff?.source?.tree !== source.tree) failures.push({ code: "site-handoff-source-mismatch", subject: "site-handoff" });
         if (siteHandoff?.routeDigest !== route?.digest) failures.push({ code: "site-handoff-route-mismatch", subject: "site-handoff" });

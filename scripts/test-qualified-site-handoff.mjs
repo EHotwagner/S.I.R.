@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
@@ -31,6 +32,26 @@ try {
   const handoff = JSON.parse(readFileSync(handoffPath, "utf8"));
   assert.equal(handoff.schema, "sir.qualified-site-handoff/v1");
   assert.equal(handoff.routeDigest, route.digest);
+
+  const malformedBody = { ...handoff };
+  delete malformedBody.digest;
+  delete malformedBody.documentationGateSha256;
+  delete malformedBody.siteReceiptSha256;
+  const malformed = { ...malformedBody, digest: createHash("sha256").update(canonical(malformedBody)).digest("hex") };
+  writeFileSync(handoffPath, canonical(malformed));
+  const malformedBindings = spawnSync(process.execPath, [tool, "verify", "--handoff", handoffPath, "--route", routePath, "--archive", archivePath, "--commit", commit, "--tree", tree], { cwd: root, encoding: "utf8" });
+  assert.equal(malformedBindings.status, 1);
+  assert.match(malformedBindings.stderr, /malformed-bindings/u);
+  writeFileSync(handoffPath, canonical(handoff));
+
+  const mismatchedBody = { ...handoff, documentationGateSha256: "0".repeat(64) };
+  delete mismatchedBody.digest;
+  const mismatched = { ...mismatchedBody, digest: createHash("sha256").update(canonical(mismatchedBody)).digest("hex") };
+  writeFileSync(handoffPath, canonical(mismatched));
+  const mismatchedGate = spawnSync(process.execPath, [tool, "verify", "--handoff", handoffPath, "--route", routePath, "--gate", gatePath, "--site-receipt", siteReceiptPath, "--archive", archivePath, "--commit", commit, "--tree", tree], { cwd: root, encoding: "utf8" });
+  assert.equal(mismatchedGate.status, 1);
+  assert.match(mismatchedGate.stderr, /documentation-gate-mismatch/u);
+  writeFileSync(handoffPath, canonical(handoff));
 
   writeFileSync(archivePath, "tampered-archive");
   const tamperedArchive = spawnSync(process.execPath, [tool, "verify", "--handoff", handoffPath, "--route", routePath, "--archive", archivePath, "--commit", commit, "--tree", tree], { cwd: root, encoding: "utf8" });

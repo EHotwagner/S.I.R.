@@ -104,6 +104,14 @@ try {
   const documentationFocusedPath = resolve(temporary, "documentation-focused.json");
   run(process.execPath, [receiptTool, "join-focused", "--route", documentationRoutePath, "--routed", documentationRoutedPath, "--site-handoff", handoffPath, "--site-handoff-status", "success", "--output", documentationFocusedPath]);
   assert.equal(JSON.parse(readFileSync(documentationFocusedPath, "utf8")).result, "pass");
+  const malformedHandoffBody = { ...handoffBody };
+  delete malformedHandoffBody.documentationGateSha256;
+  delete malformedHandoffBody.siteReceiptSha256;
+  writeFileSync(handoffPath, canonical({ ...malformedHandoffBody, digest: digest(canonical(malformedHandoffBody)) }));
+  const malformedHandoff = spawnSync(process.execPath, [receiptTool, "join-focused", "--route", documentationRoutePath, "--routed", documentationRoutedPath, "--site-handoff", handoffPath, "--site-handoff-status", "success", "--output", resolve(temporary, "malformed-handoff-focused.json")], { cwd: root, encoding: "utf8" });
+  assert.equal(malformedHandoff.status, 1);
+  assert.match(malformedHandoff.stdout, /site-handoff-malformed-bindings/u);
+  writeFileSync(handoffPath, canonical(handoff));
   const missingHandoff = spawnSync(process.execPath, [receiptTool, "join-focused", "--route", documentationRoutePath, "--routed", documentationRoutedPath, "--site-handoff", resolve(temporary, "missing-handoff.json"), "--site-handoff-status", "failure", "--output", resolve(temporary, "missing-handoff-focused.json")], { cwd: root, encoding: "utf8" });
   assert.equal(missingHandoff.status, 1);
   assert.match(missingHandoff.stdout, /site-handoff-step-failed/u);
@@ -133,6 +141,7 @@ try {
   assert.match(workflow, /^  full-qualification:\n    if: github\.event_name == 'schedule' \|\| github\.event_name == 'workflow_dispatch'[\s\S]*?needs: protected-preflight/mu);
   assert.match(workflow, /^  protected-verdict:\n    if: always\(\)/mu);
   assert.match(workflow, /verify-join[\s\S]*join-focused/u);
+  assert.match(workflow, /qualified-site-handoff\.mjs verify[\s\S]*--gate "\$extraction\/artifacts\/ci\/results\/documentation\.json"[\s\S]*--site-receipt "\$extraction\/\$site_receipt_path"/u);
   assert.match(workflow, /pattern: protected-stage-\*/u);
   assert.match(workflow, /name: protected-qualified-site/u);
   console.log("Protected complete and focused receipts, partial/cancelled failure diagnostics, exact route binding, missing-stage rejection, and event topology passed.");
