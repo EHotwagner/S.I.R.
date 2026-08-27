@@ -75,9 +75,13 @@ function markdownAst(markdown) {
 function topLevelDeclarations(modelMarkdown) {
   const quint = [...modelMarkdown.matchAll(/```quint[^\n]*\n([\s\S]*?)\n```/g)].map(match => match[1]).join("\n");
   const declarations = [];
+  let currentModule = "";
   for (const line of quint.split("\n")) {
     let match = line.match(/^module\s+(\w+)/);
-    if (match) declarations.push({ term: match[1], kind: "module" });
+    if (match) {
+      currentModule = match[1];
+      declarations.push({ term: match[1], kind: "module", module: currentModule });
+    }
     match = line.match(/^  ((?:pure\s+)?(?:type|val|def|action|var|run|invariant))\s+(\w+)/);
     if (!match) continue;
     const form = match[1];
@@ -90,7 +94,7 @@ function topLevelDeclarations(modelMarkdown) {
     else if (form === "invariant") kind = "property";
     else if (/^[A-Z][A-Z0-9_]+$/.test(match[2])) kind = "constant";
     else if (["sixteenRulesDeclared", "boundedCombatState", "incapacityMatchesHealth", "destroyedCoverIsPermeable", "validTraceObservation", "suppressionRequiresDamage", "factionNeutralCollateral"].includes(match[2])) kind = "property";
-    declarations.push({ term: match[2], kind });
+    declarations.push({ term: match[2], kind, module: currentModule });
   }
   return declarations;
 }
@@ -147,6 +151,8 @@ export function audit(markdown, modelMarkdown = authoritativeModel, inventory = 
   const index = indexStart >= 0 ? markdown.slice(indexStart) : "";
   const indexEntries = [...index.matchAll(/<a id="([a-z0-9-]+)"><\/a>\n\*\*([^*]+)\*\* — ([^.]+)\. ([^\n]+)/g)];
   const indexedAnchors = new Map(indexEntries.map(match => [match[1], match]));
+  const authoritativeDeclarations = topLevelDeclarations(modelMarkdown);
+  const declarationByTerm = new Map(authoritativeDeclarations.map(declaration => [declaration.term, declaration]));
   for (const entry of inventory.terms ?? []) {
     if ((anchorCounts.get(entry.anchor) ?? 0) !== 1) add("manifest-anchor-missing", `${entry.term} -> ${entry.anchor}`);
     const match = indexedAnchors.get(entry.anchor);
@@ -162,6 +168,14 @@ export function audit(markdown, modelMarkdown = authoritativeModel, inventory = 
     if (description.length < 35 || description.split(/\s+/).length < 6 || /TODO|TBD|placeholder/i.test(description) || /^The (function|value|type|run|property|action|module|variable|constant) for /i.test(description) || /declared authoritatively as/i.test(description))
       add("index-definition-insubstantial", entry.term);
     if (body.includes(`\`${entry.term}.${entry.term}\``)) add("index-declaration-locus-invalid", entry.term);
+    const declaration = declarationByTerm.get(entry.term);
+    if (declaration) {
+      const exactSymbol = `${declaration.module}.${declaration.term}`;
+      const acceptedLoci = declaration.kind === "module"
+        ? [`**Declared at:** literate model module \`${declaration.term}\``]
+        : [`**Declared at:** \`${exactSymbol}\``, `**Declared at:** literate model \`${exactSymbol}\``];
+      if (!acceptedLoci.some(locus => body.includes(locus))) add("index-declaration-locus-mismatch", `${entry.term}: expected exact ${exactSymbol}`);
+    }
     if (!/\[[^\]]+\]\(#[a-z0-9-]+\)/.test(body.slice(body.indexOf("**Related terms:**")))) add("index-related-link-missing", entry.term);
   }
   if (indexedAnchors.size !== inventory.terms.length) add("index-cardinality", `${indexedAnchors.size} entries for ${inventory.terms.length} terms`);
@@ -189,7 +203,7 @@ export function audit(markdown, modelMarkdown = authoritativeModel, inventory = 
   if (expectedAliases.length !== 5) add("alias-inventory-cardinality", `${expectedAliases.length} aliases, expected 5`);
   if (JSON.stringify(expectedAliases) !== JSON.stringify(actualAliases)) add("alias-inventory-mismatch", "manifest aliases and published index markers differ");
 
-  const declarations = topLevelDeclarations(modelMarkdown);
+  const declarations = authoritativeDeclarations;
   const declaredNames = new Set();
   for (const declaration of declarations) {
     if (declaredNames.has(declaration.term)) add("declaration-duplicate", declaration.term);
@@ -200,8 +214,8 @@ export function audit(markdown, modelMarkdown = authoritativeModel, inventory = 
   }
   if (declarations.length !== 74) add("declaration-inventory-cardinality", `${declarations.length} declarations, expected 74`);
   const indexedDeclarations = inventory.terms.filter(entry => ["module", "type", "constant", "value", "function", "variable", "action", "property", "run"].includes(entry.kind)).map(entry => `${entry.term}#${entry.kind}`).sort();
-  const authoritativeDeclarations = declarations.map(entry => `${entry.term}#${entry.kind}`).sort();
-  if (JSON.stringify(indexedDeclarations) !== JSON.stringify(authoritativeDeclarations)) add("declaration-inventory-mismatch", "manifest declaration entries and authoritative model declarations differ");
+  const authoritativeDeclarationKeys = declarations.map(entry => `${entry.term}#${entry.kind}`).sort();
+  if (JSON.stringify(indexedDeclarations) !== JSON.stringify(authoritativeDeclarationKeys)) add("declaration-inventory-mismatch", "manifest declaration entries and authoritative model declarations differ");
 
   const rules = inventory.mandatoryTraceability?.ruleIds ?? [];
   const manifestRules = inventory.terms.filter(entry => entry.kind === "rule").map(entry => entry.term);
@@ -276,6 +290,7 @@ const mutations = [
   ["controlled-occurrence-wrong-target", "controlled-occurrence-wrong-target", handbook.replace("[CombatState](#qnt-combat-state)", "[CombatState](#chapter-20-variables-initialization-and-cohesive-combat-sta)")],
   ["controlled-occurrence-embedded-wrong-target", "controlled-occurrence-wrong-target", handbook.replace("[CombatState](#qnt-combat-state)", "[CombatState record](#chapter-49-exercises-and-solutions)")],
   ["index-definition-insubstantial", "index-definition-insubstantial", handbook.replace(/(\*\*absolute\*\* — function\. )[\s\S]*?( \*\*Declared at:\*\*)/, "$1TODO.$2")],
+  ["declaration-locus-drift", "index-declaration-locus-mismatch", handbook.replace("`SirCombat.CombatState`", "`SirCombat.SirCombat`")],
   ["authoritative-declaration-removed", "declaration-inventory-cardinality", handbook, authoritativeModel.replace(/^  run damageRoundingPreservesInt32Wrap.*\n/m, "")],
   ["authoritative-rule-id-drift", "authoritative-rule-inventory-mismatch", handbook, authoritativeModel.replace("CONTENT-WEAPON-RIFLE-001", "CONTENT-WEAPON-RIFLE-DRIFT")],
   ["manifest-alias-removed", "alias-inventory-cardinality", handbook, authoritativeModel, { ...manifest, aliases: manifest.aliases.slice(1) }]

@@ -1279,11 +1279,11 @@ reconciles all literate Quint declarations, all sixteen rule IDs, all fifty chap
 paths, aliases, anchors, fragment links, and eligible controlled prose. Occurrence exemptions are
 manifest-declared: front matter, fenced code, headings, inline code, this canonical index, aliases used
 only as index search aids, and the ambiguous model names `combat`, `last`, and `step`, whose ordinary-English
-uses cannot identify a model symbol reliably. Twelve isolated mutations prove missing fragments, duplicate
+uses cannot identify a model symbol reliably. Thirteen isolated mutations prove missing fragments, duplicate
 anchors, absent index entries, unlinked eligible prose and model symbols, wrong canonical targets,
 wrong targets hidden inside extended link labels, insubstantial definitions, missing authoritative
-declarations, rule-ID drift across model/runtime, manifest/index alias drift, and coordinated term/index
-cardinality loss each observe red before untouched input restores green.
+declarations, exact declaration-module locus drift, rule-ID drift across model/runtime, manifest/index
+alias drift, and coordinated term/index cardinality loss each observe red before untouched input restores green.
 
 <a id="qnt-absolute"></a>
 **absolute** — function. Returns the non-negative magnitude of an integer and supports sign-aware round-half-away-from-zero arithmetic. **Declared at:** literate model `SirCombat.absolute`. **Related terms:** [pure function](#def-pure-function), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.

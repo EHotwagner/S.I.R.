@@ -316,9 +316,9 @@ Completion evidence (2026-08-27):
   exact coverage for 74 top-level Quint declarations, all sixteen stable rules, fifty chapters, three
   reading paths, 188 index targets, five canonical aliases, internal fragments, and eligible controlled
   prose. Structural exemptions are explicit in the manifest rather than inferred from text.
-- Twelve isolated controls observe red for missing fragments, duplicate anchors, absent index entries,
+- Thirteen isolated controls observe red for missing fragments, duplicate anchors, absent index entries,
   unlinked controlled occurrences and model symbols, wrong canonical targets, insubstantial definitions,
-  wrong targets hidden inside extended link labels, missing authoritative declarations,
+  wrong targets hidden inside extended link labels, missing authoritative declarations, exact declaration-module locus drift,
   rule-ID drift across model/runtime, manifest/index alias drift, and coordinated term/index cardinality
   loss before untouched input restores green.
   `scripts/build-docs.sh` now runs

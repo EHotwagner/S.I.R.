@@ -17,6 +17,7 @@ const required = [
   "wrong targets hidden inside extended link labels",
   "insubstantial definitions",
   "missing authoritative declarations",
+  "exact declaration-module locus drift",
   "rule-ID drift across model/runtime",
   "manifest/index alias drift"
   ,"coordinated term/index cardinality"

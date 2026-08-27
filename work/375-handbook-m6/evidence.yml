@@ -11,7 +11,7 @@ sourceAnalysis: readiness/375-handbook-m6/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/375-handbook-m6/analysis.json
-    digest: e68a4f0302311bc53ee11292f4aa942644696455e5b00aac9e14325e2b2f82d8
+    digest: 70a76e1354450ff41561cd386f5e6ee77c3e7895a4513fa5faf4371f02be02d6
     schemaVersion: 1
   - label: checklist
     path: work/375-handbook-m6/checklist.md
@@ -54,13 +54,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV002
     kind: verification
     subject:
@@ -81,13 +81,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV003
     kind: verification
     subject:
@@ -108,13 +108,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV004
     kind: verification
     subject:
@@ -135,13 +135,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV005
     kind: verification
     subject:
@@ -162,13 +162,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV006
     kind: verification
     subject:
@@ -189,13 +189,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV007
     kind: verification
     subject:
@@ -216,13 +216,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV008
     kind: verification
     subject:
@@ -243,13 +243,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV009
     kind: verification
     subject:
@@ -270,13 +270,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV010
     kind: verification
     subject:
@@ -297,13 +297,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV011
     kind: verification
     subject:
@@ -324,13 +324,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV012
     kind: verification
     subject:
@@ -351,13 +351,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV013
     kind: verification
     subject:
@@ -378,13 +378,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV014
     kind: verification
     subject:
@@ -405,13 +405,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV015
     kind: verification
     subject:
@@ -432,13 +432,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV016
     kind: verification
     subject:
@@ -459,13 +459,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV017
     kind: verification
     subject:
@@ -486,13 +486,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV018
     kind: verification
     subject:
@@ -513,13 +513,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV019
     kind: verification
     subject:
@@ -540,13 +540,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV020
     kind: verification
     subject:
@@ -567,13 +567,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV021
     kind: verification
     subject:
@@ -594,13 +594,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
   - id: EV022
     kind: verification
     subject:
@@ -621,12 +621,12 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/375-handbook-m6/qualification.junit.xml
-      digest: "sha256:68c9842aedad0c36e664742ae864cc80975dcf2c7637a7f907601ff6f60b9b1d"
+      digest: "sha256:f93c61482cecbca5f784f9a7e8d4a906f7fc86b54228d1582700e55b7d1c3b4b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
       failed: 0
       skipped: 0
-    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, twelve structural mutations]
+    notes: [Aggregate receipt follows strict docs and current SDD analysis., complete index and exact authority reconciliation, full Q4/runtime regression, roadmap, thirteen structural mutations]
 lifecycleNotes:
   - "Next lifecycle action: verify."
