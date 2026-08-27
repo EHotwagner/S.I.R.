@@ -9,7 +9,7 @@ status: active
 document-type: roadmap
 ---
 
-# S.I.R. Combat in Quint handbook roadmap
+# Combat in Quint handbook roadmap
 
 This is the S.I.R.-owned milestone ledger imported from
 `EHotwagner/.github` commit `b72c96d41d84d1468422b5c616a16d5f3c501c2a`,
