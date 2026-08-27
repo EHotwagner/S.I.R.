@@ -63,7 +63,6 @@ let private pageDecoder : Decoder<DocumentationPage> =
           SourcePath = get.Required.Field "sourcePath" Decode.string
           ApiPath = get.Optional.Field "apiPath" Decode.string
           ContentDigest = get.Required.Field "contentDigest" Decode.string
-          Anchors = get.Required.Field "anchors" (Decode.list Decode.string)
           Headings = get.Required.Field "headings" (Decode.list headingDecoder)
           Related = get.Required.Field "related" (Decode.list Decode.string)
           Blocks = get.Required.Field "blocks" (Decode.list blockDecoder) })

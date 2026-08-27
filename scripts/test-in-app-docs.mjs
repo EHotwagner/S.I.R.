@@ -16,15 +16,16 @@ function decode(text) {
   const slugs = manifest.pages.map((page) => page.slug);
   if (new Set(slugs).size !== slugs.length) throw new Error("Duplicate documentation slug.");
   const known = new Set(slugs);
-  const anchors = new Map(manifest.pages.map((page) => [page.slug, new Set(page.anchors)]));
+  const anchors = new Map(manifest.pages.map((page) => [page.slug, new Set(page.blocks.filter((block) => block.kind === "heading").map((block) => block.anchor))]));
   for (const page of manifest.pages) {
     if (!allowedStatuses.has(page.status)) throw new Error("Unknown documentation status.");
     if (!Array.isArray(page.blocks) || page.blocks.some((block) => !allowedBlocks.has(block.kind))) throw new Error("Unknown documentation block.");
     if (page.related.some((slug) => !known.has(slug))) throw new Error("Broken documentation cross-link.");
     const blockAnchors = new Set(page.blocks.filter((block) => block.kind === "heading").map((block) => block.anchor));
-    if (!Array.isArray(page.anchors) || page.anchors.some((anchor) => typeof anchor !== "string" || !anchor)) throw new Error("Invalid documentation anchor inventory.");
     if (page.headings.some((heading) => !heading.anchor || !blockAnchors.has(heading.anchor))) throw new Error("Broken documentation heading anchor.");
-    if (page.headings.some((heading) => !anchors.get(page.slug).has(heading.anchor))) throw new Error("Documentation heading missing from anchor inventory.");
+    if (page.blocks.some((block) => /<a\s+id=/i.test(block.text))) throw new Error("Explicit documentation anchor leaked as visible text.");
+    const semanticAnchors = page.blocks.filter((block) => block.kind === "heading" && block.text === "");
+    if (semanticAnchors.some((block) => !block.anchor || page.headings.some((heading) => heading.anchor === block.anchor))) throw new Error("Semantic documentation anchor polluted heading navigation.");
     for (const block of page.blocks) {
       if (block.kind === "table" && (!Array.isArray(block.rows) || block.rows.length === 0)) throw new Error("Unrenderable documentation table.");
       if (block.kind === "image" && (!block.imageSource || !block.text)) throw new Error("Unrenderable documentation image.");
@@ -35,8 +36,10 @@ function decode(text) {
       }
     }
     if (page.apiPath && (!page.apiPath.startsWith("reference/") || (!page.sourcePath.startsWith("reference/") && !page.sourcePath.startsWith("src/")))) throw new Error("Invalid FsDocs API identity.");
-  }
-  for (const source of Object.values(manifest.sources ?? {})) {
+}
+const handbook = manifest.pages.find((page) => page.slug === "sir-combat-quint-handbook");
+if (!handbook || !handbook.blocks.some((block) => block.kind === "heading" && block.anchor === "stat-damage" && block.text === "")) throw new Error("Handbook semantic definition anchor was not materialized.");
+for (const source of Object.values(manifest.sources ?? {})) {
     if (!known.has(source.pageSlug) || !/^[0-9a-f]{40}$/.test(source.revision) || !Number.isInteger(source.line) || source.line < 1 || !/^[0-9a-f]{64}$/.test(source.contentDigest) || !/^[0-9a-f]{64}$/.test(source.lineDigest)) throw new Error("Stale documentation source mapping.");
   }
   return manifest;

@@ -14,7 +14,6 @@ document-type: handbook
 
 This first-edition skeleton fixes the handbook's navigation and definition-address contract. Tutorial substance is intentionally reserved for milestones M2-M7; pending entries and chapter notices are honest placeholders, not executable claims.
 
-<a id="table-of-contents"></a>
 ## Table of contents
 
 - [Reading paths](#reading-paths)
@@ -77,7 +76,6 @@ This first-edition skeleton fixes the handbook's navigation and definition-addre
   - [49. Exercises and solutions](#chapter-49-exercises-and-solutions)
   - [50. Alphabetical definition index](#chapter-50-alphabetical-definition-index)
 
-<a id="reading-paths"></a>
 ## Reading paths
 
 <a id="reading-path-learn-quint"></a>
@@ -413,192 +411,559 @@ This full-shaped matrix reserves every mandatory obligation. “Pending” means
 
 The seed index is complete for the M0 inventory. Later milestones replace placeholder explanations with domain-aware definitions without changing these anchors.
 
-| Canonical term | Kind | Definition | Declared at | Related terms | Runtime correspondence |
-|---|---|---|---|---|---|
-| <a id="qnt-absolute"></a>absolute | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-action"></a>action | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-add-fixed"></a>addFixed | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-aggregate-attack-resolution"></a>aggregate attack resolution | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-algorithm-entry"></a>AlgorithmEntry | type | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-allied-attack"></a>alliedAttack | value | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-armor-retention"></a>armor retention | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-attack-input"></a>AttackInput | type | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-base-damage"></a>base damage | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-bounded-verification"></a>bounded verification | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-bounded100"></a>bounded100 | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="property-bounded-combat-state"></a>boundedCombatState | property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="catalogue-property-bounded-combat-state"></a>BoundedCombatState | catalogue property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="unit-cells"></a>cells | unit | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-claim-boundary"></a>claim boundary | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-collateral-consequence"></a>collateral consequence | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="run-collateral-outcome-ignores-faction"></a>collateralOutcomeIgnoresFaction | run | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-combat"></a>combat | variable | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="rule-combat-armor-004"></a>COMBAT-ARMOR-004 | rule | Stable S.I.R. combat formula identity. | Pending | Pending | Pending |
-| <a id="rule-combat-attack-resolution-001"></a>COMBAT-ATTACK-RESOLUTION-001 | rule | Stable S.I.R. combat transition identity. | Pending | Pending | Pending |
-| <a id="rule-combat-collateral-001"></a>COMBAT-COLLATERAL-001 | rule | Stable S.I.R. combat transition identity. | Pending | Pending | Pending |
-| <a id="rule-combat-collision-001"></a>COMBAT-COLLISION-001 | rule | Stable S.I.R. combat transition identity. | Pending | Pending | Pending |
-| <a id="rule-combat-cover-003"></a>COMBAT-COVER-003 | rule | Stable S.I.R. combat transition identity. | Pending | Pending | Pending |
-| <a id="rule-combat-cover-destruction-001"></a>COMBAT-COVER-DESTRUCTION-001 | rule | Stable S.I.R. combat transition identity. | Pending | Pending | Pending |
-| <a id="rule-combat-damage-001"></a>COMBAT-DAMAGE-001 | rule | Stable S.I.R. combat formula identity. | Pending | Pending | Pending |
-| <a id="rule-combat-engagement-001"></a>COMBAT-ENGAGEMENT-001 | rule | Stable S.I.R. combat formula identity. | Pending | Pending | Pending |
-| <a id="rule-combat-health-001"></a>COMBAT-HEALTH-001 | rule | Stable S.I.R. combat transition identity. | Pending | Pending | Pending |
-| <a id="rule-combat-penetration-001"></a>COMBAT-PENETRATION-001 | rule | Stable S.I.R. combat transition identity. | Pending | Pending | Pending |
-| <a id="rule-combat-suppression-001"></a>COMBAT-SUPPRESSION-001 | rule | Stable S.I.R. combat transition identity. | Pending | Pending | Pending |
-| <a id="rule-combat-suppression-recovery-001"></a>COMBAT-SUPPRESSION-RECOVERY-001 | rule | Stable S.I.R. combat transition identity. | Pending | Pending | Pending |
-| <a id="rule-combat-trace-002"></a>COMBAT-TRACE-002 | rule | Stable S.I.R. combat algorithm identity. | Pending | Pending | Pending |
-| <a id="rule-combat-wound-001"></a>COMBAT-WOUND-001 | rule | Stable S.I.R. combat transition identity. | Pending | Pending | Pending |
-| <a id="qnt-combat-state"></a>CombatState | type | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-consequence-explanation-order"></a>consequenceExplanationOrder | value | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-consequence-observation"></a>consequenceObservation | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-constant"></a>constant | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="rule-content-body-human-001"></a>CONTENT-BODY-HUMAN-001 | rule | Stable S.I.R. combat fact identity. | Pending | Pending | Pending |
-| <a id="rule-content-weapon-rifle-001"></a>CONTENT-WEAPON-RIFLE-001 | rule | Stable S.I.R. combat fact identity. | Pending | Pending | Pending |
-| <a id="def-correspondence"></a>correspondence | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-counterexample"></a>counterexample | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-cover-blocking"></a>cover blocking | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-cover-damage"></a>cover damage | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-cover-integrity"></a>cover integrity | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-cover-damage"></a>coverDamage | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-cover-observation"></a>coverObservation | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-current-collision-consumption"></a>current-collision consumption | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-damage"></a>damage | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="unit-damage-points"></a>damage points | unit | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-damage-for-attack"></a>damageForAttack | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-destroyed-cover"></a>destroyed cover | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="property-destroyed-cover-is-permeable"></a>destroyedCoverIsPermeable | property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="catalogue-property-destroyed-cover-is-permeable"></a>DestroyedCoverIsPermeable | catalogue property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="run-destroying-cover-consumes-current-collision"></a>destroyingCoverConsumesCurrentCollision | run | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-divide-rounded-away-from-zero"></a>divideRoundedAwayFromZero | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-event-identity"></a>event identity | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-execution-trace"></a>execution trace | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-exhaustive-check"></a>exhaustive check | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-expected-damage"></a>expected damage | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-expected-damage-raw"></a>expectedDamageRaw | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-explanation-order"></a>explanation order | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-external-algorithm-contract"></a>external algorithm contract | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-faction-neutral-consequence"></a>faction-neutral consequence | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="property-faction-neutral-collateral"></a>factionNeutralCollateral | property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="catalogue-property-faction-neutral-collateral"></a>FactionNeutralCollateral | catalogue property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-first-collision"></a>first collision | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-first-divergence"></a>first divergence | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="unit-fixed-point-ratio"></a>fixed-point ratio | unit | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-from-ratio"></a>fromRatio | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-full-damage-attack"></a>fullDamageAttack | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-generated-projection"></a>generated projection | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-guard"></a>guard | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-health"></a>health | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="unit-hit-points"></a>hit points | unit | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-hp"></a>HP | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-human-armor-retention-raw"></a>humanArmorRetentionRaw | value | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-import"></a>import | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-incapacitation"></a>incapacitation | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="property-incapacity-matches-health"></a>incapacityMatchesHealth | property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="catalogue-property-incapacity-matches-health"></a>IncapacityMatchesHealth | catalogue property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-init"></a>init | action | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-initial-combat"></a>initialCombat | value | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-initialization"></a>initialization | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-int32-max"></a>INT32_MAX | constant | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-int32-min"></a>INT32_MIN | constant | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="unit-integrity-points"></a>integrity points | unit | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-invariant"></a>invariant | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-itf-trace"></a>ITF trace | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-last"></a>last | variable | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-list"></a>list | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-major-wound"></a>MajorWound | variant | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-maximum"></a>maximum | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-minimum"></a>minimum | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-minor-wound"></a>MinorWound | variant | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-missed-attack"></a>missedAttack | value | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-module"></a>module | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-multiply-fixed"></a>multiplyFixed | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-mutation"></a>mutation | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-next-consequences"></a>nextConsequences | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-next-cover-impact"></a>nextCoverImpact | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-next-recovery"></a>nextRecovery | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-nondeterminism"></a>nondeterminism | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-no-wound"></a>NoWound | variant | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-observation"></a>Observation | type | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-observed-red-control"></a>observed-red control | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-penetration"></a>penetration | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-physical-shot-trace"></a>physical shot trace | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-prediction"></a>prediction | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-preparation-time"></a>preparation time | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-preparation-raw"></a>preparationRaw | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-primed-assignment"></a>primed assignment | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-projectile-contact"></a>projectile contact | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-property"></a>property | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-property-catalogue"></a>propertyCatalogue | value | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-property-entry"></a>PropertyEntry | type | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-pure-function"></a>pure function | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-pure-value"></a>pure value | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="unit-q4-raw-integer"></a>Q4 raw integer | unit | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-range-cells"></a>range cells | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-range-slope-raw"></a>rangeSlopeRaw | value | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-reachable-state"></a>reachable state | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-record"></a>record | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-recovered-suppression"></a>recoveredSuppression | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-recovery-observation"></a>recoveryObservation | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-registered-line-of-sight-implementation"></a>registered line-of-sight implementation | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-representative-attack"></a>representativeAttack | value | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="run-representative-damage-is-twenty"></a>representativeDamageIsTwenty | run | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-resolve-consequences"></a>resolveConsequences | action | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-resolve-cover-impact"></a>resolveCoverImpact | action | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-resolve-recovery"></a>resolveRecovery | action | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-restored-green"></a>restored green | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-retained-effect"></a>retained effect | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-retained-effect"></a>retainedEffect | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-rifle-damage-raw"></a>rifleDamageRaw | value | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="unit-round-half-away-from-zero"></a>round-half-away-from-zero | unit | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-rounded-damage"></a>roundedDamage | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-rule-catalogue"></a>ruleCatalogue | value | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-rule-entry"></a>RuleEntry | type | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-run"></a>run | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-safety-property"></a>safety property | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-sampled-run"></a>sampled run | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="unit-samples"></a>samples | unit | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-saturate-int32"></a>saturateInt32 | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-scale"></a>SCALE | constant | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="unit-scale-10-000"></a>scale 10,000 | unit | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="unit-seconds"></a>seconds | unit | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-set"></a>set | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="unit-signed-32-bit-saturation"></a>signed 32-bit saturation | unit | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-sir-combat"></a>SirCombat | module | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-sir-combat-tests"></a>SirCombatTests | module | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="property-sixteen-rules-declared"></a>sixteenRulesDeclared | property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="catalogue-property-sixteen-rules-declared"></a>SixteenRulesDeclared | catalogue property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-source-digest"></a>source digest | evidence | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-state-transition"></a>state transition | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-state-variable"></a>state variable | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-step"></a>step | action | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-stuttering"></a>stuttering | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-suppression"></a>suppression | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-suppression-delta"></a>suppression delta | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-suppression-eligibility"></a>suppression eligibility | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="unit-suppression-points"></a>suppression points | unit | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-suppression-recovery"></a>suppression recovery | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-suppression-for-damage"></a>suppressionForDamage | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="run-suppression-needs-positive-damage-and-recovers-five"></a>suppressionNeedsPositiveDamageAndRecoversFive | run | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="property-suppression-requires-damage"></a>suppressionRequiresDamage | property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="catalogue-property-suppression-requires-damage"></a>SuppressionRequiresDamage | catalogue property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-target-footprint"></a>target footprint | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-terminal-state"></a>terminal state | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-total-samples"></a>total samples | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-trace-probability"></a>trace probability | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-trace-algorithm"></a>traceAlgorithm | value | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-trace-raw"></a>traceRaw | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-type"></a>type | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-valid-attack"></a>validAttack | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-valid-trace"></a>validTrace | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="property-valid-trace-observation"></a>validTraceObservation | property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="catalogue-property-valid-trace-observation"></a>ValidTraceObservation | catalogue property | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-variant"></a>variant | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-visible-samples"></a>visible samples | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="def-witness"></a>witness | keyword | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="concept-wound"></a>wound | concept | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-wound"></a>Wound | type | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="stat-wound-threshold"></a>wound threshold | stat | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="qnt-wound-for-damage"></a>woundForDamage | function | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="run-wound-thresholds-are-exact"></a>woundThresholdsAreExact | run | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
-| <a id="run-zero-health-means-incapacitated"></a>zeroHealthMeansIncapacitated | run | Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. | Pending | Pending | Pending |
+<a id="qnt-absolute"></a>
+**absolute** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-action"></a>
+**action** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-add-fixed"></a>
+**addFixed** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-aggregate-attack-resolution"></a>
+**aggregate attack resolution** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-algorithm-entry"></a>
+**AlgorithmEntry** — type. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-allied-attack"></a>
+**alliedAttack** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-armor-retention"></a>
+**armor retention** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-attack-input"></a>
+**AttackInput** — type. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-base-damage"></a>
+**base damage** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-bounded-verification"></a>
+**bounded verification** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-bounded100"></a>
+**bounded100** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="property-bounded-combat-state"></a>
+**boundedCombatState** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="catalogue-property-bounded-combat-state"></a>
+**BoundedCombatState** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="unit-cells"></a>
+**cells** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-claim-boundary"></a>
+**claim boundary** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-collateral-consequence"></a>
+**collateral consequence** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="run-collateral-outcome-ignores-faction"></a>
+**collateralOutcomeIgnoresFaction** — run. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-combat"></a>
+**combat** — variable. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-armor-004"></a>
+**COMBAT-ARMOR-004** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-attack-resolution-001"></a>
+**COMBAT-ATTACK-RESOLUTION-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-collateral-001"></a>
+**COMBAT-COLLATERAL-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-collision-001"></a>
+**COMBAT-COLLISION-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-cover-003"></a>
+**COMBAT-COVER-003** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-cover-destruction-001"></a>
+**COMBAT-COVER-DESTRUCTION-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-damage-001"></a>
+**COMBAT-DAMAGE-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-engagement-001"></a>
+**COMBAT-ENGAGEMENT-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-health-001"></a>
+**COMBAT-HEALTH-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-penetration-001"></a>
+**COMBAT-PENETRATION-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-suppression-001"></a>
+**COMBAT-SUPPRESSION-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-suppression-recovery-001"></a>
+**COMBAT-SUPPRESSION-RECOVERY-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-trace-002"></a>
+**COMBAT-TRACE-002** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-combat-wound-001"></a>
+**COMBAT-WOUND-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-combat-state"></a>
+**CombatState** — type. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-consequence-explanation-order"></a>
+**consequenceExplanationOrder** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-consequence-observation"></a>
+**consequenceObservation** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-constant"></a>
+**constant** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-content-body-human-001"></a>
+**CONTENT-BODY-HUMAN-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="rule-content-weapon-rifle-001"></a>
+**CONTENT-WEAPON-RIFLE-001** — rule. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-correspondence"></a>
+**correspondence** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-counterexample"></a>
+**counterexample** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-cover-blocking"></a>
+**cover blocking** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-cover-damage"></a>
+**cover damage** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-cover-integrity"></a>
+**cover integrity** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-cover-damage"></a>
+**coverDamage** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-cover-observation"></a>
+**coverObservation** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-current-collision-consumption"></a>
+**current-collision consumption** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-damage"></a>
+**damage** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="unit-damage-points"></a>
+**damage points** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-damage-for-attack"></a>
+**damageForAttack** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-destroyed-cover"></a>
+**destroyed cover** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="property-destroyed-cover-is-permeable"></a>
+**destroyedCoverIsPermeable** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="catalogue-property-destroyed-cover-is-permeable"></a>
+**DestroyedCoverIsPermeable** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="run-destroying-cover-consumes-current-collision"></a>
+**destroyingCoverConsumesCurrentCollision** — run. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-divide-rounded-away-from-zero"></a>
+**divideRoundedAwayFromZero** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-event-identity"></a>
+**event identity** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-execution-trace"></a>
+**execution trace** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-exhaustive-check"></a>
+**exhaustive check** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-expected-damage"></a>
+**expected damage** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-expected-damage-raw"></a>
+**expectedDamageRaw** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-explanation-order"></a>
+**explanation order** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-external-algorithm-contract"></a>
+**external algorithm contract** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-faction-neutral-consequence"></a>
+**faction-neutral consequence** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="property-faction-neutral-collateral"></a>
+**factionNeutralCollateral** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="catalogue-property-faction-neutral-collateral"></a>
+**FactionNeutralCollateral** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-first-collision"></a>
+**first collision** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-first-divergence"></a>
+**first divergence** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="unit-fixed-point-ratio"></a>
+**fixed-point ratio** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-from-ratio"></a>
+**fromRatio** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-full-damage-attack"></a>
+**fullDamageAttack** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-generated-projection"></a>
+**generated projection** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-guard"></a>
+**guard** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-health"></a>
+**health** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="unit-hit-points"></a>
+**hit points** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-hp"></a>
+**HP** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-human-armor-retention-raw"></a>
+**humanArmorRetentionRaw** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-import"></a>
+**import** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-incapacitation"></a>
+**incapacitation** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="property-incapacity-matches-health"></a>
+**incapacityMatchesHealth** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="catalogue-property-incapacity-matches-health"></a>
+**IncapacityMatchesHealth** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-init"></a>
+**init** — action. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-initial-combat"></a>
+**initialCombat** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-initialization"></a>
+**initialization** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-int32-max"></a>
+**INT32_MAX** — constant. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-int32-min"></a>
+**INT32_MIN** — constant. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="unit-integrity-points"></a>
+**integrity points** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-invariant"></a>
+**invariant** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-itf-trace"></a>
+**ITF trace** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-last"></a>
+**last** — variable. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-list"></a>
+**list** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-major-wound"></a>
+**MajorWound** — variant. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-maximum"></a>
+**maximum** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-minimum"></a>
+**minimum** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-minor-wound"></a>
+**MinorWound** — variant. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-missed-attack"></a>
+**missedAttack** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-module"></a>
+**module** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-multiply-fixed"></a>
+**multiplyFixed** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-mutation"></a>
+**mutation** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-next-consequences"></a>
+**nextConsequences** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-next-cover-impact"></a>
+**nextCoverImpact** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-next-recovery"></a>
+**nextRecovery** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-nondeterminism"></a>
+**nondeterminism** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-no-wound"></a>
+**NoWound** — variant. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-observation"></a>
+**Observation** — type. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-observed-red-control"></a>
+**observed-red control** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-penetration"></a>
+**penetration** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-physical-shot-trace"></a>
+**physical shot trace** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-prediction"></a>
+**prediction** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-preparation-time"></a>
+**preparation time** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-preparation-raw"></a>
+**preparationRaw** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-primed-assignment"></a>
+**primed assignment** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-projectile-contact"></a>
+**projectile contact** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-property"></a>
+**property** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-property-catalogue"></a>
+**propertyCatalogue** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-property-entry"></a>
+**PropertyEntry** — type. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-pure-function"></a>
+**pure function** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-pure-value"></a>
+**pure value** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="unit-q4-raw-integer"></a>
+**Q4 raw integer** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-range-cells"></a>
+**range cells** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-range-slope-raw"></a>
+**rangeSlopeRaw** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-reachable-state"></a>
+**reachable state** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-record"></a>
+**record** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-recovered-suppression"></a>
+**recoveredSuppression** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-recovery-observation"></a>
+**recoveryObservation** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-registered-line-of-sight-implementation"></a>
+**registered line-of-sight implementation** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-representative-attack"></a>
+**representativeAttack** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="run-representative-damage-is-twenty"></a>
+**representativeDamageIsTwenty** — run. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-resolve-consequences"></a>
+**resolveConsequences** — action. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-resolve-cover-impact"></a>
+**resolveCoverImpact** — action. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-resolve-recovery"></a>
+**resolveRecovery** — action. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-restored-green"></a>
+**restored green** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-retained-effect"></a>
+**retained effect** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-retained-effect"></a>
+**retainedEffect** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-rifle-damage-raw"></a>
+**rifleDamageRaw** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="unit-round-half-away-from-zero"></a>
+**round-half-away-from-zero** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-rounded-damage"></a>
+**roundedDamage** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-rule-catalogue"></a>
+**ruleCatalogue** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-rule-entry"></a>
+**RuleEntry** — type. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-run"></a>
+**run** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-safety-property"></a>
+**safety property** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-sampled-run"></a>
+**sampled run** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="unit-samples"></a>
+**samples** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-saturate-int32"></a>
+**saturateInt32** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-scale"></a>
+**SCALE** — constant. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="unit-scale-10-000"></a>
+**scale 10,000** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="unit-seconds"></a>
+**seconds** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-set"></a>
+**set** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="unit-signed-32-bit-saturation"></a>
+**signed 32-bit saturation** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-sir-combat"></a>
+**SirCombat** — module. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-sir-combat-tests"></a>
+**SirCombatTests** — module. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="property-sixteen-rules-declared"></a>
+**sixteenRulesDeclared** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="catalogue-property-sixteen-rules-declared"></a>
+**SixteenRulesDeclared** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-source-digest"></a>
+**source digest** — evidence. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-state-transition"></a>
+**state transition** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-state-variable"></a>
+**state variable** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-step"></a>
+**step** — action. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-stuttering"></a>
+**stuttering** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-suppression"></a>
+**suppression** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-suppression-delta"></a>
+**suppression delta** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-suppression-eligibility"></a>
+**suppression eligibility** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="unit-suppression-points"></a>
+**suppression points** — unit. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-suppression-recovery"></a>
+**suppression recovery** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-suppression-for-damage"></a>
+**suppressionForDamage** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="run-suppression-needs-positive-damage-and-recovers-five"></a>
+**suppressionNeedsPositiveDamageAndRecoversFive** — run. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="property-suppression-requires-damage"></a>
+**suppressionRequiresDamage** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="catalogue-property-suppression-requires-damage"></a>
+**SuppressionRequiresDamage** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-target-footprint"></a>
+**target footprint** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-terminal-state"></a>
+**terminal state** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-total-samples"></a>
+**total samples** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-trace-probability"></a>
+**trace probability** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-trace-algorithm"></a>
+**traceAlgorithm** — value. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-trace-raw"></a>
+**traceRaw** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-type"></a>
+**type** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-valid-attack"></a>
+**validAttack** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-valid-trace"></a>
+**validTrace** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="property-valid-trace-observation"></a>
+**validTraceObservation** — property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="catalogue-property-valid-trace-observation"></a>
+**ValidTraceObservation** — catalogue property. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-variant"></a>
+**variant** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-visible-samples"></a>
+**visible samples** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="def-witness"></a>
+**witness** — keyword. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="concept-wound"></a>
+**wound** — concept. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-wound"></a>
+**Wound** — type. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="stat-wound-threshold"></a>
+**wound threshold** — stat. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="qnt-wound-for-damage"></a>
+**woundForDamage** — function. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="run-wound-thresholds-are-exact"></a>
+**woundThresholdsAreExact** — run. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
+
+<a id="run-zero-health-means-incapacitated"></a>
+**zeroHealthMeansIncapacitated** — run. Planned definition; its full explanation lands in the milestone named by the handbook hierarchy. **Declared at:** Pending. **Related terms:** Pending. **Runtime correspondence:** Pending.
 
 [Back to the table of contents](#table-of-contents)

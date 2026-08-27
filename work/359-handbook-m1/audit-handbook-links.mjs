@@ -27,7 +27,14 @@ function structuralView(markdown) {
 
 function audit(markdown, manifest) {
   const errors = [];
-  const anchors = [...markdown.matchAll(/<a\s+id="([a-z0-9-]+)"\s*><\/a>/g)].map(match => match[1]);
+  const explicitAnchors = [...markdown.matchAll(/<a\s+id="([a-z0-9-]+)"\s*><\/a>/g)].map(match => match[1]);
+  const headingAnchors = [...markdown.matchAll(/^#{1,6}\s+(.+)$/gm)].map(match => match[1]
+    .replace(/[*_`]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, ""));
+  const anchors = [...explicitAnchors, ...headingAnchors];
   const counts = new Map();
   for (const anchor of anchors) counts.set(anchor, (counts.get(anchor) ?? 0) + 1);
   for (const [anchor, count] of counts) if (count !== 1) errors.push(`duplicate anchor: ${anchor}`);
@@ -46,7 +53,7 @@ function audit(markdown, manifest) {
   const index = indexStart >= 0 ? markdown.slice(indexStart) : "";
   for (const entry of manifest.terms) {
     if (!counts.has(entry.anchor)) errors.push(`manifest anchor absent: ${entry.anchor}`);
-    if (!index.includes(`<a id="${entry.anchor}"></a>${entry.term}`)) errors.push(`index entry absent: ${entry.term}`);
+    if (!index.includes(`<a id="${entry.anchor}"></a>\n**${entry.term}**`)) errors.push(`index entry absent: ${entry.term}`);
   }
 
   const matrixStart = markdown.indexOf('<a id="chapter-46-');
@@ -81,7 +88,7 @@ if (positive.length) {
 const mutations = [
   ["missing fragment", markdown.replace("#reading-paths", "#missing-reading-path")],
   ["duplicate anchor", `${markdown}\n<a id="handbook-top"></a>\n`],
-  ["absent index entry", markdown.replace(`<a id="${manifest.terms[0].anchor}"></a>${manifest.terms[0].term}`, manifest.terms[0].term)],
+  ["absent index entry", markdown.replace(`<a id="${manifest.terms[0].anchor}"></a>\n**${manifest.terms[0].term}**`, `**${manifest.terms[0].term}**`)],
   ["unlinked controlled occurrence", markdown.replace('<a id="chapter-50-', 'A counterexample is deliberately unlinked.\n\n<a id="chapter-50-')]
 ];
 for (const [name, mutated] of mutations) {

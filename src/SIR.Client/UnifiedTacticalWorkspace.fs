@@ -132,7 +132,6 @@ type DocumentationPage =
       SourcePath: string
       ApiPath: string option
       ContentDigest: string
-      Anchors: string list
       Headings: (string * string) list
       Related: string list
       Blocks: DocumentationBlock list }

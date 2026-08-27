@@ -84,6 +84,12 @@ function blocksOf(body, sourcePath) {
   for (const line of body.split("\n")) {
     if (line.startsWith("```")) { if (code) { flush("code"); code = false; } else { flush(); code = true; } continue; }
     if (code) { buffer.push(line); continue; }
+    const explicitAnchor = line.match(/^\s*<a\s+id="([a-z0-9-]+)"\s*><\/a>\s*$/);
+    if (explicitAnchor) {
+      flush();
+      blocks.push({ kind: "heading", level: 6, anchor: explicitAnchor[1], text: "" });
+      continue;
+    }
     const heading = line.match(/^(#{1,6})\s+(.+)$/);
     if (heading) {
       flush();
@@ -116,7 +122,7 @@ for (const path of candidates) {
   const relativePath = relative(resolve("docs"), path).split(sep).join("/");
   const slug = relativePath.replace(new RegExp(`${extname(relativePath)}$`), "").split("/").map(slugify).join("/");
   const blocks = blocksOf(parsed.body, path);
-  const headings = blocks.filter((block) => block.kind === "heading").map(({ text, anchor }) => ({ title: text, anchor }));
+  const headings = blocks.filter((block) => block.kind === "heading" && block.text).map(({ text, anchor }) => ({ title: text, anchor }));
   const explicitAnchors = [...parsed.body.matchAll(/<a\s+id="([a-z0-9-]+)"\s*><\/a>/g)].map((match) => match[1]);
   const firstHeading = parsed.body.match(/^#\s+(.+)$/m)?.[1]?.replace(/[*_`]/g, "").trim();
   pages.push({
@@ -130,7 +136,6 @@ for (const path of candidates) {
     contentDigest: sha256(source),
     headings,
     explicitAnchors,
-    anchors: [...new Set([...headings.map((heading) => heading.anchor), ...explicitAnchors])],
     related: Array.isArray(parsed.fields.related) ? parsed.fields.related.map((value) => value.replace(/^docs\//, "").replace(/\.(?:md|fsx)$/i, "").split("/").map(slugify).join("/")) : [],
     blocks,
   });
@@ -163,7 +168,7 @@ for (const selection of apiSelections) {
   const plain = content.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/&(?:nbsp|amp|lt|gt);/g, " ").replace(/\s+/g, " ").trim();
   pages.push({
     slug: apiPath.replace(/\.html$/i, ""), title, category: "API reference", status: "canonical",
-    sourcePath, apiPath, contentDigest: sha256(content), headings, anchors: headings.map((heading) => heading.anchor),
+    sourcePath, apiPath, contentDigest: sha256(content), headings,
     related: [], blocks: [
       ...headings.slice(0, 24).map((heading) => ({ kind: "heading", level: 2, anchor: heading.anchor, text: heading.title })),
       { kind: "paragraph", text: plain.slice(0, 12000), segments: [{ kind: "text", text: plain.slice(0, 12000) }] },
