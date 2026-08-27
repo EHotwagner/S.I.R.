@@ -51,7 +51,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "08dbfcb9c1546d4a3688ae5da88c44b87d0bdf39f7014b0bb6d3c8081212c8c6"
+        "value": "0a72867bdd47b74782c5ed8952423dc511799792855fe0b6712c2db653a694b4"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "3be058f733496e54a7f259da16b28ac349408972120445aa635d1ab8a2787039"
+        "value": "62034fafb0cc3c0b8e5610a59c45cfdf3e094ef2a677cfc725e5cdae4714696f"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -872,10 +872,24 @@
       "path": "readiness/366-main-ci-routing/work-model.json",
       "kind": "workModel",
       "currency": "current",
-      "diagnosticIds": []
+      "diagnosticIds": [
+        "staleGeneratedView"
+      ]
     }
   ],
-  "findings": [],
+  "findings": [
+    {
+      "id": "VF001",
+      "severity": "warning",
+      "category": "warning",
+      "path": "readiness/366-main-ci-routing/work-model.json",
+      "relatedIds": [
+        "readiness/366-main-ci-routing/work-model.json"
+      ],
+      "message": "Generated view \u0027readiness/366-main-ci-routing/work-model.json\u0027 is stale.",
+      "correction": "Regenerate readiness/\u003Cid\u003E/work-model.json from current lifecycle sources."
+    }
+  ],
   "governanceCompatibility": [
     {
       "path": ".fsgg/policy.yml",
@@ -899,7 +913,18 @@
       "diagnosticIds": []
     }
   ],
-  "diagnostics": [],
+  "diagnostics": [
+    {
+      "id": "staleGeneratedView",
+      "severity": "warning",
+      "artifact": "readiness/366-main-ci-routing/work-model.json",
+      "message": "Generated view \u0027readiness/366-main-ci-routing/work-model.json\u0027 is stale.",
+      "correction": "Regenerate readiness/\u003Cid\u003E/work-model.json from current lifecycle sources.",
+      "relatedIds": [
+        "readiness/366-main-ci-routing/work-model.json"
+      ]
+    }
+  ],
   "readiness": "verificationReady",
   "nextAction": {
     "actionId": "verify.next.ship",

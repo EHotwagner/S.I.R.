@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="main-ci-routing" tests="1" failures="0" skipped="0" time="9.445"><testcase classname="SIR.CI" name="focused-main-routing" time="9.445"></testcase></testsuite>
+<testsuite name="main-ci-routing" tests="1" failures="0" skipped="0" time="10.113"><testcase classname="SIR.CI" name="focused-main-routing" time="10.113"></testcase></testsuite>
