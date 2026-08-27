@@ -28,11 +28,11 @@ Prose status: planned
 ## Plan Decisions
 - PD-001 [AC-001] [FR-001] complete: Derive one sixteen-row catalogue and a direct-dependency graph from `ruleCatalogue`, with explanation order shown separately and labelled non-causal.
 - PD-002 [AC-002] [FR-002] complete: Give each fact/formula/algorithm/transition an existing Quint visibility subject and mechanically reject missing or invented subject names.
-- PD-003 [AC-003] [FR-003] [DEC-001] [DEC-002] complete: Build focused walkthroughs around current helpers, `resolveConsequences`, `resolveCoverImpact`, `recoverSuppression`, observations, runs, and invariants; preserve aggregate atomicity and formula-level penetration.
+- PD-003 [AC-003] [FR-003] [DEC-001] [DEC-002] complete: Build focused walkthroughs around current helpers, `resolveConsequences`, `resolveCoverImpact`, `recoveredSuppression`, `resolveRecovery`, observations, runs, and invariants; preserve aggregate atomicity and formula-level penetration.
 - PD-004 [AC-004] [FR-004] complete: Teach line of sight from `traceAlgorithm` and `traceRaw`, citing the external implementation/fingerprint and explicitly excluding a duplicate supercover implementation.
 - PD-005 [AC-005] [FR-005] complete: Replace every rule-reference and traceability placeholder with exactly one complete row/entry, then audit sixteen-of-sixteen identity, fields, uniqueness, dependencies, and locators.
 - PD-006 [AC-006] [FR-006] [DEC-003] complete: Add tiered prediction/interpretation/design exercises plus answer guidance using positive authority behavior only; reserve semantic mutations for M4.
-- PD-007 [AC-007] [FR-007] complete: Own six scoped receipts—docs, links, focused M3 model, full Q4/runtime, roadmap ledger, and lifecycle—plus an aggregate receipt that is never cited as narrower proof.
+- PD-007 [AC-007] [FR-007] complete: Own six scoped receipts—docs, links, focused M3 model, full Q4/runtime, roadmap ledger, and lifecycle—plus an aggregate qualification receipt whose six named test cases and owning component receipts preserve claim granularity.
 - PD-008 [AC-008] [FR-008] complete: Update only M3's checkbox/evidence at merge-candidate time and validate that prior history and later unchecked milestones remain unchanged.
 
 ## Contract Impact

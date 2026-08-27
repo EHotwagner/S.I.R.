@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "fb7e51d7e88124799bc89ac0157e94ee86edbec802d8f113bd658a7aa9c13e8d"
+        "value": "45d75fd8ee6410673e74e5da8dda85ec46dc7a154cdb4704938afa9014a5ae00"
       }
     },
     {
@@ -1552,7 +1552,7 @@
           "path": "work/363-handbook-m3/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "fb7e51d7e88124799bc89ac0157e94ee86edbec802d8f113bd658a7aa9c13e8d"
+            "value": "45d75fd8ee6410673e74e5da8dda85ec46dc7a154cdb4704938afa9014a5ae00"
           },
           "schemaVersion": 1
         },
@@ -1575,7 +1575,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "e105a7521e54af59d55fccd2ad0e91707127d9ef0fc0e8c2c803d56096796a6b"
+        "value": "979e72c5e38180583c1425e6a1b3e5cb529da6628eb7ad919f2e734259c1d99e"
       },
       "currency": "current"
     }

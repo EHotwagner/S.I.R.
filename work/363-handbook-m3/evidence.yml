@@ -11,7 +11,7 @@ sourceAnalysis: readiness/363-handbook-m3/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/363-handbook-m3/analysis.json
-    digest: e99e6653afa243004e4e0717383f5443dc43d98f357ffaabe261702e92c49972
+    digest: ed35d310cf56efc7b4f8440e985f04c6e99210ff03474d8f487a2c2bf376d1e2
     schemaVersion: 1
   - label: checklist
     path: work/363-handbook-m3/checklist.md
@@ -23,7 +23,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/363-handbook-m3/plan.md
-    digest: fb7e51d7e88124799bc89ac0157e94ee86edbec802d8f113bd658a7aa9c13e8d
+    digest: 45d75fd8ee6410673e74e5da8dda85ec46dc7a154cdb4704938afa9014a5ae00
     schemaVersion: 1
   - label: spec
     path: work/363-handbook-m3/spec.md

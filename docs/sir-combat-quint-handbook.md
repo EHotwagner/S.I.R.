@@ -132,7 +132,7 @@ rifle fact 25
   → atomically publish health 80, suppression 12, and one observation
 ```
 
-The first five arrows calculate a completed consequence. The final arrow is one [aggregate attack resolution](#concept-aggregate-attack-resolution): the production interpreter exposes the completed result, so the model does not invent observable intermediate states between [health](#stat-health), [wound](#concept-wound), or [suppression](#stat-suppression) updates. [Cover impact](#concept-cover-blocking) and [suppression recovery](#concept-suppression-recovery) are separate runtime entry points and therefore separate [actions](#def-action); their full walkthroughs remain M3 work.
+The first five arrows calculate a completed consequence. The final arrow is one [aggregate attack resolution](#concept-aggregate-attack-resolution): the production interpreter exposes the completed result, so the model does not invent observable intermediate states between [health](#stat-health), [wound](#concept-wound), or [suppression](#stat-suppression) updates. [Cover impact](#concept-cover-blocking) and [suppression recovery](#concept-suppression-recovery) are separate runtime entry points and therefore separate [actions](#def-action); their focused walkthroughs appear in chapters 28 and 29.
 
 <a id="part-ii"></a>
 ## Part II: S.I.R. combat domain
