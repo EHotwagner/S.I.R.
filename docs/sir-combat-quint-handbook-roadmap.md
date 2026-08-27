@@ -243,7 +243,7 @@ The direct-dependency column is transcribed from both the current F# registry an
 | `CONTENT-WEAPON-RIFLE-001` | fact | none |
 | `CONTENT-BODY-HUMAN-001` | fact | none |
 | `COMBAT-ENGAGEMENT-001` | formula | none |
-| `COMBAT-TRACE-002` | external algorithm contract | none |
+| `COMBAT-TRACE-002` | algorithm | none |
 | `COMBAT-ARMOR-004` | formula | none |
 | `COMBAT-DAMAGE-001` | formula | `CONTENT-WEAPON-RIFLE-001`, `COMBAT-TRACE-002`, `COMBAT-ARMOR-004` |
 | `COMBAT-COLLISION-001` | transition | `COMBAT-TRACE-002` |
@@ -255,10 +255,12 @@ The direct-dependency column is transcribed from both the current F# registry an
 | `COMBAT-SUPPRESSION-RECOVERY-001` | transition | `COMBAT-SUPPRESSION-001` |
 | `COMBAT-COLLATERAL-001` | transition | `COMBAT-COLLISION-001` |
 | `COMBAT-COVER-DESTRUCTION-001` | transition | `COMBAT-COVER-003` |
-| `COMBAT-ATTACK-RESOLUTION-001` | aggregate transition | `COMBAT-ENGAGEMENT-001`, `COMBAT-COLLISION-001`, `COMBAT-COVER-003`, `COMBAT-PENETRATION-001`, `COMBAT-DAMAGE-001`, `COMBAT-WOUND-001`, `COMBAT-SUPPRESSION-001`, `COMBAT-COLLATERAL-001` |
+| `COMBAT-ATTACK-RESOLUTION-001` | transition | `COMBAT-ENGAGEMENT-001`, `COMBAT-COLLISION-001`, `COMBAT-COVER-003`, `COMBAT-PENETRATION-001`, `COMBAT-DAMAGE-001`, `COMBAT-WOUND-001`, `COMBAT-SUPPRESSION-001`, `COMBAT-COLLATERAL-001` |
 
-Count by kind: 2 facts + 3 formulas + 1 external algorithm contract + 9 focused transitions + 1
-aggregate transition = 16.
+Canonical count by kind: 2 facts + 3 formulas + 1 algorithm + 10 transitions = 16. Within those
+canonical kinds, `COMBAT-TRACE-002` is the external algorithm contract and
+`COMBAT-ATTACK-RESOLUTION-001` is the aggregate transition; those descriptions do not replace the
+registry's kind values.
 
 ## M0 Quint declaration and property inventory
 
