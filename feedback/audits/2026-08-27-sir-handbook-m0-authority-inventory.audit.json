@@ -1,0 +1,62 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-handbook-m0-authority-inventory.md",
+  "reportSha256": "9f92ae3b6805a8b83348a51599e7d6c5dfdd9513c528b506617dcddc245a4480",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:readiness/356-handbook-m0/handbook-m0.junit.xml",
+          "result": "verified",
+          "sha256": "f3e2d9c7ebc075602525d2b541134898f00c1c16fa5a13eb13fecb15568121ba"
+        },
+        {
+          "locator": "file:readiness/356-handbook-m0/ship-verdict.json",
+          "result": "verified",
+          "sha256": "8ade7b6ec26b0201e4831fb80ca63746ac4b624e7e2ea5cffaa87e0acf388259"
+        },
+        {
+          "locator": "file:work/356-handbook-m0/verify-roadmap.mjs",
+          "result": "verified",
+          "sha256": "a62923dfa3287f94fe7845addb4df1ac4490f0b2c945100ba9f335ed88ee8ac7"
+        }
+      ],
+      "confidenceLimits": [
+        "All 17 obligations reuse one shared JUnit case; this proves lifecycle observability, not independently distinct executions.",
+        "The dependency and declaration negative controls execute inside the shared verifier, so their pass/fail detail is not split into distinct JUnit cases."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m0-authority-inventory.jsonl",
+          "result": "verified",
+          "sha256": "f43d41532aabb062b0c0784a66af6857e3fa6bbae80c3a824c5b0effa44c38c7"
+        },
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head origin/main",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2856",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2852",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The local stale-copy behavior is verified; the upstream fix was established from issue disposition rather than independently reproduced upstream."
+      ]
+    }
+  ]
+}
