@@ -136,7 +136,7 @@ Completion evidence (2026-08-27):
   landed completion history only when PR #362 merges; post-merge validation must confirm main,
   issue #361 closure, and project status Done.
 
-### - [ ] M3 — Complete combat-rule walkthroughs
+### - [x] M3 — Complete combat-rule walkthroughs
 
 **Outcome:** every stable combat rule is documented and executable at its appropriate granularity.
 
@@ -153,6 +153,25 @@ Exit criteria:
 - sixteen of sixteen rules have complete reference coverage;
 - every focused transition is visible through a pure helper, action, observation, or property; and
 - no chapter invents a runtime-visible intermediate state.
+
+Completion evidence (2026-08-27):
+
+- `docs/sir-combat-quint-handbook.md` provides 16/16 catalogue, dependency, reference, and
+  traceability coverage plus executable walkthroughs for wound/incapacity, suppression/recovery,
+  current collision and cover/destruction, penetration, collateral, atomic aggregate resolution, and
+  the external line-of-sight contract; beginner, intermediate, and advanced exercises preserve the M4
+  mutation-laboratory boundary.
+- `work/363-handbook-m3/qualify-handbook-m3.sh` owns dedicated strict-docs, structural-link,
+  focused sixteen-rule authority, and full Q4/runtime receipts. The focused audit mechanically checks
+  exact excerpts, all stable rule/dependency/reference/traceability subjects, structural negative
+  controls, and six named Quint runs without inventing model state.
+- Lifecycle evidence: `work/363-handbook-m3/` and `readiness/363-handbook-m3/`; feedback cycle:
+  `roadmap-sir-combat-quint-handbook-m3-complete-rules`; report:
+  `feedback/2026-08-27-sir-handbook-m3-complete-rules.md`.
+- Delivery boundary: this checked entry is the merge-candidate ledger update. Independent exact-head acceptance
+  and green exact-head hosted CI are required before merge. It becomes landed completion
+  history only when the M3 PR merges; post-merge validation must confirm main, issue #363 closure, and
+  project status Done.
 
 ### - [ ] M4 — Formal reasoning and mutation laboratory
 

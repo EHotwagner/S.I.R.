@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sir-handbook-m3-qualification" tests="6" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.HandbookM3" name="locked-release-strict-docs-build"/>
+  <testcase classname="SIR.HandbookM3" name="structural-link-vocabulary-audit"/>
+  <testcase classname="SIR.HandbookM3" name="sixteen-rule-authority-reference-traceability-and-focused-runs"/>
+  <testcase classname="SIR.HandbookM3" name="full-q4-model-and-runtime-qualification"/>
+  <testcase classname="SIR.HandbookM3" name="roadmap-ledger-only-m3-checked"/>
+  <testcase classname="SIR.HandbookM3" name="sdd-analysis-current-and-implementation-ready"/>
+</testsuite>
