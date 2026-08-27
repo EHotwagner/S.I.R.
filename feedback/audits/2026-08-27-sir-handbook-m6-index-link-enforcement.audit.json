@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-27-sir-handbook-m6-index-link-enforcement.md",
-  "reportSha256": "313618bf743cc4a1af9333111f4f442acda008ba4af190dfe7df444686a0976f",
+  "reportSha256": "ebdae9caad60282b159244fb45785b578a164c90baf81794f359ae31cb9a74f9",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -13,7 +13,7 @@
         {
           "locator": "file:docs/sir-combat-quint-handbook.md",
           "result": "verified",
-          "sha256": "f4deeadfb8b6efff4589428774e8d8a92473726bc311ea92b2ba951c99962a83"
+          "sha256": "c394e3ba1fffeadaf627fbfd5b5ee1d73922eb197d7d730dc843f3789626c72f"
         },
         {
           "locator": "file:docs/sir-combat-quint-vocabulary.json",
@@ -23,12 +23,12 @@
         {
           "locator": "file:work/375-handbook-m6/audit-handbook-structure.mjs",
           "result": "verified",
-          "sha256": "7c818f64086b13050d52967658d795355ad21492d5c1a5695d17ca065baddb14"
+          "sha256": "e21e950c5436f49103068e4f68bbbfe5d6d78495b992762cb0ff586fd36499fb"
         },
         {
           "locator": "file:readiness/375-handbook-m6/structure-audit.junit.xml",
           "result": "verified",
-          "sha256": "40f07916e197222a33d14e5aac9db727c9d7bed9be400eaa3faa5f8f6663dabd"
+          "sha256": "1cc7eb93044a42caa3c715aceace1645c1588a985f0ed4850d328d7167318bd7"
         },
         {
           "locator": "command:bash work/375-handbook-m6/qualify-handbook-m6.sh",
