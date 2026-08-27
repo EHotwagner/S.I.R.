@@ -5,7 +5,7 @@ workspace: S.I.R-roadmap-m1
 cycle: roadmap-sir-combat-quint-handbook-m1-linked-skeleton
 lane: sdd
 toolVersion: 1.4.0
-commit: d62a32dba830d01ad8d5d66336d752371cae143a
+commit: c3caae6fab4332b6f08b833ed44f5d683704a94b
 ---
 
 # Development feedback — combat Quint handbook M1 linked skeleton
@@ -19,7 +19,7 @@ commit: d62a32dba830d01ad8d5d66336d752371cae143a
 
 This cycle ran on issue #359 and branch `item/359-handbook-m1` from base
 `99da2c3d4d014e2aeb7ec525e8623849c793d2c5` through commit
-`d62a32dba830d01ad8d5d66336d752371cae143a`. The lifecycle tool reported 1.4.0. The four
+`c3caae6fab4332b6f08b833ed44f5d683704a94b`. The lifecycle tool reported 1.4.0. The four
 checkpoints are in `feedback/checkpoints/roadmap-sir-combat-quint-handbook-m1-linked-skeleton.jsonl`.
 Evidence covers the complete SDD lifecycle, the focused structural audit and four mutations, strict
 fsdocs rendering, PR #360 creation, and the hosted semantic-anchor defect and repaired `prepare-web` pass. Downstream checks, independent
@@ -46,7 +46,7 @@ pinned SDK. A command-local pinned host override produced the expected handbook 
 - **Expected:** The documented site-only route either prepares its prerequisites or names the exact locked restore, Release build, and pinned-host preconditions.
 - **Observed:** The first run reported unrestored projects; after restore, reproduction selected a host that could not resolve SDK 10.0.302. Explicit preparation and a command-local host override rendered the handbook.
 - **Evidence:** file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m1-linked-skeleton.jsonl; command:./scripts/build-docs.sh --prepare-site-only; command:dotnet restore SIR.slnx --locked-mode
-- **Version:** S.I.R. commit `d62a32dba830d01ad8d5d66336d752371cae143a`; fsdocs-tool 22.1.0; pinned SDK 10.0.302.
+- **Version:** S.I.R. commit `c3caae6fab4332b6f08b833ed44f5d683704a94b`; fsdocs-tool 22.1.0; pinned SDK 10.0.302.
 - **Owner:** EHotwagner/S.I.R. documentation build bootstrap and onboarding guidance
 - **Recurrence:** seen again after `feedback/item-185-in-application-docs.md` §3/§11 and `feedback/2026-08-27-sir-handbook-m0-authority-inventory.md` §3/§6; item 277 is related host-root behavior, not this exact route.
 - **Avoidable cost:** one failed docs build and one explicit restore retry.
@@ -59,7 +59,7 @@ pinned SDK. A command-local pinned host override produced the expected handbook 
 - **Expected:** Every blocking AMB identifier is resolved by a uniquely declared decision tag before checklist.
 - **Observed:** Three `[AMB:...]` decisions produced zero remaining ambiguities and a green checklist.
 - **Evidence:** file:work/359-handbook-m1/clarifications.md; command:fsgg-sdd clarify --work 359-handbook-m1 --text
-- **Version:** fsgg-sdd 1.4.0 at commit `d62a32dba830d01ad8d5d66336d752371cae143a`.
+- **Version:** fsgg-sdd 1.4.0 at commit `c3caae6fab4332b6f08b833ed44f5d683704a94b`.
 - **Owner:** FS-GG/FS.GG.SDD clarify authoring contract
 - **Recurrence:** new for this roadmap's three concrete M1 choices; earlier item 181 §4.2 and item 146 document the general clarification grammar.
 - **Avoidable cost:** none
@@ -72,7 +72,7 @@ pinned SDK. A command-local pinned host override produced the expected handbook 
 - **Expected:** The real handbook passes and missing fragments, duplicate anchors, absent index entries, and unlinked controlled occurrences each fail through their named route.
 - **Observed:** One command passed the real handbook and detected all four in-memory mutations.
 - **Evidence:** command:node work/359-handbook-m1/audit-handbook-links.mjs; file:work/359-handbook-m1/audit-handbook-links.mjs
-- **Version:** S.I.R. commit `d62a32dba830d01ad8d5d66336d752371cae143a`.
+- **Version:** S.I.R. commit `c3caae6fab4332b6f08b833ed44f5d683704a94b`.
 - **Owner:** EHotwagner/S.I.R. handbook qualification
 - **Recurrence:** extends the JUnit-backed documentation verifier pattern in `feedback/2026-08-27-sir-handbook-m0-authority-inventory.md` §4.1 with structural Markdown and four link-specific controls.
 - **Avoidable cost:** none
@@ -82,13 +82,13 @@ pinned SDK. A command-local pinned host override produced the expected handbook 
 
 - **Kind:** defect
 - **Impact:** Hosted `prepare-web` rejected the otherwise valid handbook, so the publication could not land even though strict fsdocs rendering passed.
-- **Expected:** Local fragment validation recognizes both renderer heading slugs and explicit stable HTML anchors while keeping only real headings in navigation.
-- **Observed:** The first hosted run reported `Missing documentation anchor sir-combat-quint-handbook#part-i`; the repaired manifest now carries a separate anchor inventory and the generator plus decoder qualification pass locally.
+- **Expected:** Local fragment validation recognizes both renderer heading slugs and explicit stable HTML anchors, materializes every target in rendered blocks, and keeps semantic anchors out of heading navigation.
+- **Observed:** The first hosted run reported `Missing documentation anchor sir-combat-quint-handbook#part-i`; an exact-head review then found that metadata-only anchors still had no DOM target. The final parser materializes explicit anchors as empty anchored heading blocks beside their definitions, removes raw HTML from visible content, and excludes them from the navigation heading list.
 - **Evidence:** file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m1-linked-skeleton.jsonl; command:node scripts/generate-in-app-docs.mjs artifacts/site; command:node scripts/test-in-app-docs.mjs artifacts/site; file:scripts/generate-in-app-docs.mjs
-- **Version:** S.I.R. commit `d62a32dba830d01ad8d5d66336d752371cae143a`.
+- **Version:** S.I.R. commit `c3caae6fab4332b6f08b833ed44f5d683704a94b`.
 - **Owner:** EHotwagner/S.I.R. in-app documentation manifest and decoder contract
 - **Recurrence:** new; prior feedback search found no explicit-HTML-anchor inventory finding.
-- **Avoidable cost:** one failed hosted `prepare-web` run and one parser-contract repair.
+- **Avoidable cost:** one failed hosted `prepare-web` run, one rejected exact-head review, and two parser-contract revisions.
 - **Disposition:** product fix
 
 ## §5 Did not exercise
@@ -137,9 +137,9 @@ performance skills were not relevant to this documentation-only milestone.
 - Preserve §4.3 through M6 by integrating the manifest-backed audit into documentation qualification.
   Acceptance: hosted documentation checks fail for each of the four named mutations and pass the restored
   handbook without treating front matter, headings, fenced code, or canonical index rows as prose.
-- Preserve the §4.4 fix by keeping explicit anchors separate from navigation headings. Acceptance: a page
-  may link to a semantic HTML anchor, the in-app qualification resolves it, and the sidebar remains limited
-  to Markdown headings.
+- Preserve the §4.4 fix by materializing explicit anchors as non-navigation blocks. Acceptance: a page
+  may link to a semantic HTML anchor, qualification finds a rendered block with that ID beside the definition,
+  raw anchor markup is absent from visible text, and the sidebar remains limited to Markdown headings.
 
 ## §12 Development-surface coverage
 

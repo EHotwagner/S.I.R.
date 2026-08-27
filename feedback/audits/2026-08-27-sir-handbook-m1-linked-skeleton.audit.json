@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-27-sir-handbook-m1-linked-skeleton.md",
-  "reportSha256": "cc85dbd27d9d018e29be061fc407c45a3ecdd1e5275cfae55c0eaeae064b904b",
+  "reportSha256": "2afff7c31bbf2b36ed70f0a41505009d778a1638af6e12340567aa3e7591624b",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -59,11 +59,11 @@
         {
           "locator": "file:work/359-handbook-m1/audit-handbook-links.mjs",
           "result": "verified",
-          "sha256": "97e2bb3c7af936747425f64ff9fb64a042ba93ca0986de1381f2546c7c4bbc8c"
+          "sha256": "2fa71dd9788a323176241b18f0f6cc746b9d1c6bd5871e2489e35e5c7b7781cc"
         }
       ],
       "confidenceLimits": [
-        "The command proves the focused structural contract and four in-memory negative controls, not hosted integration."
+        "The command proves the focused structural contract, implicit-heading awareness, and four in-memory negative controls, not rendered in-app behavior."
       ]
     },
     {
@@ -87,11 +87,11 @@
         {
           "locator": "file:scripts/generate-in-app-docs.mjs",
           "result": "verified",
-          "sha256": "23484bb8430d751b5dd0babafd123ca134317fec9eb9123f32c82d0c0d940ead"
+          "sha256": "3d64ee81c216ed5a1f5219808de10a45438eb9b75aafcd0052fd0191baaee92f"
         }
       ],
       "confidenceLimits": [
-        "Local repair commands passed against the exact-head generated site; the original hosted failure was corroborated in run 33061805484 and the repaired prepare-web rerun passed after critique."
+        "Local exact-head commands prove semantic anchors become empty anchored blocks beside definitions, raw HTML is absent, and navigation excludes them; final hosted rerun remains a separate merge gate."
       ]
     }
   ]
