@@ -99,7 +99,8 @@
     {
       "term": "combat",
       "kind": "variable",
-      "anchor": "qnt-combat"
+      "anchor": "qnt-combat",
+      "occurrencePolicy": "canonical-index-only"
     },
     {
       "term": "COMBAT-ARMOR-004",
@@ -454,7 +455,8 @@
     {
       "term": "last",
       "kind": "variable",
-      "anchor": "qnt-last"
+      "anchor": "qnt-last",
+      "occurrencePolicy": "canonical-index-only"
     },
     {
       "term": "list",
@@ -789,7 +791,8 @@
     {
       "term": "step",
       "kind": "action",
-      "anchor": "qnt-step"
+      "anchor": "qnt-step",
+      "occurrencePolicy": "canonical-index-only"
     },
     {
       "term": "stuttering",

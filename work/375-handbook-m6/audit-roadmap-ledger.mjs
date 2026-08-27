@@ -12,7 +12,12 @@ const required = [
   "74 top-level Quint declarations",
   "five canonical aliases",
   "missing fragments, duplicate anchors, absent index entries",
-  "unlinked controlled occurrences"
+  "unlinked controlled occurrences and model symbols",
+  "wrong canonical targets",
+  "insubstantial definitions",
+  "missing authoritative declarations",
+  "rule-ID drift across model/runtime",
+  "manifest/index alias drift"
 ];
 for (const text of required) {
   if (!roadmap.includes(text)) {

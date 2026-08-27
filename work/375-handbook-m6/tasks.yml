@@ -25,7 +25,7 @@ sources:
     schemaVersion: 1
   - label: plan
     path: work/375-handbook-m6/plan.md
-    digest: e40d1558f5e2d791042acf507991303cc1d23b94be53ec4c0ed1ef10ee6f4938
+    digest: 197f7df17da2b3cf3104edb5db71001b9c06ee0bbc1c5c52e9be8e12333b8723
     schemaVersion: 1
 tasks:
   - id: T001

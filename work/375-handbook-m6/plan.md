@@ -41,7 +41,7 @@ Prose status: planned
 - PC-003 [PD-007] evidence contract: `work/375-handbook-m6/qualify-handbook-m6.sh` emits dedicated JUnit and aggregate receipts under `readiness/375-handbook-m6/`.
 
 ## Verification Obligations
-- VO-001 [PD-001] [PD-002] [PC-001] semanticTest: Assert 185/185 substantive definitions, canonical alias uniqueness, related-link resolution, and no placeholder/Pending fields.
+- VO-001 [PD-001] [PD-002] [PC-001] semanticTest: Assert 188/188 substantive definitions, canonical alias uniqueness, related-link resolution, and no placeholder/Pending fields.
 - VO-002 [PD-003] [PC-001] contractTest: Assert exact model-declaration and sixteen-rule reconciliation, including kind and anchor identity.
 - VO-003 [PD-004] [PD-005] [PC-002] contractTest: Assert unique internal destinations and zero eligible unlinked controlled occurrences from parsed Markdown nodes.
 - VO-004 [PD-006] [PC-002] mutationTest: Observe detector-specific red for missing fragment, duplicate anchor, absent index entry, and unlinked controlled prose; rerun unchanged input green.

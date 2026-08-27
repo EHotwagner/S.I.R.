@@ -25,7 +25,7 @@ policyPointers:
 - Link enforcement parses Markdown structure and fails closed on missing fragments, duplicate anchors, absent index entries, unresolved inventory entries, and unlinked controlled prose outside declared exemptions.
 
 ## Scope Boundaries
-- In: complete all 185 planned definition entries; canonical aliases and related links; vocabulary/declaration/rule/chapter/index reconciliation; structural Markdown link audit integrated into docs qualification; observed-red/restored-green negative controls; lifecycle, feedback, review, roadmap, PR, and hosted evidence.
+- In: complete all 188 canonical definition entries (the original 185 plus three current literate declarations); canonical aliases and related links; vocabulary/declaration/rule/chapter/index reconciliation; structural Markdown link audit integrated into docs qualification; observed-red/restored-green negative controls; lifecycle, feedback, review, roadmap, PR, and hosted evidence.
 - Out: combat or Quint semantic changes; production F# changes; M6V mechanics/theory SVGs, animation/shaders, accessibility and fallback implementations, render regression, and performance qualification; M7 final editorial/publication handoff.
 - Preserve all prior milestone history and later milestone wording/pending state; only M6 may become checked at the truthful merge-candidate boundary.
 

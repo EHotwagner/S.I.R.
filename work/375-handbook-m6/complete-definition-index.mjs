@@ -96,6 +96,65 @@ const specific = {
   "witness": "A concrete execution demonstrating that at least one behavior or state is reachable; it is not a universal proof.",
   "wound": "The completed damage classification `NoWound`, `MinorWound`, or `MajorWound` at exact thresholds.",
   "wound threshold": "A whole-damage boundary: 25 begins a minor wound and 50 begins a major wound."
+  ,"absolute": "Returns the non-negative magnitude of an integer and supports sign-aware round-half-away-from-zero arithmetic."
+  ,"addFixed": "Adds two raw fixed-point integers and clamps the mathematical result to the signed 32-bit range."
+  ,"AlgorithmEntry": "Record describing the registered external trace algorithm by stable ID, version, input and output units, tie-break rule, and source fingerprint."
+  ,"alliedAttack": "Attack fixture identical to the representative attack except that source and target factions match, used to test faction-neutral consequences."
+  ,"bounded100": "Clamps an integer to the inclusive 0–100 range used by health, suppression, and cover integrity."
+  ,"boundedCombatState": "State predicate requiring health, suppression, and cover integrity each to remain within their inclusive 0–100 bounds."
+  ,"collateralOutcomeIgnoresFaction": "Executable witness that allied and opposing inputs with equal physical fields produce equal damage and suppression consequences."
+  ,"combat": "Durable `CombatState` variable updated atomically by consequence, cover-impact, and recovery actions."
+  ,"consequenceExplanationOrder": "Ordered stable rule-ID list used when a completed attack observation explains participating consequence rules."
+  ,"consequenceObservation": "Builds the completed immutable attack observation from an input, including damage, trace, retention, wound, suppression, event identity, and explanation order."
+  ,"coverDamage": "Converts base damage to cover-integrity loss by integer halving with a minimum result of one."
+  ,"coverObservation": "Builds the completed cover-impact observation, preserving current-collision blocking separately from successor cover permeability."
+  ,"damageRoundingPreservesInt32Wrap": "Executable edge witness that final damage rounding performs the specified signed-int32 wrap before division rather than saturating that addition."
+  ,"destroyedCoverIsPermeable": "State property requiring zero-integrity cover to have `coverBlocking = false` for later projectiles."
+  ,"destroyingCoverConsumesCurrentCollision": "Executable witness that a destroying direct hit still reports the current projectile blocked while successor cover becomes permeable."
+  ,"divideRoundedAwayFromZero": "Divides two integers and moves an exact or larger half remainder one whole step away from zero."
+  ,"factionNeutralCollateral": "Property equating successor consequences for allied and opposing attacks whose physical inputs are otherwise identical."
+  ,"fromRatio": "Converts an integer numerator/denominator pair to scale-10,000 fixed point with round-half-away-from-zero and signed-int32 saturation."
+  ,"fullDamageAttack": "Constructs a valid unobstructed `AttackInput` whose raw base damage is the supplied whole damage at full trace and retention."
+  ,"humanArmorRetentionRaw": "Human-body armor-retention fact encoded at full scale (`10000`, or 1.0) for the bounded representative corpus."
+  ,"incapacityMatchesHealth": "State property requiring `incapacitated` to be true exactly when current health is zero."
+  ,"init": "Initialization action assigning both durable combat state and the complete neutral `Initialize` observation."
+  ,"INT32_MAX": "Largest signed 32-bit integer (`2147483647`) used by the model's saturation and wrap boundaries."
+  ,"INT32_MIN": "Smallest signed 32-bit integer (`-2147483648`) used by the model's saturation and wrap boundaries."
+  ,"last": "Durable `Observation` variable holding the most recently completed modeled action result."
+  ,"maximum": "Returns the greater of two integers."
+  ,"minimum": "Returns the lesser of two integers."
+  ,"missedAttack": "Invalid-target attack fixture used to witness that a miss applies neither damage nor suppression."
+  ,"nextCoverImpact": "Pure successor-state function that subtracts bounded cover damage and disables future blocking when integrity reaches zero."
+  ,"nextRecovery": "Pure successor-state function that removes up to five suppression points while preserving all other combat fields."
+  ,"preparationRaw": "Derives engagement preparation as one fixed-point second plus 0.1 second per range cell."
+  ,"propertyCatalogue": "Finite registry mapping each named model property to its kind and explicit state/declaration subjects."
+  ,"PropertyEntry": "Record schema for one property-catalogue row: stable ID, property kind, and the set of subjects it constrains."
+  ,"rangeSlopeRaw": "Per-cell engagement preparation slope encoded as raw `1000`, or 0.1 at scale 10,000."
+  ,"recoveredSuppression": "Returns the recoverable amount: at most five and never below zero."
+  ,"recoveryObservation": "Builds a completed recovery observation with negative applied suppression delta, event identity, and recovery explanation when applicable."
+  ,"resolveCoverImpact": "Guarded atomic action that publishes `nextCoverImpact` together with its completed cover observation."
+  ,"resolveRecovery": "Atomic action that publishes `nextRecovery` together with its completed recovery observation."
+  ,"rifleDamageRaw": "Representative rifle base damage encoded as raw `250000`, or 25 whole damage at scale 10,000."
+  ,"ruleCatalogue": "Finite sixteen-entry registry of stable combat rule IDs, kinds, and direct dependencies consumed by catalogue properties and traceability checks."
+  ,"RuleEntry": "Record schema for one stable rule row: rule ID, kind, and its direct dependency set."
+  ,"saturateInt32": "Clamps a mathematical integer below `INT32_MIN` or above `INT32_MAX` to the nearest signed-32-bit boundary."
+  ,"SCALE": "Fixed-point denominator `10000`; one human unit is represented by ten thousand raw units."
+  ,"SirCombat": "Primary Quint module defining the bounded combat types, facts, pure helpers, state variables, actions, and properties."
+  ,"SirCombatTests": "Companion Quint module importing `SirCombat` and defining executable witnesses for representative and boundary behaviors."
+  ,"sixteenRulesDeclared": "Catalogue property requiring exactly sixteen unique stable rule entries."
+  ,"step": "Nondeterministic transition action choosing one enabled consequence, cover-impact, or recovery branch per atomic successor."
+  ,"suppressionForDamage": "Returns a non-negative requested suppression delta only when completed damage is positive; otherwise returns zero."
+  ,"suppressionNeedsPositiveDamageAndRecoversFive": "Executable sequence witnessing zero suppression on a miss, positive suppression on a hit, and a five-point recovery."
+  ,"suppressionRequiresDamage": "Observation property requiring zero applied suppression whenever a resolved attack reports non-positive damage."
+  ,"traceAlgorithm": "Registered metadata contract for `FS.GG.Game.Core.Los.supercover.v1`, including sample units, first-collision tie break, and source fingerprint."
+  ,"UINT32_RANGE": "Unsigned 32-bit modulus (`4294967296`) used to wrap one-step signed-int32 overflow at final damage rounding."
+  ,"validTrace": "Accepts a trace exactly when total samples are positive and visible samples lie inclusively between zero and total."
+  ,"validTraceObservation": "Observation property requiring every resolved attack's emitted trace ratio to remain between zero and `SCALE`."
+  ,"Wound": "Three-case damage classification type: `NoWound`, `MinorWound`, or `MajorWound`."
+  ,"woundForDamage": "Classifies whole damage below 25 as no wound, 25–49 as minor, and 50 or more as major."
+  ,"woundThresholdsAreExact": "Executable sequence witnessing the exact 24/25/50 no-wound, minor-wound, and major-wound boundaries."
+  ,"wrapInt32": "Applies one unsigned-32-bit modulus adjustment when a value crosses a signed-int32 boundary, matching the runtime's unchecked final-rounding addition."
+  ,"zeroHealthMeansIncapacitated": "Executable witness that an attack reducing health to zero also sets incapacitation true in the same atomic successor."
 };
 
 const relatedByKind = {
@@ -136,7 +195,7 @@ function definition(entry) {
 
 function declarationLocus(entry) {
   const declaration = declarations.get(entry.term);
-  if (declaration) return `literate model \`${declaration.module}.${entry.term}\``;
+  if (declaration) return entry.kind === "module" ? `literate model module \`${entry.term}\`` : `literate model \`${declaration.module}.${entry.term}\``;
   if (entry.kind === "catalogue property") return `\`SirCombat.propertyCatalogue\``;
   if (entry.kind === "keyword" || entry.kind === "evidence") return "handbook formal-reasoning chapters 18 and 33–45";
   return "handbook combat walkthroughs and controlled rule catalogue";
@@ -165,7 +224,7 @@ for (const entry of manifest.terms) {
   const aliases = (manifest.aliases ?? []).filter(alias => alias.canonicalTerm === entry.term).map(alias => `\`${alias.alias}\``);
   const aliasText = aliases.length ? ` **Aliases:** ${aliases.join(", ")}.` : "";
   let replacement = current;
-  if (current.includes("Planned definition") || current.includes("Pending."))
+  if (current.includes("Planned definition") || current.includes("Pending.") || /\. The (function|value|type|run|property|action|module|variable|constant) for /.test(current))
     replacement = `**${entry.term}** — ${entry.kind}. ${definition(entry)} **Declared at:** ${declarationLocus(entry)}. **Related terms:** ${related(entry)}.${aliasText} **Runtime correspondence:** ${runtime(entry)}.`;
   else if (aliasText && !current.includes("**Aliases:**"))
     replacement = current.replace(" **Runtime correspondence:**", `${aliasText} **Runtime correspondence:**`);
