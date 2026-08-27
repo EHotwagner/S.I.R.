@@ -1,0 +1,82 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-handbook-m3-complete-rules.md",
+  "reportSha256": "dbabe314951595b61fdf8b440e5b9d5cd01c9bb31fbadeb4bad3580e05b29546",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:work/363-handbook-m3/clarifications.md", "result": "verified", "sha256": "a1a75bbc33ab2f8d50949ea5c5666df32cb977bd79ccdb9018f2dce6c0c729eb" },
+        { "locator": "file:readiness/363-handbook-m3/analysis.json", "result": "verified", "sha256": "ed35d310cf56efc7b4f8440e985f04c6e99210ff03474d8f487a2c2bf376d1e2" }
+      ],
+      "confidenceLimits": [
+        "Evidence verifies DEC-001 through DEC-003, 50 ready relationships, and zero blockers; it does not prove the decisions alone caused readiness.",
+        "The generated clarification status remains needsAnswers despite all questions being answered; §6 discloses the inconsistency."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:work/363-handbook-m3/audit-complete-rules.mjs", "result": "verified", "sha256": "672f44d4ae0e5476ba10a65c776f19efe3cde18b48c420061f0fc5cf39e33f3a" },
+        { "locator": "file:readiness/363-handbook-m3/handbook-m3-rules.junit.xml", "result": "verified", "sha256": "641acccc112fa8fb18374c8b53edfa6a8a2a7783fdf2645f0731465f333c8e5b" },
+        { "locator": "file:readiness/363-handbook-m3/sir-combat-q4.junit.xml", "result": "verified", "sha256": "a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1" },
+        { "locator": "file:docs/rules/sir-combat.md", "result": "verified", "sha256": "f121c201a6f77d0cfc4c86fe72455e8d821b3d941bf012ab0e3482db103e43e7" }
+      ],
+      "confidenceLimits": [
+        "Verified: 341 focused cases, six named runs, two structural negative controls, seven Q4 witnesses, eight mutations, and green receipts.",
+        "The report omits the uncited sampled-state count and proposed excerpt-repair cost."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:readiness/363-handbook-m3/qualification.junit.xml", "result": "verified", "sha256": "efbcdd72da0bb3607ba2983847de44b3f4154474d6da26dae3b4ab68ba013e9c" },
+        { "locator": "file:readiness/363-handbook-m3/lifecycle.junit.xml", "result": "verified", "sha256": "51b325c73f628bf8c5771a5d1f7adcd61a1dd9cc2fe95ce2ca916da47331290c" },
+        { "locator": "file:readiness/363-handbook-m3/ship.json", "result": "verified", "sha256": "893a2a3834fff2cbb163a193e13aa9697c2fa59134c3c064ef730d930a3e4e84" },
+        { "locator": "command:gh pr view 364 --repo EHotwagner/S.I.R. --json headRefOid,state,url", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "Verified: six aggregate cases, 17 observed obligations, zero missing, stale, synthetic, or invalid evidence, shipReady, and PR head 0a22a77.",
+        "The lifecycle receipt names two-pass convergence but does not contain separate per-pass records."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m3-complete-rules.jsonl", "result": "verified", "sha256": "c1505a4e3782a939fe4da054e20cc39993c7e379a098a9961589113353d058f9" },
+        { "locator": "file:work/363-handbook-m3/plan.md", "result": "verified", "sha256": "45d75fd8ee6410673e74e5da8dda85ec46dc7a154cdb4704938afa9014a5ae00" },
+        { "locator": "file:docs/sir-combat-quint-handbook.md", "result": "verified", "sha256": "190676ebf022fc73de6a0a10c72e981d336077e4988db1de3b67ac5874cdac67" },
+        { "locator": "command:git diff 1a060c8..12f2a99 -- work/363-handbook-m3/plan.md docs/sir-combat-quint-handbook.md", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The exact-head source reviewer identified all three defects and the cited diff verifies their repair.",
+        "Replacement exact-head acceptance and hosted CI were pending at report time."
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "duplicate",
+      "missingFacts": [
+        "A correct existing-issue locator for the historical audit-exception invalidation failures."
+      ],
+      "checkedEvidence": [
+        { "locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m3-complete-rules.jsonl", "result": "claim-only", "sha256": "c1505a4e3782a939fe4da054e20cc39993c7e379a098a9961589113353d058f9" },
+        { "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head HEAD --root .", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The command reproduced exit 1 with exactly seventeen historical exception errors.",
+        "The draft's unrelated issue locator was removed; this report does not claim a verified issue handoff."
+      ]
+    }
+  ]
+}

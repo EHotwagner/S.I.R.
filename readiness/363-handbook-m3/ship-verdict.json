@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "viewVersion": "1.0",
+  "workId": "363-handbook-m3",
+  "stage": "ship",
+  "status": "shipReady",
+  "generator": "FS.GG.SDD.Artifacts/1.4.0",
+  "sourcesDigest": {
+    "algorithm": "sha256",
+    "value": "70ec63c8da6a3ba24e566a3dd6bcc0edd4c8c6eb1dcfe72f69c92115d62dc64e"
+  },
+  "verificationReadiness": {
+    "status": "verificationReady",
+    "evidenceSupportedCount": 17,
+    "evidenceSelfAttestedCount": 0,
+    "evidenceObservedCount": 17
+  },
+  "disposition": {
+    "state": "shipReady",
+    "blockingFindingIds": []
+  },
+  "readiness": "shipReady"
+}
