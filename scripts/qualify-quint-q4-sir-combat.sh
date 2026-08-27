@@ -160,6 +160,13 @@ if [[ "${1:-}" != "--model-only" ]]; then
     grep -F 'implementation=src/SIR.Simulation/CombatRules.fs:CombatRules' "$mutation_log" >/dev/null \
       || fail "$mutation did not identify the implementation source"
   done
+
+  restored_exact_summary="$($dotnet_bin "$dll" --quint-q4-exact "$exact_root" 1)"
+  grep -F 'SIR-Q4-EXACT-ACCEPT: traces=1 states=9' <<< "$restored_exact_summary" >/dev/null \
+    || fail "untouched exact replay did not restore green after runtime correspondence mutations"
+  restored_runtime_summary="$($dotnet_bin "$dll" --quint-q4-sampled "$trace_root" 16)"
+  grep -F 'SIR-Q4-SAMPLED-ACCEPT: traces=16 states=144' <<< "$restored_runtime_summary" >/dev/null \
+    || fail "untouched sampled replay did not restore green after runtime correspondence mutations"
 fi
 
 if [[ -n "${SIR_Q4_JUNIT_OUT:-}" ]]; then
@@ -167,7 +174,7 @@ if [[ -n "${SIR_Q4_JUNIT_OUT:-}" ]]; then
   junit_tmp="$SIR_Q4_JUNIT_OUT.tmp"
   {
     printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>'
-    printf '%s\n' '<testsuite name="sir-quint-q4-combat" tests="18" failures="0" errors="0" skipped="0">'
+    printf '%s\n' '<testsuite name="sir-quint-q4-combat" tests="20" failures="0" errors="0" skipped="0">'
     for witness in \
       representativeDamageIsTwenty \
       damageRoundingPreservesInt32Wrap \
@@ -181,6 +188,8 @@ if [[ -n "${SIR_Q4_JUNIT_OUT:-}" ]]; then
     printf '%s\n' '  <testcase classname="SIR.QuintQ4" name="seeded-invariant-simulation"/>'
     printf '%s\n' '  <testcase classname="SIR.QuintQ4" name="exact-runtime-correspondence"/>'
     printf '%s\n' '  <testcase classname="SIR.QuintQ4" name="sampled-runtime-correspondence"/>'
+    printf '%s\n' '  <testcase classname="SIR.QuintQ4" name="restored-exact-runtime-correspondence"/>'
+    printf '%s\n' '  <testcase classname="SIR.QuintQ4" name="restored-sampled-runtime-correspondence"/>'
     for mutation in \
       changed-armor-retention \
       removed-suppression-guard \
