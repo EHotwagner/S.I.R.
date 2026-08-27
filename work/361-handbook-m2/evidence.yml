@@ -1,0 +1,416 @@
+schemaVersion: 1
+workId: 361-handbook-m2
+stage: evidence
+status: evidenceReady
+sourceSpec: work/361-handbook-m2/spec.md
+sourceClarifications: work/361-handbook-m2/clarifications.md
+sourceChecklist: work/361-handbook-m2/checklist.md
+sourcePlan: work/361-handbook-m2/plan.md
+sourceTasks: work/361-handbook-m2/tasks.yml
+sourceAnalysis: readiness/361-handbook-m2/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/361-handbook-m2/analysis.json
+    digest: 3215e8385d2503a911a6c8e1ea8361daece4c2bf58ca2331b79cd0f3554d65de
+    schemaVersion: 1
+  - label: checklist
+    path: work/361-handbook-m2/checklist.md
+    digest: 455a461651b128524fdc548bfbaa1b0dfbd98ac91cf7392db79ad3fbab95dfb5
+    schemaVersion: 1
+  - label: clarifications
+    path: work/361-handbook-m2/clarifications.md
+    digest: 5033519f19f00ab49faa4264b2044b282ad9dabac0e8fbf8a727c9b345746f91
+    schemaVersion: 1
+  - label: plan
+    path: work/361-handbook-m2/plan.md
+    digest: a2ed6d92ba30c5b21abc7122e82c04f202c5d564ed95a4825269a44c9b7275cc
+    schemaVersion: 1
+  - label: spec
+    path: work/361-handbook-m2/spec.md
+    digest: 9c116950fb1c871bf288183e06224bf851d64f2b0632a00f646b54b2e7932c1a
+    schemaVersion: 1
+  - label: tasks
+    path: work/361-handbook-m2/tasks.yml
+    digest: 69b72af2a45aab8a4f781e09ac7d1d97e314820bbea7dec87769d5f103123125
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV001]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV002]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV003]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV004]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV005]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV006]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV007]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV011]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004, PD-006]
+    obligationRefs: [EV012]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV014]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/361-handbook-m2/docs-build.junit.xml, readiness/361-handbook-m2/handbook-m2.junit.xml, readiness/361-handbook-m2/link-audit.junit.xml, readiness/361-handbook-m2/qualification.junit.xml, readiness/361-handbook-m2/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/361-handbook-m2/audit-representative-attack.mjs, work/361-handbook-m2/qualify-handbook-m2.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/361-handbook-m2/qualify-handbook-m2.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/361-handbook-m2/qualification.junit.xml
+      digest: "sha256:2755092ff8309b5c7c2fe61c482b6b79cfa5d1c1a1305d6cfff4ccecd23f0388"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt is written only after dedicated strict-docs, and full Q4/runtime receipts all pass., focused observed-red/restored-green, link]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

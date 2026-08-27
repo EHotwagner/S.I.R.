@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sir-combat-quint-handbook-m2" tests="28" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.HandbookM2" name="authority-has-projection"/>
+  <testcase classname="SIR.HandbookM2" name="handbook-authority-excerpts"/>
+  <testcase classname="SIR.HandbookM2" name="excerpt-1-exact"/>
+  <testcase classname="SIR.HandbookM2" name="excerpt-2-exact"/>
+  <testcase classname="SIR.HandbookM2" name="excerpt-3-exact"/>
+  <testcase classname="SIR.HandbookM2" name="excerpt-4-exact"/>
+  <testcase classname="SIR.HandbookM2" name="excerpt-5-exact"/>
+  <testcase classname="SIR.HandbookM2" name="excerpt-6-exact"/>
+  <testcase classname="SIR.HandbookM2" name="required-text:25 × 1.0 × 0.8 = 20"/>
+  <testcase classname="SIR.HandbookM2" name="required-text:250000 × 10000 / 10000 = 250000"/>
+  <testcase classname="SIR.HandbookM2" name="required-text:250000 × 8000 / 10000 = 200000"/>
+  <testcase classname="SIR.HandbookM2" name="required-text:(200000 + 5000) / 10000 = 20"/>
+  <testcase classname="SIR.HandbookM2" name="required-text:signed int32 wrap"/>
+  <testcase classname="SIR.HandbookM2" name="required-text:predict → [run](#def-run) → observe → explain"/>
+  <testcase classname="SIR.HandbookM2" name="required-text:8000 → 7000"/>
+  <testcase classname="SIR.HandbookM2" name="required-text:actual [damage](#stat-damage) becomes `18`"/>
+  <testcase classname="SIR.HandbookM2" name="required-text:does **not** by itself establish production"/>
+  <testcase classname="SIR.HandbookM2" name="rendered-handbook-exists"/>
+  <testcase classname="SIR.HandbookM2" name="rendered-representative-spine"/>
+  <testcase classname="SIR.HandbookM2" name="pinned-quint"/>
+  <testcase classname="SIR.HandbookM2" name="authoritative-typecheck"/>
+  <testcase classname="SIR.HandbookM2" name="authority-green"/>
+  <testcase classname="SIR.HandbookM2" name="mutation-subject-unique"/>
+  <testcase classname="SIR.HandbookM2" name="observed-red"/>
+  <testcase classname="SIR.HandbookM2" name="observed-red-named-witness"/>
+  <testcase classname="SIR.HandbookM2" name="observed-red-is-18"/>
+  <testcase classname="SIR.HandbookM2" name="authority-has-projection"/>
+  <testcase classname="SIR.HandbookM2" name="restored-green"/>
+</testsuite>
