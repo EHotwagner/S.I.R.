@@ -1,0 +1,47 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-handbook-pages-timeout-repair.md",
+  "reportSha256": "8123b7fd93c6ea6874dd3a36a51b9394095507b09669999f8d868f8a6ddb8e2b",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#370",
+          "result": "verified"
+        },
+        {
+          "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/33097748266",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The cancelled run establishes an external-wait lower bound, not that 30 minutes is sufficient; replacement hosted PR/main/Pages proof remained pending."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:.github/workflows/pages.yml",
+          "result": "verified",
+          "sha256": "cc2cdd8c4b5790041854df26b583abf069f46e0f5df9a34477c9dad92e4f6f8e"
+        },
+        {
+          "locator": "file:scripts/test-pages-qualified-handoff.mjs",
+          "result": "verified",
+          "sha256": "a93364c4aa5bea9d689d06a2cc167b434231a81717794c7ac07c939c1192c460"
+        }
+      ],
+      "confidenceLimits": [
+        "Focused tests prove the bounded topology change and retained contracts; replacement hosted deployment proof remained pending."
+      ]
+    }
+  ]
+}
