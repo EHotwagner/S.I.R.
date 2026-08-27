@@ -19,6 +19,7 @@ const required = [
   "missing authoritative declarations",
   "rule-ID drift across model/runtime",
   "manifest/index alias drift"
+  ,"coordinated term/index cardinality"
 ];
 for (const text of required) {
   if (!roadmap.includes(text)) {

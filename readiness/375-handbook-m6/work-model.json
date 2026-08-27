@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "14070714b7ce228f74a24b13828925db37a7d89e16251b5a93e7e52187d91f5c"
+        "value": "72fc29ab895ae88f1228ec0de28c8663f9c5435e978ee69f5c41305fcaa54f5b"
       }
     },
     {
@@ -1872,7 +1872,7 @@
           "path": "work/375-handbook-m6/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "14070714b7ce228f74a24b13828925db37a7d89e16251b5a93e7e52187d91f5c"
+            "value": "72fc29ab895ae88f1228ec0de28c8663f9c5435e978ee69f5c41305fcaa54f5b"
           },
           "schemaVersion": 1
         },
@@ -1903,7 +1903,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "2d37895095f33d4edb7708ceb49a18e56fe9905bb8bef480cdece85aca3789fe"
+        "value": "5f0fefb37c27f2f7eeef2d71d337ca6155686fe8dbd3281ea7e5cd980f05d050"
       },
       "currency": "current"
     }

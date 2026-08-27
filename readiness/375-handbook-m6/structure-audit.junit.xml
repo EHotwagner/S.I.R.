@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="sir-handbook-m6-structure" tests="12" failures="0" errors="0" skipped="0">
+<testsuite name="sir-handbook-m6-structure" tests="13" failures="0" errors="0" skipped="0">
   <testcase classname="SIR.HandbookM6" name="complete-index-alias-declaration-rule-chapter-reconciliation"/>
   <testcase classname="SIR.HandbookM6" name="missing-fragment-observed-red-restored-green"/>
   <testcase classname="SIR.HandbookM6" name="duplicate-anchor-observed-red-restored-green"/>
@@ -12,4 +12,5 @@
   <testcase classname="SIR.HandbookM6" name="authoritative-declaration-removal-observed-red-restored-green"/>
   <testcase classname="SIR.HandbookM6" name="authoritative-rule-id-drift-observed-red-restored-green"/>
   <testcase classname="SIR.HandbookM6" name="manifest-alias-removal-observed-red-restored-green"/>
+  <testcase classname="SIR.HandbookM6" name="coordinated-term-index-removal-observed-red-restored-green"/>
 </testsuite>

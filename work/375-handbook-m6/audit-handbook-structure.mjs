@@ -111,6 +111,7 @@ export function audit(markdown, modelMarkdown = authoritativeModel, inventory = 
   const errors = [];
   const add = (code, detail) => errors.push({ code, detail });
   if (inventory.schemaVersion !== 2) add("manifest-schema", `expected schemaVersion 2, got ${inventory.schemaVersion}`);
+  if ((inventory.terms ?? []).length !== 188) add("term-inventory-cardinality", `${(inventory.terms ?? []).length} terms, expected 188`);
   if (inventory.anchorContract !== "semantic-explicit-v2") add("manifest-anchor-contract", "semantic-explicit-v2 is required");
   if (inventory.embeddedLinkLabelPolicy !== "destination-disambiguates-one-controlled-component-v1") add("manifest-embedded-link-policy", "explicit embedded-label ambiguity policy is required");
   if (inventory.inventoryContract !== "literate-declarations-rules-chapters-index-v1") add("manifest-inventory-contract", "inventory contract is absent");
@@ -264,6 +265,8 @@ if (positive.length) {
 }
 
 const first = manifest.terms[0];
+const removableTerm = manifest.terms.find(entry => entry.term === "HP");
+const handbookWithoutRemovableTerm = handbook.replace(new RegExp(`<a id="${removableTerm.anchor}"></a>\\n\\*\\*${removableTerm.term}\\*\\*[^\\n]*\\n`), "");
 const mutations = [
   ["missing-fragment", "missing-fragment", handbook.replace("#reading-paths", "#missing-reading-path")],
   ["duplicate-anchor", "duplicate-anchor", `${handbook}\n<a id="handbook-top"></a>\n`],
@@ -276,6 +279,7 @@ const mutations = [
   ["authoritative-declaration-removed", "declaration-inventory-cardinality", handbook, authoritativeModel.replace(/^  run damageRoundingPreservesInt32Wrap.*\n/m, "")],
   ["authoritative-rule-id-drift", "authoritative-rule-inventory-mismatch", handbook, authoritativeModel.replace("CONTENT-WEAPON-RIFLE-001", "CONTENT-WEAPON-RIFLE-DRIFT")],
   ["manifest-alias-removed", "alias-inventory-cardinality", handbook, authoritativeModel, { ...manifest, aliases: manifest.aliases.slice(1) }]
+  ,["coordinated-term-and-index-removal", "term-inventory-cardinality", handbookWithoutRemovableTerm, authoritativeModel, { ...manifest, terms: manifest.terms.filter(entry => entry.term !== removableTerm.term) }]
 ];
 for (const [control, detector, mutated, model = authoritativeModel, inventory = manifest] of mutations) {
   const observed = audit(mutated, model, inventory);
