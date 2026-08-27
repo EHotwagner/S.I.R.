@@ -1,0 +1,578 @@
+schemaVersion: 1
+workId: 365-handbook-m4
+stage: evidence
+status: evidenceReady
+sourceSpec: work/365-handbook-m4/spec.md
+sourceClarifications: work/365-handbook-m4/clarifications.md
+sourceChecklist: work/365-handbook-m4/checklist.md
+sourcePlan: work/365-handbook-m4/plan.md
+sourceTasks: work/365-handbook-m4/tasks.yml
+sourceAnalysis: readiness/365-handbook-m4/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/365-handbook-m4/analysis.json
+    digest: 9268dfec4867a7ccdb284e9493882a6deadf4487c149d997370f4f6cda437a91
+    schemaVersion: 1
+  - label: checklist
+    path: work/365-handbook-m4/checklist.md
+    digest: 10f69c1cdbd69b6afbc6428d1d0c482d39d67896495c836dcc732f5e8ac10a9c
+    schemaVersion: 1
+  - label: clarifications
+    path: work/365-handbook-m4/clarifications.md
+    digest: 65838aa7aae9af2982692444f60a82b1238ed892d355517ca2002bdf90662097
+    schemaVersion: 1
+  - label: plan
+    path: work/365-handbook-m4/plan.md
+    digest: 745c22929272e9ddae7a673cd8d575819dd3256865eae368a0a92d83cffcec36
+    schemaVersion: 1
+  - label: spec
+    path: work/365-handbook-m4/spec.md
+    digest: f5799562481b52433e1f3d399a40a88fa9a522cff2d456908673ef324eb39ef0
+    schemaVersion: 1
+  - label: tasks
+    path: work/365-handbook-m4/tasks.yml
+    digest: f94d299a6eee60fd07ef5e331c0ca32a31d9765cf7a3f53addf3d2066254c7eb
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV003]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV007]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV008]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV012]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV013]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV014]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV015]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV016]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-004, PD-007]
+    obligationRefs: [EV017]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003, PD-004, PD-005, PD-006, PD-007, PD-008]
+    obligationRefs: [EV018]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV019]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007, PD-008]
+    obligationRefs: [EV020]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/365-handbook-m4/analysis-preflight.junit.xml, readiness/365-handbook-m4/docs-build.junit.xml, readiness/365-handbook-m4/formal-reasoning.junit.xml, readiness/365-handbook-m4/link-audit.junit.xml, readiness/365-handbook-m4/qualification.junit.xml, readiness/365-handbook-m4/roadmap-ledger.junit.xml, readiness/365-handbook-m4/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/365-handbook-m4/audit-formal-reasoning.mjs, work/365-handbook-m4/audit-roadmap-ledger.mjs, work/365-handbook-m4/qualify-handbook-m4.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/365-handbook-m4/qualify-handbook-m4.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/365-handbook-m4/qualification.junit.xml
+      digest: "sha256:b4fbb875f07dae6e72a7a9ffcd3b16d2fa7c2c5d4fa03b987c216cbc220fb8db"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [The aggregate receipt is emitted only after dedicated docs, and SDD-analysis receipts pass., focused formal-reasoning, full Q4-runtime, links, roadmap-ledger]
+lifecycleNotes:
+  - "Next lifecycle action: verify."
