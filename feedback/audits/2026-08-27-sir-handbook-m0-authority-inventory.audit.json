@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-27-sir-handbook-m0-authority-inventory.md",
-  "reportSha256": "9f92ae3b6805a8b83348a51599e7d6c5dfdd9513c528b506617dcddc245a4480",
+  "reportSha256": "68e2f608b5cc668c2c604f794102e7039596885c05e798cf024c70000faab6e7",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [

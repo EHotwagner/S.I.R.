@@ -12,6 +12,11 @@ commit: 013ce813436479f08a1926281abf756238c5700e
 
 ## §1 Provenance and confidence
 
+- **activation:** active
+- **phases:** onboarding-first-build, lifecycle-authoring, implementation-test-evidence, verify-ship-pr
+- **material events:** 4
+- **zero-event reason:** n/a
+
 This cycle ran in the existing S.I.R. scaffold on issue #356 and branch `item/356-handbook-m0`, from
 base `77e56d11867a5e2e7ad99f4d61b0f0c9fff61a5f` through reviewed cycle commit
 `013ce813436479f08a1926281abf756238c5700e`. The lifecycle tool reported version 1.4.0. The cycle's
