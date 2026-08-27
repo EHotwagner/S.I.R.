@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sir-handbook-m6-docs" tests="1" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.HandbookM6" name="locked-release-strict-docs-build-with-ast-gate"/>
+</testsuite>

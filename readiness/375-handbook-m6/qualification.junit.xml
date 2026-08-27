@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sir-handbook-m6-qualification" tests="6" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.HandbookM6" name="locked-release-strict-docs-build-with-ast-gate"/>
+  <testcase classname="SIR.HandbookM6" name="complete-definition-index"/>
+  <testcase classname="SIR.HandbookM6" name="thirteen-structural-mutations-restored-green"/>
+  <testcase classname="SIR.HandbookM6" name="full-q4-runtime-regression"/>
+  <testcase classname="SIR.HandbookM6" name="roadmap-ledger-only-m6-checked"/>
+  <testcase classname="SIR.HandbookM6" name="sdd-analysis-current-and-implementation-ready"/>
+</testsuite>

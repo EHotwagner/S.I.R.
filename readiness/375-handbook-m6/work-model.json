@@ -1,0 +1,1913 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "375-handbook-m6",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/375-handbook-m6/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "7feaa7d08686dffb7a4bfafcb445c7009046bd35fd32266b7e5865c438d232fd"
+      }
+    },
+    {
+      "path": "work/375-handbook-m6/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "afb0ebe6ba83cc3e26ccfeb279761ab6be620eb0fa63035e9d84f4c30c28cd2a"
+      }
+    },
+    {
+      "path": "work/375-handbook-m6/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "5891c69e6991738d7e4d857936e6d11e3cd2290a56555cb5ee9816d2048adae4"
+      }
+    },
+    {
+      "path": "work/375-handbook-m6/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "197f7df17da2b3cf3104edb5db71001b9c06ee0bbc1c5c52e9be8e12333b8723"
+      }
+    },
+    {
+      "path": "work/375-handbook-m6/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "897f09910e0b30ead33a3379da7555c681c8198dfb236b8d3d82ba3511ef7017"
+      }
+    },
+    {
+      "path": "work/375-handbook-m6/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "befa540bb01c16abe389457ec2e36b09af06d2d8bc4c9caeedd8259f5524f4cf"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "375-handbook-m6",
+    "title": "Handbook M6",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "Every manifest term MUST have one substantive canonical index entry containing definition, declaration locus, related canonical link, and scoped runtime correspondence; placeholder/Pending text MUST be absent. (covers AC-001)",
+      "text": "Every manifest term MUST have one substantive canonical index entry containing definition, declaration locus, related canonical link, and scoped runtime correspondence; placeholder/Pending text MUST be absent. (covers AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/375-handbook-m6/spec.md",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001",
+        "EV011"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "The manifest and handbook MUST declare aliases explicitly, bind each alias to exactly one canonical term/anchor, and surface alias relationships at the canonical index entry. (covers AC-002)",
+      "text": "The manifest and handbook MUST declare aliases explicitly, bind each alias to exactly one canonical term/anchor, and surface alias relationships at the canonical index entry. (covers AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/375-handbook-m6/spec.md",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "A mechanical reconciliation MUST derive top-level declarations from \u0060docs/rules/sir-combat.md\u0060 and stable rule IDs from the registry/roadmap inventory, then prove exact manifest/index coverage without missing, extra, duplicate, or kind-mismatched entries. (covers AC-003)",
+      "text": "A mechanical reconciliation MUST derive top-level declarations from \u0060docs/rules/sir-combat.md\u0060 and stable rule IDs from the registry/roadmap inventory, then prove exact manifest/index coverage without missing, extra, duplicate, or kind-mismatched entries. (covers AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/375-handbook-m6/spec.md",
+      "sourceLocation": {
+        "line": 43,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "Structural auditing MUST prove exactly one target for every internal fragment plus complete coverage of fifty chapters, three reading paths, all manifest anchors, and all mandatory traceability subjects. (covers AC-004)",
+      "text": "Structural auditing MUST prove exactly one target for every internal fragment plus complete coverage of fifty chapters, three reading paths, all manifest anchors, and all mandatory traceability subjects. (covers AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/375-handbook-m6/spec.md",
+      "sourceLocation": {
+        "line": 44,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004"
+      ],
+      "linkedEvidenceIds": [
+        "EV004"
+      ]
+    },
+    {
+      "id": "FR-005",
+      "title": "Controlled-occurrence enforcement MUST operate over a parsed Markdown block/inline structure, exclude only manifest-declared structural regions, and fail on unlinked occurrences outside those exemptions. (covers AC-005)",
+      "text": "Controlled-occurrence enforcement MUST operate over a parsed Markdown block/inline structure, exclude only manifest-declared structural regions, and fail on unlinked occurrences outside those exemptions. (covers AC-005)",
+      "acceptanceCriteria": [
+        "AC-005"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/375-handbook-m6/spec.md",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T005"
+      ],
+      "linkedEvidenceIds": [
+        "EV005",
+        "EV012"
+      ]
+    },
+    {
+      "id": "FR-006",
+      "title": "Qualification MUST run isolated missing-fragment, duplicate-anchor, absent-index-entry, and unlinked-occurrence mutations, require the named detector for each observed red, then rerun untouched inputs green. (covers AC-006)",
+      "text": "Qualification MUST run isolated missing-fragment, duplicate-anchor, absent-index-entry, and unlinked-occurrence mutations, require the named detector for each observed red, then rerun untouched inputs green. (covers AC-006)",
+      "acceptanceCriteria": [
+        "AC-006"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/375-handbook-m6/spec.md",
+      "sourceLocation": {
+        "line": 46,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T006"
+      ],
+      "linkedEvidenceIds": [
+        "EV006"
+      ]
+    },
+    {
+      "id": "FR-007",
+      "title": "Qualification MUST own separate strict-docs, structural/reconciliation, negative-control/restoration, roadmap, and lifecycle receipts; the ledger MUST mark only M6 at merge-candidate scope and preserve M6V/M7. (covers AC-007)",
+      "text": "Qualification MUST own separate strict-docs, structural/reconciliation, negative-control/restoration, roadmap, and lifecycle receipts; the ledger MUST mark only M6 at merge-candidate scope and preserve M6V/M7. (covers AC-007)",
+      "acceptanceCriteria": [
+        "AC-007"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/375-handbook-m6/spec.md",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T007"
+      ],
+      "linkedEvidenceIds": [
+        "EV007"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Parse Markdown into deterministic block and inline nodes in a committed dependency-free audit, rather than adding a package or using line suppression.",
+      "decision": "Parse Markdown into deterministic block and inline nodes in a committed dependency-free audit, rather than adding a package or using line suppression.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/375-handbook-m6/clarifications.md",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T008"
+      ]
+    },
+    {
+      "id": "DEC-002",
+      "title": "Exempt front matter, fenced code, headings, raw anchor nodes, canonical index, and explicit manifest exemption regions; links and code spans retain typed node identity.",
+      "decision": "Exempt front matter, fenced code, headings, raw anchor nodes, canonical index, and explicit manifest exemption regions; links and code spans retain typed node identity.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/375-handbook-m6/clarifications.md",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T009"
+      ]
+    },
+    {
+      "id": "DEC-003",
+      "title": "Definitions explain and link to named authoritative declarations/rules/runtime subjects; they do not copy executable semantics.",
+      "decision": "Definitions explain and link to named authoritative declarations/rules/runtime subjects; they do not copy executable semantics.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/375-handbook-m6/clarifications.md",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T010"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Implement requirement FR-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-002"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-002",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Implement requirement FR-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-003"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-003",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Implement requirement FR-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "FR-004",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Implement requirement FR-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-005"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "FR-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "T006",
+      "title": "Implement requirement FR-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-006"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-006",
+        "FR-006",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV006"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "T007",
+      "title": "Implement requirement FR-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-007"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "FR-007",
+        "PD-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV007"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "T008",
+      "title": "Implement clarification decision DEC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-001"
+      ],
+      "sourceIds": [
+        "DEC-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV008"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "T009",
+      "title": "Implement clarification decision DEC-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-002"
+      ],
+      "sourceIds": [
+        "DEC-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV009"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "T010",
+      "title": "Implement clarification decision DEC-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-003"
+      ],
+      "sourceIds": [
+        "DEC-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV010"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "T011",
+      "title": "Implement plan decision PD-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "DEC-003",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV011"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "T012",
+      "title": "Implement plan decision PD-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "DEC-001",
+        "DEC-002",
+        "FR-005",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV012"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "T013",
+      "title": "Update contract surface PC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-002",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV013"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "T014",
+      "title": "Update contract surface PC-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-004",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV014"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "T015",
+      "title": "Update contract surface PC-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PD-007"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV015"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "T016",
+      "title": "Record verification evidence VO-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "PD-002",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV016"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "T017",
+      "title": "Record verification evidence VO-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-003",
+        "VO-002"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV017"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "T018",
+      "title": "Record verification evidence VO-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-004",
+        "PD-005",
+        "VO-003"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV018"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "T019",
+      "title": "Record verification evidence VO-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-006",
+        "VO-004"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV019"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "T020",
+      "title": "Record verification evidence VO-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PD-007",
+        "VO-005"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV020"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "id": "T021",
+      "title": "Handle migration posture PM-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV021"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "id": "T022",
+      "title": "Refresh generated view impact GV-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-001",
+        "PD-007"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV022"
+      ],
+      "source": "work/375-handbook-m6/tasks.yml",
+      "sourceLocation": {
+        "line": 22,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV006",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T006",
+      "taskRefs": [
+        "T006"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV007",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T007",
+      "taskRefs": [
+        "T007"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV008",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T008",
+      "taskRefs": [
+        "T008"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV009",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T009",
+      "taskRefs": [
+        "T009"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV010",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T010",
+      "taskRefs": [
+        "T010"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV011",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T011",
+      "taskRefs": [
+        "T011"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV012",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T012",
+      "taskRefs": [
+        "T012"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV013",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T013",
+      "taskRefs": [
+        "T013"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV014",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T014",
+      "taskRefs": [
+        "T014"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV015",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T015",
+      "taskRefs": [
+        "T015"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV016",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T016",
+      "taskRefs": [
+        "T016"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV017",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T017",
+      "taskRefs": [
+        "T017"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV018",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T018",
+      "taskRefs": [
+        "T018"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV019",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T019",
+      "taskRefs": [
+        "T019"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV020",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T020",
+      "taskRefs": [
+        "T020"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV021",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T021",
+      "taskRefs": [
+        "T021"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV022",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T022",
+      "taskRefs": [
+        "T022"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/rules/sir-combat.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "docs/sir-combat-quint-vocabulary.json",
+        "readiness/375-handbook-m6/analysis-preflight.junit.xml",
+        "readiness/375-handbook-m6/docs-build.junit.xml",
+        "readiness/375-handbook-m6/qualification.junit.xml",
+        "readiness/375-handbook-m6/roadmap-ledger.junit.xml",
+        "readiness/375-handbook-m6/sir-combat-q4.junit.xml",
+        "readiness/375-handbook-m6/structure-audit.junit.xml",
+        "scripts/build-docs.sh",
+        "work/359-handbook-m1/audit-handbook-links.mjs",
+        "work/375-handbook-m6/audit-handbook-structure.mjs",
+        "work/375-handbook-m6/audit-roadmap-ledger.mjs",
+        "work/375-handbook-m6/complete-definition-index.mjs",
+        "work/375-handbook-m6/qualify-handbook-m6.sh"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/375-handbook-m6/evidence.yml",
+      "sourceLocation": {
+        "line": 22,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/375-handbook-m6/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.0.1"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/375-handbook-m6/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7feaa7d08686dffb7a4bfafcb445c7009046bd35fd32266b7e5865c438d232fd"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/375-handbook-m6/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "afb0ebe6ba83cc3e26ccfeb279761ab6be620eb0fa63035e9d84f4c30c28cd2a"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/375-handbook-m6/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5891c69e6991738d7e4d857936e6d11e3cd2290a56555cb5ee9816d2048adae4"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/375-handbook-m6/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "197f7df17da2b3cf3104edb5db71001b9c06ee0bbc1c5c52e9be8e12333b8723"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/375-handbook-m6/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "897f09910e0b30ead33a3379da7555c681c8198dfb236b8d3d82ba3511ef7017"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/375-handbook-m6/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "befa540bb01c16abe389457ec2e36b09af06d2d8bc4c9caeedd8259f5524f4cf"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "4447c1c15704da417f97692fe56bc73d954ac6b7aaa84a1ade7fb31b9faae919"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}

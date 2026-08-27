@@ -1,11 +1,14 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "handbook": "docs/sir-combat-quint-handbook.md",
-  "anchorContract": "semantic-explicit-v1",
+  "anchorContract": "semantic-explicit-v2",
+  "embeddedLinkLabelPolicy": "destination-disambiguates-one-controlled-component-v1",
+  "inventoryContract": "literate-declarations-rules-chapters-index-v1",
   "exemptRegions": [
     "front-matter",
     "fenced-code",
     "headings",
+    "inline-code",
     "canonical-index"
   ],
   "terms": [
@@ -97,7 +100,8 @@
     {
       "term": "combat",
       "kind": "variable",
-      "anchor": "qnt-combat"
+      "anchor": "qnt-combat",
+      "occurrencePolicy": "canonical-index-only"
     },
     {
       "term": "COMBAT-ARMOR-004",
@@ -253,6 +257,11 @@
       "term": "damageForAttack",
       "kind": "function",
       "anchor": "qnt-damage-for-attack"
+    },
+    {
+      "term": "damageRoundingPreservesInt32Wrap",
+      "kind": "run",
+      "anchor": "run-damage-rounding-preserves-int32-wrap"
     },
     {
       "term": "destroyed cover",
@@ -447,7 +456,8 @@
     {
       "term": "last",
       "kind": "variable",
-      "anchor": "qnt-last"
+      "anchor": "qnt-last",
+      "occurrencePolicy": "canonical-index-only"
     },
     {
       "term": "list",
@@ -782,7 +792,8 @@
     {
       "term": "step",
       "kind": "action",
-      "anchor": "qnt-step"
+      "anchor": "qnt-step",
+      "occurrencePolicy": "canonical-index-only"
     },
     {
       "term": "stuttering",
@@ -870,6 +881,11 @@
       "anchor": "def-type"
     },
     {
+      "term": "UINT32_RANGE",
+      "kind": "constant",
+      "anchor": "qnt-uint32-range"
+    },
+    {
       "term": "validAttack",
       "kind": "function",
       "anchor": "qnt-valid-attack"
@@ -898,6 +914,11 @@
       "term": "visible samples",
       "kind": "stat",
       "anchor": "stat-visible-samples"
+    },
+    {
+      "term": "wrapInt32",
+      "kind": "function",
+      "anchor": "qnt-wrap-int32"
     },
     {
       "term": "witness",
@@ -933,6 +954,38 @@
       "term": "zeroHealthMeansIncapacitated",
       "kind": "run",
       "anchor": "run-zero-health-means-incapacitated"
+    }
+  ],
+  "aliases": [
+    {
+      "alias": "cover HP",
+      "canonicalTerm": "cover integrity",
+      "anchor": "stat-cover-integrity",
+      "occurrencePolicy": "canonical-index-only"
+    },
+    {
+      "alias": "friendly fire",
+      "canonicalTerm": "faction-neutral consequence",
+      "anchor": "concept-faction-neutral-consequence",
+      "occurrencePolicy": "canonical-index-only"
+    },
+    {
+      "alias": "line of sight",
+      "canonicalTerm": "registered line-of-sight implementation",
+      "anchor": "concept-registered-line-of-sight-implementation",
+      "occurrencePolicy": "canonical-index-only"
+    },
+    {
+      "alias": "LoS",
+      "canonicalTerm": "registered line-of-sight implementation",
+      "anchor": "concept-registered-line-of-sight-implementation",
+      "occurrencePolicy": "canonical-index-only"
+    },
+    {
+      "alias": "Q4",
+      "canonicalTerm": "Q4 raw integer",
+      "anchor": "unit-q4-raw-integer",
+      "occurrencePolicy": "canonical-index-only"
     }
   ],
   "mandatoryTraceability": {
@@ -985,4 +1038,3 @@
     ]
   }
 }
-
