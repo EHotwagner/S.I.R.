@@ -1,0 +1,58 @@
+{
+  "schema": "sir.quint-standalone-evidence/v1",
+  "authority": {
+    "path": "docs/rules/sir-combat.md",
+    "sha256": "6d96beaeb055ecacd7d0a8ec821fbfd390cb1e642101594e7922014a1dce15b2"
+  },
+  "generatedModule": {
+    "target": "sir-combat.qnt",
+    "sha256": "f779c3c0ac821883b062d9ab65fadb2ab5916e30ce5253e2d9eb71d0ddc48df8",
+    "committed": false
+  },
+  "typedEffectSha256": "75803cb38acad5a2414ff2633b0fde1daeda3cea3cb0223fa1b1b4743dc44a2a",
+  "tool": {
+    "name": "quint",
+    "version": "0.32.0",
+    "localCliSha256": "ac12595b1cb7253feec93c79417615c6eb20fc3b6a3df35c5e3530b24e90a501"
+  },
+  "witnesses": {
+    "passed": 6,
+    "failed": 0
+  },
+  "simulation": {
+    "seed": 352,
+    "samples": 64,
+    "steps": 8,
+    "invariantViolation": false
+  },
+  "runtimeCorrespondence": {
+    "adapter": "tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs",
+    "implementation": "src/SIR.Simulation/CombatRules.fs",
+    "traces": 16,
+    "states": 144,
+    "firstDivergence": null,
+    "verdict": "accept-sampled-runtime-correspondence"
+  },
+  "compatibility": {
+    "rulesCorpus": "pass-generation-source-resolution-copied-semantics-and-mutations",
+    "nativeBuild": {
+      "warnings": 0,
+      "errors": 0
+    },
+    "crossRuntime": {
+      "dotnetFableCanonicalBytes": 105514,
+      "verdict": "pass"
+    }
+  },
+  "mutationControls": [
+    "changed-armor-retention",
+    "removed-suppression-guard",
+    "stale-generated-module",
+    "wrong-runtime-action-mapping",
+    "wrong-runtime-observable-field",
+    "corrupted-interpreter-boundary-result"
+  ],
+  "authorityStatus": "standalone-noncanonical",
+  "canonicalBackendDependency": "FS-GG/FS.GG.SDD#932",
+  "disclosure": "This proves the approved S.I.R. model under a local Quint 0.32.0 installation. It is not the hermetic manifest-v2 Typed SDD receipt and does not satisfy final canonical migration or package-only acceptance."
+}

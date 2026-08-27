@@ -1,0 +1,158 @@
+schemaVersion: 1
+work:
+  id: 352-quint-q4-sir-adoption
+  title: "Quint Q4 complete SIR combat adoption"
+  stage: tasks
+  status: tasksReady
+  sourceSpec: work/352-quint-q4-sir-adoption/spec.md
+  sourceClarifications: work/352-quint-q4-sir-adoption/clarifications.md
+  sourceChecklist: work/352-quint-q4-sir-adoption/checklist.md
+  sourcePlan: work/352-quint-q4-sir-adoption/plan.md
+  publicOrToolFacingImpact: true
+
+sources:
+  - label: spec
+    path: work/352-quint-q4-sir-adoption/spec.md
+    digest: 323c1a23fb6655c3efc53af84ca3b4a632633d92321992216ea995ef713966ad
+    schemaVersion: 1
+  - label: clarifications
+    path: work/352-quint-q4-sir-adoption/clarifications.md
+    digest: 82d64422132539f2e703419ac0a1aa362ba2ffe7ce85c61d0d3f9ad564a74b23
+    schemaVersion: 1
+  - label: checklist
+    path: work/352-quint-q4-sir-adoption/checklist.md
+    digest: dd25291d8ad2a2a0eb36eeee73b9969b6ab6132fff5290d57dbfe8c009488911
+    schemaVersion: 1
+  - label: plan
+    path: work/352-quint-q4-sir-adoption/plan.md
+    digest: 30956b2fb4ed472ef75414114f61caae0b072c9a6af52a9a7baf658fd8e157a9
+    schemaVersion: 1
+
+tasks:
+  - id: T001
+    title: Author the literate sixteen-rule catalogue and approved Quint types
+    status: done
+    owner: sdd
+    dependencies: []
+    requirements: [FR-001, FR-002]
+    decisions: [DEC-001, DEC-002, DEC-003, DEC-006]
+    sourceIds: [AC-001, AC-004, FR-001, FR-002, PD-001, PD-002, PC-001]
+    requiredSkills: [quint-modeling, quint-lang]
+    requiredEvidence: [EV001]
+  - id: T002
+    title: Implement exact Q4 fixed-point functions and registered trace contract
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: [FR-003, FR-004]
+    decisions: [DEC-004]
+    sourceIds: [AC-002, AC-004, FR-003, FR-004, PD-003, PD-004, PC-002]
+    requiredSkills: [quint-modeling, quint-lang]
+    requiredEvidence: [EV002]
+  - id: T003
+    title: Implement consequence, cover-impact, and recovery state semantics
+    status: done
+    owner: sdd
+    dependencies: [T002]
+    requirements: [FR-005, FR-006]
+    decisions: [DEC-005, DEC-006]
+    sourceIds: [AC-002, AC-004, FR-005, FR-006, PD-005, PD-006]
+    requiredSkills: [quint-modeling, quint-lang]
+    requiredEvidence: [EV003]
+  - id: T004
+    title: Add named Quint witnesses and property catalogue
+    status: done
+    owner: sdd
+    dependencies: [T003]
+    requirements: [FR-007]
+    decisions: []
+    sourceIds: [AC-002, FR-007, PD-007, VO-001]
+    requiredSkills: [quint-lang, automated-tests]
+    requiredEvidence: [EV004]
+  - id: T005
+    title: Typecheck, test, and seeded-run the standalone model
+    status: done
+    owner: sdd
+    dependencies: [T004]
+    requirements: [FR-007]
+    decisions: []
+    sourceIds: [AC-002, FR-007, PD-007, VO-001]
+    requiredSkills: [quint-lang, readiness-evidence]
+    requiredEvidence: [EV005]
+  - id: T006
+    title: Expand the real-interpreter correspondence adapter and ITF replay
+    status: done
+    owner: sdd
+    dependencies: [T005]
+    requirements: [FR-010]
+    decisions: []
+    sourceIds: [AC-005, FR-010, PD-010, PC-004, VO-003]
+    requiredSkills: [fsharp, automated-tests]
+    requiredEvidence: [EV006]
+  - id: T007
+    title: Prove frozen corpus, explanation, native, and Fable compatibility
+    status: done
+    owner: sdd
+    dependencies: [T006]
+    requirements: [FR-002, FR-008]
+    decisions: [DEC-003]
+    sourceIds: [AC-001, AC-004, FR-002, FR-008, PD-008, PC-001, VO-002]
+    requiredSkills: [fsharp, automated-tests]
+    requiredEvidence: [EV007]
+  - id: T008
+    title: Add semantic, freshness, identity, mapping, and interpreter mutation controls
+    status: done
+    owner: sdd
+    dependencies: [T005, T006]
+    requirements: [FR-012]
+    decisions: []
+    sourceIds: [AC-007, FR-012, PD-012, VO-006]
+    requiredSkills: [automated-tests, readiness-evidence]
+    requiredEvidence: [EV008]
+  - id: T009
+    title: Adopt the published FS.GG.SDD#932 coherent package set
+    status: pending
+    owner: sdd
+    dependencies: [T005]
+    requirements: [FR-009]
+    decisions: [DEC-007]
+    sourceIds: [AC-003, FR-009, PD-009, PC-003, PM-002, VO-004]
+    requiredSkills: [schema-versioning, automated-tests]
+    requiredEvidence: [EV009]
+  - id: T010
+    title: Migrate canonical authority and consume generated F#/Fable bindings
+    status: pending
+    owner: sdd
+    dependencies: [T007, T009]
+    requirements: [FR-001, FR-008]
+    decisions: [DEC-007]
+    sourceIds: [AC-001, AC-004, FR-001, FR-008, PD-001, PD-008, PC-001, PM-001, GV-002]
+    requiredSkills: [fsharp, schema-versioning, deterministic-json]
+    requiredEvidence: [EV010]
+  - id: T011
+    title: Qualify authenticated rollback and transaction recovery
+    status: pending
+    owner: sdd
+    dependencies: [T010]
+    requirements: [FR-011]
+    decisions: [DEC-003]
+    sourceIds: [AC-006, FR-011, PD-011, PC-001, PM-001, VO-005]
+    requiredSkills: [schema-versioning, automated-tests]
+    requiredEvidence: [EV011]
+  - id: T012
+    title: Run the complete package-only Q4 gate and publish readiness evidence
+    status: pending
+    owner: sdd
+    dependencies: [T008, T010, T011]
+    requirements: [FR-009, FR-010, FR-011, FR-012]
+    decisions: []
+    sourceIds: [AC-003, AC-005, AC-006, AC-007, VO-001, VO-002, VO-003, VO-004, VO-005, VO-006, GV-001, GV-002]
+    requiredSkills: [automated-tests, readiness-evidence, deterministic-json]
+    requiredEvidence: [EV012]
+
+acceptedDeferrals: []
+findings: []
+advisoryNotes:
+  - "T001-T008 are independently executable in S.I.R.; T009-T012 wait for the published FS.GG.SDD#932 coherent set."
+lifecycleNotes:
+  - "Next lifecycle action: fsgg-sdd analyze --work 352-quint-q4-sir-adoption."
