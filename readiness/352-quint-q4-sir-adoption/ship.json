@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 1,
+  "viewVersion": "1.0",
+  "workId": "352-quint-q4-sir-adoption",
+  "stage": "ship",
+  "status": "shipReady",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "readiness/352-quint-q4-sir-adoption/analysis.json",
+      "kind": "analysis",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "3913d4faf5b0f1e3c496e8e7b5067d0f93300f571e9d6354cb53faad875da4dc"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "readiness/352-quint-q4-sir-adoption/verify.json",
+      "kind": "source",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "8457bb2c71ed2d686f502cdb5cac41332f184d83900a5c6ab08c55ee218caf52"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "readiness/352-quint-q4-sir-adoption/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "55fd2d5c79325990f167a4ab121b2b35a922005cca4629dfe96a7bbc2087ae08"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/352-quint-q4-sir-adoption/checklist.md",
+      "kind": "checklist",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "dd25291d8ad2a2a0eb36eeee73b9969b6ab6132fff5290d57dbfe8c009488911"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/352-quint-q4-sir-adoption/clarifications.md",
+      "kind": "clarification",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "82d64422132539f2e703419ac0a1aa362ba2ffe7ce85c61d0d3f9ad564a74b23"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/352-quint-q4-sir-adoption/evidence.yml",
+      "kind": "evidence",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "79ec82b8af189ce46c9f8ab7465372ad48ff125a890109f2283cbcaa1dc7066d"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/352-quint-q4-sir-adoption/plan.md",
+      "kind": "plan",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "30956b2fb4ed472ef75414114f61caae0b072c9a6af52a9a7baf658fd8e157a9"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/352-quint-q4-sir-adoption/spec.md",
+      "kind": "specification",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "323c1a23fb6655c3efc53af84ca3b4a632633d92321992216ea995ef713966ad"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/352-quint-q4-sir-adoption/tasks.yml",
+      "kind": "tasks",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "7f28a212886071df48c93e7e3c045674605bd43fc5b97005bf43f06c2fd13001"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    }
+  ],
+  "lifecycleReadiness": {
+    "status": "shipReady",
+    "stages": [
+      {
+        "stage": "analyze",
+        "status": "ready"
+      },
+      {
+        "stage": "checklist",
+        "status": "ready"
+      },
+      {
+        "stage": "clarify",
+        "status": "ready"
+      },
+      {
+        "stage": "evidence",
+        "status": "ready"
+      },
+      {
+        "stage": "plan",
+        "status": "ready"
+      },
+      {
+        "stage": "specify",
+        "status": "ready"
+      },
+      {
+        "stage": "tasks",
+        "status": "ready"
+      },
+      {
+        "stage": "verify",
+        "status": "ready"
+      }
+    ]
+  },
+  "verificationReadiness": {
+    "status": "verificationReady",
+    "blockingFindingIds": [],
+    "evidenceSupportedCount": 7,
+    "evidenceSelfAttestedCount": 0,
+    "evidenceObservedCount": 7,
+    "evidenceDeferredCount": 5,
+    "evidenceMissingCount": 0,
+    "evidenceStaleCount": 0,
+    "evidenceSyntheticCount": 0,
+    "evidenceInvalidCount": 0
+  },
+  "evidenceDispositions": [
+    {
+      "id": "ED-EV001",
+      "obligationId": "EV001",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV002",
+      "obligationId": "EV002",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV003",
+      "obligationId": "EV003",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV004",
+      "obligationId": "EV004",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV005",
+      "obligationId": "EV005",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV006",
+      "obligationId": "EV006",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV007",
+      "obligationId": "EV007",
+      "state": "deferred",
+      "observed": false,
+      "severity": "advisory",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV008",
+      "obligationId": "EV008",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV009",
+      "obligationId": "EV009",
+      "state": "deferred",
+      "observed": false,
+      "severity": "advisory",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV010",
+      "obligationId": "EV010",
+      "state": "deferred",
+      "observed": false,
+      "severity": "advisory",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV011",
+      "obligationId": "EV011",
+      "state": "deferred",
+      "observed": false,
+      "severity": "advisory",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV012",
+      "obligationId": "EV012",
+      "state": "deferred",
+      "observed": false,
+      "severity": "advisory",
+      "diagnosticIds": []
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/352-quint-q4-sir-adoption/analysis.json",
+      "kind": "analysis",
+      "currency": "current",
+      "diagnosticIds": []
+    },
+    {
+      "path": "readiness/352-quint-q4-sir-adoption/verify.json",
+      "kind": "verification",
+      "currency": "current",
+      "diagnosticIds": []
+    },
+    {
+      "path": "readiness/352-quint-q4-sir-adoption/work-model.json",
+      "kind": "workModel",
+      "currency": "current",
+      "diagnosticIds": []
+    }
+  ],
+  "disposition": {
+    "state": "shipReady",
+    "blockingFindingIds": [],
+    "warningFindingIds": [],
+    "advisoryFindingIds": [],
+    "contributingStages": [],
+    "classifiedObligationsUnmetCount": 0,
+    "journeyObligationsUnmetCount": 0,
+    "correction": ""
+  },
+  "findings": [],
+  "governanceCompatibility": [
+    {
+      "path": ".fsgg/policy.yml",
+      "relationship": "optionalGovernancePolicy",
+      "requiredBySdd": false,
+      "state": "notEvaluated",
+      "diagnosticIds": []
+    },
+    {
+      "path": ".fsgg/capabilities.yml",
+      "relationship": "optionalGovernanceCapabilities",
+      "requiredBySdd": false,
+      "state": "notEvaluated",
+      "diagnosticIds": []
+    },
+    {
+      "path": ".fsgg/tooling.yml",
+      "relationship": "optionalGovernanceTooling",
+      "requiredBySdd": false,
+      "state": "notEvaluated",
+      "diagnosticIds": []
+    }
+  ],
+  "diagnostics": [],
+  "readiness": "shipReady",
+  "nextAction": {
+    "actionId": "ship.next.protectedBoundary",
+    "command": null,
+    "reason": "Ship readiness is current and ready for the protected-boundary handoff."
+  }
+}

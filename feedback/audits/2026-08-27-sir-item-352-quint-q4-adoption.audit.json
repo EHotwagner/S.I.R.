@@ -1,0 +1,68 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-27-sir-item-352-quint-q4-adoption.md",
+  "reportSha256": "98135db35a34824918a35645def23eb89106ba36f49ee5b56530b0ac8b092168",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:test \"$(git show 23e2ca00ce5cd1e3f26bff55bb6da99fbca77fb0:work/352-quint-q4-sir-adoption/tasks.yml | grep -c 'status: done')\" -eq 8 && test -z \"$(git ls-tree -r --name-only 23e2ca00ce5cd1e3f26bff55bb6da99fbca77fb0 -- work/352-quint-q4-sir-adoption/evidence.yml)\"",
+          "result": "verified"
+        },
+        {
+          "locator": "command:gh run view 33046726115 --json conclusion,jobs",
+          "result": "verified"
+        },
+        {
+          "locator": "file:work/352-quint-q4-sir-adoption/evidence.yml",
+          "result": "verified",
+          "sha256": "c1e4b038b4d3281e66e2062949ec25b1feff38576d14bb4eb7bdbe5097f87d59"
+        },
+        {
+          "locator": "file:readiness/352-quint-q4-sir-adoption/ship-verdict.json",
+          "result": "verified",
+          "sha256": "eecc2a881e61bc29d0cc2861bf4ac8204ca0997b7f8d71cd6eca38c610f6e299"
+        }
+      ],
+      "confidenceLimits": [
+        "The hosted run command verifies the failed integrity, documentation, and joined pr-verdict jobs; the old-head command proves the missing declaration independently.",
+        "The current state of issue EHotwagner/S.I.R#272 was not reverified by the critic."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/verify-docs.mjs",
+          "result": "verified",
+          "sha256": "004a6cd379fb1c3956c038f7a0b7ccafa147b3bf06702c4398bd46ee895ff0ba"
+        },
+        {
+          "locator": "file:docs/rules/sir-combat.md",
+          "result": "verified",
+          "sha256": "783821bb45837af0df3307f397fb50c4ad6ba4ed34d59f217e84b94bcd336aa2"
+        },
+        {
+          "locator": "file:scripts/qualify-quint-q4-sir-combat.sh",
+          "result": "verified",
+          "sha256": "71ddf25d54cf006bb4392e6a225bd77936455fe8ef5e39fc2ac42f9b95743e65"
+        },
+        {
+          "locator": "command:test \"$(git show 23e2ca00ce5cd1e3f26bff55bb6da99fbca77fb0:docs/rules/sir-combat.md | sed -n '1p')\" = '# S.I.R. combat rules in Quint' && ! rg -q 'verify-docs|# S[.]I[.]R[.]' scripts/qualify-quint-q4-sir-combat.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The evidence proves the original heading, current policy and repair, plus the focused gate omission.",
+        "This is recurrence evidence for the prior handbook M1 finding, not a new handoff."
+      ]
+    }
+  ]
+}

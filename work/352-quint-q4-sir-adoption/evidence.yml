@@ -1,0 +1,332 @@
+schemaVersion: 1
+workId: 352-quint-q4-sir-adoption
+stage: evidence
+status: evidenceReady
+sourceSpec: work/352-quint-q4-sir-adoption/spec.md
+sourceClarifications: work/352-quint-q4-sir-adoption/clarifications.md
+sourceChecklist: work/352-quint-q4-sir-adoption/checklist.md
+sourcePlan: work/352-quint-q4-sir-adoption/plan.md
+sourceTasks: work/352-quint-q4-sir-adoption/tasks.yml
+sourceAnalysis: readiness/352-quint-q4-sir-adoption/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/352-quint-q4-sir-adoption/analysis.json
+    digest: 3913d4faf5b0f1e3c496e8e7b5067d0f93300f571e9d6354cb53faad875da4dc
+    schemaVersion: 1
+  - label: checklist
+    path: work/352-quint-q4-sir-adoption/checklist.md
+    digest: dd25291d8ad2a2a0eb36eeee73b9969b6ab6132fff5290d57dbfe8c009488911
+    schemaVersion: 1
+  - label: clarifications
+    path: work/352-quint-q4-sir-adoption/clarifications.md
+    digest: 82d64422132539f2e703419ac0a1aa362ba2ffe7ce85c61d0d3f9ad564a74b23
+    schemaVersion: 1
+  - label: plan
+    path: work/352-quint-q4-sir-adoption/plan.md
+    digest: 30956b2fb4ed472ef75414114f61caae0b072c9a6af52a9a7baf658fd8e157a9
+    schemaVersion: 1
+  - label: spec
+    path: work/352-quint-q4-sir-adoption/spec.md
+    digest: 323c1a23fb6655c3efc53af84ca3b4a632633d92321992216ea995ef713966ad
+    schemaVersion: 1
+  - label: tasks
+    path: work/352-quint-q4-sir-adoption/tasks.yml
+    digest: 7f28a212886071df48c93e7e3c045674605bd43fc5b97005bf43f06c2fd13001
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001, FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV001]
+    artifacts: [docs/rules/sir-combat.md, scripts/qualify-quint-q4-sir-combat.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/qualify-quint-q4-sir-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 18
+      failed: 0
+      skipped: 0
+    notes: [The literate source extracts deterministically to the complete sixteen-entry typed Quint catalogue.]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-003, FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-004]
+    obligationRefs: [EV002]
+    artifacts: [docs/rules/sir-combat.md, scripts/qualify-quint-q4-sir-combat.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/qualify-quint-q4-sir-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 18
+      failed: 0
+      skipped: 0
+    notes: [Named witnesses and observed-red controls exercise fixed-point arithmetic and the registered line-of-sight boundary.]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-005, FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005, PD-006]
+    obligationRefs: [EV003]
+    artifacts: [docs/rules/sir-combat.md, scripts/qualify-quint-q4-sir-combat.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/qualify-quint-q4-sir-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 18
+      failed: 0
+      skipped: 0
+    notes: [Seeded invariant simulation exercises consequence, and recovery actions over the cohesive combat state., cover-impact]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV004]
+    artifacts: [docs/rules/sir-combat.md, scripts/qualify-quint-q4-sir-combat.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/qualify-quint-q4-sir-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 18
+      failed: 0
+      skipped: 0
+    notes: [Seven named Quint witnesses and seven named invariants pass under the pinned Quint 0.32.0 CLI.]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV005]
+    artifacts: [readiness/352-quint-q4-sir-adoption/quint-standalone.json, readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml, scripts/qualify-quint-q4-sir-combat.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/qualify-quint-q4-sir-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 18
+      failed: 0
+      skipped: 0
+    notes: [The standalone receipt records deterministic extraction, and its explicit noncanonical boundary., seeded simulation, typecheck, witnesses]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV006]
+    artifacts: [scripts/qualify-quint-q4-sir-combat.sh, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: scripts/qualify-quint-q4-sir-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 18
+      failed: 0
+      skipped: 0
+    notes: [One committed exact ITF trace with nine states and sixteen generated sampled traces with 144 states replay through the production CombatRules interpreter with first-divergence diagnostics.]
+  - id: EV007
+    kind: deferral
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-002, FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV007]
+    artifacts: [readiness/352-quint-q4-sir-adoption/quint-standalone.json]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: "The standalone focused receipt builds the native replay adapter but does not bind frozen-corpus and byte-equal Fable results into its committed observed report; generated binding replacement also remains blocked on FS-GG.SDD issue 932."
+    owner: "S.I.R. item 352 after FS-GG/FS.GG.SDD#932"
+    scope: "Frozen rules-corpus, explanation, native/Fable compatibility, and generated-binding replacement."
+    laterLifecycleVisibility: Re-open this obligation after the producer profile is published and bind the cross-runtime compatibility run into canonical evidence.
+    notes: [Hosted cross-runtime CI is an independent repository gate and is not claimed by the focused JUnit receipt.]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV008]
+    artifacts: [scripts/qualify-quint-q4-sir-combat.sh, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: scripts/qualify-quint-q4-sir-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 18
+      failed: 0
+      skipped: 0
+    notes: [Eight semantic, and interpreter-boundary mutations are observed red before restored green., contract, generation-freshness, identity, mapping, observable]
+  - id: EV009
+    kind: deferral
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV009]
+    artifacts: [readiness/352-quint-q4-sir-adoption/quint-standalone.json]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: FS-GG.SDD issue 932 has not yet published the required general consumer-defined Quint model profile.
+    owner: "FS-GG/FS.GG.SDD#932"
+    scope: Published coherent package set and package-only consumer profile adoption.
+    laterLifecycleVisibility: "Re-open this work item when FS-GG/FS.GG.SDD#932 publishes the coherent package set."
+    notes: [The standalone model does not impersonate canonical Typed SDD adoption.]
+  - id: EV010
+    kind: deferral
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-001, FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-008]
+    obligationRefs: [EV010]
+    artifacts: [readiness/352-quint-q4-sir-adoption/quint-standalone.json]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: Generated FSharp and Fable bindings depend on the unpublished general consumer-defined Quint profile.
+    owner: "FS-GG/FS.GG.SDD#932"
+    scope: Canonical manifest-v2 migration and generated binding consumption.
+    laterLifecycleVisibility: Re-open this work item after T009 is unblocked by the producer release.
+    notes: [The production CombatRules interpreter remains the correspondence target, not a second specification authority.]
+  - id: EV011
+    kind: deferral
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV011]
+    artifacts: [readiness/352-quint-q4-sir-adoption/quint-standalone.json]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: Authenticated migration rollback cannot run before a canonical migration inventory exists.
+    owner: "S.I.R. item 352 after FS-GG/FS.GG.SDD#932"
+    scope: "Canonical v2-to-v1 rollback, interruption recovery, retry, and tamper refusal."
+    laterLifecycleVisibility: Re-open this work item after T010 produces the authenticated migration inventory.
+    notes: ["Existing historical rollback evidence remains retained; no new rollback success is claimed."]
+  - id: EV012
+    kind: deferral
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: [FR-009, FR-010, FR-011, FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: [readiness/352-quint-q4-sir-adoption/quint-standalone.json]
+    sourceRefs: []
+    result: deferred
+    synthetic: false
+    rationale: "The complete package-only Q4 gate depends on the canonical package adoption, generated bindings, and rollback tasks."
+    owner: "S.I.R. item 352 after FS-GG/FS.GG.SDD#932"
+    scope: Complete package-only Q4 qualification and canonical readiness publication.
+    laterLifecycleVisibility: Re-open this work item after T009 through T011 complete.
+    notes: [The current receipt is explicitly standalone-noncanonical and cannot satisfy this obligation.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

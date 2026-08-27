@@ -16,6 +16,7 @@
     <Compile Include="../SIR.Conformance.Shared/AwarenessReactionFixtures.fs" Link="AwarenessReactionFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/CombatFixtures.fs" Link="CombatFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/QuintReplayFixtures.fs" Link="QuintReplayFixtures.fs" />
+    <Compile Include="../SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs" Link="QuintQ4ReplayFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/Program.fs" Link="Program.fs" />
   </ItemGroup>
   <ItemGroup>

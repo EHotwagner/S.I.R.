@@ -92,6 +92,27 @@ let main arguments =
         let traces, states = QuintReplayFixtures.verifySampledCorpus directory (int count)
         printfn "SIR-Q1-SAMPLED-ACCEPT: traces=%d states=%d" traces states
         0
+    | [ "--quint-q4-exact"; directory; count ] ->
+        let traces, states = QuintQ4ReplayFixtures.replayDirectory directory (int count)
+        printfn "SIR-Q4-EXACT-ACCEPT: traces=%d states=%d" traces states
+        0
+    | [ "--quint-q4-sampled"; directory; count ] ->
+        let traces, states = QuintQ4ReplayFixtures.replayDirectory directory (int count)
+        printfn "SIR-Q4-SAMPLED-ACCEPT: traces=%d states=%d" traces states
+        0
+    | [ "--inject-quint-q4-mutation"; mutationName; directory; count ] ->
+        match QuintQ4ReplayFixtures.tryParseMutation mutationName with
+        | None ->
+            eprintfn "Unknown Q4 replay mutation: %s" mutationName
+            2
+        | Some mutation ->
+            try
+                QuintQ4ReplayFixtures.replayMutation directory (int count) mutation |> ignore
+                eprintfn "Q4 replay mutation unexpectedly passed: %s" mutationName
+                1
+            with error ->
+                eprintfn "%s mutation=%s" error.Message mutationName
+                1
 #endif
     | [ "--inject-simulation-divergence"; phaseName ] ->
         match SimulationFixtures.tryParsePhase phaseName with
