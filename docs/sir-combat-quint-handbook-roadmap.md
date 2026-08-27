@@ -194,10 +194,13 @@ Completion evidence (2026-08-27):
   producer, and `sir.qualified-site-handoff/v1` binds its route, documentation gate, final-site receipt,
   and archive. The focused protected join requires that handoff whenever documentation is selected; the
   deploy job verifies the same identity and cannot rebuild or deploy an unrelated successful merge.
+  Its bounded 30-minute timeout covers GitHub Pages service latency without weakening any selector,
+  receipt, archive, permission, or no-rebuild contract; issue #370 records the post-merge timeout repair.
 - Focused positive and restored-negative evidence is owned by
   `work/366-main-ci-routing/qualify-main-ci-routing.sh`; lifecycle evidence is under
   `work/366-main-ci-routing/` and `readiness/366-main-ci-routing/`; feedback cycle:
-  `roadmap-sir-combat-quint-handbook-ci-main-routing`; delivery issue: #366; post-merge handoff repair: #368.
+  `roadmap-sir-combat-quint-handbook-ci-main-routing`; delivery issue: #366; post-merge handoff repair:
+  #368; external Pages timeout repair: #370.
 - Delivery boundary: this checked entry records the merge candidate. It becomes landed completion history
   only after independent exact-head review, green PR CI, merge, a first focused post-merge protected verdict,
   issue #366 closure, and project status Done. M4 and the later M6V visual milestone remain unchanged.
