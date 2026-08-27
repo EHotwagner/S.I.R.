@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuite name="sir-handbook-m3-roadmap-ledger" tests="1" failures="0" errors="0" skipped="0">
   <testcase classname="SIR.HandbookM3" name="only-m3-checked-with-conditional-delivery-evidence"/>
-  <properties><property name="roadmapSha256" value="037e72d6455cd9d9b5d70c8bd914c67aa2b4f6323cfbe67377b67fd40f77c9e5"/></properties>
+  <properties><property name="roadmapSha256" value="255bab6ae14d944d9db0ac0a12d4d342b16c8c5102c7b8da85c56de52af28ef5"/></properties>
 </testsuite>

@@ -168,6 +168,9 @@ Completion evidence (2026-08-27):
 - Lifecycle evidence: `work/363-handbook-m3/` and `readiness/363-handbook-m3/`; feedback cycle:
   `roadmap-sir-combat-quint-handbook-m3-complete-rules`; report:
   `feedback/2026-08-27-sir-handbook-m3-complete-rules.md`.
+- User-added roadmap requirement: pending M6V now owns mechanics/theory diagrams and their visual,
+  accessibility, fallback, authority-derivation, regression, and performance qualification. This records
+  sequencing only and does not expand M3 implementation.
 - Delivery boundary: this checked entry is the merge-candidate ledger update. Independent exact-head acceptance
   and green exact-head hosted CI are required before merge. It becomes landed completion
   history only when the M3 PR merges; post-merge validation must confirm main, issue #363 closure, and
@@ -230,6 +233,29 @@ Exit criteria:
 - zero unlinked controlled occurrences outside documented exemptions; and
 - all deliberate link defects are detected.
 
+### - [ ] M6V — Authoritative mechanics and theory diagrams
+
+**Outcome:** concrete combat mechanics and formal explanations gain trustworthy, accessible visuals
+without creating a second semantic authority.
+
+Deliverables:
+
+- concrete combat-mechanics diagrams that reuse the existing in-game SVG symbology and glyph vocabulary;
+- pure abstract SVG diagrams for formal theory, state, dependency, arithmetic, trace, and invariant explanations;
+- animation and shader effects only as progressive enhancement;
+- reduced-motion, static, print, and non-WebGL fallbacks;
+- accessible labels and descriptions for every meaningful visual;
+- derivation or mechanical checking against authoritative rules and the Quint model, avoiding duplicated semantics;
+- visual-regression/render-inspection evidence and performance qualification.
+
+Exit criteria:
+
+- every concrete visual uses the established in-game SVG vocabulary and every abstract visual remains pure SVG;
+- enhanced effects preserve the same meaning under reduced-motion, static, print, and non-WebGL fallbacks;
+- labels and descriptions expose the visual's meaning accessibly;
+- authoritative rule/model changes invalidate or mechanically recheck affected diagrams; and
+- visual regression, rendered inspection, and performance qualification pass.
+
 ### - [ ] M7 — Review, publication, and maintenance handoff
 
 **Outcome:** the handbook is published as maintained S.I.R. documentation.
@@ -242,6 +268,8 @@ Deliverables:
 - rendered-document inspection;
 - last-verified toolchain and source identities;
 - update checklist and owner handoff.
+
+Dependency: M6V authoritative mechanics and theory diagrams must be complete before M7 publication.
 
 Exit criteria:
 

@@ -25,9 +25,17 @@ const required = [
   "only when the M3 PR merges",
   "issue #363 closure",
   "project status Done",
+  "### - [ ] M6V — Authoritative mechanics and theory diagrams",
+  "reuse the existing in-game SVG symbology and glyph vocabulary",
+  "pure abstract SVG diagrams",
+  "reduced-motion, static, print, and non-WebGL fallbacks",
+  "derivation or mechanical checking against authoritative rules and the Quint model",
+  "visual-regression/render-inspection evidence and performance qualification",
+  "Dependency: M6V authoritative mechanics and theory diagrams must be complete before M7 publication.",
 ];
 const failures = [];
 if (newChecked.length !== 1 || newChecked[0] !== "M3") failures.push(`expected only M3 newly checked; got ${JSON.stringify(newChecked)}`);
+if (/^### - \[x\] M6V —/m.test(roadmap)) failures.push("M6V must remain pending during M3");
 for (const marker of required) if (!roadmap.includes(marker)) failures.push(`missing ledger marker: ${marker}`);
 if (failures.length) {
   console.error(failures.join("\n"));
