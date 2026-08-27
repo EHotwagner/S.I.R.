@@ -5,7 +5,7 @@ workspace: S.I.R-roadmap-m6
 cycle: roadmap-sir-combat-quint-handbook-m6-index-link-enforcement
 lane: sdd
 toolVersion: 1.0.1
-commit: 46ce07256a1ae111c36ace98693cd077a7b03c53
+commit: 4e9e528a6e02e491f863c7183f6ef514b100e167
 ---
 
 # Development feedback — combat Quint handbook M6 index and link enforcement
@@ -23,7 +23,7 @@ The existing scaffold is `FS.GG.Workspace.Template` 0.8.0 with provider `fable-g
 
 ## §2 What worked
 
-The roadmap's exact M6 exits translated into seven FR/AC pairs and a focused structural gate. A dependency-free Markdown block/inline AST reconciles 188 canonical definitions, five aliases, 74 top-level Quint declarations, sixteen stable rules across the model and runtime registry, fifty chapters, three reading paths, and all internal fragments. Ten isolated mutations each observe a named red and then recheck untouched input green. Composing the audit into `scripts/build-docs.sh` means the same gate runs before every rendered site projection.
+The roadmap's exact M6 exits translated into seven FR/AC pairs and a focused structural gate. A dependency-free Markdown block/inline AST reconciles 188 canonical definitions, five aliases, 74 top-level Quint declarations, sixteen stable rules across the model and runtime registry, fifty chapters, three reading paths, and all internal fragments. Eleven isolated mutations each observe a named red and then recheck untouched input green. Composing the audit into `scripts/build-docs.sh` means the same gate runs before every rendered site projection.
 
 The SDD lifecycle failed closed twice during authoring: specify named its colon-delimited input grammar, and analyze identified the exact unedited plan placeholders. Both corrections occurred before implementation. The final work model records twenty-two completed tasks and twenty-two observed, non-synthetic evidence obligations with `shipReady` status.
 
@@ -31,7 +31,7 @@ The SDD lifecycle failed closed twice during authoring: specify named its colon-
 
 The first strict docs command inherited `DOTNET_HOST_PATH=/usr/share/dotnet/dotnet` and selected a root without the pinned SDK 10.0.302, despite the repository-local build succeeding. Clearing inherited resolver variables restored the pinned path. This is the same bounded documentation-environment friction recorded by M0–M5, not a new defect.
 
-The first AST implementation over-constrained navigational links and treated aliases/inline code as ordinary controlled prose. After correction, exact-head review found the opposite failure: symbol prose was skipped, any destination was accepted for a controlled link, generated definitions could be tautological or truncated, and declaration/rule/alias removals lowered observed counts instead of failing. The repair now exempts only explicit structural/per-term cases, checks canonical destinations, requires substantive definitions, and reconciles exact model declarations, Quint/runtime rule IDs, and published alias markers against fixed cardinalities. Eligible prose and authority removal remain fail-closed.
+The first AST implementation over-constrained navigational links and treated aliases/inline code as ordinary controlled prose. After correction, exact-head review found the opposite failure: symbol prose was skipped, any destination was accepted for a controlled link, generated definitions could be tautological or truncated, and declaration/rule/alias removals lowered observed counts instead of failing. A replacement review then found controlled terms could hide inside longer link labels. The repair now exempts only explicit structural/per-term cases, checks exact and embedded-label canonical destinations under a manifest-declared ambiguity policy, requires substantive definitions, and reconciles exact model declarations, Quint/runtime rule IDs, and published alias markers against fixed cardinalities. Eligible prose and authority removal remain fail-closed.
 
 The mandatory commit-aware invalidation command remains red on seventeen historical overbroad/mismatched audit exceptions. The same command on unchanged main reports the inherited set; M6 does not touch those cited paths or exceptions.
 
@@ -42,9 +42,9 @@ The mandatory commit-aware invalidation command remains red on seventeen histori
 - **Kind:** positive-pattern
 - **Impact:** Learners have one complete canonical target per controlled term, while maintainers get exact drift detection across vocabulary, model declarations, stable rules, chapters, fragments, aliases, and eligible prose.
 - **Expected:** Every controlled term has a substantive index entry and all inventories reconcile; missing fragments, duplicate anchors, absent entries, unlinked eligible prose/model symbols, wrong targets, insubstantial definitions, and declaration/rule/alias authority drift are independently detectable before rendering.
-- **Observed:** Qualification passed 188 definitions, five aliases, 74 declarations, sixteen model/runtime-reconciled rules, fifty chapters, and ten detector-specific observed-red/restored-green mutations. Strict fsdocs and the full Quint/runtime regression passed afterward.
+- **Observed:** Qualification passed 188 definitions, five aliases, 74 declarations, sixteen model/runtime-reconciled rules, fifty chapters, and eleven detector-specific observed-red/restored-green mutations, including a controlled term embedded in an extended wrong-target link label. Strict fsdocs and the full Quint/runtime regression passed afterward.
 - **Evidence:** file:docs/sir-combat-quint-handbook.md; file:docs/sir-combat-quint-vocabulary.json; file:work/375-handbook-m6/audit-handbook-structure.mjs; file:readiness/375-handbook-m6/structure-audit.junit.xml; command:bash work/375-handbook-m6/qualify-handbook-m6.sh
-- **Version:** S.I.R. commit `46ce072`; vocabulary schema 2; Quint 0.32.0.
+- **Version:** S.I.R. commit `4e9e528`; vocabulary schema 2; Quint 0.32.0.
 - **Owner:** EHotwagner/S.I.R. handbook documentation qualification
 - **Recurrence:** extends `feedback/2026-08-27-sir-handbook-m1-linked-skeleton.md` §4.3 and §11 and closes their M6 enforcement deferral.
 - **Avoidable cost:** none
@@ -87,14 +87,14 @@ One docs build failed before the inherited resolver workaround was applied. Spec
 
 - First build: locked restore and Release build passed; first strict docs attempt hit the inherited resolver issue.
 - First meaningful focused test: not independently timed; the first AST run failed on over-broad occurrence policy and the corrected run passed.
-- Structural result: 188 definitions, five aliases, 74 declarations, sixteen model/runtime-reconciled rules, fifty chapters, three reading paths, ten mutations.
+- Structural result: 188 definitions, five aliases, 74 declarations, sixteen model/runtime-reconciled rules, fifty chapters, three reading paths, eleven mutations.
 - Runtime regression: Quint 0.32.0; seven witnesses, eight existing mutations; sampled runtime sixteen traces/144 states at seed 352, maximum eight steps.
 - Lifecycle: seven requirements, three decisions, twenty-two tasks, twenty-two observed non-synthetic obligations, `shipReady`.
 - Delivery: exact-head review, PR/CI, merge, board Done, and post-merge Pages pending at report draft time.
 
 ## §11 Falsifiable improvements
 
-- Preserve §4.1 by running `node work/375-handbook-m6/audit-handbook-structure.mjs` before every docs projection. Acceptance: it reports exactly 188 definitions, five aliases, 74 declarations, sixteen rules, fifty chapters, and ten observed-red/restored-green controls until an authoritative input intentionally changes with the manifest/index.
+- Preserve §4.1 by running `node work/375-handbook-m6/audit-handbook-structure.mjs` before every docs projection. Acceptance: it reports exactly 188 definitions, five aliases, 74 declarations, sixteen rules, fifty chapters, and eleven observed-red/restored-green controls until an authoritative input intentionally changes with the manifest/index.
 - Close §4.2 at the documentation environment boundary. Acceptance: a fresh worker can run `./scripts/build-docs.sh --prepare-site-only` with the ambient agent environment and resolve SDK 10.0.302 without a milestone-local `unset`, while a deliberate wrong-root mutation remains diagnostic.
 - Keep aliases explicit rather than inferred. Acceptance: every schema-v2 alias has one canonical term/anchor, `canonical-index-only` policy, and a matching alias marker in the canonical definition; duplicates or absent targets fail.
 - Keep M6V separate. Acceptance: no visual is added without authoritative derivation, accessibility labels/descriptions, reduced-motion/static/print/non-WebGL fallbacks, visual regression/render inspection, and performance qualification.
@@ -109,7 +109,7 @@ One docs build failed before the inherited resolver workaround was applied. Spec
 | sdd-authoring | exercised | Seven requirements, three decisions, twenty-two tasks, and current analyze/verify/ship views. |
 | implementation-apis | not-exercised | No production API changed; existing runtime evidence was regression-only. |
 | dependencies-build | exercised | Locked restore, zero-warning Release build, strict fsdocs, and pinned Quint passed. |
-| testing | exercised | AST/reconciliation, legacy link compatibility, ten structural mutations, strict docs, full Q4/runtime, roadmap, and lifecycle gates passed. |
+| testing | exercised | AST/reconciliation, legacy link compatibility, eleven structural mutations, strict docs, full Q4/runtime, roadmap, and lifecycle gates passed. |
 | evidence | exercised | Twenty-two observed, non-synthetic obligations and dedicated JUnit receipts reached `shipReady`. |
 | runtime-playtest | not-exercised | Headless correspondence regression is not an interactive journey. |
 | performance | not-exercised | M6 has no typed performance intent; visual performance remains M6V. |
