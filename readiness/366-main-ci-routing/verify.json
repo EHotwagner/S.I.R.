@@ -872,24 +872,10 @@
       "path": "readiness/366-main-ci-routing/work-model.json",
       "kind": "workModel",
       "currency": "current",
-      "diagnosticIds": [
-        "staleGeneratedView"
-      ]
+      "diagnosticIds": []
     }
   ],
-  "findings": [
-    {
-      "id": "VF001",
-      "severity": "warning",
-      "category": "warning",
-      "path": "readiness/366-main-ci-routing/work-model.json",
-      "relatedIds": [
-        "readiness/366-main-ci-routing/work-model.json"
-      ],
-      "message": "Generated view \u0027readiness/366-main-ci-routing/work-model.json\u0027 is stale.",
-      "correction": "Regenerate readiness/\u003Cid\u003E/work-model.json from current lifecycle sources."
-    }
-  ],
+  "findings": [],
   "governanceCompatibility": [
     {
       "path": ".fsgg/policy.yml",
@@ -913,18 +899,7 @@
       "diagnosticIds": []
     }
   ],
-  "diagnostics": [
-    {
-      "id": "staleGeneratedView",
-      "severity": "warning",
-      "artifact": "readiness/366-main-ci-routing/work-model.json",
-      "message": "Generated view \u0027readiness/366-main-ci-routing/work-model.json\u0027 is stale.",
-      "correction": "Regenerate readiness/\u003Cid\u003E/work-model.json from current lifecycle sources.",
-      "relatedIds": [
-        "readiness/366-main-ci-routing/work-model.json"
-      ]
-    }
-  ],
+  "diagnostics": [],
   "readiness": "verificationReady",
   "nextAction": {
     "actionId": "verify.next.ship",

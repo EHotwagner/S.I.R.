@@ -6,12 +6,12 @@
   "sources": [
     {
       "path": "readiness/366-main-ci-routing/ship.json",
-      "digest": "sha256:64dc887e02995edc128331336e2d5fbdb86cf2472e297fb50527229981c2ad59",
+      "digest": "sha256:5ca149a4dd1d3d39c55584685fc85809eb71087b2cb8ff99cc3db7274780e723",
       "schemaVersion": 1
     },
     {
       "path": "readiness/366-main-ci-routing/verify.json",
-      "digest": "sha256:217f844fd7776525925f942a580bea006862a2d7ee65e5c1d2b63d4892377a84",
+      "digest": "sha256:4c4586362f80e4e21260d9bd93b83dcf9ee9c264889f3a3e474b988a09e4503e",
       "schemaVersion": 1
     },
     {
