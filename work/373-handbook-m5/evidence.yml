@@ -11,7 +11,7 @@ sourceAnalysis: readiness/373-handbook-m5/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/373-handbook-m5/analysis.json
-    digest: 0c57cb125fb911584141f53a54f4a437da56ab5b503ab442a94a8dd4fce6f9df
+    digest: 6686d1bce61714321ddb27bcadbbcd83327f0b9a7850fa905e0ff054456fa8e0
     schemaVersion: 1
   - label: checklist
     path: work/373-handbook-m5/checklist.md
@@ -46,7 +46,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV001]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -73,7 +73,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV002]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -100,7 +100,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV003]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -127,7 +127,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV004]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -154,7 +154,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV005]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -181,7 +181,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-006]
     obligationRefs: [EV006]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -208,7 +208,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV007]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -235,7 +235,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-008]
     obligationRefs: [EV008]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -262,7 +262,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV009]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -289,7 +289,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV010]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -316,7 +316,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV011]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -343,7 +343,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV012]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -370,7 +370,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-002]
     obligationRefs: [EV013]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -397,7 +397,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-003]
     obligationRefs: [EV014]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -424,7 +424,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-004]
     obligationRefs: [EV015]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -451,7 +451,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-005]
     obligationRefs: [EV016]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -478,7 +478,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-007]
     obligationRefs: [EV017]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -505,7 +505,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001, PD-002, PD-003, PD-004, PD-005, PD-006, PD-007, PD-008]
     obligationRefs: [EV018]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -532,7 +532,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001, PD-002, PD-003, PD-004, PD-005, PD-006, PD-007, PD-008]
     obligationRefs: [EV019]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -559,7 +559,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV020]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh
@@ -586,7 +586,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-008]
     obligationRefs: [EV021]
-    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
     sourceRefs:
       - kind: verification
         path: work/373-handbook-m5/qualify-handbook-m5.sh

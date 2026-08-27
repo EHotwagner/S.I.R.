@@ -150,7 +150,24 @@ if [[ "${1:-}" != "--model-only" ]]; then
 
   for mutation in wrong-action-mapping wrong-observable-field combat-boundary-defect; do
     mutation_log="$task_tmp/$mutation.log"
-    if "$dotnet_bin" "$dll" --inject-quint-q4-mutation "$mutation" "$trace_root" 16 > "$mutation_log" 2>&1; then
+    mutation_command=("$dotnet_bin" "$dll" --inject-quint-q4-mutation "$mutation" "$trace_root" 16)
+    if [[ "$mutation" == "wrong-observable-field" ]]; then
+      mutated_trace_root="$task_tmp/itf-wrong-observable-field"
+      cp -R "$trace_root" "$mutated_trace_root"
+      mutated_trace=""
+      for candidate in "$mutated_trace_root"/trace_*.itf.json; do
+        if jq -e '.states[] | select(.last.eventId == "attack:representative")' "$candidate" >/dev/null; then
+          mutated_trace="$candidate"
+          break
+        fi
+      done
+      test -n "$mutated_trace" || fail "wrong-observable-field could not find a representative expected ITF observation"
+      jq '(.states[] | select(.last.eventId == "attack:representative") | .last.traceRaw["#bigint"]) |= ((tonumber + 1) | tostring)' \
+        "$mutated_trace" > "$mutated_trace.tmp"
+      mv "$mutated_trace.tmp" "$mutated_trace"
+      mutation_command=("$dotnet_bin" "$dll" --quint-q4-expected-divergence "$mutated_trace_root" 16 "$mutation")
+    fi
+    if "${mutation_command[@]}" > "$mutation_log" 2>&1; then
       fail "$mutation unexpectedly passed runtime correspondence"
     fi
     grep -F 'Q4 first divergence:' "$mutation_log" >/dev/null \

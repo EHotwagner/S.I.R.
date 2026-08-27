@@ -999,7 +999,7 @@ production entry point; `external-contract` when only an identity/interface boun
 does not replay the geometry algorithm. No other sixteen-rule row is silently missing. A future missing
 row must use the `missing` status, name the absent comparison, and avoid production claims.
 
-[Claim boundary](#def-claim-boundary): a green Quint [run](#def-run) establishes behavior of the extracted model. It does **not** by itself establish production [correspondence](#def-correspondence). The repository qualification separately runs exact and sampled traces through the real interpreter and independently mutates mapping, observable fields, and interpreter results to prove that boundary detects divergence. That evidence is scoped to its pinned source/tool identities and sampled traces; it is neither an exhaustive proof nor automatic equivalence for future changes.
+[Claim boundary](#def-claim-boundary): a green Quint [run](#def-run) establishes behavior of the extracted model. It does **not** by itself establish production [correspondence](#def-correspondence). The repository qualification separately runs exact and sampled traces through the real interpreter and independently mutates [action](#def-action) mapping, one ephemeral ITF expected observation, and an interpreter result to prove that boundary detects divergence. That evidence is scoped to its pinned source/tool identities and sampled traces; it is neither an exhaustive proof nor automatic equivalence for future changes.
 
 <a id="chapter-39-literate-authority-and-deterministic-qnt-extract"></a>
 ### 39. Literate authority and deterministic .qnt extraction
@@ -1083,7 +1083,7 @@ Runtime [correspondence](#def-correspondence) then runs three independent epheme
 | Control | Changed seam | Required first-divergence evidence |
 |---|---|---|
 | [`wrong-action-mapping`](#def-first-divergence) | adapter chooses a zero-visible representative attack | transition/[action](#def-action) plus earliest differing consequence field |
-| [`wrong-observable-field`](#def-first-divergence) | adapter adds one to [`last.traceRaw`](#qnt-last) | JSON pointer ending in [`last.traceRaw`](#qnt-last), expected, and actual |
+| [`wrong-observable-field`](#def-first-divergence) | temporary sampled ITF adds one to expected [`last.traceRaw`](#qnt-last); adapter and runtime stay untouched | JSON pointer ending in [`last.traceRaw`](#qnt-last), expected, and actual |
 | [`combat-boundary-defect`](#def-first-divergence) | wrapped production result reports invalid remaining [health](#stat-health) | JSON pointer ending in [`combat.health`](#qnt-combat), expected, and actual |
 
 Every control must exit red and name both adapter and implementation. The untouched exact and sampled
