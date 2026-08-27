@@ -27,7 +27,7 @@ The existing Q4 real-interpreter harness accepted both the committed exact trace
 
 ## §3 What did not
 
-The prior M4 aggregate reaches an expected milestone-local ledger failure on a descendant branch, so it is not a clean M5 baseline command. One rendered-content marker needed narrowing after fsdocs inserted markup. The lifecycle procedure also used the maintenance-only `evidence --sync-observed-run` form before bootstrapping the new receipt; `verify` correctly blocked until the JUnit was imported with the documented `evidence --from-test-report` bootstrap. The checkpoint preserves the pre-correction observation, while final receipts prove only the corrected state.
+The prior M4 aggregate reaches an expected milestone-local ledger failure on a descendant branch, so it is not a clean M5 baseline command. One rendered-content marker needed narrowing after fsdocs inserted markup. The lifecycle procedure also used the maintenance-only `evidence --sync-observed-run` form before bootstrapping the new receipt; `verify` correctly blocked until the JUnit was imported with the documented `evidence --from-test-report` bootstrap. The checkpoint preserves the pre-correction observation, while final receipts prove only the corrected state. The mandatory commit-aware feedback invalidation comparison remains red on the same seventeen historical overbroad/mismatched exceptions for both `origin/main..HEAD` and the base-to-base probe; this is inherited repository debt, not an M5 regression.
 
 ## §4 Findings
 
@@ -71,7 +71,7 @@ The qualifier retains the inherited SDK-resolver environment cleanup around stri
 
 ## §8 Friction and avoidable cost
 
-The inherited M4 baseline consumed approximately two minutes before its final, expected ledger failure. One rendered marker required a complete aggregate retry. Using receipt maintenance before bootstrap caused one blocked verify and corrective import. Adding a real post-mutation restored-green pass required lifecycle snapshot refresh. No production code, package, or generated ITF authority was duplicated.
+The inherited M4 baseline consumed approximately two minutes before its final, expected ledger failure. One rendered marker required a complete aggregate retry. Using receipt maintenance before bootstrap caused one blocked verify and corrective import. Adding a real post-mutation restored-green pass required lifecycle snapshot refresh. The historical invalidation failure required a base-to-base attribution probe. No production code, package, or generated ITF authority was duplicated.
 
 ## §9 Skill value and gaps
 

@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-27-sir-handbook-m5-runtime-correspondence.md",
-  "reportSha256": "1ba2f649cf91d701506b5147676fb1cf174e640ae6b6ecab8ff749a96e3edc97",
+  "reportSha256": "988151a270ff3db924d52e5b87dfa351ecd63d4accd3b56b171a16270f9bb6a0",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
