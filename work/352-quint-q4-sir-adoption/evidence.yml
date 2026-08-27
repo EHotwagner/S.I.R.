@@ -11,7 +11,7 @@ sourceAnalysis: readiness/352-quint-q4-sir-adoption/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/352-quint-q4-sir-adoption/analysis.json
-    digest: 8c31d67eead4daba47c9da91528158dc8edacd7f82ff226d0bac62e8e75f7fd0
+    digest: c14797cb9da408ef32a349102d253fa1f795a3a0efee4d9cad73742b7a44147d
     schemaVersion: 1
   - label: checklist
     path: work/352-quint-q4-sir-adoption/checklist.md
@@ -54,10 +54,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
-      digest: "sha256:0c9171234b3c0a2dc8c7e3acedcbd84370c09c39f830e20644eeb14bd310e39e"
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 14
+      passed: 18
       failed: 0
       skipped: 0
     notes: [The literate source extracts deterministically to the complete sixteen-entry typed Quint catalogue.]
@@ -81,10 +81,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
-      digest: "sha256:0c9171234b3c0a2dc8c7e3acedcbd84370c09c39f830e20644eeb14bd310e39e"
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 14
+      passed: 18
       failed: 0
       skipped: 0
     notes: [Named witnesses and observed-red controls exercise fixed-point arithmetic and the registered line-of-sight boundary.]
@@ -108,10 +108,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
-      digest: "sha256:0c9171234b3c0a2dc8c7e3acedcbd84370c09c39f830e20644eeb14bd310e39e"
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 14
+      passed: 18
       failed: 0
       skipped: 0
     notes: [Seeded invariant simulation exercises consequence, and recovery actions over the cohesive combat state., cover-impact]
@@ -135,13 +135,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
-      digest: "sha256:0c9171234b3c0a2dc8c7e3acedcbd84370c09c39f830e20644eeb14bd310e39e"
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 14
+      passed: 18
       failed: 0
       skipped: 0
-    notes: [Six named Quint witnesses and seven named invariants pass under the pinned Quint 0.32.0 CLI.]
+    notes: [Seven named Quint witnesses and seven named invariants pass under the pinned Quint 0.32.0 CLI.]
   - id: EV005
     kind: verification
     subject:
@@ -162,10 +162,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
-      digest: "sha256:0c9171234b3c0a2dc8c7e3acedcbd84370c09c39f830e20644eeb14bd310e39e"
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 14
+      passed: 18
       failed: 0
       skipped: 0
     notes: [The standalone receipt records deterministic extraction, and its explicit noncanonical boundary., seeded simulation, typecheck, witnesses]
@@ -189,15 +189,15 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
-      digest: "sha256:0c9171234b3c0a2dc8c7e3acedcbd84370c09c39f830e20644eeb14bd310e39e"
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 14
+      passed: 18
       failed: 0
       skipped: 0
-    notes: [Sixteen generated ITF traces and 144 states replay through the production CombatRules interpreter with first-divergence diagnostics.]
+    notes: [One committed exact ITF trace with nine states and sixteen generated sampled traces with 144 states replay through the production CombatRules interpreter with first-divergence diagnostics.]
   - id: EV007
-    kind: verification
+    kind: deferral
     subject:
       type: task
       id: T007
@@ -208,21 +208,15 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-008]
     obligationRefs: [EV007]
-    artifacts: [readiness/352-quint-q4-sir-adoption/quint-standalone.json, scripts/qualify-quint-q4-sir-combat.sh, tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj]
-    sourceRefs:
-      - kind: verification
-        path: scripts/qualify-quint-q4-sir-combat.sh
-    result: pass
+    artifacts: [readiness/352-quint-q4-sir-adoption/quint-standalone.json]
+    sourceRefs: []
+    result: deferred
     synthetic: false
-    observedRun:
-      source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
-      digest: "sha256:0c9171234b3c0a2dc8c7e3acedcbd84370c09c39f830e20644eeb14bd310e39e"
-      digestContract: exact-bytes-v1
-      outcome: passed
-      passed: 14
-      failed: 0
-      skipped: 0
-    notes: [The focused gate preserves the frozen rules corpus and records zero-warning native plus byte-equal Fable compatibility.]
+    rationale: "The standalone focused receipt builds the native replay adapter but does not bind frozen-corpus and byte-equal Fable results into its committed observed report; generated binding replacement also remains blocked on FS-GG.SDD issue 932."
+    owner: "S.I.R. item 352 after FS-GG/FS.GG.SDD#932"
+    scope: "Frozen rules-corpus, explanation, native/Fable compatibility, and generated-binding replacement."
+    laterLifecycleVisibility: Re-open this obligation after the producer profile is published and bind the cross-runtime compatibility run into canonical evidence.
+    notes: [Hosted cross-runtime CI is an independent repository gate and is not claimed by the focused JUnit receipt.]
   - id: EV008
     kind: verification
     subject:
@@ -243,13 +237,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/352-quint-q4-sir-adoption/sir-combat.junit.xml
-      digest: "sha256:0c9171234b3c0a2dc8c7e3acedcbd84370c09c39f830e20644eeb14bd310e39e"
+      digest: "sha256:a93e64853a7e1a9719052717d90cc4227501a7c9101dcba859a3945b598abdb1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 14
+      passed: 18
       failed: 0
       skipped: 0
-    notes: [Six semantic, and interpreter-boundary mutations are observed red before restored green., mapping, observable, projection-freshness]
+    notes: [Eight semantic, and interpreter-boundary mutations are observed red before restored green., contract, generation-freshness, identity, mapping, observable]
   - id: EV009
     kind: deferral
     subject:

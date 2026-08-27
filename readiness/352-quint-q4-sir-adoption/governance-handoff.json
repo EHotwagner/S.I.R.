@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/352-quint-q4-sir-adoption/ship.json",
-      "digest": "sha256:0d813fdbaee8fd4734b562aefec88c5584c2abd9836dbbba7453a143cc73a3a6",
+      "digest": "sha256:91a4a96f61db77a04f4b366507efaa18fc64531d6a172167646a387562b8c5df",
       "schemaVersion": 1
     },
     {
       "path": "readiness/352-quint-q4-sir-adoption/verify.json",
-      "digest": "sha256:ed6451e7494d0b7207ed6756cbe90d676df4175b9073d480a2ca9cb54817a7de",
+      "digest": "sha256:d2794b5d58912cad6158bb95113bfbf2854c59d9593f4df9ee1db5ba8fbb6149",
       "schemaVersion": 1
     },
     {
       "path": "readiness/352-quint-q4-sir-adoption/work-model.json",
-      "digest": "sha256:a04f8bbe56ac3d3c2ae9ab9df50b10ce4b46b2768e3093adcc040eada669b019",
+      "digest": "sha256:55fd2d5c79325990f167a4ab121b2b35a922005cca4629dfe96a7bbc2087ae08",
       "schemaVersion": 1
     }
   ],
@@ -54,8 +54,8 @@
       },
       {
         "id": "evidence:EV007",
-        "state": "real",
-        "rationale": null
+        "state": "skipped",
+        "rationale": "The standalone focused receipt builds the native replay adapter but does not bind frozen-corpus and byte-equal Fable results into its committed observed report; generated binding replacement also remains blocked on FS-GG.SDD issue 932."
       },
       {
         "id": "evidence:EV008",

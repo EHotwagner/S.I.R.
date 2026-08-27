@@ -2,21 +2,21 @@
   "schema": "sir.quint-standalone-evidence/v1",
   "authority": {
     "path": "docs/rules/sir-combat.md",
-    "sha256": "783821bb45837af0df3307f397fb50c4ad6ba4ed34d59f217e84b94bcd336aa2"
+    "sha256": "f121c201a6f77d0cfc4c86fe72455e8d821b3d941bf012ab0e3482db103e43e7"
   },
   "generatedModule": {
     "target": "sir-combat.qnt",
-    "sha256": "f779c3c0ac821883b062d9ab65fadb2ab5916e30ce5253e2d9eb71d0ddc48df8",
+    "sha256": "69cdc90a05306297ddf0a305c1224cc5232374dce81d043292cbe54d119cd717",
     "committed": false
   },
-  "typedEffectSha256": "75803cb38acad5a2414ff2633b0fde1daeda3cea3cb0223fa1b1b4743dc44a2a",
+  "typedEffectSha256": "525e4e99650ed7f57ce6879693bf1de538c1c34bb262551c01f003494520f185",
   "tool": {
     "name": "quint",
     "version": "0.32.0",
     "localCliSha256": "ac12595b1cb7253feec93c79417615c6eb20fc3b6a3df35c5e3530b24e90a501"
   },
   "witnesses": {
-    "passed": 6,
+    "passed": 7,
     "failed": 0
   },
   "simulation": {
@@ -28,26 +28,35 @@
   "runtimeCorrespondence": {
     "adapter": "tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs",
     "implementation": "src/SIR.Simulation/CombatRules.fs",
-    "traces": 16,
-    "states": 144,
+    "exact": {
+      "traces": 1,
+      "states": 9,
+      "fixture": "tests/fixtures/rules-corpus/quint-q4/trace_0.itf.json"
+    },
+    "sampled": {
+      "traces": 16,
+      "states": 144
+    },
     "firstDivergence": null,
-    "verdict": "accept-sampled-runtime-correspondence"
+    "verdict": "accept-exact-and-sampled-runtime-correspondence"
   },
   "compatibility": {
-    "rulesCorpus": "pass-generation-source-resolution-copied-semantics-and-mutations",
+    "rulesCorpus": "deferred-not-bound-to-focused-observed-report",
     "nativeBuild": {
       "warnings": 0,
       "errors": 0
     },
     "crossRuntime": {
-      "dotnetFableCanonicalBytes": 105514,
-      "verdict": "pass"
+      "dotnetFableCanonicalBytes": null,
+      "verdict": "deferred-not-bound-to-focused-observed-report"
     }
   },
   "mutationControls": [
     "changed-armor-retention",
     "removed-suppression-guard",
     "stale-generated-module",
+    "wrong-model-identity",
+    "wrong-external-algorithm-contract",
     "wrong-runtime-action-mapping",
     "wrong-runtime-observable-field",
     "corrupted-interpreter-boundary-result"

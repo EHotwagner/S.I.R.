@@ -92,6 +92,10 @@ let main arguments =
         let traces, states = QuintReplayFixtures.verifySampledCorpus directory (int count)
         printfn "SIR-Q1-SAMPLED-ACCEPT: traces=%d states=%d" traces states
         0
+    | [ "--quint-q4-exact"; directory; count ] ->
+        let traces, states = QuintQ4ReplayFixtures.replayDirectory directory (int count)
+        printfn "SIR-Q4-EXACT-ACCEPT: traces=%d states=%d" traces states
+        0
     | [ "--quint-q4-sampled"; directory; count ] ->
         let traces, states = QuintQ4ReplayFixtures.replayDirectory directory (int count)
         printfn "SIR-Q4-SAMPLED-ACCEPT: traces=%d states=%d" traces states

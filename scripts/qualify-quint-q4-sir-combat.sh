@@ -32,9 +32,23 @@ extract "$task_tmp/first.qnt" || fail "authority fences are missing, unterminate
 extract "$task_tmp/second.qnt" || fail "second clean extraction failed"
 cmp -s "$task_tmp/first.qnt" "$task_tmp/second.qnt" || fail "two clean extractions differ"
 
+verify_projection() {
+  cmp -s "$task_tmp/first.qnt" "$1"
+}
+
+verify_contract_identity() {
+  local model="$1"
+  grep -Fx 'module SirCombat {' "$model" >/dev/null \
+    && grep -Fx '    implementation: "FS.GG.Game.Core.Los.lineOfSightBy",' "$model" >/dev/null \
+    && grep -Fx '    fingerprint: "FS.GG.Game.Core@0.13.0:Los.lineOfSightBy:Supercover",' "$model" >/dev/null
+}
+
+verify_projection "$task_tmp/second.qnt" || fail "generated projection is stale"
+verify_contract_identity "$task_tmp/first.qnt" || fail "model identity or external algorithm contract drifted"
+
 quint typecheck "$task_tmp/first.qnt" --out "$task_tmp/typed-effect.json"
 
-witnesses='representativeDamageIsTwenty|woundThresholdsAreExact|zeroHealthMeansIncapacitated|suppressionNeedsPositiveDamageAndRecoversFive|destroyingCoverConsumesCurrentCollision|collateralOutcomeIgnoresFaction'
+witnesses='representativeDamageIsTwenty|damageRoundingPreservesInt32Wrap|woundThresholdsAreExact|zeroHealthMeansIncapacitated|suppressionNeedsPositiveDamageAndRecoversFive|destroyingCoverConsumesCurrentCollision|collateralOutcomeIgnoresFaction'
 quint test "$task_tmp/first.qnt" \
   --main SirCombatTests \
   --backend rust \
@@ -58,7 +72,7 @@ quint run "$task_tmp/first.qnt" \
     factionNeutralCollateral \
   --verbosity 1 > "$task_tmp/run.log"
 
-grep -F '6 passing' "$task_tmp/tests.log" >/dev/null || fail "the six named witnesses did not all pass"
+grep -F '7 passing' "$task_tmp/tests.log" >/dev/null || fail "the seven named witnesses did not all pass"
 grep -F '[ok] No violation found' "$task_tmp/run.log" >/dev/null || fail "seeded invariant simulation did not pass"
 
 sed '0,/armorRetentionRaw: 8000/s//armorRetentionRaw: 7000/' \
@@ -77,8 +91,20 @@ fi
 
 cp "$task_tmp/first.qnt" "$task_tmp/stale-generated.qnt"
 printf '\n// deliberately stale generated projection\n' >> "$task_tmp/stale-generated.qnt"
-if cmp -s "$task_tmp/first.qnt" "$task_tmp/stale-generated.qnt"; then
+if verify_projection "$task_tmp/stale-generated.qnt"; then
   fail "changed generated projection was not detected"
+fi
+
+sed '0,/module SirCombat {/s//module WrongIdentity {/' \
+  "$task_tmp/first.qnt" > "$task_tmp/wrong-identity.qnt"
+if verify_contract_identity "$task_tmp/wrong-identity.qnt"; then
+  fail "wrong model identity unexpectedly passed"
+fi
+
+sed '0,/FS.GG.Game.Core@0.13.0:Los.lineOfSightBy:Supercover/s//wrong-contract/' \
+  "$task_tmp/first.qnt" > "$task_tmp/wrong-contract.qnt"
+if verify_contract_identity "$task_tmp/wrong-contract.qnt"; then
+  fail "wrong external algorithm contract unexpectedly passed"
 fi
 
 runtime_summary="model-only"
@@ -111,6 +137,10 @@ if [[ "${1:-}" != "--model-only" ]]; then
   dll="$repo_root/tests/SIR.Domain.Tests/bin/Release/net10.0/SIR.Domain.Tests.dll"
   "$dotnet_bin" restore "$project" --locked-mode >/dev/null
   "$dotnet_bin" build "$project" --configuration Release --no-restore >/dev/null
+  exact_root="$repo_root/tests/fixtures/rules-corpus/quint-q4"
+  exact_summary="$($dotnet_bin "$dll" --quint-q4-exact "$exact_root" 1)"
+  grep -F 'SIR-Q4-EXACT-ACCEPT: traces=1 states=9' <<< "$exact_summary" >/dev/null \
+    || fail "committed exact trace did not replay through the real interpreter"
   runtime_summary="$($dotnet_bin "$dll" --quint-q4-sampled "$trace_root" 16)"
   grep -F 'SIR-Q4-SAMPLED-ACCEPT: traces=16 states=144' <<< "$runtime_summary" >/dev/null \
     || fail "real-interpreter correspondence did not accept all 16 traces and 144 states"
@@ -137,9 +167,10 @@ if [[ -n "${SIR_Q4_JUNIT_OUT:-}" ]]; then
   junit_tmp="$SIR_Q4_JUNIT_OUT.tmp"
   {
     printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>'
-    printf '%s\n' '<testsuite name="sir-quint-q4-combat" tests="14" failures="0" errors="0" skipped="0">'
+    printf '%s\n' '<testsuite name="sir-quint-q4-combat" tests="18" failures="0" errors="0" skipped="0">'
     for witness in \
       representativeDamageIsTwenty \
+      damageRoundingPreservesInt32Wrap \
       woundThresholdsAreExact \
       zeroHealthMeansIncapacitated \
       suppressionNeedsPositiveDamageAndRecoversFive \
@@ -148,11 +179,14 @@ if [[ -n "${SIR_Q4_JUNIT_OUT:-}" ]]; then
       printf '  <testcase classname="SIR.QuintQ4" name="witness-%s"/>\n' "$witness"
     done
     printf '%s\n' '  <testcase classname="SIR.QuintQ4" name="seeded-invariant-simulation"/>'
+    printf '%s\n' '  <testcase classname="SIR.QuintQ4" name="exact-runtime-correspondence"/>'
     printf '%s\n' '  <testcase classname="SIR.QuintQ4" name="sampled-runtime-correspondence"/>'
     for mutation in \
       changed-armor-retention \
       removed-suppression-guard \
       stale-generated-module \
+      wrong-model-identity \
+      wrong-external-algorithm-contract \
       wrong-action-mapping \
       wrong-observable-field \
       corrupted-interpreter-boundary-result; do
@@ -168,7 +202,7 @@ echo "authority=$(sha256sum "$authority" | cut -d' ' -f1)"
 echo "generated=$(sha256sum "$task_tmp/first.qnt" | cut -d' ' -f1)"
 echo "typedEffect=$(sha256sum "$task_tmp/typed-effect.json" | cut -d' ' -f1)"
 echo "quint=$(quint --version)"
-echo "witnesses=6"
-echo "mutations=6"
+echo "witnesses=7"
+echo "mutations=8"
 echo "simulationSeed=352 samples=64 steps=8"
 echo "runtime=$runtime_summary"

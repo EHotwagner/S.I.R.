@@ -76,6 +76,7 @@ module SirCombat {
   pure val SCALE = 10000
   pure val INT32_MIN = -2147483648
   pure val INT32_MAX = 2147483647
+  pure val UINT32_RANGE = 4294967296
   pure val rifleDamageRaw = 250000
   pure val humanArmorRetentionRaw = SCALE
   pure val rangeSlopeRaw = 1000
@@ -113,6 +114,11 @@ module SirCombat {
     else if (value > INT32_MAX) INT32_MAX
     else value
 
+  pure def wrapInt32(value: int): int =
+    if (value > INT32_MAX) value - UINT32_RANGE
+    else if (value < INT32_MIN) value + UINT32_RANGE
+    else value
+
   pure def absolute(value: int): int = if (value < 0) -value else value
   pure def minimum(left: int, right: int): int = if (left < right) left else right
   pure def maximum(left: int, right: int): int = if (left > right) left else right
@@ -140,7 +146,7 @@ module SirCombat {
   pure def traceRaw(visible: int, total: int): int = fromRatio(visible, total)
   pure def expectedDamageRaw(baseDamageRaw: int, trace: int, retention: int): int =
     multiplyFixed(multiplyFixed(baseDamageRaw, trace), retainedEffect(retention))
-  pure def roundedDamage(rawDamage: int): int = (rawDamage + SCALE / 2) / SCALE
+  pure def roundedDamage(rawDamage: int): int = wrapInt32(rawDamage + SCALE / 2) / SCALE
   pure def woundForDamage(damage: int): Wound =
     if (damage >= 50) MajorWound else if (damage >= 25) MinorWound else NoWound
 
@@ -425,6 +431,21 @@ module SirCombatTests {
         sixteenRulesDeclared,
         boundedCombatState,
         incapacityMatchesHealth,
+      })
+
+  run damageRoundingPreservesInt32Wrap =
+    init
+      .then(resolveConsequences({
+        ...representativeAttack,
+        baseDamageRaw: INT32_MAX,
+        armorRetentionRaw: SCALE,
+        eventId: "damage:int32-wrap",
+      }))
+      .expect(and {
+        last.damage == -214747,
+        combat.health == 100,
+        combat.suppression == 0,
+        last.wound == NoWound,
       })
 
   run woundThresholdsAreExact =

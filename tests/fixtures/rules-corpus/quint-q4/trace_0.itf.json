@@ -1,0 +1,539 @@
+{
+  "#meta": {
+    "format": "ITF",
+    "format-description": "https://apalache-mc.org/docs/adr/015adr-trace.html",
+    "source": "sir-combat.qnt",
+    "status": "ok"
+  },
+  "vars": [
+    "combat",
+    "last"
+  ],
+  "states": [
+    {
+      "#meta": {
+        "index": 0
+      },
+      "combat": {
+        "coverBlocking": true,
+        "coverIntegrity": {
+          "#bigint": "100"
+        },
+        "health": {
+          "#bigint": "100"
+        },
+        "incapacitated": false,
+        "suppression": {
+          "#bigint": "0"
+        }
+      },
+      "last": {
+        "attackerFaction": "",
+        "contact": false,
+        "coverDamage": {
+          "#bigint": "0"
+        },
+        "damage": {
+          "#bigint": "0"
+        },
+        "destroyed": false,
+        "eventId": "initialize",
+        "explanationOrder": [],
+        "lastAction": "Initialize",
+        "preparationRaw": {
+          "#bigint": "0"
+        },
+        "retentionRaw": {
+          "#bigint": "0"
+        },
+        "stopsProjectile": false,
+        "suppressionDelta": {
+          "#bigint": "0"
+        },
+        "targetFaction": "",
+        "traceRaw": {
+          "#bigint": "0"
+        },
+        "wound": {
+          "tag": "NoWound",
+          "value": {
+            "#tup": []
+          }
+        }
+      }
+    },
+    {
+      "#meta": {
+        "index": 1
+      },
+      "combat": {
+        "coverBlocking": true,
+        "coverIntegrity": {
+          "#bigint": "88"
+        },
+        "health": {
+          "#bigint": "100"
+        },
+        "incapacitated": false,
+        "suppression": {
+          "#bigint": "0"
+        }
+      },
+      "last": {
+        "attackerFaction": "",
+        "contact": false,
+        "coverDamage": {
+          "#bigint": "12"
+        },
+        "damage": {
+          "#bigint": "0"
+        },
+        "destroyed": false,
+        "eventId": "cover:sample",
+        "explanationOrder": [
+          "COMBAT-COVER-DESTRUCTION-001",
+          "COMBAT-COVER-003"
+        ],
+        "lastAction": "ResolveCoverImpact",
+        "preparationRaw": {
+          "#bigint": "0"
+        },
+        "retentionRaw": {
+          "#bigint": "0"
+        },
+        "stopsProjectile": true,
+        "suppressionDelta": {
+          "#bigint": "0"
+        },
+        "targetFaction": "",
+        "traceRaw": {
+          "#bigint": "0"
+        },
+        "wound": {
+          "tag": "NoWound",
+          "value": {
+            "#tup": []
+          }
+        }
+      }
+    },
+    {
+      "#meta": {
+        "index": 2
+      },
+      "combat": {
+        "coverBlocking": true,
+        "coverIntegrity": {
+          "#bigint": "88"
+        },
+        "health": {
+          "#bigint": "100"
+        },
+        "incapacitated": false,
+        "suppression": {
+          "#bigint": "0"
+        }
+      },
+      "last": {
+        "attackerFaction": "",
+        "contact": false,
+        "coverDamage": {
+          "#bigint": "0"
+        },
+        "damage": {
+          "#bigint": "0"
+        },
+        "destroyed": false,
+        "eventId": "recovery:sample",
+        "explanationOrder": [],
+        "lastAction": "ResolveRecovery",
+        "preparationRaw": {
+          "#bigint": "0"
+        },
+        "retentionRaw": {
+          "#bigint": "0"
+        },
+        "stopsProjectile": false,
+        "suppressionDelta": {
+          "#bigint": "0"
+        },
+        "targetFaction": "",
+        "traceRaw": {
+          "#bigint": "0"
+        },
+        "wound": {
+          "tag": "NoWound",
+          "value": {
+            "#tup": []
+          }
+        }
+      }
+    },
+    {
+      "#meta": {
+        "index": 3
+      },
+      "combat": {
+        "coverBlocking": true,
+        "coverIntegrity": {
+          "#bigint": "88"
+        },
+        "health": {
+          "#bigint": "100"
+        },
+        "incapacitated": false,
+        "suppression": {
+          "#bigint": "0"
+        }
+      },
+      "last": {
+        "attackerFaction": "Blue",
+        "contact": false,
+        "coverDamage": {
+          "#bigint": "0"
+        },
+        "damage": {
+          "#bigint": "0"
+        },
+        "destroyed": false,
+        "eventId": "attack:miss",
+        "explanationOrder": [
+          "COMBAT-COLLISION-001",
+          "COMBAT-ENGAGEMENT-001",
+          "COMBAT-TRACE-002",
+          "COMBAT-ARMOR-004",
+          "COMBAT-DAMAGE-001",
+          "COMBAT-COVER-003",
+          "COMBAT-PENETRATION-001",
+          "COMBAT-HEALTH-001",
+          "COMBAT-WOUND-001",
+          "COMBAT-SUPPRESSION-001",
+          "COMBAT-COLLATERAL-001"
+        ],
+        "lastAction": "ResolveConsequences",
+        "preparationRaw": {
+          "#bigint": "13000"
+        },
+        "retentionRaw": {
+          "#bigint": "8000"
+        },
+        "stopsProjectile": false,
+        "suppressionDelta": {
+          "#bigint": "0"
+        },
+        "targetFaction": "Red",
+        "traceRaw": {
+          "#bigint": "0"
+        },
+        "wound": {
+          "tag": "NoWound",
+          "value": {
+            "#tup": []
+          }
+        }
+      }
+    },
+    {
+      "#meta": {
+        "index": 4
+      },
+      "combat": {
+        "coverBlocking": true,
+        "coverIntegrity": {
+          "#bigint": "76"
+        },
+        "health": {
+          "#bigint": "100"
+        },
+        "incapacitated": false,
+        "suppression": {
+          "#bigint": "0"
+        }
+      },
+      "last": {
+        "attackerFaction": "",
+        "contact": false,
+        "coverDamage": {
+          "#bigint": "12"
+        },
+        "damage": {
+          "#bigint": "0"
+        },
+        "destroyed": false,
+        "eventId": "cover:sample",
+        "explanationOrder": [
+          "COMBAT-COVER-DESTRUCTION-001",
+          "COMBAT-COVER-003"
+        ],
+        "lastAction": "ResolveCoverImpact",
+        "preparationRaw": {
+          "#bigint": "0"
+        },
+        "retentionRaw": {
+          "#bigint": "0"
+        },
+        "stopsProjectile": true,
+        "suppressionDelta": {
+          "#bigint": "0"
+        },
+        "targetFaction": "",
+        "traceRaw": {
+          "#bigint": "0"
+        },
+        "wound": {
+          "tag": "NoWound",
+          "value": {
+            "#tup": []
+          }
+        }
+      }
+    },
+    {
+      "#meta": {
+        "index": 5
+      },
+      "combat": {
+        "coverBlocking": true,
+        "coverIntegrity": {
+          "#bigint": "76"
+        },
+        "health": {
+          "#bigint": "80"
+        },
+        "incapacitated": false,
+        "suppression": {
+          "#bigint": "12"
+        }
+      },
+      "last": {
+        "attackerFaction": "Blue",
+        "contact": true,
+        "coverDamage": {
+          "#bigint": "0"
+        },
+        "damage": {
+          "#bigint": "20"
+        },
+        "destroyed": false,
+        "eventId": "attack:representative",
+        "explanationOrder": [
+          "COMBAT-COLLISION-001",
+          "COMBAT-ENGAGEMENT-001",
+          "COMBAT-TRACE-002",
+          "COMBAT-ARMOR-004",
+          "COMBAT-DAMAGE-001",
+          "COMBAT-COVER-003",
+          "COMBAT-PENETRATION-001",
+          "COMBAT-HEALTH-001",
+          "COMBAT-WOUND-001",
+          "COMBAT-SUPPRESSION-001",
+          "COMBAT-COLLATERAL-001"
+        ],
+        "lastAction": "ResolveConsequences",
+        "preparationRaw": {
+          "#bigint": "13000"
+        },
+        "retentionRaw": {
+          "#bigint": "8000"
+        },
+        "stopsProjectile": false,
+        "suppressionDelta": {
+          "#bigint": "12"
+        },
+        "targetFaction": "Red",
+        "traceRaw": {
+          "#bigint": "10000"
+        },
+        "wound": {
+          "tag": "NoWound",
+          "value": {
+            "#tup": []
+          }
+        }
+      }
+    },
+    {
+      "#meta": {
+        "index": 6
+      },
+      "combat": {
+        "coverBlocking": true,
+        "coverIntegrity": {
+          "#bigint": "64"
+        },
+        "health": {
+          "#bigint": "80"
+        },
+        "incapacitated": false,
+        "suppression": {
+          "#bigint": "12"
+        }
+      },
+      "last": {
+        "attackerFaction": "",
+        "contact": false,
+        "coverDamage": {
+          "#bigint": "12"
+        },
+        "damage": {
+          "#bigint": "0"
+        },
+        "destroyed": false,
+        "eventId": "cover:sample",
+        "explanationOrder": [
+          "COMBAT-COVER-DESTRUCTION-001",
+          "COMBAT-COVER-003"
+        ],
+        "lastAction": "ResolveCoverImpact",
+        "preparationRaw": {
+          "#bigint": "0"
+        },
+        "retentionRaw": {
+          "#bigint": "0"
+        },
+        "stopsProjectile": true,
+        "suppressionDelta": {
+          "#bigint": "0"
+        },
+        "targetFaction": "",
+        "traceRaw": {
+          "#bigint": "0"
+        },
+        "wound": {
+          "tag": "NoWound",
+          "value": {
+            "#tup": []
+          }
+        }
+      }
+    },
+    {
+      "#meta": {
+        "index": 7
+      },
+      "combat": {
+        "coverBlocking": true,
+        "coverIntegrity": {
+          "#bigint": "64"
+        },
+        "health": {
+          "#bigint": "60"
+        },
+        "incapacitated": false,
+        "suppression": {
+          "#bigint": "24"
+        }
+      },
+      "last": {
+        "attackerFaction": "Blue",
+        "contact": true,
+        "coverDamage": {
+          "#bigint": "0"
+        },
+        "damage": {
+          "#bigint": "20"
+        },
+        "destroyed": false,
+        "eventId": "attack:representative",
+        "explanationOrder": [
+          "COMBAT-COLLISION-001",
+          "COMBAT-ENGAGEMENT-001",
+          "COMBAT-TRACE-002",
+          "COMBAT-ARMOR-004",
+          "COMBAT-DAMAGE-001",
+          "COMBAT-COVER-003",
+          "COMBAT-PENETRATION-001",
+          "COMBAT-HEALTH-001",
+          "COMBAT-WOUND-001",
+          "COMBAT-SUPPRESSION-001",
+          "COMBAT-COLLATERAL-001"
+        ],
+        "lastAction": "ResolveConsequences",
+        "preparationRaw": {
+          "#bigint": "13000"
+        },
+        "retentionRaw": {
+          "#bigint": "8000"
+        },
+        "stopsProjectile": false,
+        "suppressionDelta": {
+          "#bigint": "12"
+        },
+        "targetFaction": "Red",
+        "traceRaw": {
+          "#bigint": "10000"
+        },
+        "wound": {
+          "tag": "NoWound",
+          "value": {
+            "#tup": []
+          }
+        }
+      }
+    },
+    {
+      "#meta": {
+        "index": 8
+      },
+      "combat": {
+        "coverBlocking": true,
+        "coverIntegrity": {
+          "#bigint": "64"
+        },
+        "health": {
+          "#bigint": "40"
+        },
+        "incapacitated": false,
+        "suppression": {
+          "#bigint": "36"
+        }
+      },
+      "last": {
+        "attackerFaction": "Blue",
+        "contact": true,
+        "coverDamage": {
+          "#bigint": "0"
+        },
+        "damage": {
+          "#bigint": "20"
+        },
+        "destroyed": false,
+        "eventId": "attack:representative",
+        "explanationOrder": [
+          "COMBAT-COLLISION-001",
+          "COMBAT-ENGAGEMENT-001",
+          "COMBAT-TRACE-002",
+          "COMBAT-ARMOR-004",
+          "COMBAT-DAMAGE-001",
+          "COMBAT-COVER-003",
+          "COMBAT-PENETRATION-001",
+          "COMBAT-HEALTH-001",
+          "COMBAT-WOUND-001",
+          "COMBAT-SUPPRESSION-001",
+          "COMBAT-COLLATERAL-001"
+        ],
+        "lastAction": "ResolveConsequences",
+        "preparationRaw": {
+          "#bigint": "13000"
+        },
+        "retentionRaw": {
+          "#bigint": "8000"
+        },
+        "stopsProjectile": false,
+        "suppressionDelta": {
+          "#bigint": "12"
+        },
+        "targetFaction": "Red",
+        "traceRaw": {
+          "#bigint": "10000"
+        },
+        "wound": {
+          "tag": "NoWound",
+          "value": {
+            "#tup": []
+          }
+        }
+      }
+    }
+  ]
+}

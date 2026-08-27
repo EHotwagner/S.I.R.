@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="sir-quint-q4-combat" tests="14" failures="0" errors="0" skipped="0">
+<testsuite name="sir-quint-q4-combat" tests="18" failures="0" errors="0" skipped="0">
   <testcase classname="SIR.QuintQ4" name="witness-representativeDamageIsTwenty"/>
+  <testcase classname="SIR.QuintQ4" name="witness-damageRoundingPreservesInt32Wrap"/>
   <testcase classname="SIR.QuintQ4" name="witness-woundThresholdsAreExact"/>
   <testcase classname="SIR.QuintQ4" name="witness-zeroHealthMeansIncapacitated"/>
   <testcase classname="SIR.QuintQ4" name="witness-suppressionNeedsPositiveDamageAndRecoversFive"/>
   <testcase classname="SIR.QuintQ4" name="witness-destroyingCoverConsumesCurrentCollision"/>
   <testcase classname="SIR.QuintQ4" name="witness-collateralOutcomeIgnoresFaction"/>
   <testcase classname="SIR.QuintQ4" name="seeded-invariant-simulation"/>
+  <testcase classname="SIR.QuintQ4" name="exact-runtime-correspondence"/>
   <testcase classname="SIR.QuintQ4" name="sampled-runtime-correspondence"/>
   <testcase classname="SIR.QuintQ4" name="mutation-changed-armor-retention"/>
   <testcase classname="SIR.QuintQ4" name="mutation-removed-suppression-guard"/>
   <testcase classname="SIR.QuintQ4" name="mutation-stale-generated-module"/>
+  <testcase classname="SIR.QuintQ4" name="mutation-wrong-model-identity"/>
+  <testcase classname="SIR.QuintQ4" name="mutation-wrong-external-algorithm-contract"/>
   <testcase classname="SIR.QuintQ4" name="mutation-wrong-action-mapping"/>
   <testcase classname="SIR.QuintQ4" name="mutation-wrong-observable-field"/>
   <testcase classname="SIR.QuintQ4" name="mutation-corrupted-interpreter-boundary-result"/>

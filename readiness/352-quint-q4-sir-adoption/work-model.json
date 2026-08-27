@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "00b28f4d153d1987023408fa06a161005833ae102b7ee44f82d26fd2cba85d06"
+        "value": "2c9e92b95d4019b07f5cd3985585471326ad3bdd7f086aea924251cc29344b6a"
       }
     },
     {
@@ -1121,7 +1121,7 @@
     },
     {
       "id": "EV007",
-      "kind": "verification",
+      "kind": "deferral",
       "subjectType": "task",
       "subjectId": "T007",
       "taskRefs": [
@@ -1132,16 +1132,14 @@
         "FR-008"
       ],
       "artifactRefs": [
-        "readiness/352-quint-q4-sir-adoption/quint-standalone.json",
-        "scripts/qualify-quint-q4-sir-combat.sh",
-        "tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj"
+        "readiness/352-quint-q4-sir-adoption/quint-standalone.json"
       ],
-      "result": "pass",
+      "result": "deferred",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
       "performanceMeasurements": [],
-      "rationale": null,
+      "rationale": "The standalone focused receipt builds the native replay adapter but does not bind frozen-corpus and byte-equal Fable results into its committed observed report; generated binding replacement also remains blocked on FS-GG.SDD issue 932.",
       "source": "work/352-quint-q4-sir-adoption/evidence.yml",
       "sourceLocation": {
         "line": 7,
@@ -1338,7 +1336,7 @@
           "path": "work/352-quint-q4-sir-adoption/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "00b28f4d153d1987023408fa06a161005833ae102b7ee44f82d26fd2cba85d06"
+            "value": "2c9e92b95d4019b07f5cd3985585471326ad3bdd7f086aea924251cc29344b6a"
           },
           "schemaVersion": 1
         },
@@ -1369,7 +1367,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "399cda882e8c00de54c5b1d1b51ffc4b511b1899d908ab7c87415bbbf19f1cf7"
+        "value": "7623520be1842eea1dc005467bb0be465d7591e21d0b5bb4fffc2ed5f0ac2fed"
       },
       "currency": "current"
     }
