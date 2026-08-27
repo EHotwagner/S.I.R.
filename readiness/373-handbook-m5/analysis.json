@@ -4,7 +4,7 @@
   "workId": "373-handbook-m5",
   "stage": "analyze",
   "status": "implementationReady",
-  "generator": "FS.GG.SDD.Artifacts/1.4.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -41,7 +41,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "3d53f5f41416f66fe02b115f1ecddcb65e3cfd7ba4855310c6c787ba59b581c5"
+        "value": "cbb869cb726ef66a04c239c4640b13ad80c4968cfa10025021b49caafe78dbb9"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"

@@ -11,7 +11,7 @@ sourceAnalysis: readiness/373-handbook-m5/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/373-handbook-m5/analysis.json
-    digest: ea410f7d50eb9c484dac39a17f62d9bf3f2ca5392fb89c9e12c5b7b5eacbad3a
+    digest: 0c57cb125fb911584141f53a54f4a437da56ab5b503ab442a94a8dd4fce6f9df
     schemaVersion: 1
   - label: checklist
     path: work/373-handbook-m5/checklist.md

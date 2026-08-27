@@ -31,7 +31,7 @@ node work/373-handbook-m5/audit-roadmap-ledger.mjs
 
 analysis_report="$(mktemp)"
 trap 'rm -f "$analysis_report"' EXIT
-fsgg-sdd analyze --work 373-handbook-m5 --json > "$analysis_report"
+dotnet fsgg-sdd analyze --work 373-handbook-m5 --root . --json > "$analysis_report"
 jq -e '.analysis.readiness == "implementationReady" and .analysis.blockingCount == 0 and .analysis.staleSourceCount == 0' "$analysis_report" >/dev/null
 printf '%s\n' \
   '<?xml version="1.0" encoding="UTF-8"?>' \
