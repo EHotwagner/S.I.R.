@@ -100,6 +100,14 @@ let main arguments =
         let traces, states = QuintQ4ReplayFixtures.replayDirectory directory (int count)
         printfn "SIR-Q4-SAMPLED-ACCEPT: traces=%d states=%d" traces states
         0
+    | [ "--quint-q4-expected-divergence"; directory; count; controlName ] ->
+        try
+            QuintQ4ReplayFixtures.replayDirectory directory (int count) |> ignore
+            eprintfn "Q4 expected-data control unexpectedly passed: %s" controlName
+            1
+        with error ->
+            eprintfn "%s mutation=%s" error.Message controlName
+            1
     | [ "--inject-quint-q4-mutation"; mutationName; directory; count ] ->
         match QuintQ4ReplayFixtures.tryParseMutation mutationName with
         | None ->

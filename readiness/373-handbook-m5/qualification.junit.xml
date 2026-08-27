@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sir-handbook-m5-qualification" tests="6" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.HandbookM5" name="locked-release-strict-docs-build"/>
+  <testcase classname="SIR.HandbookM5" name="structural-link-vocabulary-audit"/>
+  <testcase classname="SIR.HandbookM5" name="complete-runtime-map-and-five-structural-inversions"/>
+  <testcase classname="SIR.HandbookM5" name="exact-sampled-and-three-runtime-inversions"/>
+  <testcase classname="SIR.HandbookM5" name="roadmap-ledger-only-m5-checked"/>
+  <testcase classname="SIR.HandbookM5" name="sdd-analysis-current-and-implementation-ready"/>
+</testsuite>

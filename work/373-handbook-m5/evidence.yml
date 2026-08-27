@@ -1,0 +1,605 @@
+schemaVersion: 1
+workId: 373-handbook-m5
+stage: evidence
+status: evidenceReady
+sourceSpec: work/373-handbook-m5/spec.md
+sourceClarifications: work/373-handbook-m5/clarifications.md
+sourceChecklist: work/373-handbook-m5/checklist.md
+sourcePlan: work/373-handbook-m5/plan.md
+sourceTasks: work/373-handbook-m5/tasks.yml
+sourceAnalysis: readiness/373-handbook-m5/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/373-handbook-m5/analysis.json
+    digest: 6686d1bce61714321ddb27bcadbbcd83327f0b9a7850fa905e0ff054456fa8e0
+    schemaVersion: 1
+  - label: checklist
+    path: work/373-handbook-m5/checklist.md
+    digest: 777a8197b2b4fff24bfe3b623631ecbc792eb7b7f99424b18ce0c88b02f17206
+    schemaVersion: 1
+  - label: clarifications
+    path: work/373-handbook-m5/clarifications.md
+    digest: 36ff805aa382670785206a2ae10a16e88343f3294ef0f0bc5c900054276e1356
+    schemaVersion: 1
+  - label: plan
+    path: work/373-handbook-m5/plan.md
+    digest: 5a1c5be5fdc11e3c65d5d53bda4145a6dfe2c803a42e9d086b3123af92314885
+    schemaVersion: 1
+  - label: spec
+    path: work/373-handbook-m5/spec.md
+    digest: dc479779efe6354cf971138f84fcb16a0bef769e732191c47330f4eac0bdcd99
+    schemaVersion: 1
+  - label: tasks
+    path: work/373-handbook-m5/tasks.yml
+    digest: 73abfe876633c36375f91d4099aa4190076b990106f9a3844227da33df80f1c1
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV006]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV008]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV012]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV013]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV014]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV015]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV016]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV017]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003, PD-004, PD-005, PD-006, PD-007, PD-008]
+    obligationRefs: [EV018]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003, PD-004, PD-005, PD-006, PD-007, PD-008]
+    obligationRefs: [EV019]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV020]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV021]
+    artifacts: [docs/rules/sir-combat.md, docs/sir-combat-quint-handbook-roadmap.md, docs/sir-combat-quint-handbook.md, readiness/373-handbook-m5/analysis-preflight.junit.xml, readiness/373-handbook-m5/docs-build.junit.xml, readiness/373-handbook-m5/link-audit.junit.xml, readiness/373-handbook-m5/qualification.junit.xml, readiness/373-handbook-m5/roadmap-ledger.junit.xml, readiness/373-handbook-m5/runtime-correspondence.junit.xml, readiness/373-handbook-m5/sir-combat-q4.junit.xml, tests/SIR.Conformance.Shared/Program.fs, tests/SIR.Conformance.Shared/QuintQ4ReplayFixtures.fs, work/359-handbook-m1/audit-handbook-links.mjs, work/373-handbook-m5/audit-roadmap-ledger.mjs, work/373-handbook-m5/audit-runtime-correspondence.mjs, work/373-handbook-m5/qualify-handbook-m5.sh]
+    sourceRefs:
+      - kind: verification
+        path: work/373-handbook-m5/qualify-handbook-m5.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/373-handbook-m5/qualification.junit.xml
+      digest: "sha256:25349156054c0b1996d52c45cfeb62d5b602d53fbda558bd66d4ae353243c71a"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Aggregate receipt follows dedicated docs, and SDD-analysis checks., link, real-Q4-runtime, roadmap-ledger, runtime-correspondence]
+lifecycleNotes:
+  - "Next lifecycle action: verify."
