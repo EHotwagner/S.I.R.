@@ -11,7 +11,7 @@ sourceAnalysis: readiness/366-main-ci-routing/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/366-main-ci-routing/analysis.json
-    digest: 0d1f087aae328059ee287b4cb4af5435816b13efeb319844f977d136b12bd790
+    digest: 2765e088c75d15fc2605038fd76d139f8e4300f9d846bb39e148ae2a07085909
     schemaVersion: 1
   - label: checklist
     path: work/366-main-ci-routing/checklist.md
