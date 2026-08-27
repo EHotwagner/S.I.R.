@@ -5,7 +5,7 @@ workspace: S.I.R-roadmap-m5
 cycle: roadmap-sir-combat-quint-handbook-m5-runtime-correspondence
 lane: sdd
 toolVersion: 1.4.0
-commit: 62fd8eaff393a196b3ce13e1225f8506846faf39
+commit: 95b7545dd372c89fe24e1d5b9601d05de84274fc
 ---
 
 # Development feedback — combat Quint handbook M5 runtime correspondence
@@ -38,7 +38,7 @@ The prior M4 aggregate reaches an expected milestone-local ledger failure on a d
 - **Expected:** All sixteen stable rules have a controlled status; supercover geometry is explicitly missing; exact and sampled traces traverse real production entry points; three independent mutations report transition, action, pointer, expected, actual, adapter, and implementation before untouched replay returns green.
 - **Observed:** The focused audit passed 47 checks, five structural red/restored-green controls, and sixteen mappings. The real Q4 qualifier accepted one exact trace/nine states and seed-352 sampling with sixteen traces/144 states; all three runtime divergence controls failed at their intended seam, after which untouched exact and sampled replay were rerun and restored green.
 - **Evidence:** file:docs/sir-combat-quint-handbook.md; file:work/373-handbook-m5/audit-runtime-correspondence.mjs; file:readiness/373-handbook-m5/runtime-correspondence.junit.xml; file:readiness/373-handbook-m5/sir-combat-q4.junit.xml; command:bash work/373-handbook-m5/qualify-handbook-m5.sh
-- **Version:** S.I.R. commit `62fd8ea`; Quint 0.32.0; authority digest `f121c201a6f77d0cfc4c86fe72455e8d821b3d941bf012ab0e3482db103e43e7`.
+- **Version:** S.I.R. commit `95b7545`; Quint 0.32.0; authority digest `f121c201a6f77d0cfc4c86fe72455e8d821b3d941bf012ab0e3482db103e43e7`.
 - **Owner:** EHotwagner/S.I.R. handbook qualification
 - **Recurrence:** seen again `feedback/2026-08-27-sir-handbook-m2-representative-attack.md` §4.1 and `feedback/2026-08-27-sir-handbook-m4-formal-reasoning.md` §4.1, now extended to complete runtime correspondence.
 - **Avoidable cost:** one rendered-marker correction.
@@ -51,7 +51,7 @@ The prior M4 aggregate reaches an expected milestone-local ledger failure on a d
 - **Expected:** Descendant baseline qualification should be able to exercise inherited build/docs/model/runtime gates without failing solely because the predecessor is no longer the newly checked milestone.
 - **Observed:** `qualify-handbook-m4.sh` passed inherited build, docs, links, formal mutations, and Q4/runtime checks before its final ledger assertion rejected the already-checked M4 state with `expected only M4 newly checked; got []`.
 - **Evidence:** file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m5-runtime-correspondence.jsonl; file:work/365-handbook-m4/qualify-handbook-m4.sh; file:work/365-handbook-m4/audit-roadmap-ledger.mjs
-- **Version:** S.I.R. report commit `62fd8ea`; inherited M4 qualification harness from base `858368e`.
+- **Version:** S.I.R. report commit `95b7545`; inherited M4 qualification harness from base `858368e`.
 - **Owner:** EHotwagner/S.I.R. handbook milestone qualification harness
 - **Recurrence:** new
 - **Avoidable cost:** one approximately two-minute baseline run reached the expected final ledger failure.
