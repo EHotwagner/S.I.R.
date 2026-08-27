@@ -17,10 +17,10 @@ for pass in first converged; do
   fsgg-sdd ship --work "$work_id" --json > "$tmp_dir/$pass-ship.json" || true
 done
 
-jq -e '.outcome == "noChange" and .analysis.blockingCount == 0 and .analysis.staleSourceCount == 0' "$tmp_dir/converged-analyze.json" >/dev/null
-jq -e '.outcome == "noChange" and .evidence.blockingCount == 0 and .evidence.staleCount == 0 and .evidence.syntheticCount == 0' "$tmp_dir/converged-evidence.json" >/dev/null
-jq -e '.outcome == "noChange" and .verification.blockingCount == 0 and .verification.evidenceStaleCount == 0 and .verification.evidenceSyntheticCount == 0' "$tmp_dir/converged-verify.json" >/dev/null
-jq -e '.outcome == "noChange" and .ship.blockingCount == 0 and .ship.generatedViewState == "current"' "$tmp_dir/converged-ship.json" >/dev/null
+jq -e '.outcome == "noChange" and ([.changedArtifacts[].operation] | all(. == "noChange")) and .analysis.blockingCount == 0 and .analysis.staleSourceCount == 0' "$tmp_dir/converged-analyze.json" >/dev/null
+jq -e '.outcome == "noChange" and ([.changedArtifacts[].operation] | all(. == "noChange")) and .evidence.blockingCount == 0 and .evidence.staleCount == 0 and .evidence.syntheticCount == 0' "$tmp_dir/converged-evidence.json" >/dev/null
+jq -e '.outcome == "noChange" and ([.changedArtifacts[].operation] | all(. == "noChange")) and .verification.blockingCount == 0 and .verification.evidenceStaleCount == 0 and .verification.evidenceSyntheticCount == 0' "$tmp_dir/converged-verify.json" >/dev/null
+jq -e '.outcome == "noChange" and ([.changedArtifacts[].operation] | all(. == "noChange")) and .ship.blockingCount == 0 and .ship.generatedViewState == "current"' "$tmp_dir/converged-ship.json" >/dev/null
 
 cat > "$receipt" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
