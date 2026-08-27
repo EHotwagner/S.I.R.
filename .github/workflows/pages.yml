@@ -105,6 +105,14 @@ jobs:
           jq -e --arg commit '${{ github.event.workflow_run.head_sha }}' --arg route "$(jq -r .digest artifacts/ci/route.json)" \
             '.schema == "sir.ci-gate-result/v1" and .gate == "documentation" and .status == "pass" and .source.commit == $commit and .routeDigest == $route' \
             artifacts/ci/results/documentation.json >/dev/null
+          node scripts/qualified-site-handoff.mjs verify \
+            --handoff artifacts/qualified-site-handoff/site-handoff.json \
+            --route artifacts/ci/route.json \
+            --gate artifacts/ci/results/documentation.json \
+            --site-receipt "$(<artifacts/ci/routed-site.receipt.path)" \
+            --archive artifacts/qualified-site-handoff/protected-qualified-site.tar \
+            --commit '${{ github.event.workflow_run.head_sha }}' \
+            --tree "$(git rev-parse 'HEAD^{tree}')"
           node scripts/production-build-receipt.mjs verify \
             --owner-command scripts/qualify-pr.sh \
             --receipt "$(<artifacts/ci/routed-site.receipt.path)"
