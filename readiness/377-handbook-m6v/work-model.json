@@ -53,7 +53,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "6947e52f8197dbccb8c02d90264c62509301e1ad5a8c5f77c6108883074a77da"
+        "value": "31f2ca876fbeda36683a4e394f04cbb5eae51a18bd8abe6887c6e706e9990761"
       }
     },
     {
@@ -65,7 +65,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "3273a2335bc8ff1f7cdf9d5caa66818b7448b88e98682d974fd7cb89aabcb6ee"
+        "value": "a50d9919c75faa31addd377e32f3d09ab407df471af267d73a1e1e2ccd377e79"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "928f6a9af36611a61a22941a3cd4e8d47e016f81c68f450d12a5eb3457a84100"
+        "value": "7e833702dc0d95c4605727e6ab9d749c31a70b85dc7afb847c7a1101e2a7df82"
       }
     },
     {
@@ -101,7 +101,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "83a6286fc0e9d5e463a63ef5be0446f784ddd7582900ebc2f0a90f8ee3cf6e74"
+        "value": "3d91f5860392e1ddd2d4fc61a5d5ef4663c02f8516f3864a5ca680bfef141625"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "3c503cbcc7ee4e4440f3d0c76c3debe1477f935ab82352ea0773288fe4d1a61d"
+        "value": "0b6109c8ea68bc0df5aae89275a34e32600b64d10901bda398bb99c5d9a4ea77"
       }
     },
     {
@@ -125,7 +125,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "24003b5ef50b0e9df45946e5649e998b646adead99f2c0a66fb48fcbc6e58ccf"
+        "value": "ca897553ac997282f77d01cd812984e9cfa7d8bec95af146e56a773afee65f97"
       }
     }
   ],
@@ -144,7 +144,7 @@
       "handbook-m6v-six-diagram-render-v1"
     ],
     "workloadDefinitionDigests": [
-      "handbook-m6v-six-diagram-render-v1=sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df"
+      "handbook-m6v-six-diagram-render-v1=sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b"
     ],
     "maximumExpectedScale": "six diagrams; 180 SVG elements; 120 KiB; 24 animated elements",
     "maxP95Ms": 100,
@@ -177,7 +177,7 @@
       "classification": [],
       "source": "work/377-handbook-m6v/spec.md",
       "sourceLocation": {
-        "line": 68,
+        "line": 71,
         "column": 1
       },
       "linkedTaskIds": [
@@ -199,7 +199,7 @@
       "classification": [],
       "source": "work/377-handbook-m6v/spec.md",
       "sourceLocation": {
-        "line": 69,
+        "line": 72,
         "column": 1
       },
       "linkedTaskIds": [
@@ -221,7 +221,7 @@
       "classification": [],
       "source": "work/377-handbook-m6v/spec.md",
       "sourceLocation": {
-        "line": 70,
+        "line": 73,
         "column": 1
       },
       "linkedTaskIds": [
@@ -242,7 +242,7 @@
       "classification": [],
       "source": "work/377-handbook-m6v/spec.md",
       "sourceLocation": {
-        "line": 71,
+        "line": 74,
         "column": 1
       },
       "linkedTaskIds": [
@@ -264,7 +264,7 @@
       "classification": [],
       "source": "work/377-handbook-m6v/spec.md",
       "sourceLocation": {
-        "line": 72,
+        "line": 75,
         "column": 1
       },
       "linkedTaskIds": [
@@ -277,8 +277,8 @@
     },
     {
       "id": "FR-006",
-      "title": "Qualification MUST build the real strict FsDocs site and inspect the generated handbook in headless Chromium for normal, reduced-motion, print, and disabled-effects routes, retaining deterministic render fingerprints and human-inspectable screenshots. (covers AC-006)",
-      "text": "Qualification MUST build the real strict FsDocs site and inspect the generated handbook in headless Chromium for normal, reduced-motion, print, and disabled-effects routes, retaining deterministic render fingerprints and human-inspectable screenshots. (covers AC-006)",
+      "title": "Qualification MUST build the real strict FsDocs site and inspect the generated handbook in headless Chromium for normal, reduced-motion, print, disabled-effects, and CSS-disabled routes, retaining deterministic render fingerprints and human-inspectable screenshots. (covers AC-006)",
+      "text": "Qualification MUST build the real strict FsDocs site and inspect the generated handbook in headless Chromium for normal, reduced-motion, print, disabled-effects, and CSS-disabled routes, retaining deterministic render fingerprints and human-inspectable screenshots. (covers AC-006)",
       "acceptanceCriteria": [
         "AC-006"
       ],
@@ -286,7 +286,7 @@
       "classification": [],
       "source": "work/377-handbook-m6v/spec.md",
       "sourceLocation": {
-        "line": 73,
+        "line": 76,
         "column": 1
       },
       "linkedTaskIds": [
@@ -308,7 +308,7 @@
       "classification": [],
       "source": "work/377-handbook-m6v/spec.md",
       "sourceLocation": {
-        "line": 74,
+        "line": 77,
         "column": 1
       },
       "linkedTaskIds": [
@@ -330,7 +330,7 @@
       "classification": [],
       "source": "work/377-handbook-m6v/spec.md",
       "sourceLocation": {
-        "line": 75,
+        "line": 78,
         "column": 1
       },
       "linkedTaskIds": [
@@ -351,7 +351,7 @@
       "classification": [],
       "source": "work/377-handbook-m6v/spec.md",
       "sourceLocation": {
-        "line": 76,
+        "line": 79,
         "column": 1
       },
       "linkedTaskIds": [
@@ -2283,7 +2283,7 @@
             "handbook-m6v-six-diagram-render-v1"
           ],
           "workloadDefinitionDigests": [
-            "handbook-m6v-six-diagram-render-v1=sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df"
+            "handbook-m6v-six-diagram-render-v1=sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b"
           ],
           "maximumExpectedScale": "six diagrams; 180 SVG elements; 120 KiB; 24 animated elements",
           "maxP95Ms": 100,
@@ -2310,9 +2310,9 @@
         ],
         "stressWorkloadIds": [],
         "workloadDefinitionDigests": [
-          "handbook-m6v-six-diagram-render-v1=sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df"
+          "handbook-m6v-six-diagram-render-v1=sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b"
         ],
-        "currencyToken": "sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df",
+        "currencyToken": "sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b",
         "capturedAfterUtc": "2026-08-28T00:00:00Z",
         "maxP95Ms": 100,
         "maxP99Ms": 200,
@@ -2328,7 +2328,7 @@
         "sampleSets": [
           {
             "workloadId": "handbook-m6v-six-diagram-render-v1",
-            "workloadDefinitionDigest": "sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df",
+            "workloadDefinitionDigest": "sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b",
             "workloadClass": "normal-play",
             "targetFps": 60,
             "maxP95Ms": 100,
@@ -2346,41 +2346,111 @@
               "headless-browser"
             ],
             "warmupPolicy": "same-browser-three-navigation-warmup",
-            "samplePolicy": "nearest-rank/30-no-store-navigation-decode-runs",
+            "samplePolicy": "nearest-rank/100-no-store-navigation-decode-runs",
             "capturedAtUtc": "2026-08-28T00:00:00Z",
-            "currencyToken": "sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df",
+            "currencyToken": "sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b",
             "probeReadbackContaminated": false,
             "durationSamplesMs": [
-              48.5,
-              48.7,
-              45.5,
-              48.7,
-              50.6,
-              48.5,
-              42.9,
-              48.2,
-              43.3,
-              48.6,
-              46.3,
-              42.4,
-              47.2,
-              45.1,
-              49.7,
-              47.4,
-              53.1,
-              49.2,
-              47.5,
-              49.7,
-              48.4,
-              53.6,
-              46.8,
-              48.5,
-              52,
-              47.5,
+              47.8,
+              53.7,
+              46,
+              45.7,
+              51.2,
               48.8,
+              51.7,
+              45.2,
+              50.5,
+              44.2,
+              47,
+              48,
+              47.7,
+              48.8,
+              49,
+              47.1,
+              51.9,
+              46.4,
+              51.1,
+              51,
+              52.4,
+              59.3,
+              48.2,
+              53.2,
+              51.9,
+              56.5,
+              49.8,
+              56,
+              56.2,
+              52.3,
+              62.4,
+              58.5,
+              54.9,
+              60,
+              56.6,
+              56.6,
+              56.3,
+              62.7,
+              60,
+              54.4,
+              58,
+              61.5,
+              60.4,
+              64.5,
+              65.4,
+              63,
+              48.4,
+              49.8,
+              55.5,
+              55.5,
+              59.9,
+              52.6,
+              55.7,
+              61,
+              54.7,
+              62.9,
+              54.8,
+              55.6,
               56.1,
-              53.5,
-              46.8
+              58.2,
+              59.1,
+              60.5,
+              63.4,
+              60.3,
+              65,
+              62.3,
+              62,
+              64.7,
+              58.7,
+              62.6,
+              65.9,
+              61.7,
+              69.2,
+              62.8,
+              66.6,
+              67.2,
+              59.9,
+              69,
+              68.1,
+              59.2,
+              59.7,
+              66.1,
+              55.6,
+              62.9,
+              67.6,
+              57.4,
+              58.4,
+              60,
+              58.3,
+              53.6,
+              60.9,
+              53.9,
+              57.1,
+              59.3,
+              57.1,
+              57,
+              61.6,
+              62.9,
+              68,
+              57.9
             ],
             "catchUpFrames": [
               0
@@ -2391,8 +2461,8 @@
       "performanceMeasurements": [
         {
           "workloadId": "handbook-m6v-six-diagram-render-v1",
-          "p95Ms": 53.6,
-          "p99Ms": 56.1,
+          "p95Ms": 67.2,
+          "p99Ms": 69,
           "maxCatchUpFrames": 0
         }
       ],
@@ -2442,7 +2512,7 @@
           "path": "readiness/377-handbook-m6v/performance-evidence.json",
           "digest": {
             "algorithm": "sha256",
-            "value": "6947e52f8197dbccb8c02d90264c62509301e1ad5a8c5f77c6108883074a77da"
+            "value": "31f2ca876fbeda36683a4e394f04cbb5eae51a18bd8abe6887c6e706e9990761"
           },
           "schemaVersion": 1
         },
@@ -2450,7 +2520,7 @@
           "path": "work/377-handbook-m6v/checklist.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "3273a2335bc8ff1f7cdf9d5caa66818b7448b88e98682d974fd7cb89aabcb6ee"
+            "value": "a50d9919c75faa31addd377e32f3d09ab407df471af267d73a1e1e2ccd377e79"
           },
           "schemaVersion": 1
         },
@@ -2466,7 +2536,7 @@
           "path": "work/377-handbook-m6v/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "928f6a9af36611a61a22941a3cd4e8d47e016f81c68f450d12a5eb3457a84100"
+            "value": "7e833702dc0d95c4605727e6ab9d749c31a70b85dc7afb847c7a1101e2a7df82"
           },
           "schemaVersion": 1
         },
@@ -2474,7 +2544,7 @@
           "path": "work/377-handbook-m6v/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "83a6286fc0e9d5e463a63ef5be0446f784ddd7582900ebc2f0a90f8ee3cf6e74"
+            "value": "3d91f5860392e1ddd2d4fc61a5d5ef4663c02f8516f3864a5ca680bfef141625"
           },
           "schemaVersion": 1
         },
@@ -2482,7 +2552,7 @@
           "path": "work/377-handbook-m6v/spec.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "3c503cbcc7ee4e4440f3d0c76c3debe1477f935ab82352ea0773288fe4d1a61d"
+            "value": "0b6109c8ea68bc0df5aae89275a34e32600b64d10901bda398bb99c5d9a4ea77"
           },
           "schemaVersion": 1
         },
@@ -2490,14 +2560,14 @@
           "path": "work/377-handbook-m6v/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "24003b5ef50b0e9df45946e5649e998b646adead99f2c0a66fb48fcbc6e58ccf"
+            "value": "ca897553ac997282f77d01cd812984e9cfa7d8bec95af146e56a773afee65f97"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "b9497289793a76398c2737327261027e36299394f42866d156663fc9c0075969"
+        "value": "0ed676d196263fb427fd8ca271ff970d2720185185fbe3610763f809062e6eb2"
       },
       "currency": "current"
     }

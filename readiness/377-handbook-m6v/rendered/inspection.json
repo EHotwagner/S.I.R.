@@ -1,208 +1,649 @@
 {
   "schema": "sir.handbook.render-inspection/v1",
   "workloadId": "handbook-m6v-six-diagram-render-v1",
-  "workloadDefinitionDigest": "sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df",
+  "workloadDefinitionDigest": "sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b",
   "route": "strict FsDocs output /sir-combat-quint-handbook.html from a pinned no-store loopback host in pinned headless Chromium",
   "result": "pass",
   "timings": {
     "subject": "warm same-browser navigation start until the six external SVG image resources are loaded and decoded with non-zero intrinsic dimensions; unrelated template CDN load is observed but is not diagram readiness",
     "gatingClock": "browser performance timeline; decodedReadyAtMs after HTMLImageElement.decode()",
-    "browserLaunchObservationMs": 125.142,
+    "browserLaunchObservationMs": 131.198,
     "coldSiteNavigationObservation": {
-      "readinessMs": 141.2,
-      "wallObservationMs": 562.617
+      "readinessMs": 123.1,
+      "wallObservationMs": 520.741
     },
     "warmupNavigations": 3,
+    "sampleCount": 100,
     "samples": [
       {
-        "readinessMs": 48.5,
-        "wallObservationMs": 150.563,
-        "loadEventEndMs": 121.2,
-        "slowestSvgResponseEndMs": 34.2
+        "readinessMs": 47.8,
+        "wallObservationMs": 155.171,
+        "loadEventEndMs": 123.4,
+        "slowestSvgResponseEndMs": 33.1
       },
       {
-        "readinessMs": 48.7,
-        "wallObservationMs": 152.605,
-        "loadEventEndMs": 124.1,
-        "slowestSvgResponseEndMs": 34.5
+        "readinessMs": 53.7,
+        "wallObservationMs": 165.605,
+        "loadEventEndMs": 130.9,
+        "slowestSvgResponseEndMs": 37.9
       },
       {
-        "readinessMs": 45.5,
-        "wallObservationMs": 147.188,
-        "loadEventEndMs": 118,
+        "readinessMs": 46,
+        "wallObservationMs": 156.273,
+        "loadEventEndMs": 122.6,
         "slowestSvgResponseEndMs": 31.1
       },
       {
-        "readinessMs": 48.7,
-        "wallObservationMs": 154.746,
-        "loadEventEndMs": 124.4,
-        "slowestSvgResponseEndMs": 34.2
+        "readinessMs": 45.7,
+        "wallObservationMs": 161.521,
+        "loadEventEndMs": 129.1,
+        "slowestSvgResponseEndMs": 30.1
       },
       {
-        "readinessMs": 50.6,
-        "wallObservationMs": 160.385,
-        "loadEventEndMs": 128.5,
-        "slowestSvgResponseEndMs": 35.4
-      },
-      {
-        "readinessMs": 48.5,
-        "wallObservationMs": 159.199,
-        "loadEventEndMs": 125.8,
-        "slowestSvgResponseEndMs": 33.7
-      },
-      {
-        "readinessMs": 42.9,
-        "wallObservationMs": 149.199,
-        "loadEventEndMs": 119.3,
-        "slowestSvgResponseEndMs": 27.9
-      },
-      {
-        "readinessMs": 48.2,
-        "wallObservationMs": 161.569,
-        "loadEventEndMs": 132.6,
-        "slowestSvgResponseEndMs": 33.5
-      },
-      {
-        "readinessMs": 43.3,
-        "wallObservationMs": 147.714,
-        "loadEventEndMs": 120.1,
-        "slowestSvgResponseEndMs": 28.5
-      },
-      {
-        "readinessMs": 48.6,
-        "wallObservationMs": 153.517,
-        "loadEventEndMs": 124.9,
-        "slowestSvgResponseEndMs": 33.4
-      },
-      {
-        "readinessMs": 46.3,
-        "wallObservationMs": 158.17,
-        "loadEventEndMs": 122.7,
-        "slowestSvgResponseEndMs": 31.3
-      },
-      {
-        "readinessMs": 42.4,
-        "wallObservationMs": 148.623,
-        "loadEventEndMs": 120.7,
-        "slowestSvgResponseEndMs": 26.9
-      },
-      {
-        "readinessMs": 47.2,
-        "wallObservationMs": 157.026,
-        "loadEventEndMs": 126.5,
-        "slowestSvgResponseEndMs": 31.8
-      },
-      {
-        "readinessMs": 45.1,
-        "wallObservationMs": 154.304,
-        "loadEventEndMs": 124.7,
-        "slowestSvgResponseEndMs": 29.7
-      },
-      {
-        "readinessMs": 49.7,
-        "wallObservationMs": 161.338,
-        "loadEventEndMs": 131.1,
-        "slowestSvgResponseEndMs": 34
-      },
-      {
-        "readinessMs": 47.4,
-        "wallObservationMs": 155.791,
-        "loadEventEndMs": 126.8,
-        "slowestSvgResponseEndMs": 31.3
-      },
-      {
-        "readinessMs": 53.1,
-        "wallObservationMs": 163.732,
-        "loadEventEndMs": 133.7,
-        "slowestSvgResponseEndMs": 36.6
-      },
-      {
-        "readinessMs": 49.2,
-        "wallObservationMs": 159.329,
-        "loadEventEndMs": 131.3,
-        "slowestSvgResponseEndMs": 33.6
-      },
-      {
-        "readinessMs": 47.5,
-        "wallObservationMs": 158.543,
-        "loadEventEndMs": 128.4,
-        "slowestSvgResponseEndMs": 31.3
-      },
-      {
-        "readinessMs": 49.7,
-        "wallObservationMs": 162.516,
-        "loadEventEndMs": 132.1,
-        "slowestSvgResponseEndMs": 33.5
-      },
-      {
-        "readinessMs": 48.4,
-        "wallObservationMs": 160.183,
-        "loadEventEndMs": 128.4,
-        "slowestSvgResponseEndMs": 32.3
-      },
-      {
-        "readinessMs": 53.6,
-        "wallObservationMs": 164.701,
-        "loadEventEndMs": 133.4,
-        "slowestSvgResponseEndMs": 37.4
-      },
-      {
-        "readinessMs": 46.8,
-        "wallObservationMs": 166.649,
-        "loadEventEndMs": 129.8,
-        "slowestSvgResponseEndMs": 30.7
-      },
-      {
-        "readinessMs": 48.5,
-        "wallObservationMs": 160.591,
-        "loadEventEndMs": 130,
-        "slowestSvgResponseEndMs": 31.2
-      },
-      {
-        "readinessMs": 52,
-        "wallObservationMs": 164.865,
-        "loadEventEndMs": 135.5,
-        "slowestSvgResponseEndMs": 35.5
-      },
-      {
-        "readinessMs": 47.5,
-        "wallObservationMs": 148.594,
-        "loadEventEndMs": 128.2,
-        "slowestSvgResponseEndMs": 31.2
+        "readinessMs": 51.2,
+        "wallObservationMs": 169.445,
+        "loadEventEndMs": 135.1,
+        "slowestSvgResponseEndMs": 35.9
       },
       {
         "readinessMs": 48.8,
-        "wallObservationMs": 156.287,
-        "loadEventEndMs": 126.5,
+        "wallObservationMs": 160.866,
+        "loadEventEndMs": 129.8,
+        "slowestSvgResponseEndMs": 33.3
+      },
+      {
+        "readinessMs": 51.7,
+        "wallObservationMs": 158.811,
+        "loadEventEndMs": 128.4,
+        "slowestSvgResponseEndMs": 36.3
+      },
+      {
+        "readinessMs": 45.2,
+        "wallObservationMs": 154.296,
+        "loadEventEndMs": 125.4,
+        "slowestSvgResponseEndMs": 29.2
+      },
+      {
+        "readinessMs": 50.5,
+        "wallObservationMs": 163.152,
+        "loadEventEndMs": 132.8,
+        "slowestSvgResponseEndMs": 34.9
+      },
+      {
+        "readinessMs": 44.2,
+        "wallObservationMs": 160.388,
+        "loadEventEndMs": 125.9,
+        "slowestSvgResponseEndMs": 28.2
+      },
+      {
+        "readinessMs": 47,
+        "wallObservationMs": 156.571,
+        "loadEventEndMs": 126.2,
+        "slowestSvgResponseEndMs": 31.1
+      },
+      {
+        "readinessMs": 48,
+        "wallObservationMs": 161.204,
+        "loadEventEndMs": 129.9,
+        "slowestSvgResponseEndMs": 32.2
+      },
+      {
+        "readinessMs": 47.7,
+        "wallObservationMs": 162.101,
+        "loadEventEndMs": 131.7,
+        "slowestSvgResponseEndMs": 32.1
+      },
+      {
+        "readinessMs": 48.8,
+        "wallObservationMs": 158.812,
+        "loadEventEndMs": 128.9,
+        "slowestSvgResponseEndMs": 33.2
+      },
+      {
+        "readinessMs": 49,
+        "wallObservationMs": 165.332,
+        "loadEventEndMs": 132.2,
+        "slowestSvgResponseEndMs": 33.4
+      },
+      {
+        "readinessMs": 47.1,
+        "wallObservationMs": 158.353,
+        "loadEventEndMs": 129.8,
+        "slowestSvgResponseEndMs": 30.9
+      },
+      {
+        "readinessMs": 51.9,
+        "wallObservationMs": 160.786,
+        "loadEventEndMs": 130.1,
+        "slowestSvgResponseEndMs": 36.2
+      },
+      {
+        "readinessMs": 46.4,
+        "wallObservationMs": 164.063,
+        "loadEventEndMs": 132.8,
+        "slowestSvgResponseEndMs": 30.1
+      },
+      {
+        "readinessMs": 51.1,
+        "wallObservationMs": 164.684,
+        "loadEventEndMs": 134.8,
+        "slowestSvgResponseEndMs": 35
+      },
+      {
+        "readinessMs": 51,
+        "wallObservationMs": 165.495,
+        "loadEventEndMs": 134.3,
+        "slowestSvgResponseEndMs": 34.3
+      },
+      {
+        "readinessMs": 52.4,
+        "wallObservationMs": 167.026,
+        "loadEventEndMs": 135.4,
+        "slowestSvgResponseEndMs": 35.6
+      },
+      {
+        "readinessMs": 59.3,
+        "wallObservationMs": 166.936,
+        "loadEventEndMs": 135.6,
         "slowestSvgResponseEndMs": 31.9
       },
       {
-        "readinessMs": 56.1,
-        "wallObservationMs": 169.694,
-        "loadEventEndMs": 139.6,
-        "slowestSvgResponseEndMs": 39
+        "readinessMs": 48.2,
+        "wallObservationMs": 164.218,
+        "loadEventEndMs": 133.7,
+        "slowestSvgResponseEndMs": 31.7
       },
       {
-        "readinessMs": 53.5,
-        "wallObservationMs": 169.661,
-        "loadEventEndMs": 137,
+        "readinessMs": 53.2,
+        "wallObservationMs": 167.13,
+        "loadEventEndMs": 136.8,
+        "slowestSvgResponseEndMs": 35.9
+      },
+      {
+        "readinessMs": 51.9,
+        "wallObservationMs": 168.047,
+        "loadEventEndMs": 136.8,
+        "slowestSvgResponseEndMs": 34.5
+      },
+      {
+        "readinessMs": 56.5,
+        "wallObservationMs": 169.517,
+        "loadEventEndMs": 138.2,
+        "slowestSvgResponseEndMs": 39.1
+      },
+      {
+        "readinessMs": 49.8,
+        "wallObservationMs": 171.408,
+        "loadEventEndMs": 135.7,
+        "slowestSvgResponseEndMs": 32.1
+      },
+      {
+        "readinessMs": 56,
+        "wallObservationMs": 174.233,
+        "loadEventEndMs": 140.5,
+        "slowestSvgResponseEndMs": 37.1
+      },
+      {
+        "readinessMs": 56.2,
+        "wallObservationMs": 169.757,
+        "loadEventEndMs": 138.6,
+        "slowestSvgResponseEndMs": 36.9
+      },
+      {
+        "readinessMs": 52.3,
+        "wallObservationMs": 171.251,
+        "loadEventEndMs": 138.9,
+        "slowestSvgResponseEndMs": 33.7
+      },
+      {
+        "readinessMs": 62.4,
+        "wallObservationMs": 198.45,
+        "loadEventEndMs": 162.8,
+        "slowestSvgResponseEndMs": 42.8
+      },
+      {
+        "readinessMs": 58.5,
+        "wallObservationMs": 195.732,
+        "loadEventEndMs": 156.7,
+        "slowestSvgResponseEndMs": 39.2
+      },
+      {
+        "readinessMs": 54.9,
+        "wallObservationMs": 181.772,
+        "loadEventEndMs": 149.7,
+        "slowestSvgResponseEndMs": 35.6
+      },
+      {
+        "readinessMs": 60,
+        "wallObservationMs": 187.182,
+        "loadEventEndMs": 154.6,
+        "slowestSvgResponseEndMs": 41.1
+      },
+      {
+        "readinessMs": 56.6,
+        "wallObservationMs": 177.632,
+        "loadEventEndMs": 145.8,
+        "slowestSvgResponseEndMs": 37.5
+      },
+      {
+        "readinessMs": 56.6,
+        "wallObservationMs": 179.039,
+        "loadEventEndMs": 143.8,
+        "slowestSvgResponseEndMs": 37.1
+      },
+      {
+        "readinessMs": 56.3,
+        "wallObservationMs": 176.1,
+        "loadEventEndMs": 144.3,
+        "slowestSvgResponseEndMs": 37.2
+      },
+      {
+        "readinessMs": 62.7,
+        "wallObservationMs": 191.687,
+        "loadEventEndMs": 158.2,
+        "slowestSvgResponseEndMs": 43
+      },
+      {
+        "readinessMs": 60,
+        "wallObservationMs": 181.919,
+        "loadEventEndMs": 153.1,
+        "slowestSvgResponseEndMs": 39.7
+      },
+      {
+        "readinessMs": 54.4,
+        "wallObservationMs": 251.643,
+        "loadEventEndMs": 209,
+        "slowestSvgResponseEndMs": 35.5
+      },
+      {
+        "readinessMs": 58,
+        "wallObservationMs": 216.727,
+        "loadEventEndMs": 167.6,
+        "slowestSvgResponseEndMs": 38.1
+      },
+      {
+        "readinessMs": 61.5,
+        "wallObservationMs": 219.945,
+        "loadEventEndMs": 168.3,
         "slowestSvgResponseEndMs": 36.7
       },
       {
-        "readinessMs": 46.8,
-        "wallObservationMs": 158.694,
-        "loadEventEndMs": 128.1,
-        "slowestSvgResponseEndMs": 29.7
+        "readinessMs": 60.4,
+        "wallObservationMs": 219.057,
+        "loadEventEndMs": 167,
+        "slowestSvgResponseEndMs": 36.8
+      },
+      {
+        "readinessMs": 64.5,
+        "wallObservationMs": 230.3,
+        "loadEventEndMs": 174.5,
+        "slowestSvgResponseEndMs": 40.5
+      },
+      {
+        "readinessMs": 65.4,
+        "wallObservationMs": 233.089,
+        "loadEventEndMs": 179.1,
+        "slowestSvgResponseEndMs": 38.4
+      },
+      {
+        "readinessMs": 63,
+        "wallObservationMs": 185.895,
+        "loadEventEndMs": 155,
+        "slowestSvgResponseEndMs": 38.4
+      },
+      {
+        "readinessMs": 48.4,
+        "wallObservationMs": 161.116,
+        "loadEventEndMs": 129.6,
+        "slowestSvgResponseEndMs": 31.5
+      },
+      {
+        "readinessMs": 49.8,
+        "wallObservationMs": 157.024,
+        "loadEventEndMs": 126.1,
+        "slowestSvgResponseEndMs": 33.3
+      },
+      {
+        "readinessMs": 55.5,
+        "wallObservationMs": 168.97,
+        "loadEventEndMs": 137.5,
+        "slowestSvgResponseEndMs": 37.6
+      },
+      {
+        "readinessMs": 55.5,
+        "wallObservationMs": 167.872,
+        "loadEventEndMs": 134.8,
+        "slowestSvgResponseEndMs": 37.1
+      },
+      {
+        "readinessMs": 59.9,
+        "wallObservationMs": 173.088,
+        "loadEventEndMs": 138.8,
+        "slowestSvgResponseEndMs": 41.5
+      },
+      {
+        "readinessMs": 52.6,
+        "wallObservationMs": 175.687,
+        "loadEventEndMs": 137.3,
+        "slowestSvgResponseEndMs": 32.7
+      },
+      {
+        "readinessMs": 55.7,
+        "wallObservationMs": 167.881,
+        "loadEventEndMs": 136,
+        "slowestSvgResponseEndMs": 36.4
+      },
+      {
+        "readinessMs": 61,
+        "wallObservationMs": 175.091,
+        "loadEventEndMs": 141,
+        "slowestSvgResponseEndMs": 41.8
+      },
+      {
+        "readinessMs": 54.7,
+        "wallObservationMs": 170.553,
+        "loadEventEndMs": 139.7,
+        "slowestSvgResponseEndMs": 35.5
+      },
+      {
+        "readinessMs": 62.9,
+        "wallObservationMs": 180.092,
+        "loadEventEndMs": 147.7,
+        "slowestSvgResponseEndMs": 42.9
+      },
+      {
+        "readinessMs": 54.8,
+        "wallObservationMs": 176.256,
+        "loadEventEndMs": 140.7,
+        "slowestSvgResponseEndMs": 36.5
+      },
+      {
+        "readinessMs": 55.6,
+        "wallObservationMs": 174.484,
+        "loadEventEndMs": 137.9,
+        "slowestSvgResponseEndMs": 36.9
+      },
+      {
+        "readinessMs": 56.1,
+        "wallObservationMs": 173.359,
+        "loadEventEndMs": 139.1,
+        "slowestSvgResponseEndMs": 36.6
+      },
+      {
+        "readinessMs": 58.2,
+        "wallObservationMs": 175.687,
+        "loadEventEndMs": 141,
+        "slowestSvgResponseEndMs": 38
+      },
+      {
+        "readinessMs": 59.1,
+        "wallObservationMs": 174.952,
+        "loadEventEndMs": 141.8,
+        "slowestSvgResponseEndMs": 39.4
+      },
+      {
+        "readinessMs": 60.5,
+        "wallObservationMs": 179.984,
+        "loadEventEndMs": 145.4,
+        "slowestSvgResponseEndMs": 40.7
+      },
+      {
+        "readinessMs": 63.4,
+        "wallObservationMs": 187.604,
+        "loadEventEndMs": 154.4,
+        "slowestSvgResponseEndMs": 42.9
+      },
+      {
+        "readinessMs": 60.3,
+        "wallObservationMs": 180.286,
+        "loadEventEndMs": 145.6,
+        "slowestSvgResponseEndMs": 39.9
+      },
+      {
+        "readinessMs": 65,
+        "wallObservationMs": 189.416,
+        "loadEventEndMs": 155.1,
+        "slowestSvgResponseEndMs": 44.5
+      },
+      {
+        "readinessMs": 62.3,
+        "wallObservationMs": 182.825,
+        "loadEventEndMs": 148.1,
+        "slowestSvgResponseEndMs": 41.2
+      },
+      {
+        "readinessMs": 62,
+        "wallObservationMs": 183.822,
+        "loadEventEndMs": 148.2,
+        "slowestSvgResponseEndMs": 40.8
+      },
+      {
+        "readinessMs": 64.7,
+        "wallObservationMs": 188.515,
+        "loadEventEndMs": 152.2,
+        "slowestSvgResponseEndMs": 44.3
+      },
+      {
+        "readinessMs": 58.7,
+        "wallObservationMs": 184.109,
+        "loadEventEndMs": 145.2,
+        "slowestSvgResponseEndMs": 37.2
+      },
+      {
+        "readinessMs": 62.6,
+        "wallObservationMs": 188.519,
+        "loadEventEndMs": 153.6,
+        "slowestSvgResponseEndMs": 41.4
+      },
+      {
+        "readinessMs": 65.9,
+        "wallObservationMs": 194.179,
+        "loadEventEndMs": 159.5,
+        "slowestSvgResponseEndMs": 44.4
+      },
+      {
+        "readinessMs": 61.7,
+        "wallObservationMs": 189.722,
+        "loadEventEndMs": 152.7,
+        "slowestSvgResponseEndMs": 41
+      },
+      {
+        "readinessMs": 69.2,
+        "wallObservationMs": 195.927,
+        "loadEventEndMs": 158.9,
+        "slowestSvgResponseEndMs": 46.3
+      },
+      {
+        "readinessMs": 62.8,
+        "wallObservationMs": 196.019,
+        "loadEventEndMs": 156.4,
+        "slowestSvgResponseEndMs": 40.9
+      },
+      {
+        "readinessMs": 66.6,
+        "wallObservationMs": 208.132,
+        "loadEventEndMs": 167,
+        "slowestSvgResponseEndMs": 43.9
+      },
+      {
+        "readinessMs": 67.2,
+        "wallObservationMs": 195.072,
+        "loadEventEndMs": 158.2,
+        "slowestSvgResponseEndMs": 45.1
+      },
+      {
+        "readinessMs": 59.9,
+        "wallObservationMs": 187.619,
+        "loadEventEndMs": 152.2,
+        "slowestSvgResponseEndMs": 38.1
+      },
+      {
+        "readinessMs": 69,
+        "wallObservationMs": 201.802,
+        "loadEventEndMs": 163.5,
+        "slowestSvgResponseEndMs": 46.6
+      },
+      {
+        "readinessMs": 68.1,
+        "wallObservationMs": 325.695,
+        "loadEventEndMs": 282.8,
+        "slowestSvgResponseEndMs": 40.4
+      },
+      {
+        "readinessMs": 59.2,
+        "wallObservationMs": 221.855,
+        "loadEventEndMs": 170.1,
+        "slowestSvgResponseEndMs": 33.6
+      },
+      {
+        "readinessMs": 59.7,
+        "wallObservationMs": 215.353,
+        "loadEventEndMs": 166.2,
+        "slowestSvgResponseEndMs": 35.8
+      },
+      {
+        "readinessMs": 66.1,
+        "wallObservationMs": 220.865,
+        "loadEventEndMs": 176.7,
+        "slowestSvgResponseEndMs": 41.4
+      },
+      {
+        "readinessMs": 55.6,
+        "wallObservationMs": 220.139,
+        "loadEventEndMs": 165.7,
+        "slowestSvgResponseEndMs": 31.6
+      },
+      {
+        "readinessMs": 62.9,
+        "wallObservationMs": 234.885,
+        "loadEventEndMs": 175.6,
+        "slowestSvgResponseEndMs": 37.2
+      },
+      {
+        "readinessMs": 67.6,
+        "wallObservationMs": 204.202,
+        "loadEventEndMs": 170.2,
+        "slowestSvgResponseEndMs": 39.4
+      },
+      {
+        "readinessMs": 57.4,
+        "wallObservationMs": 172.649,
+        "loadEventEndMs": 139.3,
+        "slowestSvgResponseEndMs": 39.9
+      },
+      {
+        "readinessMs": 58.4,
+        "wallObservationMs": 176.681,
+        "loadEventEndMs": 140.5,
+        "slowestSvgResponseEndMs": 39.5
+      },
+      {
+        "readinessMs": 60,
+        "wallObservationMs": 173.307,
+        "loadEventEndMs": 140.6,
+        "slowestSvgResponseEndMs": 39.1
+      },
+      {
+        "readinessMs": 58.3,
+        "wallObservationMs": 174.428,
+        "loadEventEndMs": 138,
+        "slowestSvgResponseEndMs": 40.2
+      },
+      {
+        "readinessMs": 53.6,
+        "wallObservationMs": 173.533,
+        "loadEventEndMs": 138.5,
+        "slowestSvgResponseEndMs": 34.8
+      },
+      {
+        "readinessMs": 60.9,
+        "wallObservationMs": 179.373,
+        "loadEventEndMs": 141.1,
+        "slowestSvgResponseEndMs": 39
+      },
+      {
+        "readinessMs": 53.9,
+        "wallObservationMs": 176.487,
+        "loadEventEndMs": 138.5,
+        "slowestSvgResponseEndMs": 34.7
+      },
+      {
+        "readinessMs": 57.1,
+        "wallObservationMs": 174.925,
+        "loadEventEndMs": 140.3,
+        "slowestSvgResponseEndMs": 38.1
+      },
+      {
+        "readinessMs": 59.3,
+        "wallObservationMs": 182.314,
+        "loadEventEndMs": 142.6,
+        "slowestSvgResponseEndMs": 39.7
+      },
+      {
+        "readinessMs": 57.1,
+        "wallObservationMs": 176.557,
+        "loadEventEndMs": 142.2,
+        "slowestSvgResponseEndMs": 36.3
+      },
+      {
+        "readinessMs": 57,
+        "wallObservationMs": 180.451,
+        "loadEventEndMs": 145.9,
+        "slowestSvgResponseEndMs": 37.5
+      },
+      {
+        "readinessMs": 61.6,
+        "wallObservationMs": 181.252,
+        "loadEventEndMs": 147.4,
+        "slowestSvgResponseEndMs": 41.1
+      },
+      {
+        "readinessMs": 62.9,
+        "wallObservationMs": 185.258,
+        "loadEventEndMs": 151.4,
+        "slowestSvgResponseEndMs": 43
+      },
+      {
+        "readinessMs": 68,
+        "wallObservationMs": 192.484,
+        "loadEventEndMs": 154.2,
+        "slowestSvgResponseEndMs": 42.3
+      },
+      {
+        "readinessMs": 57.9,
+        "wallObservationMs": 176.151,
+        "loadEventEndMs": 142.4,
+        "slowestSvgResponseEndMs": 38
       }
     ],
-    "p95LoadMs": 53.6,
-    "p99LoadMs": 56.1,
+    "distribution": {
+      "minMs": 44.2,
+      "p50Ms": 57.1,
+      "p90Ms": 65,
+      "p95Ms": 67.2,
+      "p99Ms": 69,
+      "maxMs": 69.2,
+      "overP95BudgetCount": 0,
+      "overP99BudgetCount": 0
+    },
+    "p95LoadMs": 67.2,
+    "p99LoadMs": 69,
     "maxP95Ms": 100,
     "maxP99Ms": 200
+  },
+  "provenance": {
+    "sourceRevision": "39643cff348e12675759698cf73e8d38b1cea6cf",
+    "sourceTree": "652795d4562234dfdaeb582e6a17f4744bb0affb",
+    "generatedSiteSha256": "f2f5c4b8d0630b281da011e59e666a0959a1e435bf75a08115cd1d7388ef1280",
+    "browserPreflightSha256": "e00254873ca6801a58d6dc6bd246511540127800dfa2345b200b90037c05c687",
+    "browserPreflightMeasurementSubject": false,
+    "packageLockSha256": "3bec3c4dc97e076324b85ff5f79c1f8953632e8f6d0dc6adc5cb64bd6d490206"
   },
   "capability": {
     "executablePath": "/home/developer/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome",
     "browserVersion": "151.0.7922.34",
+    "playwrightVersion": "1.62.1",
+    "fsdocsVersion": "22.1.0",
     "headless": true,
     "liveCompositor": false,
     "framePacingMeasured": false
@@ -217,43 +658,79 @@
           "id": "attack-pipeline",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Attack pipeline from production rifleman glyph and trace through cover, armor, twenty-point result, and atomic consequences",
-          "semanticFingerprint": "cf01822ebc87e53de653f121ff78a4ce871709d3fa16c009dae56941d307c26e"
+          "handbookAlt": "Production rifleman and contact split into a blocking-cover stop branch and a separate unblocked armor-and-damage branch",
+          "handbookCaption": "The established battlefield glyph and overlay vocabulary separates a cover-stopped impact from the representative unblocked attack outcome. Motion and glow are optional emphasis. effects-off view",
+          "transcriptSummary": "Attack pipeline diagram transcript",
+          "transcript": "A production rifleman occupies its faction-outlined unit footprint. Its authoritative trace reaches first contact, where two distinct outcomes separate. On the upper branch, projectile-blocking cover consumes the collision, stops the projectile, and produces zero target harm. On the lower, unblocked branch, armor retains eighty percent; the resulting twenty-point harm leads to an injury classification, stress, and collateral fields in one atomic consequence. The named rule bindings are COMBAT-TRACE-002, COMBAT-COLLISION-001, COMBAT-COVER-003, COMBAT-ARMOR-004, COMBAT-DAMAGE-001, COMBAT-HEALTH-001, COMBAT-WOUND-001, COMBAT-SUPPRESSION-001, COMBAT-COLLATERAL-001, and COMBAT-ATTACK-RESOLUTION-001. Static geometry, labels, caption, and this transcript carry the complete meaning.",
+          "handbookScreenshotSha256": "8a3728d4991ac1452ef0217cafd2a14c4d637ccacd3f71a4fabef58c09c6c6bb",
+          "semanticFingerprint": "2bbf4421f18d582f6bdad6c6732f5e98537725da6d6543186c054dfcc7bb21a1",
+          "renderedFingerprint": "a793d4ad1cb4711ed1ef41e08b7d30dc3c63b698ca93d556a0be524799ecd353",
+          "screenshotSha256": "91b4fed23f7bd7c23d01290e65056fb043d7415f4c3af6d55e4bd0b27d0b589b"
         },
         {
           "id": "state-action",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Directed rule dependencies converge on the final composite attack result",
-          "semanticFingerprint": "b684255b12d506b3a7986cd6cf0c0247742bb23ef506ad1c9fd2f45ef21f5e3e"
+          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
+          "handbookCaption": "A checked transition maps one cohesive pre-state and input to one post-state and observation; invalid input disables the operation. effects-off view",
+          "transcriptSummary": "State and transition diagram transcript",
+          "transcript": "The authoritative initial pre-state has vitality one hundred, stress zero, barrier integrity one hundred, active blocking, and remains capable. Attack input enters a validity predicate. The atomic consequence produces a complete post-state with vitality eighty, stress twelve, unchanged barrier fields, and continued capability, plus a separate observation with harm twenty and no injury classification at that threshold. Invalid input disables the operation, so it creates neither a transition nor a hidden partial state.",
+          "handbookScreenshotSha256": "612c81df6d50313229560250d75ac6a9b2c37f8d5feae95b4afab6eaa8ee516a",
+          "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
+          "renderedFingerprint": "1663aee24db2ea1beac2a1a722ff6cdc8f1556a620f1c6608ad97e9b6f1d7fa4",
+          "screenshotSha256": "47f8717c9232738878587b88b43d61731c79cb40b994274699c7eefc908154e3"
         },
         {
           "id": "rule-dependency",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
-          "semanticFingerprint": "af7edafc30aed5ef6e13880a39f1a6129bfb598b5faf0cc8a96e0a9f43e08659"
+          "handbookAlt": "Eight direct rule dependencies converge on the aggregate attack-resolution rule",
+          "handbookCaption": "The aggregate rule's eight authoritative direct dependencies converge on the final composite result; explanatory sequencing remains a separate deterministic sequence. effects-off view",
+          "transcriptSummary": "Rule dependency diagram transcript",
+          "transcript": "Engagement, collision, cover, perforation, harm, injury, stress, and collateral each have one arrow directly into COMBAT-ATTACK-RESOLUTION-001. This is the aggregate rule's immediate dependency collection from the catalogue, not the wider transitive graph. The arrows do not claim execution order or hidden intermediate states.",
+          "handbookScreenshotSha256": "f725c23035a12c5f32a710e1f271392fcec7d75956bb222c558d493aa0a912a3",
+          "semanticFingerprint": "16a978514e2f480d998d453883b21ea534d99aaa8b58eea6afb55bcfcc898b08",
+          "renderedFingerprint": "6d35a8efadbf64d11842ed3ee22fbcfe587cace1bfbc5e720b3a8e7d592bff1e",
+          "screenshotSha256": "4a773af836c6808ffa7eff0c2788f707f085954177e29bbb61b7b2169e27e697"
         },
         {
           "id": "q4-arithmetic",
           "width": 1440,
           "height": 900,
           "handbookAlt": "Twenty-five times full trace retention times eighty-percent armor retention equals twenty",
-          "semanticFingerprint": "6db48b2f457a6e05edf799bc30adb2c9e2c880c4423fa2f4051db863a6cf427c"
+          "handbookCaption": "Raw scale-ten-thousand operands make the representative twenty-point calculation visible without floating point. effects-off view",
+          "transcriptSummary": "Q4 arithmetic diagram transcript",
+          "transcript": "The rifle starts at twenty-five, encoded as 250000 raw. Full trace retention is 10000 raw and protective retention is 8000 raw. Each fixed-point multiplication divides by scale 10000; the declared tie-breaking rule produces 200000 raw, which is a twenty-point result.",
+          "handbookScreenshotSha256": "7f5b2e4c27fce3e24cb7525d1486dffbffd21294ef98c7b7cf99bee0e28552c9",
+          "semanticFingerprint": "85d2b353f4dd4306c6b2ba9b92f6ca5e59c3d58feb6386fc8047038e581be33f",
+          "renderedFingerprint": "568cce38aa8d68d0f69fda7c13fe3c2cdbb36c3570cefb4486617bff20a8bca3",
+          "screenshotSha256": "6a16a747e1d5c3269d275bc3a6bc03302f905f090f8342a014ba8da91a61be96"
         },
         {
           "id": "trace-counterexample",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
-          "semanticFingerprint": "102cdce1baea1ed4f7df5cc92e3752de313001949b1b37e40f853a0cc6b1ff60"
+          "handbookAlt": "Separate original-model and altered-model traces compare a twenty-point example with an eighteen-point failing trace",
+          "handbookCaption": "The original and altered transition systems are separate: one supplies the representative example, while the other supplies the deliberately failing trace. effects-off view",
+          "transcriptSummary": "Trace comparison diagram transcript",
+          "transcript": "The original model starts at its initial state and reaches harm twenty with vitality eighty, satisfying the representative assertion. The established retention change from 8000 to 7000 creates a separate altered transition system; its own reachable trace reaches harm eighteen with vitality eighty-two and violates that assertion. The red edge is the altered model's failing path, not a nondeterministic branch of the unchanged model and not a claim about every execution.",
+          "handbookScreenshotSha256": "0445c327c4e129abf16b4c57681d351153bd87f0209a012ca517cf194987de81",
+          "semanticFingerprint": "60e61caee8d48c9cc78355184ceff3231c23b75633beed72e910c6d87849ad9f",
+          "renderedFingerprint": "4f24512c7d598ae6aaa276278dcc09bf4233cd0fb20716497b3bf0bccfd2a06f",
+          "screenshotSha256": "df530f955d3a371d378ab20fb6adec008a7573a7b3865a591b12208d50b5430d"
         },
         {
           "id": "invariant-boundary",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "A nondeterministic trace branches into a safe path and a violating path at their earliest split",
-          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5"
+          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
+          "handbookCaption": "The safety boundary encloses checked reachable states; one mutated transition escapes to a concrete violating path. effects-off view",
+          "transcriptSummary": "Safety-boundary diagram transcript",
+          "transcript": "The safe region contains reachable combat states from one hundred vitality through zero vitality with incapacity aligned. A deliberately mutated bound permits vitality minus one, placing the successor outside the boundary. The diagram explains a checked predicate and adds no model state.",
+          "handbookScreenshotSha256": "8ee1196de7e43141046fc5fc7cc91199f585c76632d44253ce41f1913db94207",
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
+          "renderedFingerprint": "2fff2fdd7b1b0748c7ff50c8566b310e4fab3bbe4a6c59cab4727718920cdbbe",
+          "screenshotSha256": "9150e6aed7a911fed0b8f0881e52478cc675778c02437f214ec13d0ec108a5e9"
         }
       ]
     },
@@ -266,43 +743,79 @@
           "id": "attack-pipeline",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Attack pipeline from production rifleman glyph and trace through cover, armor, twenty-point result, and atomic consequences",
-          "semanticFingerprint": "cf01822ebc87e53de653f121ff78a4ce871709d3fa16c009dae56941d307c26e"
+          "handbookAlt": "Production rifleman and contact split into a blocking-cover stop branch and a separate unblocked armor-and-damage branch",
+          "handbookCaption": "The established battlefield glyph and overlay vocabulary separates a cover-stopped impact from the representative unblocked attack outcome. Motion and glow are optional emphasis. effects-off view",
+          "transcriptSummary": "Attack pipeline diagram transcript",
+          "transcript": "A production rifleman occupies its faction-outlined unit footprint. Its authoritative trace reaches first contact, where two distinct outcomes separate. On the upper branch, projectile-blocking cover consumes the collision, stops the projectile, and produces zero target harm. On the lower, unblocked branch, armor retains eighty percent; the resulting twenty-point harm leads to an injury classification, stress, and collateral fields in one atomic consequence. The named rule bindings are COMBAT-TRACE-002, COMBAT-COLLISION-001, COMBAT-COVER-003, COMBAT-ARMOR-004, COMBAT-DAMAGE-001, COMBAT-HEALTH-001, COMBAT-WOUND-001, COMBAT-SUPPRESSION-001, COMBAT-COLLATERAL-001, and COMBAT-ATTACK-RESOLUTION-001. Static geometry, labels, caption, and this transcript carry the complete meaning.",
+          "handbookScreenshotSha256": "8a3728d4991ac1452ef0217cafd2a14c4d637ccacd3f71a4fabef58c09c6c6bb",
+          "semanticFingerprint": "2bbf4421f18d582f6bdad6c6732f5e98537725da6d6543186c054dfcc7bb21a1",
+          "renderedFingerprint": "8bb2d4c6dbf29febc7429659b905911251c9759bbe910d0fee29ab7a37927a81",
+          "screenshotSha256": "2e9d9f66fb265b2534e9fc94105e96484bb5a36a58d66a11eebcc6fc9f69c37b"
         },
         {
           "id": "state-action",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Directed rule dependencies converge on the final composite attack result",
-          "semanticFingerprint": "b684255b12d506b3a7986cd6cf0c0247742bb23ef506ad1c9fd2f45ef21f5e3e"
+          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
+          "handbookCaption": "A checked transition maps one cohesive pre-state and input to one post-state and observation; invalid input disables the operation. effects-off view",
+          "transcriptSummary": "State and transition diagram transcript",
+          "transcript": "The authoritative initial pre-state has vitality one hundred, stress zero, barrier integrity one hundred, active blocking, and remains capable. Attack input enters a validity predicate. The atomic consequence produces a complete post-state with vitality eighty, stress twelve, unchanged barrier fields, and continued capability, plus a separate observation with harm twenty and no injury classification at that threshold. Invalid input disables the operation, so it creates neither a transition nor a hidden partial state.",
+          "handbookScreenshotSha256": "612c81df6d50313229560250d75ac6a9b2c37f8d5feae95b4afab6eaa8ee516a",
+          "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
+          "renderedFingerprint": "934ec0a8dd0f3670f3dd6e56c9b5f560e57f1dbcdf857405fa68b6f125d894cc",
+          "screenshotSha256": "47f8717c9232738878587b88b43d61731c79cb40b994274699c7eefc908154e3"
         },
         {
           "id": "rule-dependency",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
-          "semanticFingerprint": "af7edafc30aed5ef6e13880a39f1a6129bfb598b5faf0cc8a96e0a9f43e08659"
+          "handbookAlt": "Eight direct rule dependencies converge on the aggregate attack-resolution rule",
+          "handbookCaption": "The aggregate rule's eight authoritative direct dependencies converge on the final composite result; explanatory sequencing remains a separate deterministic sequence. effects-off view",
+          "transcriptSummary": "Rule dependency diagram transcript",
+          "transcript": "Engagement, collision, cover, perforation, harm, injury, stress, and collateral each have one arrow directly into COMBAT-ATTACK-RESOLUTION-001. This is the aggregate rule's immediate dependency collection from the catalogue, not the wider transitive graph. The arrows do not claim execution order or hidden intermediate states.",
+          "handbookScreenshotSha256": "f725c23035a12c5f32a710e1f271392fcec7d75956bb222c558d493aa0a912a3",
+          "semanticFingerprint": "16a978514e2f480d998d453883b21ea534d99aaa8b58eea6afb55bcfcc898b08",
+          "renderedFingerprint": "61d3ba511bb44bc39bb048db3cc72aa483557f02aba2fc47c431614a7be3c0d8",
+          "screenshotSha256": "1ae5e4999d080abd26430dc55a50718377f0f605169870d2cac61b0b50960d13"
         },
         {
           "id": "q4-arithmetic",
           "width": 1440,
           "height": 900,
           "handbookAlt": "Twenty-five times full trace retention times eighty-percent armor retention equals twenty",
-          "semanticFingerprint": "6db48b2f457a6e05edf799bc30adb2c9e2c880c4423fa2f4051db863a6cf427c"
+          "handbookCaption": "Raw scale-ten-thousand operands make the representative twenty-point calculation visible without floating point. effects-off view",
+          "transcriptSummary": "Q4 arithmetic diagram transcript",
+          "transcript": "The rifle starts at twenty-five, encoded as 250000 raw. Full trace retention is 10000 raw and protective retention is 8000 raw. Each fixed-point multiplication divides by scale 10000; the declared tie-breaking rule produces 200000 raw, which is a twenty-point result.",
+          "handbookScreenshotSha256": "7f5b2e4c27fce3e24cb7525d1486dffbffd21294ef98c7b7cf99bee0e28552c9",
+          "semanticFingerprint": "85d2b353f4dd4306c6b2ba9b92f6ca5e59c3d58feb6386fc8047038e581be33f",
+          "renderedFingerprint": "ffd2c8646ab0e32eb12d3ffa87d5d9b22b6d51e31a2586d9680d972ad1f69ace",
+          "screenshotSha256": "6a16a747e1d5c3269d275bc3a6bc03302f905f090f8342a014ba8da91a61be96"
         },
         {
           "id": "trace-counterexample",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
-          "semanticFingerprint": "102cdce1baea1ed4f7df5cc92e3752de313001949b1b37e40f853a0cc6b1ff60"
+          "handbookAlt": "Separate original-model and altered-model traces compare a twenty-point example with an eighteen-point failing trace",
+          "handbookCaption": "The original and altered transition systems are separate: one supplies the representative example, while the other supplies the deliberately failing trace. effects-off view",
+          "transcriptSummary": "Trace comparison diagram transcript",
+          "transcript": "The original model starts at its initial state and reaches harm twenty with vitality eighty, satisfying the representative assertion. The established retention change from 8000 to 7000 creates a separate altered transition system; its own reachable trace reaches harm eighteen with vitality eighty-two and violates that assertion. The red edge is the altered model's failing path, not a nondeterministic branch of the unchanged model and not a claim about every execution.",
+          "handbookScreenshotSha256": "0445c327c4e129abf16b4c57681d351153bd87f0209a012ca517cf194987de81",
+          "semanticFingerprint": "60e61caee8d48c9cc78355184ceff3231c23b75633beed72e910c6d87849ad9f",
+          "renderedFingerprint": "63b54f487b1414ac730e644335190ffca0880e426cb0b70576ccf5e0a034bfd7",
+          "screenshotSha256": "d8e695a39272d3f2d83efb1aeaa25fbdc8c9d15b66c1b4114243b3f4eb4df690"
         },
         {
           "id": "invariant-boundary",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "A nondeterministic trace branches into a safe path and a violating path at their earliest split",
-          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5"
+          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
+          "handbookCaption": "The safety boundary encloses checked reachable states; one mutated transition escapes to a concrete violating path. effects-off view",
+          "transcriptSummary": "Safety-boundary diagram transcript",
+          "transcript": "The safe region contains reachable combat states from one hundred vitality through zero vitality with incapacity aligned. A deliberately mutated bound permits vitality minus one, placing the successor outside the boundary. The diagram explains a checked predicate and adds no model state.",
+          "handbookScreenshotSha256": "3437e0c594e448c8872ae02214c8986930f3f9cedc370c53425d45e0d64062ad",
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
+          "renderedFingerprint": "c25ac7f65ba8b6153b3b1fd0bdbd58855673121649f46e837482916b3ba0d454",
+          "screenshotSha256": "0ddba75225feeecac1f50c61580ded519b0da565c682e6b2b4644d67642f0dbb"
         }
       ]
     },
@@ -315,43 +828,79 @@
           "id": "attack-pipeline",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Attack pipeline from production rifleman glyph and trace through cover, armor, twenty-point result, and atomic consequences",
-          "semanticFingerprint": "cf01822ebc87e53de653f121ff78a4ce871709d3fa16c009dae56941d307c26e"
+          "handbookAlt": "Production rifleman and contact split into a blocking-cover stop branch and a separate unblocked armor-and-damage branch",
+          "handbookCaption": "The established battlefield glyph and overlay vocabulary separates a cover-stopped impact from the representative unblocked attack outcome. Motion and glow are optional emphasis. effects-off view",
+          "transcriptSummary": "Attack pipeline diagram transcript",
+          "transcript": "A production rifleman occupies its faction-outlined unit footprint. Its authoritative trace reaches first contact, where two distinct outcomes separate. On the upper branch, projectile-blocking cover consumes the collision, stops the projectile, and produces zero target harm. On the lower, unblocked branch, armor retains eighty percent; the resulting twenty-point harm leads to an injury classification, stress, and collateral fields in one atomic consequence. The named rule bindings are COMBAT-TRACE-002, COMBAT-COLLISION-001, COMBAT-COVER-003, COMBAT-ARMOR-004, COMBAT-DAMAGE-001, COMBAT-HEALTH-001, COMBAT-WOUND-001, COMBAT-SUPPRESSION-001, COMBAT-COLLATERAL-001, and COMBAT-ATTACK-RESOLUTION-001. Static geometry, labels, caption, and this transcript carry the complete meaning.",
+          "handbookScreenshotSha256": "04d7790116d2c342b5aa5d0d57b8bd8a0b6e0969b6b283f35fefcbb6470f41ea",
+          "semanticFingerprint": "2bbf4421f18d582f6bdad6c6732f5e98537725da6d6543186c054dfcc7bb21a1",
+          "renderedFingerprint": "f0d07f70da4dff185bd0beab028ca40da718478c760ef1df7da578c841bef3bd",
+          "screenshotSha256": "f4f0aabb3a84cd14efdf5255f98ab30eb6806a23be46c1478ce5a129f5cb01a4"
         },
         {
           "id": "state-action",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Directed rule dependencies converge on the final composite attack result",
-          "semanticFingerprint": "b684255b12d506b3a7986cd6cf0c0247742bb23ef506ad1c9fd2f45ef21f5e3e"
+          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
+          "handbookCaption": "A checked transition maps one cohesive pre-state and input to one post-state and observation; invalid input disables the operation. effects-off view",
+          "transcriptSummary": "State and transition diagram transcript",
+          "transcript": "The authoritative initial pre-state has vitality one hundred, stress zero, barrier integrity one hundred, active blocking, and remains capable. Attack input enters a validity predicate. The atomic consequence produces a complete post-state with vitality eighty, stress twelve, unchanged barrier fields, and continued capability, plus a separate observation with harm twenty and no injury classification at that threshold. Invalid input disables the operation, so it creates neither a transition nor a hidden partial state.",
+          "handbookScreenshotSha256": "180441d7069fc89af193083089c85ca1bd0b3695dd1fb8f47ba394b08ca8dfc6",
+          "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
+          "renderedFingerprint": "7610f17292fedf237737d373b41039a7e05ab9230230ef0999d7760a116fb50e",
+          "screenshotSha256": "318a13e05c4ccbc10197294d541bad9d96d0792df5efe61a270d2eba17316a6c"
         },
         {
           "id": "rule-dependency",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
-          "semanticFingerprint": "af7edafc30aed5ef6e13880a39f1a6129bfb598b5faf0cc8a96e0a9f43e08659"
+          "handbookAlt": "Eight direct rule dependencies converge on the aggregate attack-resolution rule",
+          "handbookCaption": "The aggregate rule's eight authoritative direct dependencies converge on the final composite result; explanatory sequencing remains a separate deterministic sequence. effects-off view",
+          "transcriptSummary": "Rule dependency diagram transcript",
+          "transcript": "Engagement, collision, cover, perforation, harm, injury, stress, and collateral each have one arrow directly into COMBAT-ATTACK-RESOLUTION-001. This is the aggregate rule's immediate dependency collection from the catalogue, not the wider transitive graph. The arrows do not claim execution order or hidden intermediate states.",
+          "handbookScreenshotSha256": "bbc55ea845b5841afcb0947787cb16bce382199d59fd0d6fb048576670ef6c87",
+          "semanticFingerprint": "16a978514e2f480d998d453883b21ea534d99aaa8b58eea6afb55bcfcc898b08",
+          "renderedFingerprint": "c99d22d09a43565dac97651e1b91053a4612a60e29b7cd622e7f63b05258bdd4",
+          "screenshotSha256": "e9c7e5876f33cc2c755b4a1a89be12948d7c119d19f913b33e92ba4deba15821"
         },
         {
           "id": "q4-arithmetic",
           "width": 1440,
           "height": 900,
           "handbookAlt": "Twenty-five times full trace retention times eighty-percent armor retention equals twenty",
-          "semanticFingerprint": "6db48b2f457a6e05edf799bc30adb2c9e2c880c4423fa2f4051db863a6cf427c"
+          "handbookCaption": "Raw scale-ten-thousand operands make the representative twenty-point calculation visible without floating point. effects-off view",
+          "transcriptSummary": "Q4 arithmetic diagram transcript",
+          "transcript": "The rifle starts at twenty-five, encoded as 250000 raw. Full trace retention is 10000 raw and protective retention is 8000 raw. Each fixed-point multiplication divides by scale 10000; the declared tie-breaking rule produces 200000 raw, which is a twenty-point result.",
+          "handbookScreenshotSha256": "e30ef55d72640ac5549f9b5c6b05ed733df26a797c3d875c7efa72e842d93905",
+          "semanticFingerprint": "85d2b353f4dd4306c6b2ba9b92f6ca5e59c3d58feb6386fc8047038e581be33f",
+          "renderedFingerprint": "bc1237891b2ee3a685ebc0edd84e8f543bcdc7ae4e1fb1fe83a1bc1db0094f89",
+          "screenshotSha256": "d21f19011f6706a6a970f35c39c057ef63a7534d609b9aab1e95b305ecc14819"
         },
         {
           "id": "trace-counterexample",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
-          "semanticFingerprint": "102cdce1baea1ed4f7df5cc92e3752de313001949b1b37e40f853a0cc6b1ff60"
+          "handbookAlt": "Separate original-model and altered-model traces compare a twenty-point example with an eighteen-point failing trace",
+          "handbookCaption": "The original and altered transition systems are separate: one supplies the representative example, while the other supplies the deliberately failing trace. effects-off view",
+          "transcriptSummary": "Trace comparison diagram transcript",
+          "transcript": "The original model starts at its initial state and reaches harm twenty with vitality eighty, satisfying the representative assertion. The established retention change from 8000 to 7000 creates a separate altered transition system; its own reachable trace reaches harm eighteen with vitality eighty-two and violates that assertion. The red edge is the altered model's failing path, not a nondeterministic branch of the unchanged model and not a claim about every execution.",
+          "handbookScreenshotSha256": "db490e1ed5d1a66ddaa579a4dd9336d61732f2acbdd9251c8c7570f8e7c8ac67",
+          "semanticFingerprint": "60e61caee8d48c9cc78355184ceff3231c23b75633beed72e910c6d87849ad9f",
+          "renderedFingerprint": "8075a0418d7b9bc34350dbf3d18a31d24fd739e4adf948e813a838c22200dca4",
+          "screenshotSha256": "832ce1b997018b964f2509a86b9e76fbe10960354a1aea97e22cd6599ca3ef7f"
         },
         {
           "id": "invariant-boundary",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "A nondeterministic trace branches into a safe path and a violating path at their earliest split",
-          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5"
+          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
+          "handbookCaption": "The safety boundary encloses checked reachable states; one mutated transition escapes to a concrete violating path. effects-off view",
+          "transcriptSummary": "Safety-boundary diagram transcript",
+          "transcript": "The safe region contains reachable combat states from one hundred vitality through zero vitality with incapacity aligned. A deliberately mutated bound permits vitality minus one, placing the successor outside the boundary. The diagram explains a checked predicate and adds no model state.",
+          "handbookScreenshotSha256": "3cb9489f966f21a10b6ee7daecbc648ae9f86959929b1e5fad315a98c210b042",
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
+          "renderedFingerprint": "1bfb724338acc6cad4971f164001cdf325a2c58377780e15291940ffa89e0917",
+          "screenshotSha256": "4a05a592a14ccd4304c442c0c7e22a5508f6f6a3d999b678acebbc82b0f2e99d"
         }
       ]
     },
@@ -364,43 +913,164 @@
           "id": "attack-pipeline",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Attack pipeline from production rifleman glyph and trace through cover, armor, twenty-point result, and atomic consequences",
-          "semanticFingerprint": "cf01822ebc87e53de653f121ff78a4ce871709d3fa16c009dae56941d307c26e"
+          "handbookAlt": "Production rifleman and contact split into a blocking-cover stop branch and a separate unblocked armor-and-damage branch",
+          "handbookCaption": "The established battlefield glyph and overlay vocabulary separates a cover-stopped impact from the representative unblocked attack outcome. Motion and glow are optional emphasis. effects-off view",
+          "transcriptSummary": "Attack pipeline diagram transcript",
+          "transcript": "A production rifleman occupies its faction-outlined unit footprint. Its authoritative trace reaches first contact, where two distinct outcomes separate. On the upper branch, projectile-blocking cover consumes the collision, stops the projectile, and produces zero target harm. On the lower, unblocked branch, armor retains eighty percent; the resulting twenty-point harm leads to an injury classification, stress, and collateral fields in one atomic consequence. The named rule bindings are COMBAT-TRACE-002, COMBAT-COLLISION-001, COMBAT-COVER-003, COMBAT-ARMOR-004, COMBAT-DAMAGE-001, COMBAT-HEALTH-001, COMBAT-WOUND-001, COMBAT-SUPPRESSION-001, COMBAT-COLLATERAL-001, and COMBAT-ATTACK-RESOLUTION-001. Static geometry, labels, caption, and this transcript carry the complete meaning.",
+          "handbookScreenshotSha256": null,
+          "semanticFingerprint": "2bbf4421f18d582f6bdad6c6732f5e98537725da6d6543186c054dfcc7bb21a1",
+          "renderedFingerprint": "a4f92389e616e0860e777183a3dd9711f4b2c9762e82c46eae133302055547ad",
+          "screenshotSha256": "997d26d698b42f52e211cc6ec1bd2dce2bdbb98fa1b31803e827dd5d2e46bc68"
         },
         {
           "id": "state-action",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Directed rule dependencies converge on the final composite attack result",
-          "semanticFingerprint": "b684255b12d506b3a7986cd6cf0c0247742bb23ef506ad1c9fd2f45ef21f5e3e"
+          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
+          "handbookCaption": "A checked transition maps one cohesive pre-state and input to one post-state and observation; invalid input disables the operation. effects-off view",
+          "transcriptSummary": "State and transition diagram transcript",
+          "transcript": "The authoritative initial pre-state has vitality one hundred, stress zero, barrier integrity one hundred, active blocking, and remains capable. Attack input enters a validity predicate. The atomic consequence produces a complete post-state with vitality eighty, stress twelve, unchanged barrier fields, and continued capability, plus a separate observation with harm twenty and no injury classification at that threshold. Invalid input disables the operation, so it creates neither a transition nor a hidden partial state.",
+          "handbookScreenshotSha256": null,
+          "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
+          "renderedFingerprint": "d288263c141dd9ab8f86ab93fab2502e31dd5431156accfa33bb671ca6facdfc",
+          "screenshotSha256": "508665a5a3fba8d600fef214f78c0ca63051699aba5c71fe0a020ca9c62fc0e5"
         },
         {
           "id": "rule-dependency",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
-          "semanticFingerprint": "af7edafc30aed5ef6e13880a39f1a6129bfb598b5faf0cc8a96e0a9f43e08659"
+          "handbookAlt": "Eight direct rule dependencies converge on the aggregate attack-resolution rule",
+          "handbookCaption": "The aggregate rule's eight authoritative direct dependencies converge on the final composite result; explanatory sequencing remains a separate deterministic sequence. effects-off view",
+          "transcriptSummary": "Rule dependency diagram transcript",
+          "transcript": "Engagement, collision, cover, perforation, harm, injury, stress, and collateral each have one arrow directly into COMBAT-ATTACK-RESOLUTION-001. This is the aggregate rule's immediate dependency collection from the catalogue, not the wider transitive graph. The arrows do not claim execution order or hidden intermediate states.",
+          "handbookScreenshotSha256": null,
+          "semanticFingerprint": "16a978514e2f480d998d453883b21ea534d99aaa8b58eea6afb55bcfcc898b08",
+          "renderedFingerprint": "ed99e5c10f634d6c438a80ab4733c78a0110af65874ca9beb544083e39a0301f",
+          "screenshotSha256": "6ad7d62f079e8875fada31800e04187f69c172ced9bee9b9505870d800750e53"
         },
         {
           "id": "q4-arithmetic",
           "width": 1440,
           "height": 900,
           "handbookAlt": "Twenty-five times full trace retention times eighty-percent armor retention equals twenty",
-          "semanticFingerprint": "6db48b2f457a6e05edf799bc30adb2c9e2c880c4423fa2f4051db863a6cf427c"
+          "handbookCaption": "Raw scale-ten-thousand operands make the representative twenty-point calculation visible without floating point. effects-off view",
+          "transcriptSummary": "Q4 arithmetic diagram transcript",
+          "transcript": "The rifle starts at twenty-five, encoded as 250000 raw. Full trace retention is 10000 raw and protective retention is 8000 raw. Each fixed-point multiplication divides by scale 10000; the declared tie-breaking rule produces 200000 raw, which is a twenty-point result.",
+          "handbookScreenshotSha256": null,
+          "semanticFingerprint": "85d2b353f4dd4306c6b2ba9b92f6ca5e59c3d58feb6386fc8047038e581be33f",
+          "renderedFingerprint": "2e6b10e23de023d8a9f5fcc9e730e6a72deb92417c85eb3c545ad33744b02a44",
+          "screenshotSha256": "6a16a747e1d5c3269d275bc3a6bc03302f905f090f8342a014ba8da91a61be96"
         },
         {
           "id": "trace-counterexample",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
-          "semanticFingerprint": "102cdce1baea1ed4f7df5cc92e3752de313001949b1b37e40f853a0cc6b1ff60"
+          "handbookAlt": "Separate original-model and altered-model traces compare a twenty-point example with an eighteen-point failing trace",
+          "handbookCaption": "The original and altered transition systems are separate: one supplies the representative example, while the other supplies the deliberately failing trace. effects-off view",
+          "transcriptSummary": "Trace comparison diagram transcript",
+          "transcript": "The original model starts at its initial state and reaches harm twenty with vitality eighty, satisfying the representative assertion. The established retention change from 8000 to 7000 creates a separate altered transition system; its own reachable trace reaches harm eighteen with vitality eighty-two and violates that assertion. The red edge is the altered model's failing path, not a nondeterministic branch of the unchanged model and not a claim about every execution.",
+          "handbookScreenshotSha256": null,
+          "semanticFingerprint": "60e61caee8d48c9cc78355184ceff3231c23b75633beed72e910c6d87849ad9f",
+          "renderedFingerprint": "24f79181328765e231934b623d92224eb583773222f6746da64c985e8a28e0fa",
+          "screenshotSha256": "76629324b6b5d6b7c0df609f17332dd7c1cf5a36c44c9126a512765aa56b1e6a"
         },
         {
           "id": "invariant-boundary",
           "width": 1440,
           "height": 900,
-          "handbookAlt": "A nondeterministic trace branches into a safe path and a violating path at their earliest split",
-          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5"
+          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
+          "handbookCaption": "The safety boundary encloses checked reachable states; one mutated transition escapes to a concrete violating path. effects-off view",
+          "transcriptSummary": "Safety-boundary diagram transcript",
+          "transcript": "The safe region contains reachable combat states from one hundred vitality through zero vitality with incapacity aligned. A deliberately mutated bound permits vitality minus one, placing the successor outside the boundary. The diagram explains a checked predicate and adds no model state.",
+          "handbookScreenshotSha256": null,
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
+          "renderedFingerprint": "06eb45e05d336767769ee57c7eaf0cd16ed404599d43111731ea0ce92ed75569",
+          "screenshotSha256": "88e06074e87b5e9c1e4d2675663d905ab4df9d443c064b562dab6c81422f246d"
+        }
+      ]
+    },
+    {
+      "mode": "css-disabled",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "diagrams": [
+        {
+          "id": "attack-pipeline",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Production rifleman and contact split into a blocking-cover stop branch and a separate unblocked armor-and-damage branch",
+          "handbookCaption": "The established battlefield glyph and overlay vocabulary separates a cover-stopped impact from the representative unblocked attack outcome. Motion and glow are optional emphasis. effects-off view",
+          "transcriptSummary": "Attack pipeline diagram transcript",
+          "transcript": "A production rifleman occupies its faction-outlined unit footprint. Its authoritative trace reaches first contact, where two distinct outcomes separate. On the upper branch, projectile-blocking cover consumes the collision, stops the projectile, and produces zero target harm. On the lower, unblocked branch, armor retains eighty percent; the resulting twenty-point harm leads to an injury classification, stress, and collateral fields in one atomic consequence. The named rule bindings are COMBAT-TRACE-002, COMBAT-COLLISION-001, COMBAT-COVER-003, COMBAT-ARMOR-004, COMBAT-DAMAGE-001, COMBAT-HEALTH-001, COMBAT-WOUND-001, COMBAT-SUPPRESSION-001, COMBAT-COLLATERAL-001, and COMBAT-ATTACK-RESOLUTION-001. Static geometry, labels, caption, and this transcript carry the complete meaning.",
+          "handbookScreenshotSha256": null,
+          "semanticFingerprint": "2bbf4421f18d582f6bdad6c6732f5e98537725da6d6543186c054dfcc7bb21a1",
+          "renderedFingerprint": "4231e0e847864fa3c6f7062a0ae2a6133c99637cb36deb09c9f8c775ecbac141",
+          "screenshotSha256": "43b0b4d2b55c5b1045d8cb63ee42675feca5ce084cd8d81007567678435b56db"
+        },
+        {
+          "id": "state-action",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Checked atomic transition from a cohesive pre-state and attack input to a post-state and observation",
+          "handbookCaption": "A checked transition maps one cohesive pre-state and input to one post-state and observation; invalid input disables the operation. effects-off view",
+          "transcriptSummary": "State and transition diagram transcript",
+          "transcript": "The authoritative initial pre-state has vitality one hundred, stress zero, barrier integrity one hundred, active blocking, and remains capable. Attack input enters a validity predicate. The atomic consequence produces a complete post-state with vitality eighty, stress twelve, unchanged barrier fields, and continued capability, plus a separate observation with harm twenty and no injury classification at that threshold. Invalid input disables the operation, so it creates neither a transition nor a hidden partial state.",
+          "handbookScreenshotSha256": null,
+          "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
+          "renderedFingerprint": "5777a21b472bf10f94f3df95577b421aa05ef845d6ae785985f244bb1b9d2e4d",
+          "screenshotSha256": "e334e457e097536a7ca4c6cdce903adb5fd60a7898b446bde47467ab912f6d82"
+        },
+        {
+          "id": "rule-dependency",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Eight direct rule dependencies converge on the aggregate attack-resolution rule",
+          "handbookCaption": "The aggregate rule's eight authoritative direct dependencies converge on the final composite result; explanatory sequencing remains a separate deterministic sequence. effects-off view",
+          "transcriptSummary": "Rule dependency diagram transcript",
+          "transcript": "Engagement, collision, cover, perforation, harm, injury, stress, and collateral each have one arrow directly into COMBAT-ATTACK-RESOLUTION-001. This is the aggregate rule's immediate dependency collection from the catalogue, not the wider transitive graph. The arrows do not claim execution order or hidden intermediate states.",
+          "handbookScreenshotSha256": null,
+          "semanticFingerprint": "16a978514e2f480d998d453883b21ea534d99aaa8b58eea6afb55bcfcc898b08",
+          "renderedFingerprint": "847ebef451bf77832df3fe5b83372b3ff9bf9587759e9867f08b6bd52a37b03d",
+          "screenshotSha256": "06db74ba40a4f6bfcc9314b2303a2d5a0396c81c3582e48775f314d097f93644"
+        },
+        {
+          "id": "q4-arithmetic",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Twenty-five times full trace retention times eighty-percent armor retention equals twenty",
+          "handbookCaption": "Raw scale-ten-thousand operands make the representative twenty-point calculation visible without floating point. effects-off view",
+          "transcriptSummary": "Q4 arithmetic diagram transcript",
+          "transcript": "The rifle starts at twenty-five, encoded as 250000 raw. Full trace retention is 10000 raw and protective retention is 8000 raw. Each fixed-point multiplication divides by scale 10000; the declared tie-breaking rule produces 200000 raw, which is a twenty-point result.",
+          "handbookScreenshotSha256": null,
+          "semanticFingerprint": "85d2b353f4dd4306c6b2ba9b92f6ca5e59c3d58feb6386fc8047038e581be33f",
+          "renderedFingerprint": "819d60f072bb83d37276b11dd6b3a848a10b5067a5bc4393cae90d81cedce52d",
+          "screenshotSha256": "cf21890e86a0aa154924364181a3bafb499121593aa7e1985d195c7ccb25455a"
+        },
+        {
+          "id": "trace-counterexample",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Separate original-model and altered-model traces compare a twenty-point example with an eighteen-point failing trace",
+          "handbookCaption": "The original and altered transition systems are separate: one supplies the representative example, while the other supplies the deliberately failing trace. effects-off view",
+          "transcriptSummary": "Trace comparison diagram transcript",
+          "transcript": "The original model starts at its initial state and reaches harm twenty with vitality eighty, satisfying the representative assertion. The established retention change from 8000 to 7000 creates a separate altered transition system; its own reachable trace reaches harm eighteen with vitality eighty-two and violates that assertion. The red edge is the altered model's failing path, not a nondeterministic branch of the unchanged model and not a claim about every execution.",
+          "handbookScreenshotSha256": null,
+          "semanticFingerprint": "60e61caee8d48c9cc78355184ceff3231c23b75633beed72e910c6d87849ad9f",
+          "renderedFingerprint": "9cd801bf50f2ec44e6ca849ab4e9efad2042372ee4a9ff479e6adad35aa98911",
+          "screenshotSha256": "d809f37d890209ef2f6ddc89ee764930042209f127d4be4eab2db3c734288141"
+        },
+        {
+          "id": "invariant-boundary",
+          "width": 1440,
+          "height": 900,
+          "handbookAlt": "Reachable states remain inside a safety boundary until a mutated transition escapes",
+          "handbookCaption": "The safety boundary encloses checked reachable states; one mutated transition escapes to a concrete violating path. effects-off view",
+          "transcriptSummary": "Safety-boundary diagram transcript",
+          "transcript": "The safe region contains reachable combat states from one hundred vitality through zero vitality with incapacity aligned. A deliberately mutated bound permits vitality minus one, placing the successor outside the boundary. The diagram explains a checked predicate and adds no model state.",
+          "handbookScreenshotSha256": null,
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
+          "renderedFingerprint": "1bf9eccf2f2aa7a3379f855c5a1628360378570d147ccd6cf6f05c6b66b268a9",
+          "screenshotSha256": "f7dd902122166ede4e27d3d957cbcc7e89ef9c79c92aee4b98d1c3cb3bee7645"
         }
       ]
     }

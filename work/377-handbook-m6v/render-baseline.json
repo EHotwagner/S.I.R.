@@ -1,0 +1,242 @@
+{
+  "schema": "sir.handbook.render-baseline/v1",
+  "workloadId": "handbook-m6v-six-diagram-render-v1",
+  "workloadDefinitionDigest": "sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b",
+  "observations": [
+    {
+      "mode": "normal",
+      "diagrams": [
+        {
+          "id": "attack-pipeline",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "2bbf4421f18d582f6bdad6c6732f5e98537725da6d6543186c054dfcc7bb21a1",
+          "renderedFingerprint": "a793d4ad1cb4711ed1ef41e08b7d30dc3c63b698ca93d556a0be524799ecd353"
+        },
+        {
+          "id": "state-action",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
+          "renderedFingerprint": "1663aee24db2ea1beac2a1a722ff6cdc8f1556a620f1c6608ad97e9b6f1d7fa4"
+        },
+        {
+          "id": "rule-dependency",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "16a978514e2f480d998d453883b21ea534d99aaa8b58eea6afb55bcfcc898b08",
+          "renderedFingerprint": "6d35a8efadbf64d11842ed3ee22fbcfe587cace1bfbc5e720b3a8e7d592bff1e"
+        },
+        {
+          "id": "q4-arithmetic",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "85d2b353f4dd4306c6b2ba9b92f6ca5e59c3d58feb6386fc8047038e581be33f",
+          "renderedFingerprint": "568cce38aa8d68d0f69fda7c13fe3c2cdbb36c3570cefb4486617bff20a8bca3"
+        },
+        {
+          "id": "trace-counterexample",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "60e61caee8d48c9cc78355184ceff3231c23b75633beed72e910c6d87849ad9f",
+          "renderedFingerprint": "4f24512c7d598ae6aaa276278dcc09bf4233cd0fb20716497b3bf0bccfd2a06f"
+        },
+        {
+          "id": "invariant-boundary",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
+          "renderedFingerprint": "2fff2fdd7b1b0748c7ff50c8566b310e4fab3bbe4a6c59cab4727718920cdbbe"
+        }
+      ]
+    },
+    {
+      "mode": "reduced-motion",
+      "diagrams": [
+        {
+          "id": "attack-pipeline",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "2bbf4421f18d582f6bdad6c6732f5e98537725da6d6543186c054dfcc7bb21a1",
+          "renderedFingerprint": "8bb2d4c6dbf29febc7429659b905911251c9759bbe910d0fee29ab7a37927a81"
+        },
+        {
+          "id": "state-action",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
+          "renderedFingerprint": "934ec0a8dd0f3670f3dd6e56c9b5f560e57f1dbcdf857405fa68b6f125d894cc"
+        },
+        {
+          "id": "rule-dependency",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "16a978514e2f480d998d453883b21ea534d99aaa8b58eea6afb55bcfcc898b08",
+          "renderedFingerprint": "61d3ba511bb44bc39bb048db3cc72aa483557f02aba2fc47c431614a7be3c0d8"
+        },
+        {
+          "id": "q4-arithmetic",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "85d2b353f4dd4306c6b2ba9b92f6ca5e59c3d58feb6386fc8047038e581be33f",
+          "renderedFingerprint": "ffd2c8646ab0e32eb12d3ffa87d5d9b22b6d51e31a2586d9680d972ad1f69ace"
+        },
+        {
+          "id": "trace-counterexample",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "60e61caee8d48c9cc78355184ceff3231c23b75633beed72e910c6d87849ad9f",
+          "renderedFingerprint": "63b54f487b1414ac730e644335190ffca0880e426cb0b70576ccf5e0a034bfd7"
+        },
+        {
+          "id": "invariant-boundary",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
+          "renderedFingerprint": "c25ac7f65ba8b6153b3b1fd0bdbd58855673121649f46e837482916b3ba0d454"
+        }
+      ]
+    },
+    {
+      "mode": "print",
+      "diagrams": [
+        {
+          "id": "attack-pipeline",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "2bbf4421f18d582f6bdad6c6732f5e98537725da6d6543186c054dfcc7bb21a1",
+          "renderedFingerprint": "f0d07f70da4dff185bd0beab028ca40da718478c760ef1df7da578c841bef3bd"
+        },
+        {
+          "id": "state-action",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
+          "renderedFingerprint": "7610f17292fedf237737d373b41039a7e05ab9230230ef0999d7760a116fb50e"
+        },
+        {
+          "id": "rule-dependency",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "16a978514e2f480d998d453883b21ea534d99aaa8b58eea6afb55bcfcc898b08",
+          "renderedFingerprint": "c99d22d09a43565dac97651e1b91053a4612a60e29b7cd622e7f63b05258bdd4"
+        },
+        {
+          "id": "q4-arithmetic",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "85d2b353f4dd4306c6b2ba9b92f6ca5e59c3d58feb6386fc8047038e581be33f",
+          "renderedFingerprint": "bc1237891b2ee3a685ebc0edd84e8f543bcdc7ae4e1fb1fe83a1bc1db0094f89"
+        },
+        {
+          "id": "trace-counterexample",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "60e61caee8d48c9cc78355184ceff3231c23b75633beed72e910c6d87849ad9f",
+          "renderedFingerprint": "8075a0418d7b9bc34350dbf3d18a31d24fd739e4adf948e813a838c22200dca4"
+        },
+        {
+          "id": "invariant-boundary",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
+          "renderedFingerprint": "1bfb724338acc6cad4971f164001cdf325a2c58377780e15291940ffa89e0917"
+        }
+      ]
+    },
+    {
+      "mode": "effects-off",
+      "diagrams": [
+        {
+          "id": "attack-pipeline",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "2bbf4421f18d582f6bdad6c6732f5e98537725da6d6543186c054dfcc7bb21a1",
+          "renderedFingerprint": "a4f92389e616e0860e777183a3dd9711f4b2c9762e82c46eae133302055547ad"
+        },
+        {
+          "id": "state-action",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
+          "renderedFingerprint": "d288263c141dd9ab8f86ab93fab2502e31dd5431156accfa33bb671ca6facdfc"
+        },
+        {
+          "id": "rule-dependency",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "16a978514e2f480d998d453883b21ea534d99aaa8b58eea6afb55bcfcc898b08",
+          "renderedFingerprint": "ed99e5c10f634d6c438a80ab4733c78a0110af65874ca9beb544083e39a0301f"
+        },
+        {
+          "id": "q4-arithmetic",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "85d2b353f4dd4306c6b2ba9b92f6ca5e59c3d58feb6386fc8047038e581be33f",
+          "renderedFingerprint": "2e6b10e23de023d8a9f5fcc9e730e6a72deb92417c85eb3c545ad33744b02a44"
+        },
+        {
+          "id": "trace-counterexample",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "60e61caee8d48c9cc78355184ceff3231c23b75633beed72e910c6d87849ad9f",
+          "renderedFingerprint": "24f79181328765e231934b623d92224eb583773222f6746da64c985e8a28e0fa"
+        },
+        {
+          "id": "invariant-boundary",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
+          "renderedFingerprint": "06eb45e05d336767769ee57c7eaf0cd16ed404599d43111731ea0ce92ed75569"
+        }
+      ]
+    },
+    {
+      "mode": "css-disabled",
+      "diagrams": [
+        {
+          "id": "attack-pipeline",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "2bbf4421f18d582f6bdad6c6732f5e98537725da6d6543186c054dfcc7bb21a1",
+          "renderedFingerprint": "4231e0e847864fa3c6f7062a0ae2a6133c99637cb36deb09c9f8c775ecbac141"
+        },
+        {
+          "id": "state-action",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
+          "renderedFingerprint": "5777a21b472bf10f94f3df95577b421aa05ef845d6ae785985f244bb1b9d2e4d"
+        },
+        {
+          "id": "rule-dependency",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "16a978514e2f480d998d453883b21ea534d99aaa8b58eea6afb55bcfcc898b08",
+          "renderedFingerprint": "847ebef451bf77832df3fe5b83372b3ff9bf9587759e9867f08b6bd52a37b03d"
+        },
+        {
+          "id": "q4-arithmetic",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "85d2b353f4dd4306c6b2ba9b92f6ca5e59c3d58feb6386fc8047038e581be33f",
+          "renderedFingerprint": "819d60f072bb83d37276b11dd6b3a848a10b5067a5bc4393cae90d81cedce52d"
+        },
+        {
+          "id": "trace-counterexample",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "60e61caee8d48c9cc78355184ceff3231c23b75633beed72e910c6d87849ad9f",
+          "renderedFingerprint": "9cd801bf50f2ec44e6ca849ab4e9efad2042372ee4a9ff479e6adad35aa98911"
+        },
+        {
+          "id": "invariant-boundary",
+          "width": 1440,
+          "height": 900,
+          "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
+          "renderedFingerprint": "1bf9eccf2f2aa7a3379f855c5a1628360378570d147ccd6cf6f05c6b66b268a9"
+        }
+      ]
+    }
+  ]
+}

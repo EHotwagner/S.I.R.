@@ -11,11 +11,11 @@ sourceAnalysis: readiness/377-handbook-m6v/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/377-handbook-m6v/analysis.json
-    digest: 3ff59bd5c34e7251a4bb72eb129430d9538d21a19c80b4761e7a83ae2288a13f
+    digest: 9c210bedb63f66657b18b770b2f4dddd395ff9239f7d34687814d6975eebbb15
     schemaVersion: 1
   - label: checklist
     path: work/377-handbook-m6v/checklist.md
-    digest: 3273a2335bc8ff1f7cdf9d5caa66818b7448b88e98682d974fd7cb89aabcb6ee
+    digest: d10a95c4875909931786aae45732a40881ea61a75e258b147db962c4e15b2ef8
     schemaVersion: 1
   - label: clarifications
     path: work/377-handbook-m6v/clarifications.md
@@ -23,15 +23,15 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/377-handbook-m6v/plan.md
-    digest: 83a6286fc0e9d5e463a63ef5be0446f784ddd7582900ebc2f0a90f8ee3cf6e74
+    digest: 9d8bdb80e11a8ad52ad95100f0a9ac552fd3785987278a5d39e07babbeae693a
     schemaVersion: 1
   - label: spec
     path: work/377-handbook-m6v/spec.md
-    digest: 3c503cbcc7ee4e4440f3d0c76c3debe1477f935ab82352ea0773288fe4d1a61d
+    digest: ceff14d7ee6fc263d738202eb64f73f46d8421da516889309924e6bf8d0590be
     schemaVersion: 1
   - label: tasks
     path: work/377-handbook-m6v/tasks.yml
-    digest: 24003b5ef50b0e9df45946e5649e998b646adead99f2c0a66fb48fcbc6e58ccf
+    digest: 9f18145e551b6c0219fc5b865abb939eac429c400447428ccc1c47119fdfa646
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -987,7 +987,7 @@ evidence:
         disposition: active
         targetFps: 60
         workloadIds: [handbook-m6v-six-diagram-render-v1]
-        workloadDefinitionDigests: ["handbook-m6v-six-diagram-render-v1=sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df"]
+        workloadDefinitionDigests: ["handbook-m6v-six-diagram-render-v1=sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b"]
         maximumExpectedScale: "six diagrams; 180 SVG elements; 120 KiB; 24 animated elements"
         maxP95Ms: 100
         maxP99Ms: 200
@@ -1000,8 +1000,8 @@ evidence:
       targetFps: 60
       workloadIds: [handbook-m6v-six-diagram-render-v1]
       stressWorkloadIds: []
-      workloadDefinitionDigests: ["handbook-m6v-six-diagram-render-v1=sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df"]
-      currencyToken: "sha256:9845c702798b8655fdfab2cc7db749a4efa897a3e1c82cfc83acf23acbfef3df"
+      workloadDefinitionDigests: ["handbook-m6v-six-diagram-render-v1=sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b"]
+      currencyToken: "sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b"
       capturedAfterUtc: "2026-08-28T00:00:00Z"
       maxP95Ms: 100
       maxP99Ms: 200

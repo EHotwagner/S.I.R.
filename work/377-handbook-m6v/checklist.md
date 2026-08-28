@@ -21,7 +21,7 @@ Prose status: checklistReady
 - work/377-handbook-m6v/clarifications.md
 
 ## Source Snapshot
-- spec: work/377-handbook-m6v/spec.md sha256:3c503cbcc7ee4e4440f3d0c76c3debe1477f935ab82352ea0773288fe4d1a61d schemaVersion:1
+- spec: work/377-handbook-m6v/spec.md sha256:0b6109c8ea68bc0df5aae89275a34e32600b64d10901bda398bb99c5d9a4ea77 schemaVersion:1
 - clarifications: work/377-handbook-m6v/clarifications.md sha256:7051c8f60eb2ad7443fc73d5b7b54773c81e1ac722b356950ed4a0a0996e838f schemaVersion:1
 
 ## Checklist Items

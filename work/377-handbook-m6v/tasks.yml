@@ -13,7 +13,7 @@ work:
 sources:
   - label: spec
     path: work/377-handbook-m6v/spec.md
-    digest: 3c503cbcc7ee4e4440f3d0c76c3debe1477f935ab82352ea0773288fe4d1a61d
+    digest: 0b6109c8ea68bc0df5aae89275a34e32600b64d10901bda398bb99c5d9a4ea77
     schemaVersion: 1
   - label: clarifications
     path: work/377-handbook-m6v/clarifications.md
@@ -21,11 +21,11 @@ sources:
     schemaVersion: 1
   - label: checklist
     path: work/377-handbook-m6v/checklist.md
-    digest: 3273a2335bc8ff1f7cdf9d5caa66818b7448b88e98682d974fd7cb89aabcb6ee
+    digest: a50d9919c75faa31addd377e32f3d09ab407df471af267d73a1e1e2ccd377e79
     schemaVersion: 1
   - label: plan
     path: work/377-handbook-m6v/plan.md
-    digest: 83a6286fc0e9d5e463a63ef5be0446f784ddd7582900ebc2f0a90f8ee3cf6e74
+    digest: 3d91f5860392e1ddd2d4fc61a5d5ef4663c02f8516f3864a5ca680bfef141625
     schemaVersion: 1
 tasks:
   - id: T001
