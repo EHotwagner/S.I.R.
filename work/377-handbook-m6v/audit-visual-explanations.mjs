@@ -15,6 +15,24 @@ const baseManifest = JSON.parse(read(manifestPath));
 const regexEscape = value => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const git = (...args) => execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
 
+function capturedRevisionMatches(provenance) {
+  if (!/^[0-9a-f]{40}$/.test(provenance?.sourceRevisionAtCapture ?? "")
+      || !/^[0-9a-f]{40}$/.test(provenance?.sourceTreeAtCapture ?? "")) return false;
+  try {
+    const objectType = execFileSync("git", ["cat-file", "--batch-check=%(objecttype)"], {
+      cwd: root,
+      encoding: "utf8",
+      input: `${provenance.sourceRevisionAtCapture}\n`,
+      stdio: ["pipe", "pipe", "pipe"]
+    }).trim();
+    if (objectType.endsWith(" missing")) return true;
+    if (objectType !== "commit") return false;
+    return git("rev-parse", `${provenance.sourceRevisionAtCapture}^{tree}`) === provenance.sourceTreeAtCapture;
+  } catch {
+    return false;
+  }
+}
+
 function performanceIntent(markdown, plan = false) {
   const section = plan
     ? markdown.slice(markdown.indexOf("## Performance Intent"), markdown.indexOf("## Migration Posture"))
@@ -503,33 +521,41 @@ function validate({ manifest = baseManifest, overrides = new Map(), checkVisualQ
       || visualQualification.sourceTreeDigest !== sha256(JSON.stringify(metrics)))) fail("visual-qualification-contract-mismatch", JSON.stringify(visualQualification.counters));
   const candidateInputPaths = [manifestPath, handbookPath, "work/377-handbook-m6v/render-baseline.json", "work/377-handbook-m6v/inspect-rendered-visuals.mjs", "work/377-handbook-m6v/preflight-render-browser.mjs", ...manifest.sources.map(source => source.path), ...diagrams.map(diagram => diagram.asset)];
   const candidateInputDigest = sha256([...new Set(candidateInputPaths)].sort().map(relative => `${relative}\0${sha256(content(relative))}`).join("\n"));
-  let capturedTree;
-  try { capturedTree = git("rev-parse", `${renderReceipt.provenance?.sourceRevisionAtCapture}^{tree}`); } catch { capturedTree = undefined; }
-  let capturedNegativeTree;
-  try { capturedNegativeTree = git("rev-parse", `${timingMutation.provenance?.sourceRevisionAtCapture}^{tree}`); } catch { capturedNegativeTree = undefined; }
   if (renderReceipt.provenance?.sourceTreeCleanAtCapture !== true
       || renderReceipt.provenance?.candidateSourceInputsSha256 !== candidateInputDigest
       || renderReceipt.provenance?.renderBaselineSha256 !== sha256(content("work/377-handbook-m6v/render-baseline.json"))
       || renderReceipt.provenance?.renderBaselineRecordedDuringCapture !== false
-      || !renderReceipt.provenance?.sourceRevisionAtCapture
-      || capturedTree !== renderReceipt.provenance?.sourceTreeAtCapture) fail("candidate-provenance-mismatch", JSON.stringify(renderReceipt.provenance));
+      || !capturedRevisionMatches(renderReceipt.provenance)) fail("candidate-provenance-mismatch", JSON.stringify(renderReceipt.provenance));
   if (timingMutation.provenance?.sourceTreeCleanAtCapture !== true
       || timingMutation.provenance?.candidateSourceInputsSha256 !== candidateInputDigest
       || timingMutation.provenance?.renderBaselineSha256 !== sha256(content("work/377-handbook-m6v/render-baseline.json"))
       || timingMutation.provenance?.renderBaselineRecordedDuringCapture !== false
-      || !timingMutation.provenance?.sourceRevisionAtCapture
-      || capturedNegativeTree !== timingMutation.provenance?.sourceTreeAtCapture) fail("timing-mutation-provenance-mismatch", JSON.stringify(timingMutation.provenance));
+      || !capturedRevisionMatches(timingMutation.provenance)) fail("timing-mutation-provenance-mismatch", JSON.stringify(timingMutation.provenance));
   return { errors, metrics, aggregate };
 }
 
 function selfTest() {
   const pristine = validate();
   if (pristine.errors.length) throw new Error(`pristine audit failed: ${JSON.stringify(pristine.errors)}`);
+  const portableRender = JSON.parse(read("readiness/377-handbook-m6v/rendered/inspection.json"));
+  const portablePerformance = JSON.parse(read("readiness/377-handbook-m6v/performance-evidence.json"));
+  const unavailableRevision = "0000000000000000000000000000000000000001";
+  portableRender.provenance.sourceRevisionAtCapture = unavailableRevision;
+  portablePerformance.sampleSets[0].sourceRevisionAtCapture = unavailableRevision;
+  const portable = validate({ overrides: new Map([
+    ["readiness/377-handbook-m6v/rendered/inspection.json", JSON.stringify(portableRender)],
+    ["readiness/377-handbook-m6v/performance-evidence.json", JSON.stringify(portablePerformance)]
+  ]) });
+  if (portable.errors.length) throw new Error(`unavailable capture commit did not preserve digest-bound green: ${JSON.stringify(portable.errors)}`);
+  console.log("restored green: unavailable capture commit uses exact candidate-input and baseline digests");
   const cases = [
     ["authority-drift", "dependency-rule-set-mismatch", () => { const p = "docs/rules/sir-combat.md"; const changed = read(p).replace('dependencies: Set("COMBAT-ENGAGEMENT-001", "COMBAT-COLLISION-001"', 'dependencies: Set("COMBAT-TRACE-002", "COMBAT-COLLISION-001"'); const m = clone(baseManifest); m.sources.find(item => item.path === p).sha256 = sha256(changed); return { manifest: m, overrides: new Map([[p, changed]]) }; }],
     ["production-glyph-drift", "production-render-contract-mismatch", () => { const p = "src/SIR.Client.Web/App.fs"; const changed = read(p).replace("svg.strokeWidth 1.8", "svg.strokeWidth 1.7"); const m = clone(baseManifest); m.sources.find(item => item.path === p).sha256 = sha256(changed); return { manifest: m, overrides: new Map([[p, changed]]) }; }],
     ["accessibility-loss", "handbook-embed-binding-missing", () => { const p = handbookPath; return { overrides: new Map([[p, read(p).replace(/<figcaption>[^<]+<a href="assets\/sir-combat-quint\/state-action\.svg#effects-off">effects-off view<\/a><\/figcaption>/, "<figcaption></figcaption>")]]) }; }],
     ["fallback-loss", "static-fallback-missing", () => { const p = baseManifest.diagrams[1].asset; return { overrides: new Map([[p, read(p).replace('data-semantic-edge="pre-state-to-action" data-directed-edge="true" d="M219 108 H270" fill="none" stroke="#53b7ff"', 'data-semantic-edge="pre-state-to-action" data-directed-edge="true" d="M219 108 H270" fill="none"')]]) }; }],
+    ["candidate-content-digest-drift", "candidate-provenance-mismatch", () => { const receiptPath = "readiness/377-handbook-m6v/rendered/inspection.json"; const performancePath = "readiness/377-handbook-m6v/performance-evidence.json"; const receipt = JSON.parse(read(receiptPath)); const performance = JSON.parse(read(performancePath)); const wrongDigest = "0".repeat(64); receipt.provenance.candidateSourceInputsSha256 = wrongDigest; performance.sampleSets[0].candidateSourceInputsSha256 = wrongDigest; return { overrides: new Map([[receiptPath, JSON.stringify(receipt)], [performancePath, JSON.stringify(performance)]]) }; }],
+    ["reachable-capture-tree-drift", "candidate-provenance-mismatch", () => { const receiptPath = "readiness/377-handbook-m6v/rendered/inspection.json"; const performancePath = "readiness/377-handbook-m6v/performance-evidence.json"; const receipt = JSON.parse(read(receiptPath)); const performance = JSON.parse(read(performancePath)); const reachableRevision = git("rev-parse", "HEAD"); receipt.provenance.sourceRevisionAtCapture = reachableRevision; receipt.provenance.sourceTreeAtCapture = "0".repeat(40); performance.sampleSets[0].sourceRevisionAtCapture = reachableRevision; return { overrides: new Map([[receiptPath, JSON.stringify(receipt)], [performancePath, JSON.stringify(performance)]]) }; }],
+    ["reachable-capture-noncommit", "candidate-provenance-mismatch", () => { const receiptPath = "readiness/377-handbook-m6v/rendered/inspection.json"; const performancePath = "readiness/377-handbook-m6v/performance-evidence.json"; const receipt = JSON.parse(read(receiptPath)); const performance = JSON.parse(read(performancePath)); const reachableBlob = git("rev-parse", `HEAD:${handbookPath}`); receipt.provenance.sourceRevisionAtCapture = reachableBlob; performance.sampleSets[0].sourceRevisionAtCapture = reachableBlob; return { overrides: new Map([[receiptPath, JSON.stringify(receipt)], [performancePath, JSON.stringify(performance)]]) }; }],
     ["visual-fingerprint-drift", "render-baseline-fingerprint-mismatch", () => { const p = "work/377-handbook-m6v/render-baseline.json"; const changed = read(p).replace(/("renderedFingerprint": ")([0-9a-f])/, (_, prefix, digit) => `${prefix}${digit === "0" ? "1" : "0"}`); return { overrides: new Map([[p, changed]]) }; }],
     ["structural-overflow", "element-budget-exceeded", () => { const p = baseManifest.diagrams[5].asset; const extra = Array.from({length: 31}, (_, i) => `<circle cx="${i}" cy="1" r="1"/>`).join(""); return { overrides: new Map([[p, read(p).replace("</svg>", `${extra}</svg>`) ]]) }; }]
   ];
