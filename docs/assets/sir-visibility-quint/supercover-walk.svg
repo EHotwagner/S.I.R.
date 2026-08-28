@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 430" role="img" aria-labelledby="supercover-title supercover-desc" data-diagram="supercover-walk" data-effects="css-filter">
+  <title id="supercover-title">A grid supercover walk from observer to target</title>
+  <desc id="supercover-desc">A blue observer at cell zero zero sees a yellow target at two one. Four numbered orthogonal cells form the canonical x-first supercover. Red corner wedges show the gaps a diagonal-only ray would miss.</desc>
+  <defs>
+    <pattern id="sc-grid" width="110" height="110" patternUnits="userSpaceOnUse"><path d="M110 0H0V110" fill="none" stroke="#71808b" stroke-width="2" opacity=".55"/></pattern>
+    <filter id="sc-glow"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <marker id="sc-arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0L9 4.5 0 9Z" fill="#53b7ff"/></marker>
+    <style>
+      .pulse{animation:scPulse 2.4s ease-in-out infinite}.march{stroke-dasharray:10 12;animation:scMarch 1.7s linear infinite}.step{animation:scStep 3.2s ease-in-out infinite}.s2{animation-delay:.45s}.s3{animation-delay:.9s}.s4{animation-delay:1.35s}
+      @keyframes scPulse{50%{opacity:.42}}@keyframes scMarch{to{stroke-dashoffset:-44}}@keyframes scStep{0%,18%,100%{fill:#28343d}32%,58%{fill:#164c6d}}
+      svg:target .fx{display:none}@media(prefers-reduced-motion:reduce){*{animation:none!important}}@media print{.fx{display:none}.step{fill:#164c6d}}
+    </style>
+  </defs>
+  <rect width="960" height="430" rx="24" fill="#10161d"/><text x="54" y="52" fill="#f7f9fa" font-family="system-ui,sans-serif" font-size="24" font-weight="700">SUPERCOVER / canonical x-first tie</text>
+  <g transform="translate(245 75)"><rect width="440" height="220" fill="url(#sc-grid)" stroke="#71808b" stroke-width="2"/>
+    <rect class="step s1" x="0" y="110" width="110" height="110" fill="#28343d" stroke="#53b7ff" stroke-width="4"/>
+    <rect class="step s2" x="110" y="110" width="110" height="110" fill="#28343d" stroke="#53b7ff" stroke-width="4"/>
+    <rect class="step s3" x="110" y="0" width="110" height="110" fill="#28343d" stroke="#53b7ff" stroke-width="4"/>
+    <rect class="step s4" x="220" y="0" width="110" height="110" fill="#28343d" stroke="#53b7ff" stroke-width="4"/>
+    <path d="M55 165H165V55H275" fill="none" stroke="#53b7ff" stroke-width="7" marker-end="url(#sc-arrow)" class="march fx" filter="url(#sc-glow)"/>
+    <path d="M55 165L275 55" fill="none" stroke="#ffd166" stroke-width="2" stroke-dasharray="7 8" opacity=".8"/>
+    <path d="M110 110l18 0 0 18zM220 110l-18 0 0-18z" fill="#ff6b6b" class="pulse fx"/>
+    <g fill="#f7f9fa" font-family="ui-monospace,monospace" font-size="20" text-anchor="middle"><text x="55" y="195">0</text><text x="165" y="195">1</text><text x="165" y="85">2</text><text x="275" y="85">3</text></g>
+    <circle cx="55" cy="165" r="20" fill="#53b7ff"/><path d="M45 165h20M55 155v20" stroke="#10161d" stroke-width="4"/>
+    <path d="M275 35l20 20-20 20-20-20z" fill="#ffd166"/><circle cx="275" cy="55" r="7" fill="#10161d"/>
+  </g>
+  <g font-family="system-ui,sans-serif"><text x="245" y="335" fill="#53b7ff" font-size="18">observer ⊕ (0,0)</text><text x="545" y="335" fill="#ffd166" font-size="18">target ◈ (2,1)</text><text x="245" y="372" fill="#aeb9c2" font-size="17">Every step crosses one cell edge; corner contact cannot create a diagonal gap.</text></g>
+  <g id="effects-off" transform="translate(0 430)"/>
+</svg>
