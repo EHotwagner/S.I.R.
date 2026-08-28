@@ -33,11 +33,11 @@
   "productionRenderContract": {"footprintCells": 4, "producerCellSizePx": 64, "documentationScale": 0.5, "bodyInsetPx": 2.5, "bodyRadiusPx": 3, "bodyStrokePx": 1.5, "glyphStrokePx": 1.8, "compactHealthHeightPx": 2.5, "footprintStrokePx": 1, "directionStrokePx": 1.5, "traceStrokePx": 1, "impactRadiusPx": 2.5, "statusRadiusPx": 3, "statusStrokePx": 1, "compactHealthInsetPx": 4, "directionLengthCells": 0.75, "producerFootprintExtentPx": 256, "footprintExtentPx": 128, "bodyExtentPx": 123, "glyphScale": 5, "compactHealthAvailablePx": 120, "directionLengthPx": 24},
   "diagrams": [
     {
-      "id": "attack-pipeline", "kind": "concrete-mechanics", "asset": "docs/assets/sir-combat-quint/attack-pipeline.svg", "sha256": "20642935c9e218c9a1a451157a4b73bf4ace7539f128969d260c1df8af1719aa", "titleId": "attack-title", "descId": "attack-desc", "transcriptAnchor": "diagram-transcript-attack-pipeline",
+      "id": "attack-pipeline", "kind": "concrete-mechanics", "asset": "docs/assets/sir-combat-quint/attack-pipeline.svg", "sha256": "800d3f53b0540ecaedc0169d658570c590c7c31d902fc969af92bfad63f280a5", "titleId": "attack-title", "descId": "attack-desc", "transcriptAnchor": "diagram-transcript-attack-pipeline",
       "usedPaletteTokens": ["canvas", "grid", "text", "human", "neutral", "health", "healthDepleted"], "rules": ["COMBAT-TRACE-002", "COMBAT-COLLISION-001", "COMBAT-COVER-003", "COMBAT-ARMOR-004", "COMBAT-DAMAGE-001", "COMBAT-HEALTH-001", "COMBAT-WOUND-001", "COMBAT-SUPPRESSION-001", "COMBAT-COLLATERAL-001", "COMBAT-ATTACK-RESOLUTION-001"], "declarations": ["AttackInput", "Observation", "resolveConsequences", "consequenceObservation", "representativeAttack"]
     },
     {
-      "id": "state-action", "kind": "abstract-state", "asset": "docs/assets/sir-combat-quint/state-action.svg", "sha256": "79d02ab6841ed6fe69463a4454594caa59e87d87068dcc5c17578fb710421ed8", "titleId": "state-title", "descId": "state-desc", "transcriptAnchor": "diagram-transcript-state-action",
+      "id": "state-action", "kind": "abstract-state", "asset": "docs/assets/sir-combat-quint/state-action.svg", "sha256": "b1802dbc15cc80a20bc777d24c375e47106787fc50c9496cd392b5ad8daf0153", "titleId": "state-title", "descId": "state-desc", "transcriptAnchor": "diagram-transcript-state-action",
       "rules": ["COMBAT-ATTACK-RESOLUTION-001"], "declarations": ["CombatState", "AttackInput", "Observation", "validAttack", "resolveConsequences"]
     },
     {
@@ -49,7 +49,7 @@
       "rules": ["CONTENT-WEAPON-RIFLE-001", "COMBAT-TRACE-002", "COMBAT-ARMOR-004", "COMBAT-DAMAGE-001"], "declarations": ["SCALE", "rifleDamageRaw", "representativeAttack", "traceRaw", "multiplyFixed", "roundedDamage"]
     },
     {
-      "id": "trace-counterexample", "kind": "abstract-trace", "asset": "docs/assets/sir-combat-quint/trace-counterexample.svg", "sha256": "aeab62108cf4a8397c151bc940c59b79e1db212a04de5bf4b7bcf8756900cf2f", "titleId": "trace-title", "descId": "trace-desc", "transcriptAnchor": "diagram-transcript-trace-counterexample",
+      "id": "trace-counterexample", "kind": "abstract-trace", "asset": "docs/assets/sir-combat-quint/trace-counterexample.svg", "sha256": "006dc86a444dbf6f5e1ad78307977a8bc54585deb73380f9d63cf612c6eb5adf", "titleId": "trace-title", "descId": "trace-desc", "transcriptAnchor": "diagram-transcript-trace-counterexample",
       "rules": ["COMBAT-TRACE-002", "COMBAT-ARMOR-004", "COMBAT-DAMAGE-001"], "declarations": ["representativeDamageIsTwenty", "representativeAttack"]
     },
     {

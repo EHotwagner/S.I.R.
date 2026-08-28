@@ -29,6 +29,7 @@ const candidateSourceInputs = [
   ...manifest.sources.map(source => path.join(root, source.path)),
   ...manifest.diagrams.map(diagram => path.join(root, diagram.asset))
 ];
+const candidateSourceInputsDigest = () => digestFiles([...new Set(candidateSourceInputs)]);
 const siteFiles = [];
 const collectFiles = directory => {
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
@@ -161,11 +162,20 @@ try {
       fs.mkdirSync(path.dirname(receiptPath), { recursive: true });
       fs.writeFileSync(receiptPath, JSON.stringify({
         schema: "sir.handbook.timing-mutation/v1",
+        evidenceMode: candidateEvidence ? "immutable-candidate" : "live-replay",
         workloadId: manifest.workload.id,
         workloadDefinitionDigest: manifest.workload.definitionDigest,
         mutation: "svg-response-delay-inside-decoded-image-readiness-subject",
         detector: "render timing budget exceeded",
         result: "observed-red",
+        provenance: {
+          sourceRevisionAtCapture: git("rev-parse", "HEAD"),
+          sourceTreeAtCapture: git("rev-parse", "HEAD^{tree}"),
+          sourceTreeCleanAtCapture: sourceStatusAtCapture === "",
+          candidateSourceInputsSha256: candidateSourceInputsDigest(),
+          renderBaselineSha256: sha256(fs.readFileSync(baselinePath)),
+          renderBaselineRecordedDuringCapture: false
+        },
         observation: overflow
       }, null, 2) + "\n");
     }
@@ -333,7 +343,7 @@ try {
     if (JSON.stringify(renderedContract) !== JSON.stringify(baseline)) throw new Error(`rendered visual regression: live fingerprints differ from baseline ${path.relative(root, baselinePath)}`);
   }
   const renderBaselineSha256 = sha256(fs.readFileSync(baselinePath));
-  const candidateSourceInputsSha256 = digestFiles([...new Set(candidateSourceInputs)]);
+  const candidateSourceInputsSha256 = candidateSourceInputsDigest();
 
   collectFiles(site);
   const fsdocsManifest = JSON.parse(fs.readFileSync(path.join(root, ".config/dotnet-tools.json"), "utf8"));

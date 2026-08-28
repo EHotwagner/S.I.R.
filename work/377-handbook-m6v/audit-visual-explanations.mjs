@@ -220,7 +220,7 @@ function validate({ manifest = baseManifest, overrides = new Map(), checkVisualQ
       && (handbookExpected ? sha256(fs.readFileSync(path.join(renderedDirectory, handbookName))) === diagram.handbookScreenshotSha256 : diagram.handbookScreenshotSha256 === null);
   }));
   if (JSON.stringify(actualPngNames) !== JSON.stringify(expectedPngNames) || !screenshotHashesMatch) fail("rendered-screenshot-inventory-mismatch", JSON.stringify({ expected: expectedPngNames.length, actual: actualPngNames.length }));
-  if (timingMutation.schema !== "sir.handbook.timing-mutation/v1" || timingMutation.workloadId !== manifest.workload.id || timingMutation.workloadDefinitionDigest !== expectedWorkloadDigest
+  if (timingMutation.schema !== "sir.handbook.timing-mutation/v1" || timingMutation.evidenceMode !== "immutable-candidate" || timingMutation.workloadId !== manifest.workload.id || timingMutation.workloadDefinitionDigest !== expectedWorkloadDigest
       || timingMutation.mutation !== "svg-response-delay-inside-decoded-image-readiness-subject" || timingMutation.detector !== "render timing budget exceeded" || timingMutation.result !== "observed-red"
       || timingMutation.observation?.subject !== renderReceipt.timings?.subject || timingMutation.observation?.diagramResponseDelayMs !== 350
       || timingMutation.observation?.maxP95Ms !== manifest.workload.timing.maxP95LoadMs || timingMutation.observation?.maxP99Ms !== manifest.workload.timing.maxP99LoadMs
@@ -461,6 +461,9 @@ function validate({ manifest = baseManifest, overrides = new Map(), checkVisualQ
       || !arithmeticSvg.includes(`${representativeDamage} HP`)
       || !arithmeticSvg.includes(`SCALE = ${scale.toLocaleString("en-US")}`)) fail("arithmetic-projection-mismatch", `${rifleDamageRaw}/${traceRaw}/${representativeArmorRaw}/${representativeDamageRaw}/${representativeDamage}/${scale}`);
   if (!Number.isInteger(mutatedRetentionRaw)
+      || !traceSvg.includes(`damage ${representativeDamage}`)
+      || !traceSvg.includes(`HP ${successorHealth}`)
+      || !traceSvg.includes("property ✓")
       || !traceSvg.includes(`${mutatedRetentionRaw} → damage ${mutatedDamage}`)
       || !traceSvg.includes(`HP ${mutatedHealth}`)
       || !traceSvg.includes("property ✕")) fail("trace-mutation-projection-mismatch", `${mutatedRetentionRaw}/${mutatedDamage}/${mutatedHealth}`);
@@ -491,12 +494,20 @@ function validate({ manifest = baseManifest, overrides = new Map(), checkVisualQ
   const candidateInputDigest = sha256([...new Set(candidateInputPaths)].sort().map(relative => `${relative}\0${sha256(content(relative))}`).join("\n"));
   let capturedTree;
   try { capturedTree = git("rev-parse", `${renderReceipt.provenance?.sourceRevisionAtCapture}^{tree}`); } catch { capturedTree = undefined; }
+  let capturedNegativeTree;
+  try { capturedNegativeTree = git("rev-parse", `${timingMutation.provenance?.sourceRevisionAtCapture}^{tree}`); } catch { capturedNegativeTree = undefined; }
   if (renderReceipt.provenance?.sourceTreeCleanAtCapture !== true
       || renderReceipt.provenance?.candidateSourceInputsSha256 !== candidateInputDigest
       || renderReceipt.provenance?.renderBaselineSha256 !== sha256(content("work/377-handbook-m6v/render-baseline.json"))
       || renderReceipt.provenance?.renderBaselineRecordedDuringCapture !== false
       || !renderReceipt.provenance?.sourceRevisionAtCapture
       || capturedTree !== renderReceipt.provenance?.sourceTreeAtCapture) fail("candidate-provenance-mismatch", JSON.stringify(renderReceipt.provenance));
+  if (timingMutation.provenance?.sourceTreeCleanAtCapture !== true
+      || timingMutation.provenance?.candidateSourceInputsSha256 !== candidateInputDigest
+      || timingMutation.provenance?.renderBaselineSha256 !== sha256(content("work/377-handbook-m6v/render-baseline.json"))
+      || timingMutation.provenance?.renderBaselineRecordedDuringCapture !== false
+      || !timingMutation.provenance?.sourceRevisionAtCapture
+      || capturedNegativeTree !== timingMutation.provenance?.sourceTreeAtCapture) fail("timing-mutation-provenance-mismatch", JSON.stringify(timingMutation.provenance));
   return { errors, metrics, aggregate };
 }
 
