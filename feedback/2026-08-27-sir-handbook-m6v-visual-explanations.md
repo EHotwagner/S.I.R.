@@ -5,7 +5,7 @@ workspace: S.I.R-roadmap-m6v
 cycle: roadmap-sir-combat-quint-handbook-m6v-visual-explanations
 lane: sdd
 toolVersion: 1.4.0
-commit: 99b0d9eaf98e766170c197b9a1e016d82277d0e8
+commit: f507d57e5be9ca57e2bbc1ba413484605b95f832
 ---
 
 # Development feedback — combat Quint handbook M6V visual explanations
@@ -72,10 +72,10 @@ The report does not claim an independently committed pre-implementation numeric 
 - **Expected:** The real rendered handbook route identifies the six external SVG resources, observes navigation-to-loaded-and-decoded readiness in the browser clock, reports cold/browser/caller observations separately, and makes a permanent delay inside that exact subject fail.
 - **Observed:** The repaired route uses six external `<img>` resources and a browser-init observer plus `HTMLImageElement.decode()` with non-zero intrinsic dimensions. It reports 100-sample warm p95/p99 74.1/84.6 ms separately from 129.54 ms browser launch and 128.5 ms cold-site readiness. A retained 350 ms in-subject response-delay mutation records p95/p99 385/387.2 ms against the unchanged 100/200 ms limits; the full owner command then restores green. Thirty standalone diagram-by-mode records and 18 handbook-image screenshots passed after clipping, print-contrast, edge/text, and label/border repairs.
 - **Evidence:** file:work/377-handbook-m6v/inspect-rendered-visuals.mjs; file:readiness/377-handbook-m6v/rendered/inspection.json; file:readiness/377-handbook-m6v/performance-evidence.json; file:readiness/377-handbook-m6v/timing-overflow-mutation.json; command:bash work/377-handbook-m6v/qualify-handbook-m6v.sh
-- **Version:** S.I.R. lifecycle evidence commit `99b0d9e`; Playwright 1.62.1; Chromium 151.0.7922.34; FsDocs 22.1.0.
+- **Version:** S.I.R. lifecycle evidence commit `f507d57`; Playwright 1.62.1; Chromium 151.0.7922.34; FsDocs 22.1.0.
 - **Owner:** EHotwagner/S.I.R. documentation render qualification
 - **Recurrence:** no matching open or closed S.I.R. issue or prior feedback finding was found for this exact nested-SVG/timing-subject failure.
-- **Avoidable cost:** three measurement redesign runs, replacement of six embeds, one screenshot-driven clipping/contrast repair, and one critic-rejected false-green structural mutation before the timing control was added.
+- **Avoidable cost:** three measurement redesign runs, replacement of six embeds, two screenshot-driven repair rounds covering clipping, print contrast, edge/text, and label/border collisions, and one critic-rejected false-green structural mutation before the timing control was added.
 - **Disposition:** accepted
 
 #### §4.4 One aggregate observed receipt plus the standard performance artifact kept lifecycle claims coherent
