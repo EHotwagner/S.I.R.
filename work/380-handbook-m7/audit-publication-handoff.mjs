@@ -7,6 +7,8 @@ const root = process.cwd();
 const read = path => fs.readFileSync(path, "utf8");
 const json = path => JSON.parse(read(path));
 const gitBlob = path => execFileSync("git", ["hash-object", path], { encoding: "utf8" }).trim();
+const sha256 = value => crypto.createHash("sha256").update(value).digest("hex");
+const blobForText = value => crypto.createHash("sha1").update(`blob ${Buffer.byteLength(value)}\0`).update(value).digest("hex");
 const fail = message => { throw new Error(`handbook-m7 audit: ${message}`); };
 const need = (condition, message) => { if (!condition) fail(message); };
 
@@ -21,6 +23,20 @@ const paths = {
   inspection: "readiness/377-handbook-m6v/rendered/inspection.json"
 };
 
+function handbookFrontMatter(handbook) {
+  const match = handbook.match(/^---\n([\s\S]*?)\n---\n/);
+  need(match, "handbook YAML front matter missing");
+  const titleLine = match[1].split("\n").find(line => line.startsWith("title:"));
+  need(titleLine, "handbook YAML title missing");
+  const encodedTitle = titleLine.slice("title:".length).trim();
+  need(encodedTitle.includes(":\u00a0"), "handbook YAML title colon must use YAML-safe non-breaking spacing");
+  const title = encodedTitle.replaceAll("\u00a0", " ");
+  need(typeof title === "string" && title.length > 0, "handbook YAML title is empty");
+  const body = handbook.slice(match[0].length);
+  const normalized = handbook.replace(titleLine, `title: ${title}`);
+  return { title, body, normalized };
+}
+
 function verify(overrides = new Map(), options = {}) {
   const text = path => overrides.has(path) ? overrides.get(path) : read(path);
   const parsed = path => JSON.parse(text(path));
@@ -31,6 +47,7 @@ function verify(overrides = new Map(), options = {}) {
   const diagrams = parsed(paths.diagrams);
   const performance = parsed(paths.performance);
   const inspection = parsed(paths.inspection);
+  const frontMatter = handbookFrontMatter(handbook);
 
   need(/^status: maintained$/m.test(handbook), "handbook is not maintained");
   need(!handbook.includes("*Scheduled content:*"), "scheduled placeholder remains");
@@ -46,7 +63,7 @@ function verify(overrides = new Map(), options = {}) {
   need(record.owner?.triggerLocation === paths.maintenance, "owner trigger location drift");
   for (const source of record.sourceBlobs) {
     const actual = overrides.has(source.path)
-      ? crypto.createHash("sha1").update(`blob ${Buffer.byteLength(text(source.path))}\0`).update(text(source.path)).digest("hex")
+      ? blobForText(text(source.path))
       : gitBlob(source.path);
     need(source.gitBlob === actual, `stale source blob ${source.path}`);
   }
@@ -110,7 +127,17 @@ function verify(overrides = new Map(), options = {}) {
   }
 
   need(reviews.schemaVersion === 1, "review manifest schema mismatch");
-  need(reviews.reviewedSourceBlobs.handbook === record.sourceBlobs.find(x => x.path === paths.handbook).gitBlob, "review handbook binding drift");
+  const publishedHandbookBlob = record.sourceBlobs.find(x => x.path === paths.handbook).gitBlob;
+  if (reviews.reviewedSourceBlobs.handbook !== publishedHandbookBlob) {
+    need(record.successorRepairs?.length === 1, "review handbook binding drift without one bounded successor repair");
+    const repair = record.successorRepairs[0];
+    need(repair.id === "yaml-title-safe-spacing" && repair.scope === "front-matter-title-yaml-safe-spacing-only", "successor repair scope drift");
+    need(repair.reviewedHandbookBlob === reviews.reviewedSourceBlobs.handbook, "successor repair reviewed blob drift");
+    need(repair.publishedHandbookBlob === publishedHandbookBlob, "successor repair published blob drift");
+    need(repair.interpretedTitle === frontMatter.title, "successor repair interpreted title drift");
+    need(repair.reviewedNormalizedSha256 === sha256(frontMatter.normalized), "successor repair exceeds YAML-safe title spacing");
+    need(repair.bodySha256 === sha256(frontMatter.body), "successor repair handbook body drift");
+  }
   need(reviews.reviewedSourceBlobs.model === record.sourceBlobs.find(x => x.path === paths.model).gitBlob, "review model binding drift");
   need(reviews.reviewedSourceBlobs.diagramManifest === record.sourceBlobs.find(x => x.path === paths.diagrams).gitBlob, "review diagram binding drift");
   const subjects = new Set(record.reviewSubjects);
@@ -146,6 +173,19 @@ const preRender = process.argv.includes("--pre-render");
 if (process.argv.includes("--self-test")) {
   const reviews = json(paths.reviews);
   const record = json(paths.record);
+  const unsafeTitleHandbook = read(paths.handbook).replace(
+    "title: Combat in Quint:\u00a0From Design Decisions to Executable Models",
+    "title: Combat in Quint: From Design Decisions to Executable Models"
+  );
+  const broadenedHandbook = read(paths.handbook).replace(
+    "This maintained first edition combines",
+    "This altered maintained first edition combines"
+  );
+  const recordForHandbook = handbook => JSON.stringify({
+    ...record,
+    sourceBlobs: record.sourceBlobs.map(source => source.path === paths.handbook ? {...source, gitBlob: blobForText(handbook)} : source),
+    successorRepairs: record.successorRepairs.map(repair => ({...repair, publishedHandbookBlob: blobForText(handbook)}))
+  });
   const cases = [
     ["missing-domain-review", new Map([[paths.reviews, JSON.stringify({...reviews, reviews: reviews.reviews.filter(x => x.subject !== "domain")})]])],
     ["rejected-model-review", new Map([[paths.reviews, JSON.stringify({...reviews, reviews: reviews.reviews.map(x => x.subject === "quint-modeling" ? {...x, verdict: "changes-required"} : x)})]])],
@@ -154,7 +194,9 @@ if (process.argv.includes("--self-test")) {
     ["scheduled-placeholder", mutated(paths.handbook, value => value + "\n*Scheduled content:* deliberate defect\n")],
     ["weakened-m6v-budget", new Map([[paths.record, JSON.stringify({...record, inheritedEvidence: {...record.inheritedEvidence, m6vPerformance: {...record.inheritedEvidence.m6vPerformance, maxP95Ms: 200}}})]])],
     ["invented-compositor-claim", new Map([[paths.record, JSON.stringify({...record, inheritedEvidence: {...record.inheritedEvidence, m6vPerformance: {...record.inheritedEvidence.m6vPerformance, liveCompositorRequired: true}}})]])],
-    ["missing-m6-binding", new Map([[paths.record, JSON.stringify({...record, inheritedEvidence: {...record.inheritedEvidence, m6StructureAudit: {...record.inheritedEvidence.m6StructureAudit, gitBlob: "0".repeat(40)}}})]])]
+    ["missing-m6-binding", new Map([[paths.record, JSON.stringify({...record, inheritedEvidence: {...record.inheritedEvidence, m6StructureAudit: {...record.inheritedEvidence.m6StructureAudit, gitBlob: "0".repeat(40)}}})]])],
+    ["unsafe-yaml-title-spacing", new Map([[paths.handbook, unsafeTitleHandbook], [paths.record, recordForHandbook(unsafeTitleHandbook)]])],
+    ["broadened-successor-repair", new Map([[paths.handbook, broadenedHandbook], [paths.record, recordForHandbook(broadenedHandbook)]])]
   ];
   for (const [name, override] of cases) {
     let red = false;
