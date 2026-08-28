@@ -41,7 +41,7 @@ node work/380-handbook-m7/audit-publication-handoff.mjs --self-test
 ./scripts/build-docs.sh --prepare-site-only
 node work/380-handbook-m7/qualify-render-replay.mjs --self-test
 node work/380-handbook-m7/qualify-render-replay.mjs \
-  "$render_replay" "$receipt_root/render-measurement-validity.json"
+  "$render_replay" "$render_replay/measurement-validity.json"
 ./scripts/qualify-quint-q4-sir-combat.sh
 
 node work/380-handbook-m7/audit-roadmap-m7.mjs
