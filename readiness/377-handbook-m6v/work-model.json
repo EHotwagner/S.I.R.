@@ -1,0 +1,2577 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "377-handbook-m6v",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "readiness/377-handbook-m6v/performance-evidence.json",
+      "kind": "performanceEvidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "5d91add07d71f3388a366c3de72672f261d5bc7ecb1b1aed64097d38884abb4c"
+      }
+    },
+    {
+      "path": "work/377-handbook-m6v/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "a50d9919c75faa31addd377e32f3d09ab407df471af267d73a1e1e2ccd377e79"
+      }
+    },
+    {
+      "path": "work/377-handbook-m6v/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "7051c8f60eb2ad7443fc73d5b7b54773c81e1ac722b356950ed4a0a0996e838f"
+      }
+    },
+    {
+      "path": "work/377-handbook-m6v/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "e0eba0eb50892be5e301b729c110a5ab91b334614b7cef240f388582e1824c10"
+      }
+    },
+    {
+      "path": "work/377-handbook-m6v/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "3d91f5860392e1ddd2d4fc61a5d5ef4663c02f8516f3864a5ca680bfef141625"
+      }
+    },
+    {
+      "path": "work/377-handbook-m6v/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "0b6109c8ea68bc0df5aae89275a34e32600b64d10901bda398bb99c5d9a4ea77"
+      }
+    },
+    {
+      "path": "work/377-handbook-m6v/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "ca897553ac997282f77d01cd812984e9cfa7d8bec95af146e56a773afee65f97"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "377-handbook-m6v",
+    "title": "Handbook M6V visual explanations",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": {
+    "id": "handbook-m6v-visuals-v1",
+    "disposition": "active",
+    "targetFps": 60,
+    "workloadIds": [
+      "handbook-m6v-six-diagram-render-v1"
+    ],
+    "workloadDefinitionDigests": [
+      "handbook-m6v-six-diagram-render-v1=sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b"
+    ],
+    "maximumExpectedScale": "six diagrams; 180 SVG elements; 120 KiB; 24 animated elements",
+    "maxP95Ms": 100,
+    "maxP99Ms": 200,
+    "maxCatchUpFrames": 0,
+    "structuralCostBudgets": [
+      "aggregate-bytes\u003C=122880",
+      "aggregate-elements\u003C=180",
+      "animated-elements\u003C=24",
+      "diagram-bytes\u003C=20480",
+      "diagram-elements\u003C=30"
+    ],
+    "requiredCapability": "headless-browser",
+    "liveCompositorRequired": false,
+    "deferralIssue": null,
+    "evidenceRefs": [
+      "docs/performance-budget.md"
+    ],
+    "rationale": "The real strict-FsDocs/headless-browser route measures warm navigation until all six diagrams are visible plus deterministic structural counters; cold browser/context startup is separately observed, 60 Hz is progressive-animation intent only, and the host lacks a live compositor and cannot claim frame pacing."
+  },
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "The concrete mechanics diagram MUST reuse the exact production rifleman glyph path and the established battlefield palette, footprint, trace/contact, cover, armor, health/wound, suppression, and collateral vocabulary while naming every bound stable rule ID. (covers AC-001)",
+      "text": "The concrete mechanics diagram MUST reuse the exact production rifleman glyph path and the established battlefield palette, footprint, trace/contact, cover, armor, health/wound, suppression, and collateral vocabulary while naming every bound stable rule ID. (covers AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/377-handbook-m6v/spec.md",
+      "sourceLocation": {
+        "line": 71,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001",
+        "EV014"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "Five abstract diagrams MUST remain pure SVG and explain state/action, rule dependency, scale-10,000 arithmetic, nondeterministic trace/counterexample reading, and invariant reasoning from current authoritative declarations and rule metadata. (covers AC-002)",
+      "text": "Five abstract diagrams MUST remain pure SVG and explain state/action, rule dependency, scale-10,000 arithmetic, nondeterministic trace/counterexample reading, and invariant reasoning from current authoritative declarations and rule metadata. (covers AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/377-handbook-m6v/spec.md",
+      "sourceLocation": {
+        "line": 72,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002",
+        "EV015"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "Every meaningful SVG MUST provide one nonempty \u0060title\u0060, one nonempty \u0060desc\u0060, \u0060role=\u0022img\u0022\u0060, \u0060aria-labelledby\u0060, labeled semantic groups/text, a figure caption, and an adjacent prose transcript. (covers AC-003)",
+      "text": "Every meaningful SVG MUST provide one nonempty \u0060title\u0060, one nonempty \u0060desc\u0060, \u0060role=\u0022img\u0022\u0060, \u0060aria-labelledby\u0060, labeled semantic groups/text, a figure caption, and an adjacent prose transcript. (covers AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/377-handbook-m6v/spec.md",
+      "sourceLocation": {
+        "line": 73,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "Animation and SVG-filter effects MUST be progressive-only; base geometry/text MUST carry all meaning and explicit reduced-motion, static, print, CSS-disabled, filter-unsupported, and non-WebGL routes MUST preserve it. (covers AC-004)",
+      "text": "Animation and SVG-filter effects MUST be progressive-only; base geometry/text MUST carry all meaning and explicit reduced-motion, static, print, CSS-disabled, filter-unsupported, and non-WebGL routes MUST preserve it. (covers AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/377-handbook-m6v/spec.md",
+      "sourceLocation": {
+        "line": 74,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004"
+      ],
+      "linkedEvidenceIds": [
+        "EV004",
+        "EV016"
+      ]
+    },
+    {
+      "id": "FR-005",
+      "title": "A schema-versioned diagram manifest and audit MUST bind diagram ids/subjects to current rule IDs, Quint declarations, vocabulary anchors, exact production glyph primitives, and source digests or derived values without becoming an executable authority. (covers AC-005)",
+      "text": "A schema-versioned diagram manifest and audit MUST bind diagram ids/subjects to current rule IDs, Quint declarations, vocabulary anchors, exact production glyph primitives, and source digests or derived values without becoming an executable authority. (covers AC-005)",
+      "acceptanceCriteria": [
+        "AC-005"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/377-handbook-m6v/spec.md",
+      "sourceLocation": {
+        "line": 75,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T005"
+      ],
+      "linkedEvidenceIds": [
+        "EV005",
+        "EV017"
+      ]
+    },
+    {
+      "id": "FR-006",
+      "title": "Qualification MUST build the real strict FsDocs site and inspect the generated handbook in headless Chromium for normal, reduced-motion, print, disabled-effects, and CSS-disabled routes, retaining deterministic render fingerprints and human-inspectable screenshots. (covers AC-006)",
+      "text": "Qualification MUST build the real strict FsDocs site and inspect the generated handbook in headless Chromium for normal, reduced-motion, print, disabled-effects, and CSS-disabled routes, retaining deterministic render fingerprints and human-inspectable screenshots. (covers AC-006)",
+      "acceptanceCriteria": [
+        "AC-006"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/377-handbook-m6v/spec.md",
+      "sourceLocation": {
+        "line": 76,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T006"
+      ],
+      "linkedEvidenceIds": [
+        "EV006",
+        "EV018"
+      ]
+    },
+    {
+      "id": "FR-007",
+      "title": "Typed performance evidence MUST declare the six-diagram production docs workload, structural byte/node/animation budgets, measured counters, and host/capability facts; it MUST refuse stale workload definitions or exceeded budgets and MUST not invent wall-clock/FPS verdicts. (covers AC-007)",
+      "text": "Typed performance evidence MUST declare the six-diagram production docs workload, structural byte/node/animation budgets, measured counters, and host/capability facts; it MUST refuse stale workload definitions or exceeded budgets and MUST not invent wall-clock/FPS verdicts. (covers AC-007)",
+      "acceptanceCriteria": [
+        "AC-007"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/377-handbook-m6v/spec.md",
+      "sourceLocation": {
+        "line": 77,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T007"
+      ],
+      "linkedEvidenceIds": [
+        "EV007",
+        "EV019"
+      ]
+    },
+    {
+      "id": "FR-008",
+      "title": "Qualification MUST isolate at least six mutations covering authority drift, production glyph drift, accessibility loss, fallback loss, visual fingerprint drift, and performance overflow; every mutation MUST observe its named red detector before untouched inputs restore green. (covers AC-008)",
+      "text": "Qualification MUST isolate at least six mutations covering authority drift, production glyph drift, accessibility loss, fallback loss, visual fingerprint drift, and performance overflow; every mutation MUST observe its named red detector before untouched inputs restore green. (covers AC-008)",
+      "acceptanceCriteria": [
+        "AC-008"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/377-handbook-m6v/spec.md",
+      "sourceLocation": {
+        "line": 78,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T008"
+      ],
+      "linkedEvidenceIds": [
+        "EV008"
+      ]
+    },
+    {
+      "id": "FR-009",
+      "title": "Dedicated qualification MUST own source-binding, SVG/accessibility/fallback, rendered inspection, visual-regression, performance, strict-docs, roadmap, and lifecycle receipts; only M6V may become checked while M7 remains pending. (covers AC-009)",
+      "text": "Dedicated qualification MUST own source-binding, SVG/accessibility/fallback, rendered inspection, visual-regression, performance, strict-docs, roadmap, and lifecycle receipts; only M6V may become checked while M7 remains pending. (covers AC-009)",
+      "acceptanceCriteria": [
+        "AC-009"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/377-handbook-m6v/spec.md",
+      "sourceLocation": {
+        "line": 79,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T009"
+      ],
+      "linkedEvidenceIds": [
+        "EV009"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Authored SVG plus a checked binding manifest is the reviewable publication shape; exact source-token, digest, rule, declaration, and glyph comparisons prevent it from becoming a second authority.",
+      "decision": "Authored SVG plus a checked binding manifest is the reviewable publication shape; exact source-token, digest, rule, declaration, and glyph comparisons prevent it from becoming a second authority.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/377-handbook-m6v/clarifications.md",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T010"
+      ]
+    },
+    {
+      "id": "DEC-002",
+      "title": "SVG filter primitives are the only shader-like enhancement. Every effect is removable through the same \u0060data-effects=\u0022off\u0022\u0060 route used by the audit and preserves static geometry/text.",
+      "decision": "SVG filter primitives are the only shader-like enhancement. Every effect is removable through the same \u0060data-effects=\u0022off\u0022\u0060 route used by the audit and preserves static geometry/text.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/377-handbook-m6v/clarifications.md",
+      "sourceLocation": {
+        "line": 31,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T011"
+      ]
+    },
+    {
+      "id": "DEC-003",
+      "title": "The M6V performance contract covers six diagrams on the real docs route with predeclared structural budgets and capability facts; tactical workload budgets remain producer-owned and unchanged.",
+      "decision": "The M6V performance contract covers six diagrams on the real docs route with predeclared structural budgets and capability facts; tactical workload budgets remain producer-owned and unchanged.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/377-handbook-m6v/clarifications.md",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T012"
+      ]
+    },
+    {
+      "id": "DEC-004",
+      "title": "Semantic DOM fingerprints are deterministic regression gates; Chromium screenshots and computed-layout inspection provide actual-render evidence with honest host limits.",
+      "decision": "Semantic DOM fingerprints are deterministic regression gates; Chromium screenshots and computed-layout inspection provide actual-render evidence with honest host limits.",
+      "requirementRefs": [],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/377-handbook-m6v/clarifications.md",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T013"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Implement requirement FR-002",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [],
+      "requirements": [
+        "FR-002"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Implement requirement FR-003",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [],
+      "requirements": [
+        "FR-003"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-003",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Implement requirement FR-004",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "FR-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Implement requirement FR-005",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [],
+      "requirements": [
+        "FR-005"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "FR-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "T006",
+      "title": "Implement requirement FR-006",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [],
+      "requirements": [
+        "FR-006"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-006",
+        "FR-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV006"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "T007",
+      "title": "Implement requirement FR-007",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [],
+      "requirements": [
+        "FR-007"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "FR-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV007"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "T008",
+      "title": "Implement requirement FR-008",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [],
+      "requirements": [
+        "FR-008"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-008",
+        "FR-008",
+        "PD-008"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV008"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "T009",
+      "title": "Implement requirement FR-009",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [],
+      "requirements": [
+        "FR-009"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-009",
+        "FR-009",
+        "PD-009"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV009"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "T010",
+      "title": "Implement clarification decision DEC-001",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-001"
+      ],
+      "sourceIds": [
+        "DEC-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV010"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "T011",
+      "title": "Implement clarification decision DEC-002",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-002"
+      ],
+      "sourceIds": [
+        "DEC-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV011"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "T012",
+      "title": "Implement clarification decision DEC-003",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-003"
+      ],
+      "sourceIds": [
+        "DEC-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV012"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "T013",
+      "title": "Implement clarification decision DEC-004",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-004"
+      ],
+      "sourceIds": [
+        "DEC-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV013"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "T014",
+      "title": "Implement plan decision PD-001",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "DEC-001",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV014"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "T015",
+      "title": "Implement plan decision PD-002",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "DEC-001",
+        "FR-002",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV015"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "T016",
+      "title": "Implement plan decision PD-004",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "DEC-002",
+        "FR-004",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV016"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "T017",
+      "title": "Implement plan decision PD-005",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "DEC-001",
+        "FR-005",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV017"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "T018",
+      "title": "Implement plan decision PD-006",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-006",
+        "DEC-004",
+        "FR-006",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV018"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "T019",
+      "title": "Implement plan decision PD-007",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "DEC-003",
+        "FR-007",
+        "PD-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV019"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "T020",
+      "title": "Update contract surface PC-001",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "PD-002",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV020"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "id": "T021",
+      "title": "Update contract surface PC-002",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-003",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV021"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "id": "T022",
+      "title": "Update contract surface PC-003",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV022"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "id": "T023",
+      "title": "Update contract surface PC-004",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PD-007"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV023"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "id": "T024",
+      "title": "Record verification evidence VO-001",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "PD-002",
+        "PD-005",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV024"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 24,
+        "column": 1
+      }
+    },
+    {
+      "id": "T025",
+      "title": "Record verification evidence VO-002",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-003",
+        "PD-004",
+        "VO-002"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV025"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "id": "T026",
+      "title": "Record verification evidence VO-003",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-005",
+        "VO-003"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV026"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      }
+    },
+    {
+      "id": "T027",
+      "title": "Record verification evidence VO-004",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PD-006",
+        "VO-004"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV027"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 27,
+        "column": 1
+      }
+    },
+    {
+      "id": "T028",
+      "title": "Record verification evidence VO-005",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PD-007",
+        "VO-005"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV028"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "id": "T029",
+      "title": "Record verification evidence VO-006",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PD-008",
+        "VO-006"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV029"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "id": "T030",
+      "title": "Record verification evidence VO-007",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PD-009",
+        "VO-007"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV030"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      }
+    },
+    {
+      "id": "T031",
+      "title": "Handle migration posture PM-001",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV031"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 31,
+        "column": 1
+      }
+    },
+    {
+      "id": "T032",
+      "title": "Handle migration posture PM-002",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PM-002"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV032"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "id": "T033",
+      "title": "Refresh generated view impact GV-001",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-005",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV033"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "id": "T034",
+      "title": "Refresh generated view impact GV-002",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-002",
+        "PD-009"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV034"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 34,
+        "column": 1
+      }
+    },
+    {
+      "id": "T035",
+      "title": "Measure performance intent handbook-m6v-visuals-v1",
+      "status": "done",
+      "owner": "kite-97e4",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [],
+      "requiredSkills": [
+        "headless-browser",
+        "performance-measurement"
+      ],
+      "requiredEvidence": [
+        "EV035"
+      ],
+      "source": "work/377-handbook-m6v/tasks.yml",
+      "sourceLocation": {
+        "line": 35,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        "docs/assets/sir-combat-quint/attack-pipeline.svg",
+        "docs/sir-combat-quint-diagrams.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [
+        "docs/assets/sir-combat-quint/invariant-boundary.svg",
+        "docs/assets/sir-combat-quint/q4-arithmetic.svg",
+        "docs/assets/sir-combat-quint/rule-dependency.svg",
+        "docs/assets/sir-combat-quint/state-action.svg",
+        "docs/assets/sir-combat-quint/trace-counterexample.svg"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [
+        "docs/sir-combat-quint-handbook.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [
+        "docs/sir-combat-quint-diagrams.json",
+        "readiness/377-handbook-m6v/visual-qualification.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV006",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T006",
+      "taskRefs": [
+        "T006"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV007",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T007",
+      "taskRefs": [
+        "T007"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json",
+        "readiness/377-handbook-m6v/visual-qualification.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV008",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T008",
+      "taskRefs": [
+        "T008"
+      ],
+      "requirementRefs": [
+        "FR-008"
+      ],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/qualification.junit.xml"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV009",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T009",
+      "taskRefs": [
+        "T009"
+      ],
+      "requirementRefs": [
+        "FR-009"
+      ],
+      "artifactRefs": [
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "readiness/377-handbook-m6v/qualification.junit.xml"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV010",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T010",
+      "taskRefs": [
+        "T010"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/sir-combat-quint-diagrams.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV011",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T011",
+      "taskRefs": [
+        "T011"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV012",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T012",
+      "taskRefs": [
+        "T012"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV013",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T013",
+      "taskRefs": [
+        "T013"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV014",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T014",
+      "taskRefs": [
+        "T014"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        "docs/assets/sir-combat-quint/attack-pipeline.svg"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV015",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T015",
+      "taskRefs": [
+        "T015"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [
+        "docs/assets/sir-combat-quint/invariant-boundary.svg",
+        "docs/assets/sir-combat-quint/state-action.svg"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV016",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T016",
+      "taskRefs": [
+        "T016"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV017",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T017",
+      "taskRefs": [
+        "T017"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [
+        "docs/sir-combat-quint-diagrams.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV018",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T018",
+      "taskRefs": [
+        "T018"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV019",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T019",
+      "taskRefs": [
+        "T019"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json",
+        "readiness/377-handbook-m6v/visual-qualification.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV020",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T020",
+      "taskRefs": [
+        "T020"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/sir-combat-quint-diagrams.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV021",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T021",
+      "taskRefs": [
+        "T021"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/assets/sir-combat-quint/attack-pipeline.svg",
+        "docs/sir-combat-quint-handbook.md"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV022",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T022",
+      "taskRefs": [
+        "T022"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV023",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T023",
+      "taskRefs": [
+        "T023"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json",
+        "readiness/377-handbook-m6v/visual-qualification.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV024",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T024",
+      "taskRefs": [
+        "T024"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/visual-qualification.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 24,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV025",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T025",
+      "taskRefs": [
+        "T025"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/docs-render.junit.xml"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV026",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T026",
+      "taskRefs": [
+        "T026"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/visual-qualification.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV027",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T027",
+      "taskRefs": [
+        "T027"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 27,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV028",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T028",
+      "taskRefs": [
+        "T028"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json",
+        "readiness/377-handbook-m6v/visual-qualification.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV029",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T029",
+      "taskRefs": [
+        "T029"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/qualification.junit.xml"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV030",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T030",
+      "taskRefs": [
+        "T030"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/analysis.json",
+        "readiness/377-handbook-m6v/qualification.junit.xml"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV031",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T031",
+      "taskRefs": [
+        "T031"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/sir-combat-quint-diagrams.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 31,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV032",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T032",
+      "taskRefs": [
+        "T032"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/377-handbook-m6v/rendered/inspection.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV033",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T033",
+      "taskRefs": [
+        "T033"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json",
+        "readiness/377-handbook-m6v/visual-qualification.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV034",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T034",
+      "taskRefs": [
+        "T034"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/analysis.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 34,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV035",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T035",
+      "taskRefs": [
+        "T035"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/377-handbook-m6v/rendered/inspection.json",
+        "readiness/377-handbook-m6v/visual-qualification.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": {
+        "artifactPath": "readiness/377-handbook-m6v/performance-evidence.json",
+        "intent": {
+          "id": "handbook-m6v-visuals-v1",
+          "disposition": "active",
+          "targetFps": 60,
+          "workloadIds": [
+            "handbook-m6v-six-diagram-render-v1"
+          ],
+          "workloadDefinitionDigests": [
+            "handbook-m6v-six-diagram-render-v1=sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b"
+          ],
+          "maximumExpectedScale": "six diagrams; 180 SVG elements; 120 KiB; 24 animated elements",
+          "maxP95Ms": 100,
+          "maxP99Ms": 200,
+          "maxCatchUpFrames": 0,
+          "structuralCostBudgets": [
+            "aggregate-bytes\u003C=122880",
+            "aggregate-elements\u003C=180",
+            "animated-elements\u003C=24",
+            "diagram-bytes\u003C=20480",
+            "diagram-elements\u003C=30"
+          ],
+          "requiredCapability": "headless-browser",
+          "liveCompositorRequired": false,
+          "deferralIssue": null,
+          "evidenceRefs": [
+            "docs/performance-budget.md"
+          ],
+          "rationale": "The real strict-FsDocs/headless-browser route measures warm navigation until all six diagrams are visible plus deterministic structural counters; cold browser/context startup is separately observed, 60 Hz is progressive-animation intent only, and the host lacks a live compositor and cannot claim frame pacing."
+        },
+        "targetFps": 60,
+        "workloadIds": [
+          "handbook-m6v-six-diagram-render-v1"
+        ],
+        "stressWorkloadIds": [],
+        "workloadDefinitionDigests": [
+          "handbook-m6v-six-diagram-render-v1=sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b"
+        ],
+        "currencyToken": "sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b",
+        "capturedAfterUtc": "2026-08-28T00:00:00Z",
+        "maxP95Ms": 100,
+        "maxP99Ms": 200,
+        "maxCatchUpFrames": 0,
+        "measurementScope": "warm same-browser navigation start until the six external SVG image resources are loaded and decoded with non-zero intrinsic dimensions; unrelated template CDN load is observed but is not diagram readiness",
+        "requiredCapability": "headless-browser",
+        "liveCompositorRequired": false,
+        "deferralIssue": null
+      },
+      "performanceEvidenceArtifact": {
+        "contractVersion": "performance-evidence-v1",
+        "claimedBudgetPassed": true,
+        "sampleSets": [
+          {
+            "workloadId": "handbook-m6v-six-diagram-render-v1",
+            "workloadDefinitionDigest": "sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b",
+            "workloadClass": "normal-play",
+            "targetFps": 60,
+            "maxP95Ms": 100,
+            "maxP99Ms": 200,
+            "maxCatchUpFrames": 0,
+            "measurementScope": "warm same-browser navigation start until the six external SVG image resources are loaded and decoded with non-zero intrinsic dimensions; unrelated template CDN load is observed but is not diagram readiness",
+            "requiredCapability": "headless-browser",
+            "hostProfile": "linux-x64-headless-chromium-151.0.7922.34",
+            "packageVersions": [
+              "@playwright/test@1.62.1",
+              "FsDocs@22.1.0"
+            ],
+            "measurementMode": "headless",
+            "capabilities": [
+              "headless-browser"
+            ],
+            "warmupPolicy": "same-browser-three-navigation-warmup",
+            "samplePolicy": "nearest-rank/100-no-store-navigation-decode-runs",
+            "capturedAtUtc": "2026-08-28T00:00:00Z",
+            "currencyToken": "sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b",
+            "probeReadbackContaminated": false,
+            "durationSamplesMs": [
+              47.9,
+              48.1,
+              49.2,
+              47,
+              50.8,
+              49.6,
+              48,
+              45.2,
+              50.1,
+              50,
+              45.4,
+              45.7,
+              48.9,
+              45.4,
+              51.5,
+              46.8,
+              46.3,
+              52.2,
+              47.2,
+              51.3,
+              46.3,
+              54.5,
+              54.5,
+              49.9,
+              56,
+              55.1,
+              57.2,
+              54.3,
+              53.3,
+              58.8,
+              55.3,
+              59.3,
+              52.4,
+              55.1,
+              57.2,
+              58,
+              63.9,
+              66.7,
+              65.8,
+              62.7,
+              70.7,
+              64.8,
+              67.4,
+              74.1,
+              70,
+              62.9,
+              60.6,
+              53.4,
+              57.9,
+              52.5,
+              58.1,
+              57.9,
+              69.3,
+              63.3,
+              53.1,
+              58.3,
+              53.1,
+              56.2,
+              57.5,
+              55.7,
+              58.7,
+              57.1,
+              64.1,
+              62.9,
+              60.4,
+              65.1,
+              58.7,
+              68.6,
+              68.5,
+              66.6,
+              74.3,
+              67.5,
+              72.9,
+              67.7,
+              66.6,
+              72.4,
+              62.7,
+              81.5,
+              146.7,
+              66.5,
+              73.5,
+              71.3,
+              72.4,
+              72.2,
+              66.4,
+              57.6,
+              61.7,
+              62.6,
+              59.5,
+              62.8,
+              62.5,
+              60.5,
+              68,
+              62.5,
+              67.9,
+              67.6,
+              64.2,
+              76.6,
+              67.4,
+              84.6
+            ],
+            "catchUpFrames": [
+              0
+            ]
+          }
+        ]
+      },
+      "performanceMeasurements": [
+        {
+          "workloadId": "handbook-m6v-six-diagram-render-v1",
+          "p95Ms": 74.1,
+          "p99Ms": 84.6,
+          "maxCatchUpFrames": 0
+        }
+      ],
+      "rationale": null,
+      "source": "work/377-handbook-m6v/evidence.yml",
+      "sourceLocation": {
+        "line": 35,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/377-handbook-m6v/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.4.0"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "readiness/377-handbook-m6v/performance-evidence.json",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5d91add07d71f3388a366c3de72672f261d5bc7ecb1b1aed64097d38884abb4c"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/377-handbook-m6v/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a50d9919c75faa31addd377e32f3d09ab407df471af267d73a1e1e2ccd377e79"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/377-handbook-m6v/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7051c8f60eb2ad7443fc73d5b7b54773c81e1ac722b356950ed4a0a0996e838f"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/377-handbook-m6v/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e0eba0eb50892be5e301b729c110a5ab91b334614b7cef240f388582e1824c10"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/377-handbook-m6v/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "3d91f5860392e1ddd2d4fc61a5d5ef4663c02f8516f3864a5ca680bfef141625"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/377-handbook-m6v/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "0b6109c8ea68bc0df5aae89275a34e32600b64d10901bda398bb99c5d9a4ea77"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/377-handbook-m6v/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "ca897553ac997282f77d01cd812984e9cfa7d8bec95af146e56a773afee65f97"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "839db66136657241d7d84fdf8f35c8e787d61b58e0727954223f29acad844a51"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}

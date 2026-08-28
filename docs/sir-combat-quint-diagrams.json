@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "authorityPosture": "checked explanatory projection; never combat, model, glyph, or performance authority",
+  "workload": {
+    "id": "handbook-m6v-six-diagram-render-v1",
+    "definitionDigest": "sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b",
+    "route": "strict-fsdocs-render-plus-headless-chromium",
+    "modes": ["normal", "reduced-motion", "print", "effects-off", "css-disabled"],
+    "maximumScale": {"diagrams": 6, "elementsPerDiagram": 30, "aggregateElements": 180, "bytesPerDiagram": 20480, "aggregateBytes": 122880, "animatedElements": 24},
+    "timing": {"targetFpsIntent": 60, "warmupNavigations": 3, "sampleCount": 100, "maxP95LoadMs": 100, "maxP99LoadMs": 200, "liveCompositorRequired": false}
+  },
+  "sources": [
+    {"path": "src/SIR.Client/UnitGlyphCatalog.fs", "sha256": "3ff311aef068da1f19bfcf9bfc39eeacb6aca6db203c7a14e37c5235c9e8597c", "owns": ["rifleman glyph", "palette tokens"]},
+    {"path": "src/SIR.Client/Battlefield.fs", "sha256": "c551bc69450d25da3651ea0d4833fb2bcae5a8dc843f640ecbe3d2226092bf4b", "owns": ["footprint and battlefield symbology"]},
+    {"path": "src/SIR.Client/MapEditor.fs", "sha256": "78d78ed8cbbc6f1371afc4574db9c141e30f92ea2ce5debdf6f0c3a3735a2a57", "owns": ["canonical rifleman footprint extent"]},
+    {"path": "src/SIR.Client/TacticalSceneProjection.fs", "sha256": "57766b7ef90d24b7867779a17728893eb17d412e95c8a816e44dd6c4fdc7239c", "owns": ["visual-system and status-overlay semantics"]},
+    {"path": "src/SIR.Client.Web/App.fs", "sha256": "726ed595767a9431c7c9a9a86940125e9c68f87f248d29ab04b8cdbd46eaffeb", "owns": ["unit body and glyph rendering attributes"]},
+    {"path": "src/SIR.Client.Web/TacticalUnitSymbolView.fs", "sha256": "c8a5272be582ab39616434ea648557f3dab53423df55a2794216f870093b19ef", "owns": ["health and status-channel rendering"]},
+    {"path": "src/SIR.Client.Web/TacticalOverlayView.fs", "sha256": "27e3d822ea7dc1baf946bc67609890cd3b817682c1eda2282fcc0cab22c81978", "owns": ["footprint, trace, contact, direction, and status geometry"]},
+    {"path": "src/SIR.Client.Web/styles.css", "sha256": "a66689af1fbf8f4fab841e36d22e5e32c9b48b5e58d76ec9500e3772a79d3a0a", "owns": ["persistent tactical overlay color and stroke behavior"]},
+    {"path": "docs/rules/sir-combat.md", "sha256": "f121c201a6f77d0cfc4c86fe72455e8d821b3d941bf012ab0e3482db103e43e7", "owns": ["Quint declarations and properties"]},
+    {"path": "src/SIR.Simulation/CombatRules.fs", "sha256": "3fa44465db98e8715d0d818a8714958bd2dc66f13c8180da15fb1ca2f12661f0", "owns": ["stable rule registry"]},
+    {"path": "docs/sir-combat-quint-vocabulary.json", "sha256": "10a39bbdc68ec916c9492034539bf4cbc95baccb2084b7b225d47fdd5951f34a", "owns": ["canonical handbook anchors"]},
+    {"path": "scripts/lib/performance-budget.mjs", "sha256": "f7b60841106b4a46d47f62d1db24dcffafcf6424f0efddeae1ea5ca34878b306", "owns": ["producer tactical performance posture"]},
+    {"path": "work/361-handbook-m2/audit-representative-attack.mjs", "sha256": "7eec05003303fa74b1de6fcb51d181e8be5eedcc1175021363a1f92b5850fdc3", "owns": ["established representative retention mutation witness"]}
+  ],
+  "productionVocabulary": {
+    "glyphId": "rifleman",
+    "glyphPrimitives": ["M4 18 L12 4 L20 18 L16 18 L12 11 L8 18 Z", "M5 20 L19 8"],
+    "overlayIds": ["combat.armor-coverage", "combat.attack-traces", "combat.hp-wounds", "combat.suppression", "cover.exposure", "unit.footprints"],
+    "palette": {"canvas": "#10161d", "terrain": "#28343d", "grid": "#71808b", "text": "#f7f9fa", "human": "#53b7ff", "arcane": "#d792ff", "neutral": "#ffd166", "health": "#ff6b6b", "healthDepleted": "#59636b"}
+  },
+  "productionRenderContract": {"footprintCells": 4, "producerCellSizePx": 64, "documentationScale": 0.5, "bodyInsetPx": 2.5, "bodyRadiusPx": 3, "bodyStrokePx": 1.5, "glyphStrokePx": 1.8, "compactHealthHeightPx": 2.5, "footprintStrokePx": 1, "directionStrokePx": 1.5, "traceStrokePx": 1, "impactRadiusPx": 2.5, "statusRadiusPx": 3, "statusStrokePx": 1, "compactHealthInsetPx": 4, "directionLengthCells": 0.75, "producerFootprintExtentPx": 256, "footprintExtentPx": 128, "bodyExtentPx": 123, "glyphScale": 5, "compactHealthAvailablePx": 120, "directionLengthPx": 24},
+  "diagrams": [
+    {
+      "id": "attack-pipeline", "kind": "concrete-mechanics", "asset": "docs/assets/sir-combat-quint/attack-pipeline.svg", "sha256": "800d3f53b0540ecaedc0169d658570c590c7c31d902fc969af92bfad63f280a5", "titleId": "attack-title", "descId": "attack-desc", "transcriptAnchor": "diagram-transcript-attack-pipeline",
+      "usedPaletteTokens": ["canvas", "grid", "text", "human", "neutral", "health", "healthDepleted"], "rules": ["COMBAT-TRACE-002", "COMBAT-COLLISION-001", "COMBAT-COVER-003", "COMBAT-ARMOR-004", "COMBAT-DAMAGE-001", "COMBAT-HEALTH-001", "COMBAT-WOUND-001", "COMBAT-SUPPRESSION-001", "COMBAT-COLLATERAL-001", "COMBAT-ATTACK-RESOLUTION-001"], "declarations": ["AttackInput", "Observation", "resolveConsequences", "consequenceObservation", "representativeAttack"]
+    },
+    {
+      "id": "state-action", "kind": "abstract-state", "asset": "docs/assets/sir-combat-quint/state-action.svg", "sha256": "b1802dbc15cc80a20bc777d24c375e47106787fc50c9496cd392b5ad8daf0153", "titleId": "state-title", "descId": "state-desc", "transcriptAnchor": "diagram-transcript-state-action",
+      "rules": ["COMBAT-ATTACK-RESOLUTION-001"], "declarations": ["CombatState", "AttackInput", "Observation", "validAttack", "resolveConsequences"]
+    },
+    {
+      "id": "rule-dependency", "kind": "abstract-dependency", "asset": "docs/assets/sir-combat-quint/rule-dependency.svg", "sha256": "a97ada7ff46615cc82eaf9e0d6042cbc81c4306b3b0d7cdcfaae33567d912380", "titleId": "dependency-title", "descId": "dependency-desc", "transcriptAnchor": "diagram-transcript-rule-dependency",
+      "directDependencyOwner": "COMBAT-ATTACK-RESOLUTION-001", "rules": ["COMBAT-ENGAGEMENT-001", "COMBAT-COLLISION-001", "COMBAT-COVER-003", "COMBAT-PENETRATION-001", "COMBAT-DAMAGE-001", "COMBAT-WOUND-001", "COMBAT-SUPPRESSION-001", "COMBAT-COLLATERAL-001", "COMBAT-ATTACK-RESOLUTION-001"], "declarations": ["ruleCatalogue", "consequenceExplanationOrder"]
+    },
+    {
+      "id": "q4-arithmetic", "kind": "abstract-arithmetic", "asset": "docs/assets/sir-combat-quint/q4-arithmetic.svg", "sha256": "9f83ed6e972f0a83fe114b6baad39b203bc57587ae5f3f200d128804b493b44c", "titleId": "arithmetic-title", "descId": "arithmetic-desc", "transcriptAnchor": "diagram-transcript-q4-arithmetic",
+      "rules": ["CONTENT-WEAPON-RIFLE-001", "COMBAT-TRACE-002", "COMBAT-ARMOR-004", "COMBAT-DAMAGE-001"], "declarations": ["SCALE", "rifleDamageRaw", "representativeAttack", "traceRaw", "multiplyFixed", "roundedDamage"]
+    },
+    {
+      "id": "trace-counterexample", "kind": "abstract-trace", "asset": "docs/assets/sir-combat-quint/trace-counterexample.svg", "sha256": "006dc86a444dbf6f5e1ad78307977a8bc54585deb73380f9d63cf612c6eb5adf", "titleId": "trace-title", "descId": "trace-desc", "transcriptAnchor": "diagram-transcript-trace-counterexample",
+      "rules": ["COMBAT-TRACE-002", "COMBAT-ARMOR-004", "COMBAT-DAMAGE-001"], "declarations": ["representativeDamageIsTwenty", "representativeAttack"]
+    },
+    {
+      "id": "invariant-boundary", "kind": "abstract-invariant", "asset": "docs/assets/sir-combat-quint/invariant-boundary.svg", "sha256": "208bd14ba9c48e417e645bafb11b9eee66c6f1ba1ac72e0beb406b0f7c12ffa2", "titleId": "invariant-title", "descId": "invariant-desc", "transcriptAnchor": "diagram-transcript-invariant-boundary",
+      "rules": ["COMBAT-COVER-003", "COMBAT-HEALTH-001", "COMBAT-WOUND-001", "COMBAT-SUPPRESSION-001"], "declarations": ["boundedCombatState", "incapacityMatchesHealth"]
+    }
+  ],
+  "fallbackContract": {"baseMeaning": "inline static geometry/text plus title, description, caption, and transcript", "motionClass": "motion", "effectClass": "fx", "effectOffSelector": "svg:target .fx", "effectOffRoute": "asset.svg#effects-off", "staticMode": "css-disabled", "reducedMotionMedia": "prefers-reduced-motion:reduce", "printMedia": "print", "webglRequired": false}
+}
