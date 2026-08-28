@@ -93,7 +93,8 @@ function verify(overrides = new Map(), options = {}) {
   need(extension.qualification?.combatTooltipHotspots === 56, "combat tooltip evidence drift");
   need(extension.qualification?.interactiveCombatSvgObjects === 6, "combat interactive embed evidence drift");
   need(extension.qualification?.canonicalVisualSourcesPreserved === true, "combat tooltip extension does not preserve reviewed visual sources");
-  need(extension.sourceBlobs?.length === 16, "interactive extension source cardinality drift");
+  need(extension.qualification?.inAppProjection === "safe image block", "interactive SVG in-app projection drift");
+  need(extension.sourceBlobs?.length === 17, "interactive extension source cardinality drift");
   for (const source of extension.sourceBlobs) need(source.gitBlob === gitBlob(source.path), `visibility extension source drift: ${source.path}`);
   const visibilityAssets = extension.sourceBlobs.filter(source => source.path.includes("/sir-visibility-quint/") && source.path.endsWith(".svg"));
   need(visibilityAssets.length === 7, "visibility extension must bind seven SVG diagrams");

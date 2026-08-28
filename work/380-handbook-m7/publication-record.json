@@ -40,7 +40,7 @@
       "publishedHandbookBlob": "448bd97875ad611a17841ab84361c90cffb31905",
       "handbookSha256": "b11a59e7bb1d05c1fa5dd1ee5cb102d7fb45c2ac5a586ead33c19c798cc5747e",
       "reviewPosture": "automated qualification only; the four inherited M7 human reviews and six-diagram render performance evidence do not cover this extension",
-      "qualification": {"command": "./scripts/qualify-quint-sir-visibility.sh", "quint": "0.32.0", "tests": 13, "boundedOrderedCellPairs": 625, "sampledInvariants": 2, "witnesses": 3, "observedRedMutations": 7, "tooltipHotspots": 69, "interactiveSvgObjects": 7, "combatTooltipCommand": "./scripts/qualify-sir-combat-quint-tooltips.sh", "combatTooltipHotspots": 56, "interactiveCombatSvgObjects": 6, "canonicalVisualSourcesPreserved": true, "apalache": "optional; requires Java 17 or newer"},
+      "qualification": {"command": "./scripts/qualify-quint-sir-visibility.sh", "quint": "0.32.0", "tests": 13, "boundedOrderedCellPairs": 625, "sampledInvariants": 2, "witnesses": 3, "observedRedMutations": 7, "tooltipHotspots": 69, "interactiveSvgObjects": 7, "combatTooltipCommand": "./scripts/qualify-sir-combat-quint-tooltips.sh", "combatTooltipHotspots": 56, "interactiveCombatSvgObjects": 6, "canonicalVisualSourcesPreserved": true, "inAppProjection": "safe image block", "apalache": "optional; requires Java 17 or newer"},
       "sourceBlobs": [
         {"path": "docs/rules/sir-visibility.md", "gitBlob": "89becb27fbc285b4b6f8a1e378b931442e634fe7"},
         {"path": "scripts/qualify-quint-sir-visibility.sh", "gitBlob": "c8a47282a276058a970fa5edb714225eed11c0e5"},
@@ -52,6 +52,7 @@
         {"path": "docs/assets/sir-visibility-quint/two-traces.svg", "gitBlob": "807e1e920fbd89ea5236deeee887397f3e221567"},
         {"path": "docs/assets/sir-visibility-quint/work-bound.svg", "gitBlob": "42679f5d8b98539d1989990461083561c31d46cd"},
         {"path": "scripts/qualify-sir-combat-quint-tooltips.sh", "gitBlob": "8e2c7e389eebc6fcac583912e4dbc59db617e864"},
+        {"path": "scripts/generate-in-app-docs.mjs", "gitBlob": "37ce66c85eff5a4c8179e4a783ccfb1da92469c9"},
         {"path": "docs/assets/sir-combat-quint-interactive/attack-pipeline.svg", "gitBlob": "9adcde340127f573b359d8d36a2eded971762d74"},
         {"path": "docs/assets/sir-combat-quint-interactive/invariant-boundary.svg", "gitBlob": "e90b9812875875c79e0fb3121c8db60ab062442f"},
         {"path": "docs/assets/sir-combat-quint-interactive/q4-arithmetic.svg", "gitBlob": "b8d3a8ec430b734e6d13ad75172e1f1f12bdedc4"},
