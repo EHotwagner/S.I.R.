@@ -1,0 +1,69 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-28-sir-handbook-m7-publication-handoff.md",
+  "reportSha256": "c8b52f6f50ff2ea760b12424a485fbf8b77a5ec56880f43260cf1e46df0663bc",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m7-publication-handoff.jsonl", "result": "claim-only", "sha256": "eea5f7c98d8b0c4de9a696cfd4da54605429ecbc4fa136dd2d5eafad2ea415ca"},
+        {"locator": "issue:EHotwagner/S.I.R.#380", "result": "verified"},
+        {"locator": "command:scripts/fsgg-coord delivery-route show 380 --json", "result": "verified"}
+      ],
+      "confidenceLimits": [
+        "The raw digest-free refusal and exact attempt output were not retained; those details remain explicitly identified as checkpoint testimony.",
+        "Issue chronology and the current route command independently verify the later digest-valid route revisions, successful claim chronology, final revision 3, and digest c96118cf92caedabe99879a6d37e2da9ee879562559678ecb5b3b90af50ddfe6.",
+        "Closed FS-GG/.github#2698 and M6V feedback §4.1 establish the recurring residual route-authoring cause; this report does not claim a new root cause."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "file:work/380-handbook-m7/plan.md", "result": "verified", "sha256": "e3ab288742fed4dfeaa3d4fa44cd474172251fc67051f7037ea5c17415798ca4"},
+        {"locator": "file:readiness/380-handbook-m7/analysis.json", "result": "verified", "sha256": "36e45c11f35b222d0171b5f39dde4dca89f5a164847ba1df0ba40aa2ee90cdb7"},
+        {"locator": "command:artifacts/tools/fsgg-sdd-1.4.0/fsgg-sdd analyze --work 380-handbook-m7 --text", "result": "verified"}
+      ],
+      "confidenceLimits": [
+        "The initial PM-001 rejection view was not retained and is explicitly presented as checkpoint testimony.",
+        "The committed plan independently verifies the concrete additive compatibility posture.",
+        "The committed analysis and fresh command independently verify the repaired implementationReady state with 68 of 68 relationships ready and no blockers."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "issue:EHotwagner/S.I.R.#380", "result": "verified"},
+        {"locator": "command:scripts/fsgg-coord delivery-route show 380 --json", "result": "verified"}
+      ],
+      "confidenceLimits": [
+        "No exact pre-widen tree or claim-touch-set receipt was retained; the first-write ordering and claim widen remain explicitly identified as checkpoint testimony.",
+        "Issue route history independently verifies that revision 1 omitted the maintenance path and revision 2 added it.",
+        "The current route command independently verifies final revision 3 and sdd-required routing, but makes no claim about the historical claim touch-set or overlap state."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "file:work/380-handbook-m7/publication-reviews.json", "result": "verified", "sha256": "bc41b4b4eec1e4a8d3cb5a693762c001376687b33fe1c4afa8937a195e66a62f"},
+        {"locator": "file:work/380-handbook-m7/publication-record.json", "result": "verified", "sha256": "3c3cb31f47581aba48ddcc247ff924f7ee5b78d05685c104b7406ae629040034"},
+        {"locator": "file:readiness/380-handbook-m7/rendered/inspection.json", "result": "verified", "sha256": "89367a0f6ef8b8f762d9c692bb071bf6ad82da91c52c7ea499f8428d481c2a7b"},
+        {"locator": "command:node work/380-handbook-m7/audit-publication-handoff.mjs --self-test", "result": "verified"}
+      ],
+      "confidenceLimits": [
+        "The three retired candidates and four replay count are explicitly identified as checkpoint testimony because discarded outputs were not retained.",
+        "Committed evidence independently verifies four final approvals bound to handbook blob 6a2a2c5c44da82bef28c459497786f35017d17e4, model blob 2347769cf18c278b27e4af4322580cd50719fe3f, and manifest blob 7a84db6af105d3653243828e4828beea451e69ea.",
+        "Current render evidence independently verifies candidate digest a794b7b8132cc237946de5bf2c37cfd803630a265f4d81bddd4b7715b58ea90f, 48 screenshots, six diagrams in five modes, 100 measured samples after three warmups, p95 71.4 ms, p99 76.8 ms, and the explicit absence of live-compositor and frame-pacing claims."
+      ]
+    }
+  ]
+}
