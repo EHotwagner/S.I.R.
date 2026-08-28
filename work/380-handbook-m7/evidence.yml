@@ -11,7 +11,7 @@ sourceAnalysis: readiness/380-handbook-m7/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/380-handbook-m7/analysis.json
-    digest: 3aa4c76763407cc0e1f551612b59e3dcdcf5b2e34ec26719a567a34493813462
+    digest: 36e45c11f35b222d0171b5f39dde4dca89f5a164847ba1df0ba40aa2ee90cdb7
     schemaVersion: 1
   - label: checklist
     path: work/380-handbook-m7/checklist.md

@@ -6,5 +6,5 @@
   "packageLockSha256": "3bec3c4dc97e076324b85ff5f79c1f8953632e8f6d0dc6adc5cb64bd6d490206",
   "playwrightVersion": "1.62.1",
   "browserVersion": "151.0.7922.34",
-  "executableSource": "playwright-managed"
+  "executableSource": "explicit-PLAYWRIGHT_EXECUTABLE_PATH"
 }
