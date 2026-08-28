@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuite name="sir-handbook-m6v-qualification" tests="8" failures="0" errors="0" skipped="0">
-  <testcase classname="SIR.HandbookM6V" name="source-bound-svg-and-seven-observed-red-restored-green-mutations"/>
+  <testcase classname="SIR.HandbookM6V" name="source-bound-svg-and-seven-observed-red-restored-green-controls"/>
   <testcase classname="SIR.HandbookM6V" name="strict-fsdocs-production-route"/>
-  <testcase classname="SIR.HandbookM6V" name="normal-reduced-motion-print-effects-off-rendering"/>
+  <testcase classname="SIR.HandbookM6V" name="normal-reduced-motion-print-effects-off-css-disabled-rendering"/>
   <testcase classname="SIR.HandbookM6V" name="typed-structural-and-warm-decode-performance"/>
   <testcase classname="SIR.HandbookM6V" name="production-client-glyph-and-battlefield-regression"/>
   <testcase classname="SIR.HandbookM6V" name="quint-q4-runtime-correspondence"/>
