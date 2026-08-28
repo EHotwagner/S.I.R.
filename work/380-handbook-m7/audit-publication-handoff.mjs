@@ -91,7 +91,11 @@ function verify(overrides = new Map(), options = {}) {
   need(record.currentRenderEvidence.liveCompositor === false && record.currentRenderEvidence.framePacingMeasured === false, "current render record overclaims compositor evidence");
   const validity = parsed(record.measurementValidity.path);
   need(validity.schema === record.measurementValidity.schema && validity.status === "pass", "render measurement validity receipt is not passing");
-  need(validity.policy?.exactNode === record.measurementValidity.exactNode && validity.policy?.batches === record.measurementValidity.batches, "render validity execution identity drift");
+  need(validity.observedNode === record.measurementValidity.observedNode && validity.observedNode === validity.policy?.exactNode && validity.policy.exactNode === record.measurementValidity.exactNode, "render validity observed Node identity drift");
+  need(validity.policy?.batches === record.measurementValidity.batches, "render validity batch cardinality drift");
+  need(validity.policy?.preflightSamples === record.measurementValidity.preflightSamples && validity.policy?.preflightIntervalMs === record.measurementValidity.preflightIntervalMs, "render validity preflight policy drift");
+  need(validity.policy?.maxCpuUtilization === record.measurementValidity.maxCpuUtilization && validity.policy?.maxCpuPressureSomeAvg10 === record.measurementValidity.maxCpuPressureSomeAvg10, "render validity host threshold drift");
+  need(validity.policy?.competingBrowserOrRenderProcessesAllowed === record.measurementValidity.competingBrowserOrRenderProcessesAllowed && validity.policy.competingBrowserOrRenderProcessesAllowed === false, "render validity competitor policy drift");
   need(validity.policy?.maxP95Ms === record.measurementValidity.maxP95Ms && validity.policy?.maxP99Ms === record.measurementValidity.maxP99Ms, "render validity budgets drift");
   need(validity.policy?.performanceIntent === record.measurementValidity.performanceIntent, "render validity invented a new performance intent");
   need(validity.batches?.length === 2, "render validity requires two comparable batches");
@@ -100,6 +104,9 @@ function verify(overrides = new Map(), options = {}) {
     need(batch.sampleCount === record.measurementValidity.samplesPerBatch && batch.warmupNavigations === record.measurementValidity.warmupsPerBatch, `render validity workload drift: ${batch.id}`);
     need(batch.p95LoadMs <= 100 && batch.p99LoadMs <= 200, `render validity budget exceeded: ${batch.id}`);
     need(batch.environment?.invalidSampleCount === 0 && batch.environment?.competitors?.length === 0, `render validity host was not quiescent: ${batch.id}`);
+    need(batch.preflight?.length === record.measurementValidity.preflightSamples, `render validity preflight sample count drift: ${batch.id}`);
+    need(batch.preflight.every(sample => sample.cpuUtilization <= record.measurementValidity.maxCpuUtilization && sample.cpuPressureSomeAvg10 <= record.measurementValidity.maxCpuPressureSomeAvg10 && sample.competitors?.length === 0), `render validity preflight was not quiescent: ${batch.id}`);
+    need(batch.environment.maxCpuUtilization <= record.measurementValidity.maxCpuUtilization && batch.environment.maxCpuPressureSomeAvg10 <= record.measurementValidity.maxCpuPressureSomeAvg10, `render validity batch host threshold exceeded: ${batch.id}`);
   }
 
   need(reviews.schemaVersion === 1, "review manifest schema mismatch");

@@ -73,4 +73,4 @@ cat > "$receipt_root/qualification.junit.xml" <<'XML'
   <testcase classname="SIR.HandbookM7" name="lifecycle-feedback-roadmap"/>
 </testsuite>
 XML
-printf 'handbook-m7 qualification: PASS (4 reviews, 6 diagrams, two quiescent 100-sample render batches, inherited 100/200ms budgets, 8 publication + 3 host-validity mutations, strict docs, Q4/runtime, SDD, feedback)\n'
+printf 'handbook-m7 qualification: PASS (4 reviews, 6 diagrams, two quiescent 100-sample render batches, inherited 100/200ms budgets, 8 publication + 5 host-validity mutations, strict docs, Q4/runtime, SDD, feedback)\n'

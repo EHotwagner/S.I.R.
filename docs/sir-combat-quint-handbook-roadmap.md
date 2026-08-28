@@ -433,9 +433,9 @@ Completion evidence:
   100/200 ms budgets. Evidence remains headless with `liveCompositor:false` and
   `framePacingMeasured:false`; it makes no FPS or compositor claim.
 - Because a concurrent-host replay exposed scheduler-sensitive tail variance, M7 also retains two
-  exact-Node-26.5 quiescent 100-sample batches at p95/p99 64.1/66.4 ms and 64.7/81.9 ms. The validity
+  exact-Node-26.5 quiescent 100-sample batches at p95/p99 61.0/66.5 ms and 63.0/64.6 ms. The validity
   wrapper rejects competing render/browser work or sustained host CPU pressure and has three
-  observed-red/restored-green controls; it preserves the M6V workload and 100/200 ms budgets.
+  observed-red/restored-green predicate/runtime/process controls; it preserves the M6V workload and 100/200 ms budgets.
 - `work/380-handbook-m7/audit-publication-handoff.mjs` observed red and restored green for eight isolated
   review, identity, owner, placeholder, M6/M6V linkage, budget, and capability mutations. Lifecycle and
   aggregate qualification receipts live under `work/380-handbook-m7/` and `readiness/380-handbook-m7/`;

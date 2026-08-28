@@ -17,8 +17,11 @@ const maxCpuUtilization = 0.5;
 const maxCpuPressureAvg10 = 10;
 const preflightSamples = 5;
 const session = crypto.randomUUID();
+const requiredNode = "v26.5.0";
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const round = value => Math.round(value * 1000) / 1000;
+const isExactNode = version => version === requiredNode;
+if (!isExactNode(process.version)) throw new Error(`render validity requires ${requiredNode}; observed ${process.version}`);
 
 function cpuPressure() {
   const text = fs.readFileSync("/proc/pressure/cpu", "utf8");
@@ -92,8 +95,15 @@ if (selfTest) {
     { ...green, cpuPressureSomeAvg10: maxCpuPressureAvg10 + 0.001 },
     { ...green, competitors: [{ pid: 1, command: "chromium" }] }
   ];
-  if (!isQuiescent(green) || mutations.some(isQuiescent)) throw new Error("render validity predicate mutation did not observe red and restored green");
-  console.log("M7 render validity self-test: PASS (3 observed-red/restored-green controls)");
+  if (!isQuiescent(green) || mutations.some(isQuiescent) || isExactNode("v26.8.0")) throw new Error("render validity predicate/runtime mutation did not observe red and restored green");
+  const foreign = spawn(process.execPath, ["-e", "setTimeout(() => {}, 30000)", "inspect-rendered-visuals.mjs"], { stdio: "ignore" });
+  await sleep(250);
+  const foreignSeen = competitors().some(process => process.pid === foreign.pid);
+  const ownedExcluded = !competitors(foreign.pid).some(process => process.pid === foreign.pid);
+  foreign.kill("SIGTERM");
+  await new Promise(resolve => foreign.on("exit", resolve));
+  if (!foreignSeen || !ownedExcluded) throw new Error("render validity process-level competitor/ownership mutation did not observe red and restored green");
+  console.log("M7 render validity self-test: PASS (5 observed-red/restored-green controls)");
   process.exit(0);
 }
 
@@ -178,8 +188,9 @@ async function runBatch(id) {
 const receipt = {
   schema: "sir.handbook.render-measurement-validity/v1",
   status: "pass",
+  observedNode: process.version,
   policy: {
-    exactNode: "v26.5.0",
+    exactNode: requiredNode,
     batches: 2,
     preflightSamples,
     preflightIntervalMs: 500,
