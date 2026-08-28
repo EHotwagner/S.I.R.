@@ -11,14 +11,14 @@
           "width": 1440,
           "height": 900,
           "semanticFingerprint": "2d9f229abff442cced5bbe82a256ee906f37f2bf54362f68e3e4c3eaec44aca0",
-          "renderedFingerprint": "211e0629fea9a6a08280dfcbd111e1af0219b991e4739e8aa33e171148f81c66"
+          "renderedFingerprint": "e5e35de64454830819d14891ced06b80e0585380fb568c8f99b395f5d272d159"
         },
         {
           "id": "state-action",
           "width": 1440,
           "height": 900,
           "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
-          "renderedFingerprint": "2831ff9672d1fbff9d6adabb967a976bc5b9130901aa0af9cf9a93f87a501c2e"
+          "renderedFingerprint": "294d3d1dba7b239a0dbcf4f3eca9799fecae5fa81a017583d26ec5edb57f0624"
         },
         {
           "id": "rule-dependency",
@@ -38,8 +38,8 @@
           "id": "trace-counterexample",
           "width": 1440,
           "height": 900,
-          "semanticFingerprint": "22e9ead657fad0ac165ac8e6bb3762563ff192b9f339e4a913bcde78573279b8",
-          "renderedFingerprint": "4a15a7bc6ae06301f3890caab2226157cc032cb0b6295d87ca92e485605a47f5"
+          "semanticFingerprint": "b5b32aa0df67814040f595e830b9c1db7af4aa85c8968833cbd7419350b3517a",
+          "renderedFingerprint": "8a5e0c25c97874039f7610bd05d254150c4763e36d31165578a95c78f540b5d6"
         },
         {
           "id": "invariant-boundary",
@@ -58,14 +58,14 @@
           "width": 1440,
           "height": 900,
           "semanticFingerprint": "2d9f229abff442cced5bbe82a256ee906f37f2bf54362f68e3e4c3eaec44aca0",
-          "renderedFingerprint": "de8cd823f35eedadfffa6376985ce40a6026c2a5162c0ec6f5c128ef7e23e6d7"
+          "renderedFingerprint": "f6dc950886c508f55409355e8b7f570343e5d795c3bfc112ce2590bfd7f38892"
         },
         {
           "id": "state-action",
           "width": 1440,
           "height": 900,
           "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
-          "renderedFingerprint": "1b1b29830ef1e68aea47df5cf255e437e45811101ea6443ec3110a4367f94b48"
+          "renderedFingerprint": "d4fbd44fb00730108f117e3800458d37fa43a39a5424877e1051a9a68bce66f2"
         },
         {
           "id": "rule-dependency",
@@ -85,8 +85,8 @@
           "id": "trace-counterexample",
           "width": 1440,
           "height": 900,
-          "semanticFingerprint": "22e9ead657fad0ac165ac8e6bb3762563ff192b9f339e4a913bcde78573279b8",
-          "renderedFingerprint": "4f2f518b0105c81b56829b62d87600bdde3c46a22bb38ce760c5e3a3e74255a0"
+          "semanticFingerprint": "b5b32aa0df67814040f595e830b9c1db7af4aa85c8968833cbd7419350b3517a",
+          "renderedFingerprint": "c6dba7d526c6982f5d272247980f42516475b9407a9a0641297166efb83fe37c"
         },
         {
           "id": "invariant-boundary",
@@ -105,14 +105,14 @@
           "width": 1440,
           "height": 900,
           "semanticFingerprint": "2d9f229abff442cced5bbe82a256ee906f37f2bf54362f68e3e4c3eaec44aca0",
-          "renderedFingerprint": "e8f989c1323a03e40eb0c7e0e812f22332bed9e7e52459d8a5ef333338dcd944"
+          "renderedFingerprint": "d0116548071acbca3837c98b4956a4f335f97a21bede7d2ebb31c94b512213e9"
         },
         {
           "id": "state-action",
           "width": 1440,
           "height": 900,
           "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
-          "renderedFingerprint": "edc81361ad550a9741df7289a9eee9a94814b437bc6e1223ea7adb92201cebb8"
+          "renderedFingerprint": "30fee4498365c55469459242461bc42920098c40e9e8120883d5c40e0e5afe86"
         },
         {
           "id": "rule-dependency",
@@ -132,8 +132,8 @@
           "id": "trace-counterexample",
           "width": 1440,
           "height": 900,
-          "semanticFingerprint": "22e9ead657fad0ac165ac8e6bb3762563ff192b9f339e4a913bcde78573279b8",
-          "renderedFingerprint": "7baff83a57ea121d01d4d15cbb7e10ace2a3250dcc08cec7537a9acbb2f2843b"
+          "semanticFingerprint": "b5b32aa0df67814040f595e830b9c1db7af4aa85c8968833cbd7419350b3517a",
+          "renderedFingerprint": "f0278b43e5dc00d73770e1a4f696fcee7d7709cf79533139271018aca658b2b9"
         },
         {
           "id": "invariant-boundary",
@@ -152,14 +152,14 @@
           "width": 1440,
           "height": 900,
           "semanticFingerprint": "2d9f229abff442cced5bbe82a256ee906f37f2bf54362f68e3e4c3eaec44aca0",
-          "renderedFingerprint": "3ccdd5a6c85afb8c71f61eeea53f4f70309cbfb47510bd8b383f512d15a62ded"
+          "renderedFingerprint": "6352906a431359895c38d13e84317a073afca5178f00a1a44d810c8dbf38469d"
         },
         {
           "id": "state-action",
           "width": 1440,
           "height": 900,
           "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
-          "renderedFingerprint": "cb64f50315d1ca639a8a2cee8830ae8e8c364739290bf73e2ee3700dffb2412c"
+          "renderedFingerprint": "0d403ea6429f9bd061724216fdaea2b112851be7525c1e9bb4ca38a62ef05aa2"
         },
         {
           "id": "rule-dependency",
@@ -179,8 +179,8 @@
           "id": "trace-counterexample",
           "width": 1440,
           "height": 900,
-          "semanticFingerprint": "22e9ead657fad0ac165ac8e6bb3762563ff192b9f339e4a913bcde78573279b8",
-          "renderedFingerprint": "b79c1abaccc5496d16f9966e61320da77412b12776dc0bd095a4902a902638c5"
+          "semanticFingerprint": "b5b32aa0df67814040f595e830b9c1db7af4aa85c8968833cbd7419350b3517a",
+          "renderedFingerprint": "73d4b86b6a70eb6d8439243534aa46c5d4e085b2fd67bff280baea4b4ec70e75"
         },
         {
           "id": "invariant-boundary",
@@ -199,14 +199,14 @@
           "width": 1440,
           "height": 900,
           "semanticFingerprint": "2d9f229abff442cced5bbe82a256ee906f37f2bf54362f68e3e4c3eaec44aca0",
-          "renderedFingerprint": "b7fa810a3fc135626d304bdf4d304c5efc23ec6e23d07b32d81a1d5ec77f19da"
+          "renderedFingerprint": "6ebba8912e1859ea3f9347e4a0055671f48a667d686931c4d097464fbd106458"
         },
         {
           "id": "state-action",
           "width": 1440,
           "height": 900,
           "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
-          "renderedFingerprint": "a15f593dd65552e82191e798ea807cb6e0ce67bb4cc9f7ee21eb1a76779dc3c1"
+          "renderedFingerprint": "80de0d673a9a524ec96e2b831e70879b80b504d1d47acc22cc635728b5e58c54"
         },
         {
           "id": "rule-dependency",
@@ -226,8 +226,8 @@
           "id": "trace-counterexample",
           "width": 1440,
           "height": 900,
-          "semanticFingerprint": "22e9ead657fad0ac165ac8e6bb3762563ff192b9f339e4a913bcde78573279b8",
-          "renderedFingerprint": "d32e800f4c33cbcc795a494db8e4a34070ffae1a8741a20f68b1e43f6f39c243"
+          "semanticFingerprint": "b5b32aa0df67814040f595e830b9c1db7af4aa85c8968833cbd7419350b3517a",
+          "renderedFingerprint": "b83f9b67604520cfb03d4c64ec1700ba633f44d76bdf4790df622729d4ce646e"
         },
         {
           "id": "invariant-boundary",

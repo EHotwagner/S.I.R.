@@ -8,638 +8,638 @@
   "timings": {
     "subject": "warm same-browser navigation start until the six external SVG image resources are loaded and decoded with non-zero intrinsic dimensions; unrelated template CDN load is observed but is not diagram readiness",
     "gatingClock": "browser performance timeline; decodedReadyAtMs after HTMLImageElement.decode()",
-    "browserLaunchObservationMs": 127.295,
+    "browserLaunchObservationMs": 127.036,
     "coldSiteNavigationObservation": {
-      "readinessMs": 243.2,
-      "wallObservationMs": 650.352
+      "readinessMs": 309.9,
+      "wallObservationMs": 670.015
     },
     "warmupNavigations": 3,
     "sampleCount": 100,
     "samples": [
       {
-        "readinessMs": 49.2,
-        "wallObservationMs": 155.695,
-        "loadEventEndMs": 123.1,
-        "slowestSvgResponseEndMs": 34.7
-      },
-      {
-        "readinessMs": 50,
-        "wallObservationMs": 154.307,
-        "loadEventEndMs": 124.6,
-        "slowestSvgResponseEndMs": 35.1
-      },
-      {
-        "readinessMs": 46.3,
-        "wallObservationMs": 151.679,
-        "loadEventEndMs": 122.1,
-        "slowestSvgResponseEndMs": 31.3
-      },
-      {
-        "readinessMs": 50,
-        "wallObservationMs": 160.504,
-        "loadEventEndMs": 131,
-        "slowestSvgResponseEndMs": 34.9
-      },
-      {
-        "readinessMs": 52.1,
-        "wallObservationMs": 163.901,
-        "loadEventEndMs": 131.2,
-        "slowestSvgResponseEndMs": 36.4
-      },
-      {
-        "readinessMs": 48,
-        "wallObservationMs": 161.106,
-        "loadEventEndMs": 127.1,
-        "slowestSvgResponseEndMs": 33
-      },
-      {
-        "readinessMs": 43.5,
-        "wallObservationMs": 149.943,
+        "readinessMs": 47.1,
+        "wallObservationMs": 142.689,
         "loadEventEndMs": 121,
-        "slowestSvgResponseEndMs": 28.5
-      },
-      {
-        "readinessMs": 52.1,
-        "wallObservationMs": 161.172,
-        "loadEventEndMs": 132,
-        "slowestSvgResponseEndMs": 35.4
-      },
-      {
-        "readinessMs": 44.3,
-        "wallObservationMs": 152.539,
-        "loadEventEndMs": 124.5,
-        "slowestSvgResponseEndMs": 28.9
-      },
-      {
-        "readinessMs": 48.7,
-        "wallObservationMs": 160.095,
-        "loadEventEndMs": 129,
-        "slowestSvgResponseEndMs": 33.4
-      },
-      {
-        "readinessMs": 44.9,
-        "wallObservationMs": 158.096,
-        "loadEventEndMs": 125.9,
-        "slowestSvgResponseEndMs": 29.2
-      },
-      {
-        "readinessMs": 44.3,
-        "wallObservationMs": 151.609,
-        "loadEventEndMs": 122.1,
-        "slowestSvgResponseEndMs": 28.9
-      },
-      {
-        "readinessMs": 53.4,
-        "wallObservationMs": 164.688,
-        "loadEventEndMs": 134.1,
-        "slowestSvgResponseEndMs": 37.5
-      },
-      {
-        "readinessMs": 46.4,
-        "wallObservationMs": 155.388,
-        "loadEventEndMs": 125.6,
-        "slowestSvgResponseEndMs": 30.7
-      },
-      {
-        "readinessMs": 51.4,
-        "wallObservationMs": 168.705,
-        "loadEventEndMs": 137.8,
-        "slowestSvgResponseEndMs": 35.2
-      },
-      {
-        "readinessMs": 51.3,
-        "wallObservationMs": 162.494,
-        "loadEventEndMs": 131.6,
-        "slowestSvgResponseEndMs": 34.9
-      },
-      {
-        "readinessMs": 53,
-        "wallObservationMs": 161.69,
-        "loadEventEndMs": 132.2,
-        "slowestSvgResponseEndMs": 36.9
-      },
-      {
-        "readinessMs": 49.8,
-        "wallObservationMs": 157.085,
-        "loadEventEndMs": 127.8,
-        "slowestSvgResponseEndMs": 34
-      },
-      {
-        "readinessMs": 44,
-        "wallObservationMs": 157.958,
-        "loadEventEndMs": 125.7,
-        "slowestSvgResponseEndMs": 26.9
-      },
-      {
-        "readinessMs": 53.3,
-        "wallObservationMs": 166.97,
-        "loadEventEndMs": 136.4,
-        "slowestSvgResponseEndMs": 36.5
-      },
-      {
-        "readinessMs": 49.2,
-        "wallObservationMs": 162.016,
-        "loadEventEndMs": 129.7,
-        "slowestSvgResponseEndMs": 32.4
-      },
-      {
-        "readinessMs": 54,
-        "wallObservationMs": 163.847,
-        "loadEventEndMs": 134.6,
-        "slowestSvgResponseEndMs": 36.9
-      },
-      {
-        "readinessMs": 48,
-        "wallObservationMs": 163.1,
-        "loadEventEndMs": 130.5,
-        "slowestSvgResponseEndMs": 31.4
-      },
-      {
-        "readinessMs": 47.6,
-        "wallObservationMs": 161.409,
-        "loadEventEndMs": 131.3,
-        "slowestSvgResponseEndMs": 31.1
-      },
-      {
-        "readinessMs": 55.2,
-        "wallObservationMs": 166.838,
-        "loadEventEndMs": 137.8,
-        "slowestSvgResponseEndMs": 38
-      },
-      {
-        "readinessMs": 48.7,
-        "wallObservationMs": 162.35,
-        "loadEventEndMs": 130.4,
         "slowestSvgResponseEndMs": 32.1
       },
       {
-        "readinessMs": 54.4,
-        "wallObservationMs": 167.683,
-        "loadEventEndMs": 137.6,
-        "slowestSvgResponseEndMs": 37.3
-      },
-      {
-        "readinessMs": 50.5,
-        "wallObservationMs": 174.26,
-        "loadEventEndMs": 137.6,
-        "slowestSvgResponseEndMs": 32.7
-      },
-      {
-        "readinessMs": 51.6,
-        "wallObservationMs": 163.637,
-        "loadEventEndMs": 134.9,
-        "slowestSvgResponseEndMs": 33
-      },
-      {
-        "readinessMs": 53.5,
-        "wallObservationMs": 166.321,
-        "loadEventEndMs": 137.1,
-        "slowestSvgResponseEndMs": 35.7
-      },
-      {
-        "readinessMs": 52,
-        "wallObservationMs": 167.891,
-        "loadEventEndMs": 135.6,
-        "slowestSvgResponseEndMs": 34
-      },
-      {
-        "readinessMs": 56.4,
-        "wallObservationMs": 171.012,
-        "loadEventEndMs": 140.9,
+        "readinessMs": 51.4,
+        "wallObservationMs": 158.622,
+        "loadEventEndMs": 125.1,
         "slowestSvgResponseEndMs": 36.5
       },
       {
-        "readinessMs": 52.3,
-        "wallObservationMs": 169.236,
-        "loadEventEndMs": 137,
-        "slowestSvgResponseEndMs": 32.8
+        "readinessMs": 50.3,
+        "wallObservationMs": 156.123,
+        "loadEventEndMs": 124.7,
+        "slowestSvgResponseEndMs": 35.3
       },
       {
-        "readinessMs": 61.7,
-        "wallObservationMs": 177.54,
-        "loadEventEndMs": 145.6,
-        "slowestSvgResponseEndMs": 41.9
+        "readinessMs": 48.7,
+        "wallObservationMs": 156.694,
+        "loadEventEndMs": 124.4,
+        "slowestSvgResponseEndMs": 33.4
       },
       {
-        "readinessMs": 57.9,
-        "wallObservationMs": 176.969,
-        "loadEventEndMs": 143.6,
-        "slowestSvgResponseEndMs": 37.8
-      },
-      {
-        "readinessMs": 55.7,
-        "wallObservationMs": 172.214,
-        "loadEventEndMs": 140.1,
-        "slowestSvgResponseEndMs": 36.3
-      },
-      {
-        "readinessMs": 58.4,
-        "wallObservationMs": 178.72,
-        "loadEventEndMs": 143.8,
+        "readinessMs": 55.6,
+        "wallObservationMs": 169.08,
+        "loadEventEndMs": 134.4,
         "slowestSvgResponseEndMs": 39.1
       },
       {
-        "readinessMs": 57.3,
-        "wallObservationMs": 177.618,
-        "loadEventEndMs": 142.8,
-        "slowestSvgResponseEndMs": 38
+        "readinessMs": 45.2,
+        "wallObservationMs": 146.81,
+        "loadEventEndMs": 123.7,
+        "slowestSvgResponseEndMs": 30.4
       },
       {
-        "readinessMs": 62,
-        "wallObservationMs": 177.559,
-        "loadEventEndMs": 147.2,
-        "slowestSvgResponseEndMs": 42.2
+        "readinessMs": 44.1,
+        "wallObservationMs": 152.231,
+        "loadEventEndMs": 122.2,
+        "slowestSvgResponseEndMs": 28.9
       },
       {
-        "readinessMs": 56.6,
-        "wallObservationMs": 225.951,
-        "loadEventEndMs": 159.8,
-        "slowestSvgResponseEndMs": 36.9
+        "readinessMs": 47.3,
+        "wallObservationMs": 161.407,
+        "loadEventEndMs": 129.9,
+        "slowestSvgResponseEndMs": 31.6
       },
       {
-        "readinessMs": 83.5,
-        "wallObservationMs": 247.307,
-        "loadEventEndMs": 200.5,
-        "slowestSvgResponseEndMs": 58
+        "readinessMs": 52.8,
+        "wallObservationMs": 166.916,
+        "loadEventEndMs": 134.1,
+        "slowestSvgResponseEndMs": 37
       },
       {
-        "readinessMs": 62.2,
-        "wallObservationMs": 219.47,
-        "loadEventEndMs": 168.6,
-        "slowestSvgResponseEndMs": 37.6
+        "readinessMs": 49.4,
+        "wallObservationMs": 158.938,
+        "loadEventEndMs": 127.7,
+        "slowestSvgResponseEndMs": 34
       },
       {
-        "readinessMs": 65.6,
-        "wallObservationMs": 223.875,
-        "loadEventEndMs": 170.8,
-        "slowestSvgResponseEndMs": 41.2
+        "readinessMs": 55.4,
+        "wallObservationMs": 171.115,
+        "loadEventEndMs": 138.9,
+        "slowestSvgResponseEndMs": 40
       },
       {
-        "readinessMs": 61.4,
-        "wallObservationMs": 211.898,
-        "loadEventEndMs": 164.4,
-        "slowestSvgResponseEndMs": 35.5
+        "readinessMs": 51.3,
+        "wallObservationMs": 161.119,
+        "loadEventEndMs": 132,
+        "slowestSvgResponseEndMs": 35.6
       },
       {
-        "readinessMs": 53.6,
-        "wallObservationMs": 171.659,
-        "loadEventEndMs": 136.2,
+        "readinessMs": 46.1,
+        "wallObservationMs": 158.242,
+        "loadEventEndMs": 127.6,
+        "slowestSvgResponseEndMs": 30.5
+      },
+      {
+        "readinessMs": 48.6,
+        "wallObservationMs": 155.47,
+        "loadEventEndMs": 125.3,
+        "slowestSvgResponseEndMs": 33
+      },
+      {
+        "readinessMs": 47.8,
+        "wallObservationMs": 158.11,
+        "loadEventEndMs": 129.5,
+        "slowestSvgResponseEndMs": 31.5
+      },
+      {
+        "readinessMs": 51.3,
+        "wallObservationMs": 158.966,
+        "loadEventEndMs": 129.8,
+        "slowestSvgResponseEndMs": 35.6
+      },
+      {
+        "readinessMs": 46.5,
+        "wallObservationMs": 164.114,
+        "loadEventEndMs": 130.1,
+        "slowestSvgResponseEndMs": 30.8
+      },
+      {
+        "readinessMs": 49.2,
+        "wallObservationMs": 160.628,
+        "loadEventEndMs": 131.8,
+        "slowestSvgResponseEndMs": 33.2
+      },
+      {
+        "readinessMs": 53.1,
+        "wallObservationMs": 164.775,
+        "loadEventEndMs": 132,
+        "slowestSvgResponseEndMs": 36.7
+      },
+      {
+        "readinessMs": 46.3,
+        "wallObservationMs": 157.337,
+        "loadEventEndMs": 127.3,
+        "slowestSvgResponseEndMs": 30
+      },
+      {
+        "readinessMs": 51.8,
+        "wallObservationMs": 161.07,
+        "loadEventEndMs": 130,
         "slowestSvgResponseEndMs": 35.2
       },
       {
-        "readinessMs": 58.7,
-        "wallObservationMs": 176.14,
-        "loadEventEndMs": 140.6,
-        "slowestSvgResponseEndMs": 39.5
+        "readinessMs": 46.5,
+        "wallObservationMs": 161.005,
+        "loadEventEndMs": 127.6,
+        "slowestSvgResponseEndMs": 29.9
       },
       {
-        "readinessMs": 55,
-        "wallObservationMs": 173.397,
-        "loadEventEndMs": 141.6,
-        "slowestSvgResponseEndMs": 36.1
+        "readinessMs": 47,
+        "wallObservationMs": 154.323,
+        "loadEventEndMs": 125.8,
+        "slowestSvgResponseEndMs": 30.3
       },
       {
-        "readinessMs": 61.1,
-        "wallObservationMs": 175.822,
-        "loadEventEndMs": 146.6,
-        "slowestSvgResponseEndMs": 41.2
+        "readinessMs": 52.3,
+        "wallObservationMs": 163.302,
+        "loadEventEndMs": 132.8,
+        "slowestSvgResponseEndMs": 35.7
       },
       {
-        "readinessMs": 53.3,
-        "wallObservationMs": 175.772,
-        "loadEventEndMs": 139,
+        "readinessMs": 48.8,
+        "wallObservationMs": 159.453,
+        "loadEventEndMs": 130.7,
+        "slowestSvgResponseEndMs": 31.7
+      },
+      {
+        "readinessMs": 51.3,
+        "wallObservationMs": 164.577,
+        "loadEventEndMs": 135.5,
         "slowestSvgResponseEndMs": 34.7
       },
       {
-        "readinessMs": 58.1,
-        "wallObservationMs": 175.343,
-        "loadEventEndMs": 141.4,
-        "slowestSvgResponseEndMs": 37.7
+        "readinessMs": 49.3,
+        "wallObservationMs": 165.727,
+        "loadEventEndMs": 136.3,
+        "slowestSvgResponseEndMs": 32.2
       },
       {
-        "readinessMs": 56.1,
-        "wallObservationMs": 172.19,
+        "readinessMs": 54.9,
+        "wallObservationMs": 166.784,
+        "loadEventEndMs": 138,
+        "slowestSvgResponseEndMs": 38.1
+      },
+      {
+        "readinessMs": 53.6,
+        "wallObservationMs": 164.926,
+        "loadEventEndMs": 135.8,
+        "slowestSvgResponseEndMs": 36.4
+      },
+      {
+        "readinessMs": 51.1,
+        "wallObservationMs": 162.71,
+        "loadEventEndMs": 130.7,
+        "slowestSvgResponseEndMs": 33.6
+      },
+      {
+        "readinessMs": 57.7,
+        "wallObservationMs": 171.923,
+        "loadEventEndMs": 141,
+        "slowestSvgResponseEndMs": 39.4
+      },
+      {
+        "readinessMs": 52.3,
+        "wallObservationMs": 164.223,
+        "loadEventEndMs": 134.4,
+        "slowestSvgResponseEndMs": 34.3
+      },
+      {
+        "readinessMs": 57.1,
+        "wallObservationMs": 174.162,
+        "loadEventEndMs": 141.7,
+        "slowestSvgResponseEndMs": 39
+      },
+      {
+        "readinessMs": 50.2,
+        "wallObservationMs": 166.561,
+        "loadEventEndMs": 133.2,
+        "slowestSvgResponseEndMs": 32
+      },
+      {
+        "readinessMs": 50.7,
+        "wallObservationMs": 166.68,
+        "loadEventEndMs": 134.6,
+        "slowestSvgResponseEndMs": 33
+      },
+      {
+        "readinessMs": 56.6,
+        "wallObservationMs": 168.003,
+        "loadEventEndMs": 137.6,
+        "slowestSvgResponseEndMs": 36.7
+      },
+      {
+        "readinessMs": 53.9,
+        "wallObservationMs": 167.588,
+        "loadEventEndMs": 137.6,
+        "slowestSvgResponseEndMs": 34.2
+      },
+      {
+        "readinessMs": 56.5,
+        "wallObservationMs": 172.111,
         "loadEventEndMs": 139.7,
         "slowestSvgResponseEndMs": 37.3
       },
       {
-        "readinessMs": 57.7,
-        "wallObservationMs": 179.333,
-        "loadEventEndMs": 141.5,
-        "slowestSvgResponseEndMs": 37.4
+        "readinessMs": 53.1,
+        "wallObservationMs": 175.8,
+        "loadEventEndMs": 140,
+        "slowestSvgResponseEndMs": 32.9
       },
       {
-        "readinessMs": 60.4,
-        "wallObservationMs": 179.509,
-        "loadEventEndMs": 145,
-        "slowestSvgResponseEndMs": 39.4
+        "readinessMs": 54,
+        "wallObservationMs": 174.711,
+        "loadEventEndMs": 141.4,
+        "slowestSvgResponseEndMs": 33.5
       },
       {
-        "readinessMs": 62.5,
-        "wallObservationMs": 185.948,
-        "loadEventEndMs": 150.1,
-        "slowestSvgResponseEndMs": 41.3
+        "readinessMs": 60.3,
+        "wallObservationMs": 245.25,
+        "loadEventEndMs": 162.2,
+        "slowestSvgResponseEndMs": 39.8
       },
       {
-        "readinessMs": 58.1,
-        "wallObservationMs": 176.509,
-        "loadEventEndMs": 145,
-        "slowestSvgResponseEndMs": 38
+        "readinessMs": 61.1,
+        "wallObservationMs": 210.536,
+        "loadEventEndMs": 164.6,
+        "slowestSvgResponseEndMs": 41.7
       },
       {
-        "readinessMs": 60.2,
-        "wallObservationMs": 182.236,
-        "loadEventEndMs": 148,
-        "slowestSvgResponseEndMs": 40.1
+        "readinessMs": 57.3,
+        "wallObservationMs": 213.547,
+        "loadEventEndMs": 162.6,
+        "slowestSvgResponseEndMs": 35
       },
       {
-        "readinessMs": 62.8,
-        "wallObservationMs": 180.909,
-        "loadEventEndMs": 149.5,
-        "slowestSvgResponseEndMs": 40.2
-      },
-      {
-        "readinessMs": 63.8,
-        "wallObservationMs": 199.329,
-        "loadEventEndMs": 165.6,
-        "slowestSvgResponseEndMs": 41.9
-      },
-      {
-        "readinessMs": 60.8,
-        "wallObservationMs": 190.259,
-        "loadEventEndMs": 153.6,
-        "slowestSvgResponseEndMs": 38.8
-      },
-      {
-        "readinessMs": 69.3,
-        "wallObservationMs": 200.234,
-        "loadEventEndMs": 161.3,
-        "slowestSvgResponseEndMs": 47.5
-      },
-      {
-        "readinessMs": 66.1,
-        "wallObservationMs": 193.46,
-        "loadEventEndMs": 158.4,
-        "slowestSvgResponseEndMs": 42.8
-      },
-      {
-        "readinessMs": 64.9,
-        "wallObservationMs": 188.772,
-        "loadEventEndMs": 155.1,
-        "slowestSvgResponseEndMs": 41.8
-      },
-      {
-        "readinessMs": 68.7,
-        "wallObservationMs": 193.29,
-        "loadEventEndMs": 159.7,
-        "slowestSvgResponseEndMs": 44.2
-      },
-      {
-        "readinessMs": 68.3,
-        "wallObservationMs": 192.958,
-        "loadEventEndMs": 158.6,
-        "slowestSvgResponseEndMs": 45.2
-      },
-      {
-        "readinessMs": 70.7,
-        "wallObservationMs": 199.168,
-        "loadEventEndMs": 164.1,
-        "slowestSvgResponseEndMs": 47
-      },
-      {
-        "readinessMs": 64.8,
-        "wallObservationMs": 197.138,
-        "loadEventEndMs": 160.4,
-        "slowestSvgResponseEndMs": 41.8
-      },
-      {
-        "readinessMs": 63.9,
-        "wallObservationMs": 195.157,
-        "loadEventEndMs": 159.1,
-        "slowestSvgResponseEndMs": 39.5
-      },
-      {
-        "readinessMs": 69.8,
-        "wallObservationMs": 201.979,
-        "loadEventEndMs": 166.4,
-        "slowestSvgResponseEndMs": 44.5
-      },
-      {
-        "readinessMs": 63.1,
-        "wallObservationMs": 189.776,
-        "loadEventEndMs": 157.6,
-        "slowestSvgResponseEndMs": 38.6
-      },
-      {
-        "readinessMs": 73.7,
-        "wallObservationMs": 213.843,
-        "loadEventEndMs": 175.3,
-        "slowestSvgResponseEndMs": 48
-      },
-      {
-        "readinessMs": 65.7,
-        "wallObservationMs": 210.219,
-        "loadEventEndMs": 167.8,
-        "slowestSvgResponseEndMs": 42.3
-      },
-      {
-        "readinessMs": 77.1,
-        "wallObservationMs": 220.979,
-        "loadEventEndMs": 184.2,
-        "slowestSvgResponseEndMs": 48
-      },
-      {
-        "readinessMs": 73.7,
-        "wallObservationMs": 208.604,
-        "loadEventEndMs": 170,
-        "slowestSvgResponseEndMs": 50.1
-      },
-      {
-        "readinessMs": 68.4,
-        "wallObservationMs": 207.498,
-        "loadEventEndMs": 170.1,
-        "slowestSvgResponseEndMs": 43.7
-      },
-      {
-        "readinessMs": 70.9,
-        "wallObservationMs": 209.783,
-        "loadEventEndMs": 172.9,
-        "slowestSvgResponseEndMs": 46.6
-      },
-      {
-        "readinessMs": 69.1,
-        "wallObservationMs": 271.193,
-        "loadEventEndMs": 185,
-        "slowestSvgResponseEndMs": 43.6
-      },
-      {
-        "readinessMs": 143.1,
-        "wallObservationMs": 330.602,
-        "loadEventEndMs": 275.6,
-        "slowestSvgResponseEndMs": 112
-      },
-      {
-        "readinessMs": 77.5,
-        "wallObservationMs": 257.986,
-        "loadEventEndMs": 198.6,
-        "slowestSvgResponseEndMs": 41.9
-      },
-      {
-        "readinessMs": 79.6,
-        "wallObservationMs": 266.305,
-        "loadEventEndMs": 206.7,
-        "slowestSvgResponseEndMs": 48.3
-      },
-      {
-        "readinessMs": 78.9,
-        "wallObservationMs": 282.924,
-        "loadEventEndMs": 211.1,
-        "slowestSvgResponseEndMs": 44.5
-      },
-      {
-        "readinessMs": 73.6,
-        "wallObservationMs": 276.496,
-        "loadEventEndMs": 210.7,
-        "slowestSvgResponseEndMs": 42.5
-      },
-      {
-        "readinessMs": 65.8,
-        "wallObservationMs": 228.826,
-        "loadEventEndMs": 184.2,
-        "slowestSvgResponseEndMs": 37.2
-      },
-      {
-        "readinessMs": 65.9,
-        "wallObservationMs": 192.575,
-        "loadEventEndMs": 155.8,
-        "slowestSvgResponseEndMs": 44.7
-      },
-      {
-        "readinessMs": 64,
-        "wallObservationMs": 191.213,
-        "loadEventEndMs": 153.9,
-        "slowestSvgResponseEndMs": 38.8
-      },
-      {
-        "readinessMs": 59.5,
-        "wallObservationMs": 184.796,
-        "loadEventEndMs": 146.2,
-        "slowestSvgResponseEndMs": 37.7
-      },
-      {
-        "readinessMs": 62.4,
-        "wallObservationMs": 182.643,
-        "loadEventEndMs": 148.3,
-        "slowestSvgResponseEndMs": 42
-      },
-      {
-        "readinessMs": 62.3,
-        "wallObservationMs": 184.964,
-        "loadEventEndMs": 151.1,
-        "slowestSvgResponseEndMs": 40.9
-      },
-      {
-        "readinessMs": 64.5,
-        "wallObservationMs": 189.87,
-        "loadEventEndMs": 155.2,
-        "slowestSvgResponseEndMs": 44
+        "readinessMs": 56.7,
+        "wallObservationMs": 204.156,
+        "loadEventEndMs": 156,
+        "slowestSvgResponseEndMs": 34.2
       },
       {
         "readinessMs": 60.2,
-        "wallObservationMs": 186.75,
-        "loadEventEndMs": 149.5,
-        "slowestSvgResponseEndMs": 38.3
+        "wallObservationMs": 220.276,
+        "loadEventEndMs": 165.3,
+        "slowestSvgResponseEndMs": 36.5
+      },
+      {
+        "readinessMs": 55.6,
+        "wallObservationMs": 210.027,
+        "loadEventEndMs": 159.4,
+        "slowestSvgResponseEndMs": 31
+      },
+      {
+        "readinessMs": 54.6,
+        "wallObservationMs": 163.422,
+        "loadEventEndMs": 130.5,
+        "slowestSvgResponseEndMs": 33.9
+      },
+      {
+        "readinessMs": 47.3,
+        "wallObservationMs": 159.332,
+        "loadEventEndMs": 124.3,
+        "slowestSvgResponseEndMs": 30.4
+      },
+      {
+        "readinessMs": 48.5,
+        "wallObservationMs": 156.383,
+        "loadEventEndMs": 124.7,
+        "slowestSvgResponseEndMs": 31.7
+      },
+      {
+        "readinessMs": 51.4,
+        "wallObservationMs": 159.37,
+        "loadEventEndMs": 129.4,
+        "slowestSvgResponseEndMs": 34.7
+      },
+      {
+        "readinessMs": 51.7,
+        "wallObservationMs": 160.313,
+        "loadEventEndMs": 128.8,
+        "slowestSvgResponseEndMs": 33.2
+      },
+      {
+        "readinessMs": 54.6,
+        "wallObservationMs": 162.805,
+        "loadEventEndMs": 130.8,
+        "slowestSvgResponseEndMs": 35.8
+      },
+      {
+        "readinessMs": 50.3,
+        "wallObservationMs": 165.675,
+        "loadEventEndMs": 131.6,
+        "slowestSvgResponseEndMs": 31.9
+      },
+      {
+        "readinessMs": 53.4,
+        "wallObservationMs": 164.03,
+        "loadEventEndMs": 133.2,
+        "slowestSvgResponseEndMs": 34.1
+      },
+      {
+        "readinessMs": 53.4,
+        "wallObservationMs": 166.518,
+        "loadEventEndMs": 136.2,
+        "slowestSvgResponseEndMs": 36.3
+      },
+      {
+        "readinessMs": 53.4,
+        "wallObservationMs": 175.676,
+        "loadEventEndMs": 142.5,
+        "slowestSvgResponseEndMs": 35.5
+      },
+      {
+        "readinessMs": 53.6,
+        "wallObservationMs": 169.976,
+        "loadEventEndMs": 138.5,
+        "slowestSvgResponseEndMs": 36
+      },
+      {
+        "readinessMs": 51.9,
+        "wallObservationMs": 171.161,
+        "loadEventEndMs": 137.8,
+        "slowestSvgResponseEndMs": 33
       },
       {
         "readinessMs": 58,
-        "wallObservationMs": 186.729,
-        "loadEventEndMs": 148.6,
-        "slowestSvgResponseEndMs": 37.2
+        "wallObservationMs": 178.523,
+        "loadEventEndMs": 142.8,
+        "slowestSvgResponseEndMs": 37.9
       },
       {
-        "readinessMs": 68.8,
-        "wallObservationMs": 196.776,
-        "loadEventEndMs": 161.5,
+        "readinessMs": 62.6,
+        "wallObservationMs": 190.048,
+        "loadEventEndMs": 156.4,
+        "slowestSvgResponseEndMs": 42.6
+      },
+      {
+        "readinessMs": 56.7,
+        "wallObservationMs": 177.771,
+        "loadEventEndMs": 143.1,
+        "slowestSvgResponseEndMs": 37.5
+      },
+      {
+        "readinessMs": 64.7,
+        "wallObservationMs": 188.41,
+        "loadEventEndMs": 154.5,
+        "slowestSvgResponseEndMs": 43.6
+      },
+      {
+        "readinessMs": 58.5,
+        "wallObservationMs": 178.466,
+        "loadEventEndMs": 146.8,
+        "slowestSvgResponseEndMs": 38.1
+      },
+      {
+        "readinessMs": 59.3,
+        "wallObservationMs": 179.547,
+        "loadEventEndMs": 147.5,
+        "slowestSvgResponseEndMs": 40.9
+      },
+      {
+        "readinessMs": 62.6,
+        "wallObservationMs": 208.354,
+        "loadEventEndMs": 170.9,
+        "slowestSvgResponseEndMs": 43.6
+      },
+      {
+        "readinessMs": 57.4,
+        "wallObservationMs": 179.106,
+        "loadEventEndMs": 146.3,
+        "slowestSvgResponseEndMs": 35.7
+      },
+      {
+        "readinessMs": 63.1,
+        "wallObservationMs": 184.588,
+        "loadEventEndMs": 150.1,
+        "slowestSvgResponseEndMs": 42.6
+      },
+      {
+        "readinessMs": 65.7,
+        "wallObservationMs": 195.803,
+        "loadEventEndMs": 160.5,
+        "slowestSvgResponseEndMs": 43.3
+      },
+      {
+        "readinessMs": 67.9,
+        "wallObservationMs": 187.893,
+        "loadEventEndMs": 153.2,
+        "slowestSvgResponseEndMs": 46.2
+      },
+      {
+        "readinessMs": 56.6,
+        "wallObservationMs": 184.796,
+        "loadEventEndMs": 148.3,
+        "slowestSvgResponseEndMs": 36.2
+      },
+      {
+        "readinessMs": 57.1,
+        "wallObservationMs": 176.325,
+        "loadEventEndMs": 143.2,
+        "slowestSvgResponseEndMs": 37
+      },
+      {
+        "readinessMs": 60.2,
+        "wallObservationMs": 178.182,
+        "loadEventEndMs": 144.2,
+        "slowestSvgResponseEndMs": 39.2
+      },
+      {
+        "readinessMs": 54.3,
+        "wallObservationMs": 172.027,
+        "loadEventEndMs": 139.4,
+        "slowestSvgResponseEndMs": 33.8
+      },
+      {
+        "readinessMs": 58.6,
+        "wallObservationMs": 173.853,
+        "loadEventEndMs": 142.5,
+        "slowestSvgResponseEndMs": 38.4
+      },
+      {
+        "readinessMs": 58.1,
+        "wallObservationMs": 183.103,
+        "loadEventEndMs": 144.8,
+        "slowestSvgResponseEndMs": 38
+      },
+      {
+        "readinessMs": 55.2,
+        "wallObservationMs": 173.828,
+        "loadEventEndMs": 140,
+        "slowestSvgResponseEndMs": 34.6
+      },
+      {
+        "readinessMs": 61.8,
+        "wallObservationMs": 181.613,
+        "loadEventEndMs": 147.8,
+        "slowestSvgResponseEndMs": 41.7
+      },
+      {
+        "readinessMs": 58.3,
+        "wallObservationMs": 177.13,
+        "loadEventEndMs": 145.8,
+        "slowestSvgResponseEndMs": 37.9
+      },
+      {
+        "readinessMs": 64.1,
+        "wallObservationMs": 185.404,
+        "loadEventEndMs": 153,
+        "slowestSvgResponseEndMs": 42.9
+      },
+      {
+        "readinessMs": 65.7,
+        "wallObservationMs": 312.281,
+        "loadEventEndMs": 263.8,
+        "slowestSvgResponseEndMs": 38.9
+      },
+      {
+        "readinessMs": 70.8,
+        "wallObservationMs": 229.793,
+        "loadEventEndMs": 176.5,
         "slowestSvgResponseEndMs": 46.4
       },
       {
-        "readinessMs": 67,
-        "wallObservationMs": 196.472,
-        "loadEventEndMs": 158.5,
-        "slowestSvgResponseEndMs": 43.5
+        "readinessMs": 58.2,
+        "wallObservationMs": 221.501,
+        "loadEventEndMs": 166,
+        "slowestSvgResponseEndMs": 34.8
       },
       {
-        "readinessMs": 62.2,
-        "wallObservationMs": 191.614,
-        "loadEventEndMs": 154.4,
-        "slowestSvgResponseEndMs": 41.1
+        "readinessMs": 59.4,
+        "wallObservationMs": 212.538,
+        "loadEventEndMs": 165.7,
+        "slowestSvgResponseEndMs": 35.7
       },
       {
-        "readinessMs": 66.1,
-        "wallObservationMs": 199.478,
-        "loadEventEndMs": 160.8,
-        "slowestSvgResponseEndMs": 43.5
+        "readinessMs": 65.8,
+        "wallObservationMs": 227.133,
+        "loadEventEndMs": 174.8,
+        "slowestSvgResponseEndMs": 41.2
       },
       {
-        "readinessMs": 66.1,
-        "wallObservationMs": 194.974,
-        "loadEventEndMs": 160.1,
-        "slowestSvgResponseEndMs": 43.4
+        "readinessMs": 62.5,
+        "wallObservationMs": 227.329,
+        "loadEventEndMs": 177.1,
+        "slowestSvgResponseEndMs": 37.3
       },
       {
-        "readinessMs": 63.2,
-        "wallObservationMs": 198.222,
-        "loadEventEndMs": 160,
-        "slowestSvgResponseEndMs": 39.4
+        "readinessMs": 62.6,
+        "wallObservationMs": 179.311,
+        "loadEventEndMs": 149.4,
+        "slowestSvgResponseEndMs": 40.3
       },
       {
-        "readinessMs": 68.3,
-        "wallObservationMs": 201.847,
-        "loadEventEndMs": 163,
-        "slowestSvgResponseEndMs": 44.9
+        "readinessMs": 51.6,
+        "wallObservationMs": 159.577,
+        "loadEventEndMs": 127.2,
+        "slowestSvgResponseEndMs": 32.3
       },
       {
-        "readinessMs": 61.2,
-        "wallObservationMs": 201.233,
-        "loadEventEndMs": 163.1,
-        "slowestSvgResponseEndMs": 38.8
+        "readinessMs": 48.6,
+        "wallObservationMs": 157.773,
+        "loadEventEndMs": 127,
+        "slowestSvgResponseEndMs": 31.4
       },
       {
-        "readinessMs": 66.1,
-        "wallObservationMs": 199.428,
-        "loadEventEndMs": 159.8,
-        "slowestSvgResponseEndMs": 42.5
+        "readinessMs": 52.5,
+        "wallObservationMs": 163.295,
+        "loadEventEndMs": 132.7,
+        "slowestSvgResponseEndMs": 34.9
       },
       {
-        "readinessMs": 61.4,
-        "wallObservationMs": 206.362,
-        "loadEventEndMs": 167.4,
-        "slowestSvgResponseEndMs": 35.8
+        "readinessMs": 50.6,
+        "wallObservationMs": 158.118,
+        "loadEventEndMs": 127,
+        "slowestSvgResponseEndMs": 33.5
+      },
+      {
+        "readinessMs": 57.6,
+        "wallObservationMs": 171.372,
+        "loadEventEndMs": 137.8,
+        "slowestSvgResponseEndMs": 39.5
+      },
+      {
+        "readinessMs": 51.8,
+        "wallObservationMs": 165.861,
+        "loadEventEndMs": 129.5,
+        "slowestSvgResponseEndMs": 34
+      },
+      {
+        "readinessMs": 59.3,
+        "wallObservationMs": 172.62,
+        "loadEventEndMs": 141.2,
+        "slowestSvgResponseEndMs": 40.4
+      },
+      {
+        "readinessMs": 55.5,
+        "wallObservationMs": 169.299,
+        "loadEventEndMs": 139.8,
+        "slowestSvgResponseEndMs": 36.9
+      },
+      {
+        "readinessMs": 53,
+        "wallObservationMs": 168.369,
+        "loadEventEndMs": 137.9,
+        "slowestSvgResponseEndMs": 34.2
+      },
+      {
+        "readinessMs": 64.8,
+        "wallObservationMs": 182.079,
+        "loadEventEndMs": 149.1,
+        "slowestSvgResponseEndMs": 42.4
+      },
+      {
+        "readinessMs": 52.2,
+        "wallObservationMs": 180.784,
+        "loadEventEndMs": 140.9,
+        "slowestSvgResponseEndMs": 33.6
+      },
+      {
+        "readinessMs": 59.2,
+        "wallObservationMs": 180.709,
+        "loadEventEndMs": 146.4,
+        "slowestSvgResponseEndMs": 38.9
+      },
+      {
+        "readinessMs": 62.1,
+        "wallObservationMs": 182.804,
+        "loadEventEndMs": 147,
+        "slowestSvgResponseEndMs": 42.3
+      },
+      {
+        "readinessMs": 61.6,
+        "wallObservationMs": 185.097,
+        "loadEventEndMs": 149.6,
+        "slowestSvgResponseEndMs": 41.4
       }
     ],
     "distribution": {
-      "minMs": 43.5,
-      "p50Ms": 60.2,
-      "p90Ms": 70.7,
-      "p95Ms": 77.1,
-      "p99Ms": 83.5,
-      "maxMs": 143.1,
-      "overP95BudgetCount": 1,
+      "minMs": 44.1,
+      "p50Ms": 54,
+      "p90Ms": 62.6,
+      "p95Ms": 64.8,
+      "p99Ms": 67.9,
+      "maxMs": 70.8,
+      "overP95BudgetCount": 0,
       "overP99BudgetCount": 0
     },
-    "p95LoadMs": 77.1,
-    "p99LoadMs": 83.5,
+    "p95LoadMs": 64.8,
+    "p99LoadMs": 67.9,
     "maxP95Ms": 100,
     "maxP99Ms": 200
   },
   "provenance": {
-    "sourceRevisionAtCapture": "5b9ea3337c1ee39a4cbbed2aece809cef2accc60",
-    "sourceTreeAtCapture": "3ba3e344f54b55103177941c9dad8be70b341b80",
+    "sourceRevisionAtCapture": "f3ac87d52dec3e0f3713ff1f8fa0b6b3cc49de4b",
+    "sourceTreeAtCapture": "60356fa9fec87c9914a0450dbec7c18018968c9a",
     "sourceTreeCleanAtCapture": true,
-    "candidateSourceInputsSha256": "da50cc46aba30229db9073f71250fdd0dc559940f0589b95010e2387b84956ce",
-    "renderBaselineSha256": "a0b3293b79c076c7e4271080c31c1a7f4f9f282c6ccb9a9e1989dd69521f81b4",
+    "candidateSourceInputsSha256": "7695590064376a9e3df772b9c5a90d6a59fee01b1749cc208ab199251cf07c51",
+    "renderBaselineSha256": "37d9c1e7875e997d43ddbb8ca349056b83ae95d5a4415c2414b9a4b168836e67",
     "renderBaselineRecordedDuringCapture": true,
-    "generatedSiteSha256": "111298dc228d8109037c434e8a9c91b76f77fc101ef7f78b7ba6b7276b031d98",
+    "generatedSiteSha256": "adf94767d9057fc93a7b09a0c292a3a1b44efe0bddd813dc4b70e725d9cff12c",
     "browserPreflightSha256": "e00254873ca6801a58d6dc6bd246511540127800dfa2345b200b90037c05c687",
     "browserPreflightMeasurementSubject": false,
     "packageLockSha256": "3bec3c4dc97e076324b85ff5f79c1f8953632e8f6d0dc6adc5cb64bd6d490206"
@@ -667,10 +667,10 @@
           "handbookCaption": "The established battlefield glyph and overlay vocabulary separates a cover-stopped impact from the representative unblocked attack outcome. Motion and glow are optional emphasis. effects-off view",
           "transcriptSummary": "Attack pipeline diagram transcript",
           "transcript": "A production rifleman occupies its faction-outlined unit footprint. Its authoritative trace reaches first contact, where two distinct outcomes separate. On the upper branch, projectile-blocking cover consumes the collision, stops the projectile, and produces zero target harm. On the lower, unblocked branch, armor retains eighty percent; the resulting twenty-point harm leads to an injury classification, stress, and collateral fields in one atomic consequence. The named rule bindings are COMBAT-TRACE-002, COMBAT-COLLISION-001, COMBAT-COVER-003, COMBAT-ARMOR-004, COMBAT-DAMAGE-001, COMBAT-HEALTH-001, COMBAT-WOUND-001, COMBAT-SUPPRESSION-001, COMBAT-COLLATERAL-001, and COMBAT-ATTACK-RESOLUTION-001. Static geometry, labels, caption, and this transcript carry the complete meaning.",
-          "handbookScreenshotSha256": "c172dc2a070adbb7275880d27894569f93ff2dd9201cea51e6504e6463850c91",
+          "handbookScreenshotSha256": "b01bab7073ccbac802f898abef76a53e00fc1db374c4a3276a406d38bea0308e",
           "semanticFingerprint": "2d9f229abff442cced5bbe82a256ee906f37f2bf54362f68e3e4c3eaec44aca0",
-          "renderedFingerprint": "211e0629fea9a6a08280dfcbd111e1af0219b991e4739e8aa33e171148f81c66",
-          "screenshotSha256": "7a0e627af1196e329afb59414a4c85a231e52fdf811fa2abc681593a959c7d13"
+          "renderedFingerprint": "e5e35de64454830819d14891ced06b80e0585380fb568c8f99b395f5d272d159",
+          "screenshotSha256": "857ac301e5e885243cc5a91aa80c07068f77cfa5527d03b3e51d16a729d91ddf"
         },
         {
           "id": "state-action",
@@ -680,10 +680,10 @@
           "handbookCaption": "A checked transition maps one cohesive pre-state and input to one post-state and observation; invalid input disables the operation. effects-off view",
           "transcriptSummary": "State and transition diagram transcript",
           "transcript": "The authoritative initial pre-state has vitality one hundred, stress zero, barrier integrity one hundred, active blocking, and remains capable. Attack input enters a validity predicate. The atomic consequence produces a complete post-state with vitality eighty, stress twelve, unchanged barrier fields, and continued capability, plus a separate observation with harm twenty and no injury classification at that threshold. Invalid input disables the operation, so it creates neither a transition nor a hidden partial state.",
-          "handbookScreenshotSha256": "167acfda156cb3c46157357d0b007b47eae8dcb25ae3635ca93ab639d5cc7127",
+          "handbookScreenshotSha256": "9be9dec43a305707f9c1a3fdaed9f2382e7f029cde27af06b6253771eb4d8adc",
           "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
-          "renderedFingerprint": "2831ff9672d1fbff9d6adabb967a976bc5b9130901aa0af9cf9a93f87a501c2e",
-          "screenshotSha256": "201717b222094250e4a441c989c32ea6204b63baa8215ae3a5f647d3f061d0dd"
+          "renderedFingerprint": "294d3d1dba7b239a0dbcf4f3eca9799fecae5fa81a017583d26ec5edb57f0624",
+          "screenshotSha256": "3654d25049a6e614c9e9f194a82d3e40155c09f226c73b8f1f5d0b93ad1c5753"
         },
         {
           "id": "rule-dependency",
@@ -719,10 +719,10 @@
           "handbookCaption": "The original and altered transition systems are separate: one supplies the representative example, while the other supplies the deliberately failing trace. effects-off view",
           "transcriptSummary": "Trace comparison diagram transcript",
           "transcript": "The original model starts at its initial state and reaches harm twenty with vitality eighty, satisfying the representative assertion. The established retention change from 8000 to 7000 creates a separate altered transition system; its own reachable trace reaches harm eighteen with vitality eighty-two and violates that assertion. The red edge is the altered model's failing path, not a nondeterministic branch of the unchanged model and not a claim about every execution.",
-          "handbookScreenshotSha256": "8298827dc6a97ecc6deeba0a99bab8401c640897306c9283914f29579a04c92a",
-          "semanticFingerprint": "22e9ead657fad0ac165ac8e6bb3762563ff192b9f339e4a913bcde78573279b8",
-          "renderedFingerprint": "4a15a7bc6ae06301f3890caab2226157cc032cb0b6295d87ca92e485605a47f5",
-          "screenshotSha256": "587d6d087fb8a08aa0d2781b4ebe3eab663ceb92050c54b95aa1bd6899dad98b"
+          "handbookScreenshotSha256": "74d30ebdfd5cddcce3f92d016a8a674c10aa8f2b1b9ebc3a33a584318e43cf28",
+          "semanticFingerprint": "b5b32aa0df67814040f595e830b9c1db7af4aa85c8968833cbd7419350b3517a",
+          "renderedFingerprint": "8a5e0c25c97874039f7610bd05d254150c4763e36d31165578a95c78f540b5d6",
+          "screenshotSha256": "a7404539710685bd03dbfcec88480a41a9d4c2b73fe05d24bab4342344b9cfd6"
         },
         {
           "id": "invariant-boundary",
@@ -732,7 +732,7 @@
           "handbookCaption": "The safety boundary encloses checked reachable states; one mutated transition escapes to a concrete violating path. effects-off view",
           "transcriptSummary": "Safety-boundary diagram transcript",
           "transcript": "The safe region contains reachable combat states from one hundred vitality through zero vitality with incapacity aligned. A deliberately mutated bound permits vitality minus one, placing the successor outside the boundary. The diagram explains a checked predicate and adds no model state.",
-          "handbookScreenshotSha256": "878c8b990501423c32dbeabd6517b4576444a001b8714b45ba4ce52a551c2709",
+          "handbookScreenshotSha256": "6b7b69a011dea50ff70e577c48fd3d6285555b885318e0293dc231ec6d5d02d3",
           "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
           "renderedFingerprint": "fb405d1b8439c8b769262dd054abc3e191bc44d0b5ef30081e3ce4f32cb6364e",
           "screenshotSha256": "5e5a2ee0f5daac6d94f19b668916df63f1dbefdca7872193a81044400fb7cdb1"
@@ -752,10 +752,10 @@
           "handbookCaption": "The established battlefield glyph and overlay vocabulary separates a cover-stopped impact from the representative unblocked attack outcome. Motion and glow are optional emphasis. effects-off view",
           "transcriptSummary": "Attack pipeline diagram transcript",
           "transcript": "A production rifleman occupies its faction-outlined unit footprint. Its authoritative trace reaches first contact, where two distinct outcomes separate. On the upper branch, projectile-blocking cover consumes the collision, stops the projectile, and produces zero target harm. On the lower, unblocked branch, armor retains eighty percent; the resulting twenty-point harm leads to an injury classification, stress, and collateral fields in one atomic consequence. The named rule bindings are COMBAT-TRACE-002, COMBAT-COLLISION-001, COMBAT-COVER-003, COMBAT-ARMOR-004, COMBAT-DAMAGE-001, COMBAT-HEALTH-001, COMBAT-WOUND-001, COMBAT-SUPPRESSION-001, COMBAT-COLLATERAL-001, and COMBAT-ATTACK-RESOLUTION-001. Static geometry, labels, caption, and this transcript carry the complete meaning.",
-          "handbookScreenshotSha256": "c172dc2a070adbb7275880d27894569f93ff2dd9201cea51e6504e6463850c91",
+          "handbookScreenshotSha256": "b01bab7073ccbac802f898abef76a53e00fc1db374c4a3276a406d38bea0308e",
           "semanticFingerprint": "2d9f229abff442cced5bbe82a256ee906f37f2bf54362f68e3e4c3eaec44aca0",
-          "renderedFingerprint": "de8cd823f35eedadfffa6376985ce40a6026c2a5162c0ec6f5c128ef7e23e6d7",
-          "screenshotSha256": "7a0e627af1196e329afb59414a4c85a231e52fdf811fa2abc681593a959c7d13"
+          "renderedFingerprint": "f6dc950886c508f55409355e8b7f570343e5d795c3bfc112ce2590bfd7f38892",
+          "screenshotSha256": "6074481f75bb0252ca62b8e9922b8d42cb0596adbb4a39742c8cb03059edc979"
         },
         {
           "id": "state-action",
@@ -765,10 +765,10 @@
           "handbookCaption": "A checked transition maps one cohesive pre-state and input to one post-state and observation; invalid input disables the operation. effects-off view",
           "transcriptSummary": "State and transition diagram transcript",
           "transcript": "The authoritative initial pre-state has vitality one hundred, stress zero, barrier integrity one hundred, active blocking, and remains capable. Attack input enters a validity predicate. The atomic consequence produces a complete post-state with vitality eighty, stress twelve, unchanged barrier fields, and continued capability, plus a separate observation with harm twenty and no injury classification at that threshold. Invalid input disables the operation, so it creates neither a transition nor a hidden partial state.",
-          "handbookScreenshotSha256": "167acfda156cb3c46157357d0b007b47eae8dcb25ae3635ca93ab639d5cc7127",
+          "handbookScreenshotSha256": "9be9dec43a305707f9c1a3fdaed9f2382e7f029cde27af06b6253771eb4d8adc",
           "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
-          "renderedFingerprint": "1b1b29830ef1e68aea47df5cf255e437e45811101ea6443ec3110a4367f94b48",
-          "screenshotSha256": "201717b222094250e4a441c989c32ea6204b63baa8215ae3a5f647d3f061d0dd"
+          "renderedFingerprint": "d4fbd44fb00730108f117e3800458d37fa43a39a5424877e1051a9a68bce66f2",
+          "screenshotSha256": "3654d25049a6e614c9e9f194a82d3e40155c09f226c73b8f1f5d0b93ad1c5753"
         },
         {
           "id": "rule-dependency",
@@ -804,10 +804,10 @@
           "handbookCaption": "The original and altered transition systems are separate: one supplies the representative example, while the other supplies the deliberately failing trace. effects-off view",
           "transcriptSummary": "Trace comparison diagram transcript",
           "transcript": "The original model starts at its initial state and reaches harm twenty with vitality eighty, satisfying the representative assertion. The established retention change from 8000 to 7000 creates a separate altered transition system; its own reachable trace reaches harm eighteen with vitality eighty-two and violates that assertion. The red edge is the altered model's failing path, not a nondeterministic branch of the unchanged model and not a claim about every execution.",
-          "handbookScreenshotSha256": "8298827dc6a97ecc6deeba0a99bab8401c640897306c9283914f29579a04c92a",
-          "semanticFingerprint": "22e9ead657fad0ac165ac8e6bb3762563ff192b9f339e4a913bcde78573279b8",
-          "renderedFingerprint": "4f2f518b0105c81b56829b62d87600bdde3c46a22bb38ce760c5e3a3e74255a0",
-          "screenshotSha256": "587d6d087fb8a08aa0d2781b4ebe3eab663ceb92050c54b95aa1bd6899dad98b"
+          "handbookScreenshotSha256": "74d30ebdfd5cddcce3f92d016a8a674c10aa8f2b1b9ebc3a33a584318e43cf28",
+          "semanticFingerprint": "b5b32aa0df67814040f595e830b9c1db7af4aa85c8968833cbd7419350b3517a",
+          "renderedFingerprint": "c6dba7d526c6982f5d272247980f42516475b9407a9a0641297166efb83fe37c",
+          "screenshotSha256": "e61376e832251846b63c070581e340e0d95393a5addaa6ea95d23b5e891ed76f"
         },
         {
           "id": "invariant-boundary",
@@ -817,7 +817,7 @@
           "handbookCaption": "The safety boundary encloses checked reachable states; one mutated transition escapes to a concrete violating path. effects-off view",
           "transcriptSummary": "Safety-boundary diagram transcript",
           "transcript": "The safe region contains reachable combat states from one hundred vitality through zero vitality with incapacity aligned. A deliberately mutated bound permits vitality minus one, placing the successor outside the boundary. The diagram explains a checked predicate and adds no model state.",
-          "handbookScreenshotSha256": "6b7b69a011dea50ff70e577c48fd3d6285555b885318e0293dc231ec6d5d02d3",
+          "handbookScreenshotSha256": "5ebef91b19dce9c9aa874382f44abe7dd53ce9a6ac4d82bbc4f10af64f8294e4",
           "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
           "renderedFingerprint": "bb926bb257873abbda7dd8b951a383071a8c7b5dcb2e9142d544f10f734a6795",
           "screenshotSha256": "5e03ecf4288ab7a82ce50355e4ab9c2c005778ca08d50182446e7944b1eed6df"
@@ -837,10 +837,10 @@
           "handbookCaption": "The established battlefield glyph and overlay vocabulary separates a cover-stopped impact from the representative unblocked attack outcome. Motion and glow are optional emphasis. effects-off view",
           "transcriptSummary": "Attack pipeline diagram transcript",
           "transcript": "A production rifleman occupies its faction-outlined unit footprint. Its authoritative trace reaches first contact, where two distinct outcomes separate. On the upper branch, projectile-blocking cover consumes the collision, stops the projectile, and produces zero target harm. On the lower, unblocked branch, armor retains eighty percent; the resulting twenty-point harm leads to an injury classification, stress, and collateral fields in one atomic consequence. The named rule bindings are COMBAT-TRACE-002, COMBAT-COLLISION-001, COMBAT-COVER-003, COMBAT-ARMOR-004, COMBAT-DAMAGE-001, COMBAT-HEALTH-001, COMBAT-WOUND-001, COMBAT-SUPPRESSION-001, COMBAT-COLLATERAL-001, and COMBAT-ATTACK-RESOLUTION-001. Static geometry, labels, caption, and this transcript carry the complete meaning.",
-          "handbookScreenshotSha256": "dc213af11c56ffec963c641dd5da3458f0f1aee1a333131d0bd69dc805bec9ab",
+          "handbookScreenshotSha256": "0e9f5ceffcc47c017fbb5f13334c2ec6801050704c745f0134e74c4dcb137d91",
           "semanticFingerprint": "2d9f229abff442cced5bbe82a256ee906f37f2bf54362f68e3e4c3eaec44aca0",
-          "renderedFingerprint": "e8f989c1323a03e40eb0c7e0e812f22332bed9e7e52459d8a5ef333338dcd944",
-          "screenshotSha256": "d1f42ce089ac80d88b035f80b5ac99a4e3764d7dd8dbae2b966c08fc472c15ff"
+          "renderedFingerprint": "d0116548071acbca3837c98b4956a4f335f97a21bede7d2ebb31c94b512213e9",
+          "screenshotSha256": "4edc303e213460d152fd11e0fa711699a31f3c826e6c1e1584600655c3f03e19"
         },
         {
           "id": "state-action",
@@ -850,10 +850,10 @@
           "handbookCaption": "A checked transition maps one cohesive pre-state and input to one post-state and observation; invalid input disables the operation. effects-off view",
           "transcriptSummary": "State and transition diagram transcript",
           "transcript": "The authoritative initial pre-state has vitality one hundred, stress zero, barrier integrity one hundred, active blocking, and remains capable. Attack input enters a validity predicate. The atomic consequence produces a complete post-state with vitality eighty, stress twelve, unchanged barrier fields, and continued capability, plus a separate observation with harm twenty and no injury classification at that threshold. Invalid input disables the operation, so it creates neither a transition nor a hidden partial state.",
-          "handbookScreenshotSha256": "d272f1b8a99b4d5f8075892f67ed1d43336084ff818d4cbe275e669d93a442d6",
+          "handbookScreenshotSha256": "043ce22de327e49fabc8c96bfaf87c71e15dfb51beba18fe21c3d6371f8e5e52",
           "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
-          "renderedFingerprint": "edc81361ad550a9741df7289a9eee9a94814b437bc6e1223ea7adb92201cebb8",
-          "screenshotSha256": "0ca7fec9c626b0b5fad32e4f55e947359be827cd4e7dc7ed610354ad44733c21"
+          "renderedFingerprint": "30fee4498365c55469459242461bc42920098c40e9e8120883d5c40e0e5afe86",
+          "screenshotSha256": "8bba3cf90bbc7a84827bb28f6bf4d55a2a0b6ecd3bbc3832d54b5b1c126e5e36"
         },
         {
           "id": "rule-dependency",
@@ -889,10 +889,10 @@
           "handbookCaption": "The original and altered transition systems are separate: one supplies the representative example, while the other supplies the deliberately failing trace. effects-off view",
           "transcriptSummary": "Trace comparison diagram transcript",
           "transcript": "The original model starts at its initial state and reaches harm twenty with vitality eighty, satisfying the representative assertion. The established retention change from 8000 to 7000 creates a separate altered transition system; its own reachable trace reaches harm eighteen with vitality eighty-two and violates that assertion. The red edge is the altered model's failing path, not a nondeterministic branch of the unchanged model and not a claim about every execution.",
-          "handbookScreenshotSha256": "5e262d1a9fd2d4b38ba8904a9ebcc72f74a35d30889258fde69b034c11d9c8f8",
-          "semanticFingerprint": "22e9ead657fad0ac165ac8e6bb3762563ff192b9f339e4a913bcde78573279b8",
-          "renderedFingerprint": "7baff83a57ea121d01d4d15cbb7e10ace2a3250dcc08cec7537a9acbb2f2843b",
-          "screenshotSha256": "9c53be15ce7d8c7dc2e6f33f32e12fb2291abc10715b367217ab5c98a6a57a2d"
+          "handbookScreenshotSha256": "8a48f2c1439908bee571ba5c0e3a67f52dbb443144e269793fee7166d100e419",
+          "semanticFingerprint": "b5b32aa0df67814040f595e830b9c1db7af4aa85c8968833cbd7419350b3517a",
+          "renderedFingerprint": "f0278b43e5dc00d73770e1a4f696fcee7d7709cf79533139271018aca658b2b9",
+          "screenshotSha256": "2deb6be422923d1df0f45396135e70bb9a35261c3abd9a766c75cb9f1cc6e005"
         },
         {
           "id": "invariant-boundary",
@@ -902,7 +902,7 @@
           "handbookCaption": "The safety boundary encloses checked reachable states; one mutated transition escapes to a concrete violating path. effects-off view",
           "transcriptSummary": "Safety-boundary diagram transcript",
           "transcript": "The safe region contains reachable combat states from one hundred vitality through zero vitality with incapacity aligned. A deliberately mutated bound permits vitality minus one, placing the successor outside the boundary. The diagram explains a checked predicate and adds no model state.",
-          "handbookScreenshotSha256": "8c2d5e3a0cc524223ddfe61c4a4d0a6762e696aa810b823608f95b616b52aa64",
+          "handbookScreenshotSha256": "d715723d896049e83b96db43ba59e6ebd932949aa3b67f173962d64b830c32c5",
           "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
           "renderedFingerprint": "e1eb1851f961b8b05a5235ea905f09c8a5b5a181e95d306f835a79b49ec524cf",
           "screenshotSha256": "df55489ef62facc605c1f8683919c41d0b1d366aa83594068250d302696da7bf"
@@ -924,8 +924,8 @@
           "transcript": "A production rifleman occupies its faction-outlined unit footprint. Its authoritative trace reaches first contact, where two distinct outcomes separate. On the upper branch, projectile-blocking cover consumes the collision, stops the projectile, and produces zero target harm. On the lower, unblocked branch, armor retains eighty percent; the resulting twenty-point harm leads to an injury classification, stress, and collateral fields in one atomic consequence. The named rule bindings are COMBAT-TRACE-002, COMBAT-COLLISION-001, COMBAT-COVER-003, COMBAT-ARMOR-004, COMBAT-DAMAGE-001, COMBAT-HEALTH-001, COMBAT-WOUND-001, COMBAT-SUPPRESSION-001, COMBAT-COLLATERAL-001, and COMBAT-ATTACK-RESOLUTION-001. Static geometry, labels, caption, and this transcript carry the complete meaning.",
           "handbookScreenshotSha256": null,
           "semanticFingerprint": "2d9f229abff442cced5bbe82a256ee906f37f2bf54362f68e3e4c3eaec44aca0",
-          "renderedFingerprint": "3ccdd5a6c85afb8c71f61eeea53f4f70309cbfb47510bd8b383f512d15a62ded",
-          "screenshotSha256": "7e65295f3f72326222c77d36ed1d9fe3cfb0cb8fa1f73e1b3b391552a7c49346"
+          "renderedFingerprint": "6352906a431359895c38d13e84317a073afca5178f00a1a44d810c8dbf38469d",
+          "screenshotSha256": "c73b7fa66e57bc75eaeb290eb439a5068357dccda4b96f63a061cfb0015b1458"
         },
         {
           "id": "state-action",
@@ -937,8 +937,8 @@
           "transcript": "The authoritative initial pre-state has vitality one hundred, stress zero, barrier integrity one hundred, active blocking, and remains capable. Attack input enters a validity predicate. The atomic consequence produces a complete post-state with vitality eighty, stress twelve, unchanged barrier fields, and continued capability, plus a separate observation with harm twenty and no injury classification at that threshold. Invalid input disables the operation, so it creates neither a transition nor a hidden partial state.",
           "handbookScreenshotSha256": null,
           "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
-          "renderedFingerprint": "cb64f50315d1ca639a8a2cee8830ae8e8c364739290bf73e2ee3700dffb2412c",
-          "screenshotSha256": "6e938bfa97f8bd100c64f4dd560330e60e0803be75549e4d9301f6b10dfe002a"
+          "renderedFingerprint": "0d403ea6429f9bd061724216fdaea2b112851be7525c1e9bb4ca38a62ef05aa2",
+          "screenshotSha256": "1bd158ccef5f5e43534d8d9bd732e487ebbf2017339251ffe71d89c91c7c5a44"
         },
         {
           "id": "rule-dependency",
@@ -975,9 +975,9 @@
           "transcriptSummary": "Trace comparison diagram transcript",
           "transcript": "The original model starts at its initial state and reaches harm twenty with vitality eighty, satisfying the representative assertion. The established retention change from 8000 to 7000 creates a separate altered transition system; its own reachable trace reaches harm eighteen with vitality eighty-two and violates that assertion. The red edge is the altered model's failing path, not a nondeterministic branch of the unchanged model and not a claim about every execution.",
           "handbookScreenshotSha256": null,
-          "semanticFingerprint": "22e9ead657fad0ac165ac8e6bb3762563ff192b9f339e4a913bcde78573279b8",
-          "renderedFingerprint": "b79c1abaccc5496d16f9966e61320da77412b12776dc0bd095a4902a902638c5",
-          "screenshotSha256": "0c22bb54707bd5439e81cd6a0467264cc7debbe788be5d62c198df7b5745a9b1"
+          "semanticFingerprint": "b5b32aa0df67814040f595e830b9c1db7af4aa85c8968833cbd7419350b3517a",
+          "renderedFingerprint": "73d4b86b6a70eb6d8439243534aa46c5d4e085b2fd67bff280baea4b4ec70e75",
+          "screenshotSha256": "d9829f34596a3474a1981cc3dfe3a047f829a07d505262af2f2e25937e15813a"
         },
         {
           "id": "invariant-boundary",
@@ -1009,8 +1009,8 @@
           "transcript": "A production rifleman occupies its faction-outlined unit footprint. Its authoritative trace reaches first contact, where two distinct outcomes separate. On the upper branch, projectile-blocking cover consumes the collision, stops the projectile, and produces zero target harm. On the lower, unblocked branch, armor retains eighty percent; the resulting twenty-point harm leads to an injury classification, stress, and collateral fields in one atomic consequence. The named rule bindings are COMBAT-TRACE-002, COMBAT-COLLISION-001, COMBAT-COVER-003, COMBAT-ARMOR-004, COMBAT-DAMAGE-001, COMBAT-HEALTH-001, COMBAT-WOUND-001, COMBAT-SUPPRESSION-001, COMBAT-COLLATERAL-001, and COMBAT-ATTACK-RESOLUTION-001. Static geometry, labels, caption, and this transcript carry the complete meaning.",
           "handbookScreenshotSha256": null,
           "semanticFingerprint": "2d9f229abff442cced5bbe82a256ee906f37f2bf54362f68e3e4c3eaec44aca0",
-          "renderedFingerprint": "b7fa810a3fc135626d304bdf4d304c5efc23ec6e23d07b32d81a1d5ec77f19da",
-          "screenshotSha256": "a3882c73f83c5fc5ea1ad5f8b90a66ad9f01b82884c4e7bd87ea8023a7948e7f"
+          "renderedFingerprint": "6ebba8912e1859ea3f9347e4a0055671f48a667d686931c4d097464fbd106458",
+          "screenshotSha256": "6431c4e43d23b11504b9419c58c17a52bfcfd488c5bd61842ed9486a4304f880"
         },
         {
           "id": "state-action",
@@ -1022,8 +1022,8 @@
           "transcript": "The authoritative initial pre-state has vitality one hundred, stress zero, barrier integrity one hundred, active blocking, and remains capable. Attack input enters a validity predicate. The atomic consequence produces a complete post-state with vitality eighty, stress twelve, unchanged barrier fields, and continued capability, plus a separate observation with harm twenty and no injury classification at that threshold. Invalid input disables the operation, so it creates neither a transition nor a hidden partial state.",
           "handbookScreenshotSha256": null,
           "semanticFingerprint": "63a678fbcfd0ab3b868cd99d11fadedffacefa1d150b0185459075b13dd370ac",
-          "renderedFingerprint": "a15f593dd65552e82191e798ea807cb6e0ce67bb4cc9f7ee21eb1a76779dc3c1",
-          "screenshotSha256": "7c7106a8c0f244b475547278f82fc8e00ff1a24307c6ce7a7f1871d7011ff5f2"
+          "renderedFingerprint": "80de0d673a9a524ec96e2b831e70879b80b504d1d47acc22cc635728b5e58c54",
+          "screenshotSha256": "9f3613fd5b9a14ae4de7b14f01946feaa22b881a7199dcdad4c1ca34b81eb611"
         },
         {
           "id": "rule-dependency",
@@ -1060,9 +1060,9 @@
           "transcriptSummary": "Trace comparison diagram transcript",
           "transcript": "The original model starts at its initial state and reaches harm twenty with vitality eighty, satisfying the representative assertion. The established retention change from 8000 to 7000 creates a separate altered transition system; its own reachable trace reaches harm eighteen with vitality eighty-two and violates that assertion. The red edge is the altered model's failing path, not a nondeterministic branch of the unchanged model and not a claim about every execution.",
           "handbookScreenshotSha256": null,
-          "semanticFingerprint": "22e9ead657fad0ac165ac8e6bb3762563ff192b9f339e4a913bcde78573279b8",
-          "renderedFingerprint": "d32e800f4c33cbcc795a494db8e4a34070ffae1a8741a20f68b1e43f6f39c243",
-          "screenshotSha256": "f713fcfecc2bf74d9b32e49b0d63498117612e354bb88b306a09db9b568e8581"
+          "semanticFingerprint": "b5b32aa0df67814040f595e830b9c1db7af4aa85c8968833cbd7419350b3517a",
+          "renderedFingerprint": "b83f9b67604520cfb03d4c64ec1700ba633f44d76bdf4790df622729d4ce646e",
+          "screenshotSha256": "01b6a85cafa2ce5bac6e79a7c399fdfae2711ce47d4db4cc017d6399ff02de8a"
         },
         {
           "id": "invariant-boundary",
