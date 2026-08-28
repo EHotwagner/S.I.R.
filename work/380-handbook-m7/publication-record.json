@@ -42,7 +42,7 @@
       "reviewPosture": "automated qualification only; the four inherited M7 human reviews and six-diagram render performance evidence do not cover this extension",
       "qualification": {"command": "./scripts/qualify-quint-sir-visibility.sh", "quint": "0.32.0", "tests": 13, "boundedOrderedCellPairs": 625, "sampledInvariants": 2, "witnesses": 3, "observedRedMutations": 7, "apalache": "optional; requires Java 17 or newer"},
       "sourceBlobs": [
-        {"path": "docs/rules/sir-visibility.md", "gitBlob": "afde6794debaee78dcb9015badba3f17520b2969"},
+        {"path": "docs/rules/sir-visibility.md", "gitBlob": "89becb27fbc285b4b6f8a1e378b931442e634fe7"},
         {"path": "scripts/qualify-quint-sir-visibility.sh", "gitBlob": "dfd60ee022d9ef9f284f9bd44a5b31c55c75f194"},
         {"path": "docs/assets/sir-visibility-quint/blocker-semantics.svg", "gitBlob": "fcc1d98e9db99cef5bb712387afa8840785ead5b"},
         {"path": "docs/assets/sir-visibility-quint/canonical-symmetry.svg", "gitBlob": "0535748cd619f23afe3156f244427989b51ed6ac"},

@@ -1,12 +1,12 @@
 ---
-title: S.I.R. visibility in Quint
+title: Grid Visibility in Quint
 category: Rules
 categoryindex: 2
 index: 49
 description: A bounded executable Quint translation of S.I.R.'s grid supercover line-of-sight mechanism.
 ---
 
-# S.I.R. visibility in Quint
+# Grid Visibility in Quint
 
 This literate source translates the discrete visibility path used by
 `SIR.Simulation.SpatialQuery`: canonical endpoint ordering, integer supercover
