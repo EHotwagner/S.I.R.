@@ -13,16 +13,16 @@
   </defs>
   <rect width="960" height="430" rx="24" fill="#10161d"/><text x="54" y="52" fill="#f7f9fa" font-family="system-ui,sans-serif" font-size="24" font-weight="700">SUPERCOVER / canonical x-first tie</text>
   <g transform="translate(245 75)"><rect width="440" height="220" fill="url(#sc-grid)" stroke="#71808b" stroke-width="2"/>
-    <rect class="step s1" x="0" y="110" width="110" height="110" fill="#28343d" stroke="#53b7ff" stroke-width="4"/>
-    <rect class="step s2" x="110" y="110" width="110" height="110" fill="#28343d" stroke="#53b7ff" stroke-width="4"/>
-    <rect class="step s3" x="110" y="0" width="110" height="110" fill="#28343d" stroke="#53b7ff" stroke-width="4"/>
-    <rect class="step s4" x="220" y="0" width="110" height="110" fill="#28343d" stroke="#53b7ff" stroke-width="4"/>
-    <path d="M55 165H165V55H275" fill="none" stroke="#53b7ff" stroke-width="7" marker-end="url(#sc-arrow)" class="march fx" filter="url(#sc-glow)"/>
-    <path d="M55 165L275 55" fill="none" stroke="#ffd166" stroke-width="2" stroke-dasharray="7 8" opacity=".8"/>
-    <path d="M110 110l18 0 0 18zM220 110l-18 0 0-18z" fill="#ff6b6b" class="pulse fx"/>
+    <rect data-tooltip="step-zero" class="step s1" x="0" y="110" width="110" height="110" fill="#28343d" stroke="#53b7ff" stroke-width="4"><title>Step 0 — cell (0,0): canonical source endpoint. It is retained in the path but exempt from terrain-opacity testing.</title></rect>
+    <rect data-tooltip="step-one" class="step s2" x="110" y="110" width="110" height="110" fill="#28343d" stroke="#53b7ff" stroke-width="4"><title>Step 1 — cell (1,0): the next x half-cell boundary is crossed first, so this intermediate cell must be transparent.</title></rect>
+    <rect data-tooltip="step-two" class="step s3" x="110" y="0" width="110" height="110" fill="#28343d" stroke="#53b7ff" stroke-width="4"><title>Step 2 — cell (1,1): the y boundary is crossed next. Including both cells around the corner closes the diagonal visibility gap.</title></rect>
+    <rect data-tooltip="step-three" class="step s4" x="220" y="0" width="110" height="110" fill="#28343d" stroke="#53b7ff" stroke-width="4"><title>Step 3 — cell (2,1): canonical target endpoint. Like the source, it is retained but exempt from terrain-opacity testing.</title></rect>
+    <path data-tooltip="supercover-path" d="M55 165H165V55H275" fill="none" stroke="#53b7ff" stroke-width="7" marker-end="url(#sc-arrow)" class="march fx" filter="url(#sc-glow)"><title>Executable supercover path: four-connected sequence [(0,0), (1,0), (1,1), (2,1)] with x-first resolution at an exact corner tie.</title></path>
+    <path data-tooltip="geometric-ray" d="M55 165L275 55" fill="none" stroke="#ffd166" stroke-width="2" stroke-dasharray="7 8" opacity=".8"><title>Explanatory geometric ray: useful for seeing corner contact, but not itself the list used by lineOfSightBy Supercover.</title></path>
+    <path data-tooltip="corner-gap" d="M110 110l18 0 0 18zM220 110l-18 0 0-18z" fill="#ff6b6b" class="pulse fx"><title>Corner-gap warning: a diagonal-only walk could miss terrain touching the ray at this lattice corner; the orthogonal supercover includes both sides.</title></path>
     <g fill="#f7f9fa" font-family="ui-monospace,monospace" font-size="20" text-anchor="middle"><text x="55" y="195">0</text><text x="165" y="195">1</text><text x="165" y="85">2</text><text x="275" y="85">3</text></g>
-    <circle cx="55" cy="165" r="20" fill="#53b7ff"/><path d="M45 165h20M55 155v20" stroke="#10161d" stroke-width="4"/>
-    <path d="M275 35l20 20-20 20-20-20z" fill="#ffd166"/><circle cx="275" cy="55" r="7" fill="#10161d"/>
+    <circle data-tooltip="observer" cx="55" cy="165" r="20" fill="#53b7ff"><title>Observer glyph at (0,0): the source anchor for this point-to-point visibility query.</title></circle><path d="M45 165h20M55 155v20" stroke="#10161d" stroke-width="4"/>
+    <path data-tooltip="target" d="M275 35l20 20-20 20-20-20z" fill="#ffd166"><title>Target glyph at (2,1): the destination anchor and final endpoint of the canonical walk.</title></path><circle cx="275" cy="55" r="7" fill="#10161d"/>
   </g>
   <g font-family="system-ui,sans-serif"><text x="245" y="335" fill="#53b7ff" font-size="18">observer ⊕ (0,0)</text><text x="545" y="335" fill="#ffd166" font-size="18">target ◈ (2,1)</text><text x="245" y="372" fill="#aeb9c2" font-size="17">Every step crosses one cell edge; corner contact cannot create a diagonal gap.</text></g>
   <g id="effects-off" transform="translate(0 430)"/>

@@ -80,21 +80,32 @@ function verify(overrides = new Map(), options = {}) {
   need(extension.qualification?.boundedOrderedCellPairs === 625, "visibility bounded property sweep drift");
   need(extension.qualification?.sampledInvariants === 2 && extension.qualification?.witnesses === 3, "visibility temporal evidence drift");
   need(extension.qualification?.observedRedMutations === 7, "visibility mutation evidence drift");
+  need(extension.qualification?.tooltipHotspots === 69, "visibility tooltip evidence drift");
+  need(extension.qualification?.interactiveSvgObjects === 7, "visibility interactive embed evidence drift");
   need(extension.qualification?.apalache.startsWith("optional"), "visibility extension overclaims Apalache verification");
   need(extension.sourceBlobs?.length === 9, "visibility extension source cardinality drift");
   for (const source of extension.sourceBlobs) need(source.gitBlob === gitBlob(source.path), `visibility extension source drift: ${source.path}`);
   const visibilityAssets = extension.sourceBlobs.filter(source => source.path.endsWith(".svg"));
   need(visibilityAssets.length === 7, "visibility extension must bind seven SVG diagrams");
+  let tooltipHotspots = 0;
   for (const source of visibilityAssets) {
     const svg = text(source.path);
     need(/role="img"/.test(svg) && /aria-labelledby="[^"]+"/.test(svg), `visibility SVG accessibility binding missing: ${source.path}`);
     need(/<title id="[^"]+">/.test(svg) && /<desc id="[^"]+">/.test(svg), `visibility SVG title or description missing: ${source.path}`);
     need(/prefers-reduced-motion:reduce/.test(svg) && /@media print/.test(svg), `visibility SVG static fallback missing: ${source.path}`);
     need(/id="effects-off"/.test(svg) && /@keyframes/.test(svg) && /<filter id=/.test(svg), `visibility SVG effect contract missing: ${source.path}`);
+    const tooltipCount = (svg.match(/\bdata-tooltip=/g) ?? []).length;
+    const titleCount = (svg.match(/<title(?:\s|>)/g) ?? []).length;
+    need(tooltipCount >= 8, `visibility SVG tooltip density regressed: ${source.path}`);
+    need(titleCount >= tooltipCount + 1, `visibility SVG tooltip titles incomplete: ${source.path}`);
+    tooltipHotspots += tooltipCount;
     const id = source.path.split("/").at(-1).replace(".svg", "");
     need(handbook.includes(`data-diagram-embed="${id}"`), `visibility SVG handbook embed missing: ${id}`);
+    need(handbook.includes(`<object type="image/svg+xml" data="${source.path.replace("docs/", "")}"`), `visibility SVG interactive object missing: ${id}`);
+    need(!handbook.includes(`<img src="${source.path.replace("docs/", "")}"`), `visibility SVG degraded to non-interactive image: ${id}`);
     need(handbook.includes(`id="diagram-transcript-${id}"`), `visibility SVG transcript missing: ${id}`);
   }
+  need(tooltipHotspots === extension.qualification.tooltipHotspots, "visibility tooltip count does not match publication evidence");
 
   const expectedTools = new Map([
     [".NET SDK", json("global.json").sdk.version],
@@ -225,6 +236,8 @@ if (process.argv.includes("--self-test")) {
     ["extension-overclaims-inherited-reviews", new Map([[paths.record, JSON.stringify({...record, contentExtensions: record.contentExtensions.map(extension => ({...extension, reviewPosture: "covered by inherited human reviews"}))})]])],
     ["extension-source-missing", new Map([[paths.record, JSON.stringify({...record, contentExtensions: record.contentExtensions.map(extension => ({...extension, sourceBlobs: extension.sourceBlobs.slice(1)}))})]])],
     ["visibility-static-fallback-missing", mutated("docs/assets/sir-visibility-quint/supercover-walk.svg", value => value.replace("prefers-reduced-motion:reduce", "motion-fallback-removed"))],
+    ["visibility-tooltip-density-regressed", mutated("docs/assets/sir-visibility-quint/canonical-symmetry.svg", value => value.replaceAll("data-tooltip=", "data-detail="))],
+    ["visibility-interactive-embed-missing", mutated(paths.handbook, value => value.replace('<object type="image/svg+xml" data="assets/sir-visibility-quint/supercover-walk.svg"', '<img src="assets/sir-visibility-quint/supercover-walk.svg"'))],
     ["unsafe-yaml-title-spacing", new Map([[paths.handbook, unsafeTitleHandbook], [paths.record, recordForHandbook(unsafeTitleHandbook)]])],
     ["broadened-successor-repair", new Map([[paths.handbook, broadenedHandbook], [paths.record, recordForHandbook(broadenedHandbook)]])]
   ];

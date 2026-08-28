@@ -12,7 +12,7 @@
     "triggerLocation": "docs/rules/sir-combat-handbook-maintenance.md"
   },
   "sourceBlobs": [
-    {"path": "docs/sir-combat-quint-handbook.md", "gitBlob": "64718255ef1c18168627a27323176c8fdfe7fbb1", "owns": "pedagogy, navigation, and claim boundaries"},
+    {"path": "docs/sir-combat-quint-handbook.md", "gitBlob": "f41848608762ea0866e66f99bd84768e9c3fb759", "owns": "pedagogy, navigation, and claim boundaries"},
     {"path": "docs/rules/sir-combat.md", "gitBlob": "2347769cf18c278b27e4af4322580cd50719fe3f", "owns": "bounded literate Quint model"},
     {"path": "docs/combat-resolution.md", "gitBlob": "a5a0779a089705f082c5f8e7420e813adc9a6d89", "owns": "physical combat design"},
     {"path": "src/SIR.Simulation/CombatRules.fs", "gitBlob": "8908afcc7c62413696c701c6009f24ebdbb378e1", "owns": "production rule registry and entry points"},
@@ -37,20 +37,20 @@
       "id": "bounded-sir-grid-visibility",
       "scope": "chapter 31A, contextual line-of-sight boundary corrections, separate literate SirVisibility model, qualification, and seven abstract grid SVGs",
       "baseHandbookBlob": "ea548fb4c4179c6b1a5d3072afb1d44699016c08",
-      "publishedHandbookBlob": "64718255ef1c18168627a27323176c8fdfe7fbb1",
-      "handbookSha256": "a9ad1e55f2a4c2778ee75595de48b24e4e5213216752101809170a5918058850",
+      "publishedHandbookBlob": "f41848608762ea0866e66f99bd84768e9c3fb759",
+      "handbookSha256": "07d9afa919120f72e7c41d9edf497ab35cc774aa5adb7ef0d7d684b3fc21d049",
       "reviewPosture": "automated qualification only; the four inherited M7 human reviews and six-diagram render performance evidence do not cover this extension",
-      "qualification": {"command": "./scripts/qualify-quint-sir-visibility.sh", "quint": "0.32.0", "tests": 13, "boundedOrderedCellPairs": 625, "sampledInvariants": 2, "witnesses": 3, "observedRedMutations": 7, "apalache": "optional; requires Java 17 or newer"},
+      "qualification": {"command": "./scripts/qualify-quint-sir-visibility.sh", "quint": "0.32.0", "tests": 13, "boundedOrderedCellPairs": 625, "sampledInvariants": 2, "witnesses": 3, "observedRedMutations": 7, "tooltipHotspots": 69, "interactiveSvgObjects": 7, "apalache": "optional; requires Java 17 or newer"},
       "sourceBlobs": [
         {"path": "docs/rules/sir-visibility.md", "gitBlob": "89becb27fbc285b4b6f8a1e378b931442e634fe7"},
-        {"path": "scripts/qualify-quint-sir-visibility.sh", "gitBlob": "dfd60ee022d9ef9f284f9bd44a5b31c55c75f194"},
-        {"path": "docs/assets/sir-visibility-quint/blocker-semantics.svg", "gitBlob": "fcc1d98e9db99cef5bb712387afa8840785ead5b"},
-        {"path": "docs/assets/sir-visibility-quint/canonical-symmetry.svg", "gitBlob": "0535748cd619f23afe3156f244427989b51ed6ac"},
-        {"path": "docs/assets/sir-visibility-quint/evaluator-pipeline.svg", "gitBlob": "68851818e95348ec8d050dcc8bed0b62b120c64f"},
-        {"path": "docs/assets/sir-visibility-quint/footprint-exposure.svg", "gitBlob": "4082b829d657c8d2c44f2288968ac8802b749a8f"},
-        {"path": "docs/assets/sir-visibility-quint/supercover-walk.svg", "gitBlob": "3b7a330f3d7a4c0b0beed3d94c1bf53bb54c2d3f"},
-        {"path": "docs/assets/sir-visibility-quint/two-traces.svg", "gitBlob": "9ea28966fdd1cfed1698f2dc1a2c504ee5c95a7e"},
-        {"path": "docs/assets/sir-visibility-quint/work-bound.svg", "gitBlob": "31561f63c63cef91952283d31e51aeed7733a441"}
+        {"path": "scripts/qualify-quint-sir-visibility.sh", "gitBlob": "c8a47282a276058a970fa5edb714225eed11c0e5"},
+        {"path": "docs/assets/sir-visibility-quint/blocker-semantics.svg", "gitBlob": "d7cd022c1cf8b790cdac0bf450cb15547a1bfcc0"},
+        {"path": "docs/assets/sir-visibility-quint/canonical-symmetry.svg", "gitBlob": "b285fa3e4f35c37fc4306df61544c8395db4604b"},
+        {"path": "docs/assets/sir-visibility-quint/evaluator-pipeline.svg", "gitBlob": "eff5c18f0358b4bc28a6e73c3f8dd8d6d88dcfc3"},
+        {"path": "docs/assets/sir-visibility-quint/footprint-exposure.svg", "gitBlob": "da6cf75172c8df04f5c5a4357188794bc0008888"},
+        {"path": "docs/assets/sir-visibility-quint/supercover-walk.svg", "gitBlob": "3c14b613748fdeb425750fb6ddb7cd5def3092a8"},
+        {"path": "docs/assets/sir-visibility-quint/two-traces.svg", "gitBlob": "807e1e920fbd89ea5236deeee887397f3e221567"},
+        {"path": "docs/assets/sir-visibility-quint/work-bound.svg", "gitBlob": "42679f5d8b98539d1989990461083561c31d46cd"}
       ]
     }
   ],
