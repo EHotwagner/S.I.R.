@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-28-sir-handbook-m7-publication-handoff.md",
-  "reportSha256": "572b3dc2f0c44d683c1275ff8a50cc9efa9a694b4c35ac165f1e31210668c174",
+  "reportSha256": "cd23e69345c679255b1e47a4049a20ac76c06b330efc3971390c6c5d890b5371",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [

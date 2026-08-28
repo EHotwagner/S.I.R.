@@ -5,7 +5,7 @@ workspace: S.I.R-roadmap-m7
 cycle: roadmap-sir-combat-quint-handbook-m7-publication-handoff
 lane: sdd
 toolVersion: 1.4.0
-commit: 5db36f983a49a18ffdfb2819ab22f26a2ff8adc9
+commit: a1e33d8066e1408a22f8a52d2090ee9df02bc4fa
 ---
 
 # Development feedback — combat Quint handbook M7 publication handoff
@@ -19,7 +19,7 @@ commit: 5db36f983a49a18ffdfb2819ab22f26a2ff8adc9
 
 This cycle covers issue #380 on isolated branch `item/380-handbook-m7` from exact base
 `318f07a7ae30e98d86a5d5780126cab1e105b7f2` through committed repair/evidence boundary
-`5db36f983a49a18ffdfb2819ab22f26a2ff8adc9`. Four immutable checkpoints at
+`a1e33d8066e1408a22f8a52d2090ee9df02bc4fa`. Four immutable checkpoints at
 `feedback/checkpoints/roadmap-sir-combat-quint-handbook-m7-publication-handoff.jsonl` record route onboarding,
 SDD authoring, touch-set repair, and exact-source review convergence. The report covers the maintained
 handbook, adjacent owner trigger, exact identity record, independent subject approvals, strict FsDocs,
@@ -47,6 +47,8 @@ batches passed at p95/p99 61.0/66.5 ms and 63.0/64.6 ms. The M7 validity wrapper
 Node v26.5.0, rejects concurrent browser/render work or sustained CPU load, and exercises five
 red/restored predicate/runtime/process controls; it
 does not change the M6V workload, intent, or 100/200 ms budgets.
+The aggregate qualifier repeats the same two-batch gate into a disposable directory so later verification
+does not overwrite the committed acceptance receipt or make evidence identity depend on scheduler timing.
 
 ## §3 What did not
 
