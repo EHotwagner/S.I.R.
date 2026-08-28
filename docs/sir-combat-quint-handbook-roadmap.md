@@ -383,6 +383,9 @@ Completion evidence:
 - Focused receipts, screenshots, and qualification live under `work/377-handbook-m6v/` and
   `readiness/377-handbook-m6v/`; feedback cycle:
   `roadmap-sir-combat-quint-handbook-m6v-visual-explanations`; delivery issue: #377.
+- Capture provenance resolves available revisions to their exact commit trees and permits a
+  squash/shallow-history fallback only when the capture object is absent and the candidate-input
+  and render-baseline digests still match exactly.
 - Delivery boundary: this checked entry is the merge-candidate ledger update. Independent exact-head
   implementation and feedback acceptance, green relevant hosted CI, merge, exact-main validation,
   Pages proof, issue closure, and project status Done remain required before it becomes landed
