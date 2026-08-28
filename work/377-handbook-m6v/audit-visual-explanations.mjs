@@ -138,6 +138,7 @@ function validate({ manifest = baseManifest, overrides = new Map(), checkVisualQ
   const smoke = JSON.parse(content("readiness/377-handbook-m6v/performance-smoke.json"));
   const performanceEvidence = JSON.parse(content("readiness/377-handbook-m6v/performance-evidence.json"));
   const renderReceipt = JSON.parse(content("readiness/377-handbook-m6v/rendered/inspection.json"));
+  const renderBaseline = JSON.parse(content("work/377-handbook-m6v/render-baseline.json"));
   const visualQualification = JSON.parse(content("readiness/377-handbook-m6v/visual-qualification.json"));
   const browserPreflight = JSON.parse(content("readiness/377-handbook-m6v/browser-preflight.json"));
   const timingMutation = JSON.parse(content("readiness/377-handbook-m6v/timing-overflow-mutation.json"));
@@ -174,6 +175,16 @@ function validate({ manifest = baseManifest, overrides = new Map(), checkVisualQ
   const expectedDiagramIds = diagrams.map(diagram => diagram.id);
   const observationModes = renderReceipt.observations?.map(item => item.mode) ?? [];
   const normalFingerprints = new Map((renderReceipt.observations?.[0]?.diagrams ?? []).map(diagram => [diagram.id, diagram.semanticFingerprint]));
+  const canonicalRenderContract = {
+    schema: "sir.handbook.render-baseline/v1",
+    workloadId: renderReceipt.workloadId,
+    workloadDefinitionDigest: renderReceipt.workloadDefinitionDigest,
+    observations: (renderReceipt.observations ?? []).map(observation => ({
+      mode: observation.mode,
+      diagrams: observation.diagrams.map(({ id, width, height, semanticFingerprint, renderedFingerprint }) => ({ id, width, height, semanticFingerprint, renderedFingerprint }))
+    }))
+  };
+  if (JSON.stringify(renderBaseline) !== JSON.stringify(canonicalRenderContract)) fail("render-baseline-fingerprint-mismatch", "committed Chromium baseline differs from immutable candidate receipt");
   const renderedObservationMatches = renderReceipt.observations?.length === manifest.workload.modes.length
     && renderReceipt.observations.every(observation => JSON.stringify(observation.diagrams?.map(diagram => diagram.id)) === JSON.stringify(expectedDiagramIds)
       && observation.diagrams.length === 6
@@ -519,7 +530,7 @@ function selfTest() {
     ["production-glyph-drift", "production-render-contract-mismatch", () => { const p = "src/SIR.Client.Web/App.fs"; const changed = read(p).replace("svg.strokeWidth 1.8", "svg.strokeWidth 1.7"); const m = clone(baseManifest); m.sources.find(item => item.path === p).sha256 = sha256(changed); return { manifest: m, overrides: new Map([[p, changed]]) }; }],
     ["accessibility-loss", "handbook-embed-binding-missing", () => { const p = handbookPath; return { overrides: new Map([[p, read(p).replace(/<figcaption>[^<]+<a href="assets\/sir-combat-quint\/state-action\.svg#effects-off">effects-off view<\/a><\/figcaption>/, "<figcaption></figcaption>")]]) }; }],
     ["fallback-loss", "static-fallback-missing", () => { const p = baseManifest.diagrams[1].asset; return { overrides: new Map([[p, read(p).replace('data-semantic-edge="pre-state-to-action" data-directed-edge="true" d="M219 108 H270" fill="none" stroke="#53b7ff"', 'data-semantic-edge="pre-state-to-action" data-directed-edge="true" d="M219 108 H270" fill="none"')]]) }; }],
-    ["visual-fingerprint-drift", "asset-fingerprint-mismatch", () => { const p = baseManifest.diagrams[4].asset; return { overrides: new Map([[p, read(p).replace("damage 18", "damage 17")]]) }; }],
+    ["visual-fingerprint-drift", "render-baseline-fingerprint-mismatch", () => { const p = "work/377-handbook-m6v/render-baseline.json"; const changed = read(p).replace(/("renderedFingerprint": ")([0-9a-f])/, (_, prefix, digit) => `${prefix}${digit === "0" ? "1" : "0"}`); return { overrides: new Map([[p, changed]]) }; }],
     ["structural-overflow", "element-budget-exceeded", () => { const p = baseManifest.diagrams[5].asset; const extra = Array.from({length: 31}, (_, i) => `<circle cx="${i}" cy="1" r="1"/>`).join(""); return { overrides: new Map([[p, read(p).replace("</svg>", `${extra}</svg>`) ]]) }; }]
   ];
   for (const [name, detector, mutate] of cases) {
