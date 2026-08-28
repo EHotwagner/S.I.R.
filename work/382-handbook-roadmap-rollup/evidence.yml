@@ -1,0 +1,686 @@
+schemaVersion: 1
+workId: 382-handbook-roadmap-rollup
+stage: evidence
+status: evidenceReady
+sourceSpec: work/382-handbook-roadmap-rollup/spec.md
+sourceClarifications: work/382-handbook-roadmap-rollup/clarifications.md
+sourceChecklist: work/382-handbook-roadmap-rollup/checklist.md
+sourcePlan: work/382-handbook-roadmap-rollup/plan.md
+sourceTasks: work/382-handbook-roadmap-rollup/tasks.yml
+sourceAnalysis: readiness/382-handbook-roadmap-rollup/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/382-handbook-roadmap-rollup/analysis.json
+    digest: c80582c18ba6f74bb14359dbe6d768dbfb53c51a69b15c1d97e107f68a6ac4bc
+    schemaVersion: 1
+  - label: checklist
+    path: work/382-handbook-roadmap-rollup/checklist.md
+    digest: ad0ffdd244f3e881c0c16da6bdff54084c07931c0af471204bc48f02a810a86c
+    schemaVersion: 1
+  - label: clarifications
+    path: work/382-handbook-roadmap-rollup/clarifications.md
+    digest: 7de53340b13604d5c8fec01805c18e516f8ee67dcc6b1dc8c5de6fbc8a84c3a0
+    schemaVersion: 1
+  - label: plan
+    path: work/382-handbook-roadmap-rollup/plan.md
+    digest: 21df815d19025f3219c023bd6cf94d72be1b8e32dc0c5c4c75979ec302a26c01
+    schemaVersion: 1
+  - label: spec
+    path: work/382-handbook-roadmap-rollup/spec.md
+    digest: 43bce9d48150ca86e4af21fb6f58eab2a2aa248521f82507c1d4a23904f906a3
+    schemaVersion: 1
+  - label: tasks
+    path: work/382-handbook-roadmap-rollup/tasks.yml
+    digest: 9e8d968985c64d6d55597cea2d98b8433bf50ae47a3f8c81de5c4664428045eb
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV002]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV005]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV006]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV007]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV013]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV014]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV015]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV016]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-003]
+    obligationRefs: [EV017]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002, PD-005]
+    obligationRefs: [EV018]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003, PD-004, PD-006, PD-008]
+    obligationRefs: [EV019]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV020]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV021]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV022]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV023]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002, PD-005]
+    obligationRefs: [EV024]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
+      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Observed owner qualification covers repository-derived roll-up, and strict docs., feedback bindings, mutations]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

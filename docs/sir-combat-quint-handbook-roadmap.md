@@ -19,6 +19,9 @@ Milestone wording is preserved below; completion evidence is appended to the mil
 The finished publication target is `docs/sir-combat-quint-handbook.md`. It is intentionally not created
 until M1.
 
+The completed cross-cycle evidence and individual checkpoint dispositions are published in the
+[terminal roadmap report](2026-08-28-sir-combat-quint-handbook-roadmap-final-report.html).
+
 ## Roadmap
 
 The work proceeds from authority inventory to a runnable learning spine, then broadens into complete
@@ -444,6 +447,11 @@ Completion evidence:
   and feedback acceptance, green relevant hosted CI, merge, exact-main CI, exact-SHA Pages/live-content
   proof, issue closure, and Project 6 Done remain required before it becomes landed completion history.
   The parent roadmap host retains the separate final cross-cycle roll-up.
+
+Terminal roll-up: the parent-owned report is maintained at
+[Combat in Quint handbook roadmap final report](2026-08-28-sir-combat-quint-handbook-roadmap-final-report.html).
+It validates every completed cycle and dispositions every checkpoint without creating a new milestone
+or self-referential feedback cycle.
 
 ## M0 source and authority inventory
 
