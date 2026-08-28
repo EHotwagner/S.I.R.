@@ -10,6 +10,12 @@ const gitBlob = path => execFileSync("git", ["hash-object", path], { encoding: "
 const readGitBlob = blob => execFileSync("git", ["cat-file", "blob", blob], { encoding: "utf8" });
 const sha256 = value => crypto.createHash("sha256").update(value).digest("hex");
 const blobForText = value => crypto.createHash("sha1").update(`blob ${Buffer.byteLength(value)}\0`).update(value).digest("hex");
+const withoutNativeTooltips = value => value
+  .replace(/\sdata-tooltip="[^"]+"/g, "")
+  .replace(/<title>(?:.|\n)*?<\/title>/g, "")
+  .replaceAll("></path>", "/>")
+  .replaceAll("></polyline>", "/>")
+  .replaceAll("></circle>", "/>");
 const fail = message => { throw new Error(`handbook-m7 audit: ${message}`); };
 const need = (condition, message) => { if (!condition) fail(message); };
 
@@ -80,21 +86,54 @@ function verify(overrides = new Map(), options = {}) {
   need(extension.qualification?.boundedOrderedCellPairs === 625, "visibility bounded property sweep drift");
   need(extension.qualification?.sampledInvariants === 2 && extension.qualification?.witnesses === 3, "visibility temporal evidence drift");
   need(extension.qualification?.observedRedMutations === 7, "visibility mutation evidence drift");
+  need(extension.qualification?.tooltipHotspots === 69, "visibility tooltip evidence drift");
+  need(extension.qualification?.interactiveSvgObjects === 7, "visibility interactive embed evidence drift");
   need(extension.qualification?.apalache.startsWith("optional"), "visibility extension overclaims Apalache verification");
-  need(extension.sourceBlobs?.length === 9, "visibility extension source cardinality drift");
+  need(extension.qualification?.combatTooltipCommand === "./scripts/qualify-sir-combat-quint-tooltips.sh", "combat tooltip qualification command drift");
+  need(extension.qualification?.combatTooltipHotspots === 56, "combat tooltip evidence drift");
+  need(extension.qualification?.interactiveCombatSvgObjects === 6, "combat interactive embed evidence drift");
+  need(extension.qualification?.canonicalVisualSourcesPreserved === true, "combat tooltip extension does not preserve reviewed visual sources");
+  need(extension.qualification?.inAppProjection === "safe image block", "interactive SVG in-app projection drift");
+  need(extension.sourceBlobs?.length === 17, "interactive extension source cardinality drift");
   for (const source of extension.sourceBlobs) need(source.gitBlob === gitBlob(source.path), `visibility extension source drift: ${source.path}`);
-  const visibilityAssets = extension.sourceBlobs.filter(source => source.path.endsWith(".svg"));
+  const visibilityAssets = extension.sourceBlobs.filter(source => source.path.includes("/sir-visibility-quint/") && source.path.endsWith(".svg"));
   need(visibilityAssets.length === 7, "visibility extension must bind seven SVG diagrams");
+  let tooltipHotspots = 0;
   for (const source of visibilityAssets) {
     const svg = text(source.path);
     need(/role="img"/.test(svg) && /aria-labelledby="[^"]+"/.test(svg), `visibility SVG accessibility binding missing: ${source.path}`);
     need(/<title id="[^"]+">/.test(svg) && /<desc id="[^"]+">/.test(svg), `visibility SVG title or description missing: ${source.path}`);
     need(/prefers-reduced-motion:reduce/.test(svg) && /@media print/.test(svg), `visibility SVG static fallback missing: ${source.path}`);
     need(/id="effects-off"/.test(svg) && /@keyframes/.test(svg) && /<filter id=/.test(svg), `visibility SVG effect contract missing: ${source.path}`);
+    const tooltipCount = (svg.match(/\bdata-tooltip=/g) ?? []).length;
+    const titleCount = (svg.match(/<title(?:\s|>)/g) ?? []).length;
+    need(tooltipCount >= 8, `visibility SVG tooltip density regressed: ${source.path}`);
+    need(titleCount >= tooltipCount + 1, `visibility SVG tooltip titles incomplete: ${source.path}`);
+    tooltipHotspots += tooltipCount;
     const id = source.path.split("/").at(-1).replace(".svg", "");
     need(handbook.includes(`data-diagram-embed="${id}"`), `visibility SVG handbook embed missing: ${id}`);
+    need(handbook.includes(`<object type="image/svg+xml" data="${source.path.replace("docs/", "")}"`), `visibility SVG interactive object missing: ${id}`);
+    need(!handbook.includes(`<img src="${source.path.replace("docs/", "")}"`), `visibility SVG degraded to non-interactive image: ${id}`);
     need(handbook.includes(`id="diagram-transcript-${id}"`), `visibility SVG transcript missing: ${id}`);
   }
+  need(tooltipHotspots === extension.qualification.tooltipHotspots, "visibility tooltip count does not match publication evidence");
+  const combatAssets = extension.sourceBlobs.filter(source => source.path.includes("/sir-combat-quint-interactive/") && source.path.endsWith(".svg"));
+  need(combatAssets.length === 6, "interactive extension must bind six combat SVG editions");
+  let combatTooltipHotspots = 0;
+  for (const source of combatAssets) {
+    const svg = text(source.path);
+    const id = source.path.split("/").at(-1).replace(".svg", "");
+    const canonicalPath = `docs/assets/sir-combat-quint/${id}.svg`;
+    const tooltipCount = (svg.match(/\bdata-tooltip=/g) ?? []).length;
+    const titleCount = (svg.match(/<title(?:\s|>)/g) ?? []).length;
+    need(tooltipCount >= 8, `combat SVG tooltip density regressed: ${source.path}`);
+    need(titleCount >= tooltipCount + 1, `combat SVG tooltip titles incomplete: ${source.path}`);
+    need(withoutNativeTooltips(svg) === text(canonicalPath), `combat SVG changes reviewed visual bytes: ${id}`);
+    need(handbook.includes(`<object type="image/svg+xml" data="${source.path.replace("docs/", "")}"`), `combat SVG interactive object missing: ${id}`);
+    need(handbook.includes(`id="diagram-transcript-${id}"`), `combat SVG transcript missing: ${id}`);
+    combatTooltipHotspots += tooltipCount;
+  }
+  need(combatTooltipHotspots === extension.qualification.combatTooltipHotspots, "combat tooltip count does not match publication evidence");
 
   const expectedTools = new Map([
     [".NET SDK", json("global.json").sdk.version],
@@ -225,6 +264,9 @@ if (process.argv.includes("--self-test")) {
     ["extension-overclaims-inherited-reviews", new Map([[paths.record, JSON.stringify({...record, contentExtensions: record.contentExtensions.map(extension => ({...extension, reviewPosture: "covered by inherited human reviews"}))})]])],
     ["extension-source-missing", new Map([[paths.record, JSON.stringify({...record, contentExtensions: record.contentExtensions.map(extension => ({...extension, sourceBlobs: extension.sourceBlobs.slice(1)}))})]])],
     ["visibility-static-fallback-missing", mutated("docs/assets/sir-visibility-quint/supercover-walk.svg", value => value.replace("prefers-reduced-motion:reduce", "motion-fallback-removed"))],
+    ["visibility-tooltip-density-regressed", mutated("docs/assets/sir-visibility-quint/canonical-symmetry.svg", value => value.replaceAll("data-tooltip=", "data-detail="))],
+    ["visibility-interactive-embed-missing", mutated(paths.handbook, value => value.replace('<object type="image/svg+xml" data="assets/sir-visibility-quint/supercover-walk.svg"', '<img src="assets/sir-visibility-quint/supercover-walk.svg"'))],
+    ["combat-tooltip-density-regressed", mutated("docs/assets/sir-combat-quint-interactive/state-action.svg", value => value.replaceAll("data-tooltip=", "data-detail="))],
     ["unsafe-yaml-title-spacing", new Map([[paths.handbook, unsafeTitleHandbook], [paths.record, recordForHandbook(unsafeTitleHandbook)]])],
     ["broadened-successor-repair", new Map([[paths.handbook, broadenedHandbook], [paths.record, recordForHandbook(broadenedHandbook)]])]
   ];

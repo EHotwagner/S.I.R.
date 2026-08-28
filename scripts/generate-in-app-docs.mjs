@@ -69,6 +69,14 @@ function segmentsOf(text, sourcePath) {
   return segments.length ? segments : [{ kind: "text", text }];
 }
 
+function interactiveDiagramOf(line) {
+  const match = line.match(/^<figure class="combat-quint-diagram" data-diagram-embed="([a-z0-9-]+)"><object type="image\/svg\+xml" data="(assets\/(?:sir-visibility-quint|sir-combat-quint-interactive)\/([a-z0-9-]+)\.svg)" aria-label="([^"]+)" style="width:100%;aspect-ratio:\d+\/\d+;display:block"><a href="\2">[^<]+<\/a><\/object><figcaption>([\s\S]+)<\/figcaption><\/figure>$/);
+  if (!match || match[1] !== match[3]) return undefined;
+  const captionWithoutSafeLink = match[5].replace(/<a href="assets\/(?:sir-visibility-quint|sir-combat-quint-interactive)\/[a-z0-9-]+\.svg#effects-off">[^<]+<\/a>/g, "");
+  if (/<[^>]+>|javascript:|\son\w+\s*=/i.test(captionWithoutSafeLink)) return undefined;
+  return { kind: "image", text: match[4], imageSource: match[2] };
+}
+
 function blocksOf(body, sourcePath) {
   const blocks = [];
   let code = false;
@@ -99,6 +107,10 @@ function blocksOf(body, sourcePath) {
       flush();
       const [, alt, imagePath] = line.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
       blocks.push({ kind: "image", text: alt, imageSource: imagePath });
+    }
+    else if (interactiveDiagramOf(line)) {
+      flush();
+      blocks.push(interactiveDiagramOf(line));
     }
     else if (/^\s*\|/.test(line)) { buffer.push(line); }
     else if (line.trim() === "") { flush(buffer.some((row) => /^\s*\|/.test(row)) ? "table" : "paragraph"); }

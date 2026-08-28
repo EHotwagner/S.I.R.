@@ -22,6 +22,7 @@ grep -F 'let private lineCells origin target =' \
   "$repo_root/src/SIR.Simulation/SpatialQuery.fs" >/dev/null || fail "production sampled-line boundary drifted"
 
 diagram_ids=(blocker-semantics canonical-symmetry evaluator-pipeline footprint-exposure supercover-walk two-traces work-bound)
+tooltip_hotspots=0
 for id in "${diagram_ids[@]}"; do
   svg="$repo_root/docs/assets/sir-visibility-quint/$id.svg"
   test -f "$svg" || fail "missing visibility diagram: $id"
@@ -32,11 +33,26 @@ for id in "${diagram_ids[@]}"; do
   grep -F 'prefers-reduced-motion:reduce' "$svg" >/dev/null || fail "diagram lacks reduced-motion fallback: $id"
   grep -F '@media print' "$svg" >/dev/null || fail "diagram lacks print fallback: $id"
   grep -F 'id="effects-off"' "$svg" >/dev/null || fail "diagram lacks effects-off target: $id"
+  tooltip_count="$(awk '{ count += gsub(/data-tooltip=/, "") } END { print count + 0 }' "$svg")"
+  title_count="$(awk '{ count += gsub(/<title([ >])/, "") } END { print count + 0 }' "$svg")"
+  (( tooltip_count >= 8 )) || fail "diagram lacks dense tooltip coverage: $id ($tooltip_count; expected at least 8)"
+  (( title_count >= tooltip_count + 1 )) \
+    || fail "diagram tooltip titles are incomplete: $id ($title_count titles for $tooltip_count hotspots)"
+  tooltip_hotspots=$((tooltip_hotspots + tooltip_count))
   grep -F "data-diagram-embed=\"$id\"" "$repo_root/docs/sir-combat-quint-handbook.md" >/dev/null \
     || fail "handbook embed missing: $id"
+  grep -F "<object type=\"image/svg+xml\" data=\"assets/sir-visibility-quint/$id.svg\"" \
+    "$repo_root/docs/sir-combat-quint-handbook.md" >/dev/null \
+    || fail "handbook interactive SVG object missing: $id"
+  if grep -F "<img src=\"assets/sir-visibility-quint/$id.svg\"" \
+      "$repo_root/docs/sir-combat-quint-handbook.md" >/dev/null; then
+    fail "handbook uses a non-interactive image embed: $id"
+  fi
   grep -F "id=\"diagram-transcript-$id\"" "$repo_root/docs/sir-combat-quint-handbook.md" >/dev/null \
     || fail "handbook transcript missing: $id"
 done
+(( tooltip_hotspots >= 60 )) \
+  || fail "visibility diagrams lack dense aggregate tooltip coverage: $tooltip_hotspots (expected at least 60)"
 
 extract() {
   local output="$1"
@@ -116,4 +132,4 @@ if [[ "${1:-}" == "--with-verify" ]]; then
   verification="apalache-bounded"
 fi
 
-echo "quint-sir-visibility: PASS (Quint 0.32.0; 13 tests including 625 bounded cell pairs; 2 sampled invariants; 3 witnesses; 7 observed-red mutations; 7 accessible animated SVGs; verification=$verification)"
+echo "quint-sir-visibility: PASS (Quint 0.32.0; 13 tests including 625 bounded cell pairs; 2 sampled invariants; 3 witnesses; 7 observed-red mutations; 7 accessible animated SVGs with $tooltip_hotspots detailed tooltip hotspots; verification=$verification)"
