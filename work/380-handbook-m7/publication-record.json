@@ -12,13 +12,13 @@
     "triggerLocation": "docs/rules/sir-combat-handbook-maintenance.md"
   },
   "sourceBlobs": [
-    {"path": "docs/sir-combat-quint-handbook.md", "gitBlob": "ea548fb4c4179c6b1a5d3072afb1d44699016c08", "owns": "pedagogy, navigation, and claim boundaries"},
+    {"path": "docs/sir-combat-quint-handbook.md", "gitBlob": "64718255ef1c18168627a27323176c8fdfe7fbb1", "owns": "pedagogy, navigation, and claim boundaries"},
     {"path": "docs/rules/sir-combat.md", "gitBlob": "2347769cf18c278b27e4af4322580cd50719fe3f", "owns": "bounded literate Quint model"},
     {"path": "docs/combat-resolution.md", "gitBlob": "a5a0779a089705f082c5f8e7420e813adc9a6d89", "owns": "physical combat design"},
     {"path": "src/SIR.Simulation/CombatRules.fs", "gitBlob": "8908afcc7c62413696c701c6009f24ebdbb378e1", "owns": "production rule registry and entry points"},
     {"path": "docs/sir-combat-quint-vocabulary.json", "gitBlob": "13ee988255acdb22dbd842430de80f4041f09a1e", "owns": "controlled terms and anchors"},
     {"path": "docs/sir-combat-quint-diagrams.json", "gitBlob": "7a84db6af105d3653243828e4828beea451e69ea", "owns": "source-bound diagram projection"},
-    {"path": "docs/rules/sir-combat-handbook-maintenance.md", "gitBlob": "151395f4e8286d3099f16a050ec41f9ac26153f6", "owns": "model-adjacent maintenance routing"},
+    {"path": "docs/rules/sir-combat-handbook-maintenance.md", "gitBlob": "f50a0034b6b87000d4596fe7280db91476abf11b", "owns": "model-adjacent maintenance routing"},
     {"path": "scripts/build-docs.sh", "gitBlob": "1c154fa80ba2e89d8c53f14e8bb1506db3082607", "owns": "successor publication selection"}
   ],
   "successorRepairs": [
@@ -30,6 +30,28 @@
       "interpretedTitle": "Combat in Quint: From Design Decisions to Executable Models",
       "reviewedNormalizedSha256": "bea5fa649e87a718c774878b158f453ec0c6d1e115c458cdb93b6776f945b394",
       "bodySha256": "319aa7d23fefcb0dce22be32010f83a1a4758ebf2f640ca983a8c9e034bfc5dc"
+    }
+  ],
+  "contentExtensions": [
+    {
+      "id": "bounded-sir-grid-visibility",
+      "scope": "chapter 31A, contextual line-of-sight boundary corrections, separate literate SirVisibility model, qualification, and seven abstract grid SVGs",
+      "baseHandbookBlob": "ea548fb4c4179c6b1a5d3072afb1d44699016c08",
+      "publishedHandbookBlob": "64718255ef1c18168627a27323176c8fdfe7fbb1",
+      "handbookSha256": "a9ad1e55f2a4c2778ee75595de48b24e4e5213216752101809170a5918058850",
+      "reviewPosture": "automated qualification only; the four inherited M7 human reviews and six-diagram render performance evidence do not cover this extension",
+      "qualification": {"command": "./scripts/qualify-quint-sir-visibility.sh", "quint": "0.32.0", "tests": 13, "boundedOrderedCellPairs": 625, "sampledInvariants": 2, "witnesses": 3, "observedRedMutations": 7, "apalache": "optional; requires Java 17 or newer"},
+      "sourceBlobs": [
+        {"path": "docs/rules/sir-visibility.md", "gitBlob": "89becb27fbc285b4b6f8a1e378b931442e634fe7"},
+        {"path": "scripts/qualify-quint-sir-visibility.sh", "gitBlob": "dfd60ee022d9ef9f284f9bd44a5b31c55c75f194"},
+        {"path": "docs/assets/sir-visibility-quint/blocker-semantics.svg", "gitBlob": "fcc1d98e9db99cef5bb712387afa8840785ead5b"},
+        {"path": "docs/assets/sir-visibility-quint/canonical-symmetry.svg", "gitBlob": "0535748cd619f23afe3156f244427989b51ed6ac"},
+        {"path": "docs/assets/sir-visibility-quint/evaluator-pipeline.svg", "gitBlob": "68851818e95348ec8d050dcc8bed0b62b120c64f"},
+        {"path": "docs/assets/sir-visibility-quint/footprint-exposure.svg", "gitBlob": "4082b829d657c8d2c44f2288968ac8802b749a8f"},
+        {"path": "docs/assets/sir-visibility-quint/supercover-walk.svg", "gitBlob": "3b7a330f3d7a4c0b0beed3d94c1bf53bb54c2d3f"},
+        {"path": "docs/assets/sir-visibility-quint/two-traces.svg", "gitBlob": "9ea28966fdd1cfed1698f2dc1a2c504ee5c95a7e"},
+        {"path": "docs/assets/sir-visibility-quint/work-bound.svg", "gitBlob": "31561f63c63cef91952283d31e51aeed7733a441"}
+      ]
     }
   ],
   "toolchain": [
@@ -82,6 +104,7 @@
     "docs/rules/sir-combat.md", "docs/rules/sir-combat-handbook-maintenance.md", "docs/combat-resolution.md", "src/SIR.Simulation/CombatRules.fs",
     "docs/sir-combat-quint-handbook.md", "docs/sir-combat-quint-vocabulary.json",
     "docs/sir-combat-quint-diagrams.json", "docs/assets/sir-combat-quint/",
+    "docs/rules/sir-visibility.md", "docs/assets/sir-visibility-quint/", "scripts/qualify-quint-sir-visibility.sh",
     "scripts/qualify-quint-q4-sir-combat.sh", "scripts/build-docs.sh", ".config/dotnet-tools.json",
     "global.json", "package.json", "package-lock.json"
   ],

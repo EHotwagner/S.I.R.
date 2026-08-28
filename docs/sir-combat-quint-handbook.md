@@ -53,6 +53,7 @@ This maintained first edition combines stable navigation, a mechanically enforce
   - [29. Suppression eligibility and five-point recovery](#chapter-29-suppression-eligibility-and-five-point-recovery)
   - [30. Faction-neutral collateral consequences](#chapter-30-faction-neutral-collateral-consequences)
   - [31. Registered external line-of-sight behavior](#chapter-31-registered-external-line-of-sight-behavior)
+  - [31A. Grid visibility: from supercover cells to footprint exposure](#chapter-31a-grid-visibility)
 - [Part VI: Formal reasoning in practice](#part-vi)
   - [32. Choosing an example, witness, or invariant](#chapter-32-choosing-an-example-witness-or-invariant)
   - [33. Reading an execution trace](#chapter-33-reading-an-execution-trace)
@@ -164,10 +165,11 @@ completed combat consequences follow? It includes registry identity, range prepa
 trace, [armor retention](#stat-armor-retention), whole-point [damage](#stat-damage), [health](#stat-health), wounds, [incapacitation](#concept-incapacitation), [suppression](#stat-suppression), cover impact,
 cover destruction, collateral consequences, and an atomic [aggregate attack resolution](#concept-aggregate-attack-resolution).
 
-It does not model aiming UI, projectile flight, geometry traversal, animation, audio, networking, or
-entity selection. In particular, the registered [line-of-sight implementation](#concept-registered-line-of-sight-implementation)
-remains external. The bounded model accepts valid integer [samples](#unit-samples) and calculates a
-[fixed-point ratio](#unit-fixed-point-ratio); it does not copy the supercover algorithm.
+The core combat model does not model aiming UI, projectile flight, geometry traversal, animation, audio,
+networking, or entity selection. Its registered [line-of-sight implementation](#concept-registered-line-of-sight-implementation)
+remains an external dependency. Chapter 31A supplies a separate bounded Quint translation of that grid visibility
+mechanism; the core model still accepts valid integer [samples](#unit-samples) and calculates a
+[fixed-point ratio](#unit-fixed-point-ratio) without acquiring a second combat authority.
 
 The model has three useful scales:
 
@@ -435,8 +437,9 @@ integer [samples](#unit-samples), not [cells](#unit-cells) or pixels. The result
 
 The bounded adapter checks `total > 0` and `0 <= visible <= total`, then converts `visible / total` to
 [scale 10,000](#unit-scale-10-000). A 0/10 trace yields 0; 5/10 yields 5000; 10/10 yields 10000. Geometry decides which
-[samples](#unit-samples) are visible. Quint checks the ratio contract and downstream consequences. This separation
-prevents a second supercover authority from appearing in the handbook.
+[samples](#unit-samples) are visible. The core `SirCombat` [module](#def-module) checks the ratio contract and downstream
+consequences. The separate `SirVisibility` translation in chapter 31A makes the registered grid mechanism executable
+while retaining `SpatialQuery` and the pinned package as production authorities.
 
 <a id="chapter-16-atomic-aggregate-consequences-versus-focused-pur"></a>
 ### 16. Atomic aggregate consequences versus focused pure helpers
@@ -810,9 +813,123 @@ To review the boundary, separate three claims:
 
 The representative 10/10 and missed 0/10 paths exercise the two ratio extremes. The
 [validTraceObservation](#property-valid-trace-observation) [property](#def-property) bounds emitted trace ratios for
-completed consequences. None of these claims proves how supercover chooses [visible samples](#stat-visible-samples); that
-behavior belongs to the registered external implementation and its own evidence. The handbook's model
-starts after geometry has produced the counts.
+completed consequences. These core-model claims do not prove how supercover chooses [visible samples](#stat-visible-samples).
+The separate chapter 31A model exposes that mechanism for bounded review; production equivalence still belongs to
+the registered external implementation and runtime [correspondence](#def-correspondence) evidence. The `SirCombat` pipeline itself starts
+after geometry has produced the counts.
+
+<a id="chapter-31a-grid-visibility"></a>
+### 31A. Grid visibility: from supercover cells to footprint exposure
+
+S.I.R. asks a discrete question: for every origin/target cell pair formed by two footprints, does the pinned
+grid line remain transparent? The literate authority is [`docs/rules/sir-visibility.md`](rules/sir-visibility.html).
+Its `SirVisibility` [module](#def-module) is a pure, bounded translation of `SpatialQuery.observedTrace` and
+`FS.GG.Game.Core.Los.lineOfSightBy Supercover`. The diagrams follow the progressive, inspect-the-algorithm spirit
+of [Red Blob Games' visibility article](https://www.redblobgames.com/articles/visibility/), but use S.I.R.'s square
+grid, cell, edge, footprint, and glyph vocabulary rather than continuous polygon geometry.
+
+#### First: walk every crossed cell
+
+The package canonicalizes the endpoints, then compares the next half-cell boundary on each axis using integers.
+An exact corner tie steps in the x direction first. The resulting [list](#def-list) contains `|dx| + |dy| + 1` [cells](#unit-cells) and is
+always four-connected.
+
+<figure class="combat-quint-diagram" data-diagram-embed="supercover-walk"><img src="assets/sir-visibility-quint/supercover-walk.svg" alt="Four numbered orthogonal grid cells connect a blue observer to a yellow target using the canonical x-first supercover"/><figcaption>The direct ray is explanatory; the numbered orthogonal walk is the executable blocker path. Animated marching and glow are optional emphasis. <a href="assets/sir-visibility-quint/supercover-walk.svg#effects-off">effects-off view</a></figcaption></figure>
+<details id="diagram-transcript-supercover-walk"><summary>Supercover walk diagram transcript</summary><p>The observer is in cell zero zero and the target is in cell two one. The canonical supercover visits zero zero, one zero, one one, and two one. A straight geometric ray touches a grid corner, but the x-first tie rule crosses two orthogonal [cells](#unit-cells) instead of jumping diagonally. Therefore an opaque cell on either side of the corner can block visibility.</p></details>
+
+```quint authority=sir-visibility
+val comparison = (1 + 2 * ix) * ny - (1 + 2 * iy) * nx
+val stepX = iy >= ny or (ix < nx and comparison <= 0)
+```
+
+Canonical ordering makes that tie-break independent of caller direction.
+
+<figure class="combat-quint-diagram" data-diagram-embed="canonical-symmetry"><img src="assets/sir-visibility-quint/canonical-symmetry.svg" alt="Opposite A-to-B and B-to-A requests pass through one canonical endpoint ordering and produce the same cell sequence"/><figcaption>Both caller directions become the same ordered question before traversal. <a href="assets/sir-visibility-quint/canonical-symmetry.svg#effects-off">effects-off view</a></figcaption></figure>
+<details id="diagram-transcript-canonical-symmetry"><summary>Canonical symmetry diagram transcript</summary><p>An A-to-B request and a B-to-A request enter from opposite sides. Both are converted to the structurally smaller cell followed by the larger cell. The same x-first supercover is then evaluated, so both directions consult the same intermediate terrain [cells](#unit-cells) and yield the same point-to-point visibility answer.</p></details>
+
+#### Second: preserve S.I.R.'s two trace meanings
+
+The implementation deliberately uses two related lists. Internal package terrain testing uses the four-connected
+supercover. Public crossed-cell reporting, declared work, and boundary testing use `lineCells`: max-axis integer
+interpolation with duplicates removed. Only an orthogonally adjacent sampled pair can name a canonical edge;
+a diagonal pair contributes no edge. Equating these lists would silently strengthen the production boundary rule.
+
+<figure class="combat-quint-diagram" data-diagram-embed="two-traces"><img src="assets/sir-visibility-quint/two-traces.svg" alt="Parallel lanes compare a four-cell supercover terrain trace with a three-cell sampled boundary trace"/><figcaption>Terrain and boundary permeability consume different grid projections of the same endpoints. <a href="assets/sir-visibility-quint/two-traces.svg#effects-off">effects-off view</a></figcaption></figure>
+<details id="diagram-transcript-two-traces"><summary>Two traces diagram transcript</summary><p>The upper lane walks four supercover [cells](#unit-cells) and stops on an opaque interior terrain cell. The lower lane reports three sampled [cells](#unit-cells). Its first consecutive pair is orthogonal and can name a blocking edge; its second pair is diagonal and therefore names no edge. The final answer requires both the supercover terrain predicate and sampled boundary predicate to pass.</p></details>
+
+Endpoints are exempt from terrain opacity because they define the visibility question. Intermediate opaque terrain
+and opaque sampled edges block it.
+
+<figure class="combat-quint-diagram" data-diagram-embed="blocker-semantics"><img src="assets/sir-visibility-quint/blocker-semantics.svg" alt="Three grid lanes show an opaque endpoint passing, an opaque interior cell blocking, and an opaque edge blocking"/><figcaption>Opacity matters only at the precise interior cell and sampled-edge positions named by the two predicates. <a href="assets/sir-visibility-quint/blocker-semantics.svg#effects-off">effects-off view</a></figcaption></figure>
+<details id="diagram-transcript-blocker-semantics"><summary>Blocker semantics diagram transcript</summary><p>In the first lane the observer endpoint is opaque, yet the path remains visible because endpoints are exempt. In the second lane an opaque intermediate terrain cell stops the ray. In the third lane an opaque canonical boundary between two orthogonally adjacent sampled [cells](#unit-cells) stops the ray.</p></details>
+
+#### Third: aggregate footprint exposure and refuse oversized work
+
+`tracePairs` forms the Cartesian product of [absolute](#qnt-absolute) origin and [target footprint](#concept-target-footprint) [cells](#unit-cells). Visibility is existential:
+one transparent pair exposes the target, while `visibleSamples` retains how many pairs passed.
+
+<figure class="combat-quint-diagram" data-diagram-embed="footprint-exposure"><img src="assets/sir-visibility-quint/footprint-exposure.svg" alt="Four paths connect two origin cells to two target cells; one blue path survives three red blockers, making the target visible"/><figcaption>One surviving pair is sufficient: visibility means `visibleSamples &gt; 0`, not that every footprint pair passes. <a href="assets/sir-visibility-quint/footprint-exposure.svg#effects-off">effects-off view</a></figcaption></figure>
+<details id="diagram-transcript-footprint-exposure"><summary>Footprint exposure diagram transcript</summary><p>Two origin [cells](#unit-cells) and two target [cells](#unit-cells) produce four pair [samples](#unit-samples). Three paths are blocked and one is transparent. The evaluator records one visible sample out of four and returns visible true because the aggregation rule is existential.</p></details>
+
+Before materializing traces, `evaluateVisibility` rejects an empty footprint, a non-positive bound, too many pairs,
+or declared sampled work above `maximumCrossedItems`. A truncated query evaluates no [visible samples](#stat-visible-samples). The model
+also reports `supercoverWork` as a diagnostic, but does not pretend that it is the public bound.
+
+<figure class="combat-quint-diagram" data-diagram-embed="work-bound"><img src="assets/sir-visibility-quint/work-bound.svg" alt="A four-pair matrix reaches a guard where declared work twelve exceeds maximum eight and returns a truncated result before tracing"/><figcaption>The declared sampled-line work controls admission; internal supercover work remains separately visible for review. <a href="assets/sir-visibility-quint/work-bound.svg#effects-off">effects-off view</a></figcaption></figure>
+<details id="diagram-transcript-work-bound"><summary>Work bound diagram transcript</summary><p>Four footprint pairs satisfy an eight-pair limit, but their declared sampled-line work totals twelve and exceeds the [maximum](#qnt-maximum) of eight. The [guard](#def-guard) returns a truncated, non-visible result with zero evaluated [visible samples](#stat-visible-samples). A separate diagnostic meter shows sixteen internal supercover [cells](#unit-cells); that larger number is not substituted for the public admission rule.</p></details>
+
+The complete pure pipeline is therefore small enough to inspect as one expression graph.
+
+<figure class="combat-quint-diagram" data-diagram-embed="evaluator-pipeline"><img src="assets/sir-visibility-quint/evaluator-pipeline.svg" alt="Visibility query flows through footprint pairs, work guard, two line predicates, visible count, and a result record"/><figcaption>The functional model introduces no production state; its simulation adapter stores results only to exercise invariants and reachable witnesses. <a href="assets/sir-visibility-quint/evaluator-pipeline.svg#effects-off">effects-off view</a></figcaption></figure>
+<details id="diagram-transcript-evaluator-pipeline"><summary>Evaluator pipeline diagram transcript</summary><p>A visibility query contains anchors, a footprint, disclosed opaque [cells](#unit-cells) and edges, and a work bound. It expands into source-target pairs and checks bounds. Each admitted pair combines canonical supercover terrain transparency with sampled-line boundary transparency. A fold counts successful pairs and builds a result containing visibility, visible and total sample counts, declared and supercover work, and truncation.</p></details>
+
+#### Visibility declaration map
+
+This local map keeps every declaration in the separate translation findable without pretending that it belongs to
+the 74-declaration `SirCombat` index.
+
+| Concern | Quint declarations |
+|---|---|
+| grid values | `Cell`, `Edge`, `CellPair`, `SupercoverState` |
+| query and answer | `VisibilityQuery`, `VisibilityResult`, `evaluateVisibility`, `resultIsConsistent` |
+| canonical traversal | `cellLeq`, `canonicalPair`, `canonicalEdge`, `initialSupercover`, `advanceSupercover`, `supercover` |
+| S.I.R. sampled projection | `sampledLine`, `declaredPairWork`, `declaredTraceWork` |
+| blockers | `cellTransparent`, `edgesTransparent`, `lineVisible` |
+| footprints and aggregation | `absoluteFootprint`, `tracePairs`, `visibleSampleCount` |
+| diagnostic work | `supercoverPairWork`, `supercoverTraceWork` |
+| structural checks | `fourConnected`, `endpointsPreserved`, `symmetricVisibility` |
+| temporal adapter | `EvaluationState`, `evaluated`, `init`, `evaluateScenario`, `step` |
+| invariants and witnesses | `storedResultMatchesPureEvaluation`, `truncatedResultIsNeverVisible`, `visibleEvaluationReached`, `blockedEvaluationReached`, `exhaustedEvaluationReached` |
+
+Run the executable boundary with:
+
+```bash
+./scripts/qualify-quint-sir-visibility.sh
+```
+
+Its named examples cover open and blocked lines, endpoint exemption, the corner gap, caller symmetry, the two-trace
+boundary distinction, one-pair footprint exposure, truncation, structural properties, and separate work accounting.
+The qualification deliberately climbs several distinct Quint validation levels:
+
+| Quint capability | Visibility use | Exact claim |
+|---|---|---|
+| `quint typecheck` | checks all three extracted modules before execution | declarations, effects, and inferred types are internally well-formed |
+| named `run` model tests | 12 focused semantic examples plus one finite [property](#def-property) sweep | the examples pass, and four structural properties hold for all 625 ordered pairs in the 5×5 grid from −2 through 2 |
+| `quint run` simulation | 256 seeded traces of the three-scenario state machine | both invariants held in this sample; visible, blocked, and exhausted witnesses were all reached |
+| observed-red mutations | inverts seven load-bearing choices one at a time | each named test can detect the defect it claims to [guard](#def-guard) against |
+| `quint verify` through Apalache | optionally explores the bounded scenario transition system | no [invariant](#def-invariant) violation exists up to the requested depth, rather than merely none appearing in sampled traces |
+
+The default command needs only Quint and reports the exact counts. To request the stronger bounded transition-system
+check, install Java 17 or newer and [run](#def-run):
+
+```bash
+./scripts/qualify-quint-sir-visibility.sh --with-verify
+```
+
+That final tier is intentionally opt-in because Apalache requires Java; the script fails instead of silently calling a
+skipped verification “green.” Even when it passes, this remains a bounded translation, not an exhaustive proof over
+every integer coordinate, production overflow, continuous visibility polygons, field of view, caching, or runtime
+equivalence.
 
 <a id="part-vi"></a>
 ## Part VI: Formal reasoning in practice
@@ -1039,9 +1156,9 @@ production entry point; `external-contract` when only an identity/interface boun
 | [COMBAT-COVER-DESTRUCTION-001](#rule-combat-cover-destruction-001) | [nextCoverImpact](#qnt-next-cover-impact), [destroyedCoverIsPermeable](#property-destroyed-cover-is-permeable) | `CombatRules.resolveCoverImpact`; `Destroyed`; `StopsProjectile` | focused exact/sample cover replay | exact |
 | [COMBAT-ATTACK-RESOLUTION-001](#rule-combat-attack-resolution-001) | [nextConsequences](#qnt-next-consequences), [resolveConsequences](#qnt-resolve-consequences), [Observation](#qnt-observation) | `CombatRules.resolveConsequences`; `QuintQ4ReplayFixtures.applyModelAction` | twenty normalized fields compared after every state | aggregate |
 
-**Missing [correspondence](#def-correspondence) register.** The supercover geometry behind [COMBAT-TRACE-002](#rule-combat-trace-002) is deliberately
-`missing`: Q4 accepts visible/[total samples](#stat-total-samples) and checks the pinned `lineOfSightBy` contract identity, but
-does not replay the geometry algorithm. No other sixteen-rule row is silently missing. A future missing
+**Missing [correspondence](#def-correspondence) register.** Runtime replay of the supercover geometry behind [COMBAT-TRACE-002](#rule-combat-trace-002) remains
+`missing`: Q4 accepts visible/[total samples](#stat-total-samples), while chapter 31A independently translates and tests
+the pinned grid algorithm, but neither route replays production geometry outputs against Quint. No other sixteen-rule row is silently missing. A future missing
 row must use the `missing` status, name the absent comparison, and avoid production claims.
 
 [Claim boundary](#def-claim-boundary): a green Quint [run](#def-run) establishes behavior of the extracted model. It does **not** by itself establish production [correspondence](#def-correspondence). The repository qualification separately runs exact and sampled traces through the real interpreter and independently mutates [action](#def-action) mapping, one ephemeral ITF expected observation, and an interpreter result to prove that boundary detects divergence. That evidence is scoped to its pinned source/tool identities and sampled traces; it is neither an exhaustive proof nor automatic equivalence for future changes.
@@ -1258,7 +1375,7 @@ The M6V performance line is a six-diagram load/decode measurement, not a composi
 <a id="chapter-48-known-limits-and-future-experiments"></a>
 ### 48. Known limits and future experiments
 
-The model is bounded and intentionally omits supercover internals, full catalogues, UI, networking, persistence, and unrelated simulation state. Deterministic sampled traces are not exhaustive proof; model success is not automatic production equivalence; the headless render route does not observe a live compositor. Future experiments may widen bounds, add independently justified [properties](#def-property), or adopt the canonical Typed SDD consumer profile, but each change must preserve those [claim boundaries](#def-claim-boundary) and earn new evidence.
+The core combat model remains bounded and omits supercover internals; the separate visibility model now translates them for finite review but omits runtime replay, continuous polygons, field of view, caching, and full-coordinate overflow [correspondence](#def-correspondence). Both omit full catalogues, UI, networking, persistence, and unrelated simulation state. Deterministic sampled traces are not exhaustive proof; model success is not automatic production equivalence; the headless render route does not observe a live compositor. Future experiments may widen bounds, add independently justified [properties](#def-property), or adopt the canonical Typed SDD consumer profile, but each change must preserve those [claim boundaries](#def-claim-boundary) and earn new evidence.
 
 #### Last verified publication
 

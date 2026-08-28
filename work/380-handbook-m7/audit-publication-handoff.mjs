@@ -7,6 +7,7 @@ const root = process.cwd();
 const read = path => fs.readFileSync(path, "utf8");
 const json = path => JSON.parse(read(path));
 const gitBlob = path => execFileSync("git", ["hash-object", path], { encoding: "utf8" }).trim();
+const readGitBlob = blob => execFileSync("git", ["cat-file", "blob", blob], { encoding: "utf8" });
 const sha256 = value => crypto.createHash("sha256").update(value).digest("hex");
 const blobForText = value => crypto.createHash("sha1").update(`blob ${Buffer.byteLength(value)}\0`).update(value).digest("hex");
 const fail = message => { throw new Error(`handbook-m7 audit: ${message}`); };
@@ -66,6 +67,33 @@ function verify(overrides = new Map(), options = {}) {
       ? blobForText(text(source.path))
       : gitBlob(source.path);
     need(source.gitBlob === actual, `stale source blob ${source.path}`);
+  }
+
+  need(record.contentExtensions?.length === 1, "exactly one post-M7 content extension required");
+  const extension = record.contentExtensions[0];
+  need(extension.id === "bounded-sir-grid-visibility", "visibility extension identity drift");
+  need(extension.publishedHandbookBlob === gitBlob(paths.handbook), "visibility extension handbook binding drift");
+  need(extension.handbookSha256 === sha256(handbook), "visibility extension handbook digest drift");
+  need(extension.reviewPosture.includes("do not cover this extension"), "visibility extension overclaims inherited review or render evidence");
+  need(extension.qualification?.command === "./scripts/qualify-quint-sir-visibility.sh", "visibility qualification command drift");
+  need(extension.qualification?.quint === "0.32.0" && extension.qualification?.tests === 13, "visibility Quint test evidence drift");
+  need(extension.qualification?.boundedOrderedCellPairs === 625, "visibility bounded property sweep drift");
+  need(extension.qualification?.sampledInvariants === 2 && extension.qualification?.witnesses === 3, "visibility temporal evidence drift");
+  need(extension.qualification?.observedRedMutations === 7, "visibility mutation evidence drift");
+  need(extension.qualification?.apalache.startsWith("optional"), "visibility extension overclaims Apalache verification");
+  need(extension.sourceBlobs?.length === 9, "visibility extension source cardinality drift");
+  for (const source of extension.sourceBlobs) need(source.gitBlob === gitBlob(source.path), `visibility extension source drift: ${source.path}`);
+  const visibilityAssets = extension.sourceBlobs.filter(source => source.path.endsWith(".svg"));
+  need(visibilityAssets.length === 7, "visibility extension must bind seven SVG diagrams");
+  for (const source of visibilityAssets) {
+    const svg = text(source.path);
+    need(/role="img"/.test(svg) && /aria-labelledby="[^"]+"/.test(svg), `visibility SVG accessibility binding missing: ${source.path}`);
+    need(/<title id="[^"]+">/.test(svg) && /<desc id="[^"]+">/.test(svg), `visibility SVG title or description missing: ${source.path}`);
+    need(/prefers-reduced-motion:reduce/.test(svg) && /@media print/.test(svg), `visibility SVG static fallback missing: ${source.path}`);
+    need(/id="effects-off"/.test(svg) && /@keyframes/.test(svg) && /<filter id=/.test(svg), `visibility SVG effect contract missing: ${source.path}`);
+    const id = source.path.split("/").at(-1).replace(".svg", "");
+    need(handbook.includes(`data-diagram-embed="${id}"`), `visibility SVG handbook embed missing: ${id}`);
+    need(handbook.includes(`id="diagram-transcript-${id}"`), `visibility SVG transcript missing: ${id}`);
   }
 
   const expectedTools = new Map([
@@ -128,16 +156,16 @@ function verify(overrides = new Map(), options = {}) {
 
   need(reviews.schemaVersion === 1, "review manifest schema mismatch");
   const publishedHandbookBlob = record.sourceBlobs.find(x => x.path === paths.handbook).gitBlob;
-  if (reviews.reviewedSourceBlobs.handbook !== publishedHandbookBlob) {
-    need(record.successorRepairs?.length === 1, "review handbook binding drift without one bounded successor repair");
-    const repair = record.successorRepairs[0];
-    need(repair.id === "yaml-title-safe-spacing" && repair.scope === "front-matter-title-yaml-safe-spacing-only", "successor repair scope drift");
-    need(repair.reviewedHandbookBlob === reviews.reviewedSourceBlobs.handbook, "successor repair reviewed blob drift");
-    need(repair.publishedHandbookBlob === publishedHandbookBlob, "successor repair published blob drift");
-    need(repair.interpretedTitle === frontMatter.title, "successor repair interpreted title drift");
-    need(repair.reviewedNormalizedSha256 === sha256(frontMatter.normalized), "successor repair exceeds YAML-safe title spacing");
-    need(repair.bodySha256 === sha256(frontMatter.body), "successor repair handbook body drift");
-  }
+  need(record.successorRepairs?.length === 1, "review handbook binding drift without one bounded successor repair");
+  const repair = record.successorRepairs[0];
+  need(repair.id === "yaml-title-safe-spacing" && repair.scope === "front-matter-title-yaml-safe-spacing-only", "successor repair scope drift");
+  need(repair.reviewedHandbookBlob === reviews.reviewedSourceBlobs.handbook, "successor repair reviewed blob drift");
+  need(extension.baseHandbookBlob === repair.publishedHandbookBlob, "visibility extension does not start at the YAML-safe base edition");
+  need(extension.publishedHandbookBlob === publishedHandbookBlob, "visibility extension does not end at the current handbook");
+  const repairedBase = handbookFrontMatter(readGitBlob(repair.publishedHandbookBlob));
+  need(repair.interpretedTitle === repairedBase.title, "successor repair interpreted title drift");
+  need(repair.reviewedNormalizedSha256 === sha256(repairedBase.normalized), "successor repair exceeds YAML-safe title spacing");
+  need(repair.bodySha256 === sha256(repairedBase.body), "successor repair base body drift");
   need(reviews.reviewedSourceBlobs.model === record.sourceBlobs.find(x => x.path === paths.model).gitBlob, "review model binding drift");
   need(reviews.reviewedSourceBlobs.diagramManifest === record.sourceBlobs.find(x => x.path === paths.diagrams).gitBlob, "review diagram binding drift");
   const subjects = new Set(record.reviewSubjects);
@@ -161,7 +189,7 @@ function verify(overrides = new Map(), options = {}) {
     need(current.timings?.p95LoadMs <= 100 && current.timings?.p99LoadMs <= 200, "current M7 decoded-readiness budget exceeded");
     need(current.capability?.liveCompositor === false && current.capability?.framePacingMeasured === false, "current M7 replay overclaims compositor evidence");
   }
-  return { reviews: reviews.reviews.length, diagrams: diagrams.diagrams.length, sourceBlobs: record.sourceBlobs.length, toolchain: record.toolchain.length };
+  return { reviews: reviews.reviews.length, diagrams: diagrams.diagrams.length, extensions: record.contentExtensions.length, sourceBlobs: record.sourceBlobs.length, toolchain: record.toolchain.length };
 }
 
 function mutated(path, change) {
@@ -183,8 +211,7 @@ if (process.argv.includes("--self-test")) {
   );
   const recordForHandbook = handbook => JSON.stringify({
     ...record,
-    sourceBlobs: record.sourceBlobs.map(source => source.path === paths.handbook ? {...source, gitBlob: blobForText(handbook)} : source),
-    successorRepairs: record.successorRepairs.map(repair => ({...repair, publishedHandbookBlob: blobForText(handbook)}))
+    sourceBlobs: record.sourceBlobs.map(source => source.path === paths.handbook ? {...source, gitBlob: blobForText(handbook)} : source)
   });
   const cases = [
     ["missing-domain-review", new Map([[paths.reviews, JSON.stringify({...reviews, reviews: reviews.reviews.filter(x => x.subject !== "domain")})]])],
@@ -195,6 +222,9 @@ if (process.argv.includes("--self-test")) {
     ["weakened-m6v-budget", new Map([[paths.record, JSON.stringify({...record, inheritedEvidence: {...record.inheritedEvidence, m6vPerformance: {...record.inheritedEvidence.m6vPerformance, maxP95Ms: 200}}})]])],
     ["invented-compositor-claim", new Map([[paths.record, JSON.stringify({...record, inheritedEvidence: {...record.inheritedEvidence, m6vPerformance: {...record.inheritedEvidence.m6vPerformance, liveCompositorRequired: true}}})]])],
     ["missing-m6-binding", new Map([[paths.record, JSON.stringify({...record, inheritedEvidence: {...record.inheritedEvidence, m6StructureAudit: {...record.inheritedEvidence.m6StructureAudit, gitBlob: "0".repeat(40)}}})]])],
+    ["extension-overclaims-inherited-reviews", new Map([[paths.record, JSON.stringify({...record, contentExtensions: record.contentExtensions.map(extension => ({...extension, reviewPosture: "covered by inherited human reviews"}))})]])],
+    ["extension-source-missing", new Map([[paths.record, JSON.stringify({...record, contentExtensions: record.contentExtensions.map(extension => ({...extension, sourceBlobs: extension.sourceBlobs.slice(1)}))})]])],
+    ["visibility-static-fallback-missing", mutated("docs/assets/sir-visibility-quint/supercover-walk.svg", value => value.replace("prefers-reduced-motion:reduce", "motion-fallback-removed"))],
     ["unsafe-yaml-title-spacing", new Map([[paths.handbook, unsafeTitleHandbook], [paths.record, recordForHandbook(unsafeTitleHandbook)]])],
     ["broadened-successor-repair", new Map([[paths.handbook, broadenedHandbook], [paths.record, recordForHandbook(broadenedHandbook)]])]
   ];
@@ -207,5 +237,5 @@ if (process.argv.includes("--self-test")) {
   console.log(`handbook-m7 audit: PASS (${cases.length} observed-red/restored-green controls)`);
 } else {
   const result = verify(new Map(), { preRender });
-  console.log(`handbook-m7 audit: PASS (${result.reviews} reviews, ${result.diagrams} diagrams, ${result.sourceBlobs} source blobs, ${result.toolchain} tools)`);
+  console.log(`handbook-m7 audit: PASS (${result.reviews} base reviews, ${result.diagrams} base diagrams, ${result.extensions} qualified extension, ${result.sourceBlobs} source blobs, ${result.toolchain} tools)`);
 }
