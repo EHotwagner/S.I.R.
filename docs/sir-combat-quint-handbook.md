@@ -4,15 +4,15 @@ category: Battlefield Systems
 categoryindex: 4
 index: 48
 description: A navigable handbook for learning Quint through the bounded S.I.R. physical-combat rule corpus.
-date: 2026-08-27
-status: in-development
+date: 2026-08-28
+status: maintained
 document-type: handbook
 ---
 
 <a id="handbook-top"></a>
 # Combat in Quint: From Design Decisions to Executable Models
 
-This in-progress first edition combines stable navigation, a complete mechanically enforced definition index, a representative rifle-attack learning spine, and complete coverage of all sixteen stable combat rules. Chapters still marked “Scheduled content” belong to later roadmap milestones and remain honest placeholders, not executable claims.
+This maintained first edition combines stable navigation, a mechanically enforced definition index, a representative rifle-attack learning spine, and complete coverage of all sixteen stable combat rules. Its M7 publication [record](#def-record) binds the last-reviewed sources and tools; the maintenance trigger beside the literate model names when that review must [run](#def-run) again.
 
 ## Table of contents
 
@@ -81,7 +81,7 @@ This in-progress first edition combines stable navigation, a complete mechanical
 <a id="reading-path-learn-quint"></a>
 ### Learn Quint
 
-[Orientation](#chapter-01-what-this-handbook-is) → [representative attack](#chapter-24-representative-rifle-damage-25-x-1-0-x-0-8-20) → [foundations](#part-iv) → [guided walkthroughs](#part-v) → [formal reasoning](#part-vi).
+[Orientation](#chapter-01-what-this-handbook-is) → [fixed-point decisions](#chapter-14-fixed-point-q4-arithmetic-and-rounding) → [foundations](#part-iv) → [representative attack](#chapter-24-representative-rifle-damage-25-x-1-0-x-0-8-20) → [remaining guided walkthroughs](#chapter-25-a-miss-causes-neither-damage-nor-suppression) → [formal reasoning](#part-vi).
 
 <a id="reading-path-understand-combat"></a>
 ### Understand combat
@@ -99,22 +99,38 @@ This in-progress first edition combines stable navigation, a complete mechanical
 <a id="chapter-01-what-this-handbook-is"></a>
 ### 1. What this handbook is
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+This is a learning and review companion to the literate `docs/rules/sir-combat.md` model. It explains why the bounded model has its current [CombatState](#qnt-combat-state), [AttackInput](#qnt-attack-input), [Observation](#qnt-observation), [action](#def-action), and [property](#def-property) shapes; it does not replace the model, combat architecture, or runtime registry. Use executable snippets as projections of the literate authority and production statements only where chapter 38 names a runtime subject and evidence boundary.
 
 <a id="chapter-02-how-to-use-the-three-reading-paths"></a>
 ### 2. How to use the three reading paths
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+Choose one route at [Reading paths](#reading-paths), make each [prediction](#def-prediction) before reading its result, and follow canonical links when a term is unfamiliar. New Quint readers should complete chapters 4, 14, 17–24, and 33 in order. Domain reviewers can start with chapters 6–10 and 44–46. Traceability reviewers should compare chapters 3, 38–43, and 46, always separating a model [witness](#def-witness), bounded [property](#def-property), and runtime [correspondence](#def-correspondence) claim.
 
 <a id="chapter-03-sources-of-authority-and-their-precedence"></a>
 ### 3. Sources of authority and their precedence
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+When sources disagree, apply this order by subject rather than treating the handbook as universal authority:
+
+1. `docs/combat-resolution.md` owns physical combat intent and `src/SIR.Simulation/CombatRules.fs` owns the current production registry/entry points.
+2. `docs/rules/sir-combat.md` owns the bounded Quint model; extracted `.qnt` and ITF are generated [projections](#def-generated-projection).
+3. `docs/sir-combat-quint-vocabulary.json` owns handbook terms/anchors and `docs/sir-combat-quint-diagrams.json` binds explanatory visuals to their real sources.
+4. This handbook owns pedagogy, navigation, [claim boundaries](#def-claim-boundary), and the maintenance checklist—not combat or model semantics.
+
+A changed authority therefore makes its explanation or [correspondence](#def-correspondence) stale; it never makes handbook prose the winner.
 
 <a id="chapter-04-toolchain-setup-and-a-first-successful-quint-run"></a>
 ### 4. Toolchain setup and a first successful Quint run
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+Start in a POSIX-compatible shell at the repository root with `dotnet` **10.0.302**, Node.js **26.5.0** (with `npm` available), and the standard `awk` and `mktemp` utilities available. Chapter 24's readable trace query also uses `jq`. The repository pins the .NET and Node versions in `global.json` and `package.json`; install those prerequisites before continuing. Then restore the repository tools, install the exact Quint CLI if `quint` is absent, verify `0.32.0`, extract the fenced literate model through the owning qualification, and execute the representative [run](#def-run):
+
+```sh
+dotnet tool restore
+command -v quint >/dev/null || npm install --global @informalsystems/quint@0.32.0
+quint --version
+./scripts/qualify-quint-q4-sir-combat.sh
+```
+
+The command must report `quint-q4-sir-combat: PASS`. The sampled and named-[run](#def-run) learning path needs no Java runtime. Chapter 37's optional `quint verify` route invokes Apalache and additionally requires a Java 17-or-newer runtime; confirm it with `java -version` before using that route. Before looking farther, predict the representative [damage](#stat-damage): raw `250000 × 10000 × 8000`, with scale removed after each multiplication and [round-half-away-from-zero](#unit-round-half-away-from-zero) at the whole-point boundary, yields `20`. If setup fails, fix the pinned tool or extraction route; do not edit generated `.qnt` bytes.
 
 <a id="chapter-05-the-complete-attack-resolution-pipeline-at-a-gla"></a>
 ### 5. The complete attack-resolution pipeline at a glance
@@ -520,7 +536,7 @@ The apostrophe means “value in the successor state.” Both assignments belong
 <a id="chapter-22-nondeterministic-steps-and-possible-combat-histo"></a>
 ### 22. Nondeterministic steps and possible combat histories
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+[step](#qnt-step) uses Quint's nondeterministic choice to select one enabled transition from aggregate consequences, cover impact, or recovery. A [trace](#def-execution-trace) is therefore one possible history, not a promise that actions execute in source order. Read each adjacent state pair: identify `lastAction`, compare only the durable fields changed by that [action](#def-action), and allow enabled alternatives or [stuttering](#def-stuttering) only where the command or [property](#def-property) permits them. Chapters 33–37 turn this distinction into [counterexample](#def-counterexample) and bounded-verification practice.
 
 <a id="chapter-23-runs-witnesses-invariants-simulations-and-bounde"></a>
 ### 23. Runs, witnesses, invariants, simulations, and bounded verification
@@ -592,13 +608,20 @@ From the repository root, use the pinned end-to-end qualification:
 ./scripts/qualify-quint-q4-sir-combat.sh
 ```
 
-For the smallest model-only loop, deterministically extract the `quint sir-combat.qnt +=` fences from `docs/rules/sir-combat.md`, then [run](#def-run):
+For the smallest model-only loop, deterministically extract the `quint sir-combat.qnt +=` fences from `docs/rules/sir-combat.md`, then [run](#def-run) the named [witness](#def-witness):
 
-```console
-quint test <extracted-sir-combat.qnt> --main SirCombatTests --backend rust --seed 352 --match representativeDamageIsTwenty --verbosity 3
+```sh
+model_file="$(mktemp)"
+awk '/^```quint sir-combat.qnt \+=$/{inside=1;next} /^```$/{if(inside){inside=0;next}} inside{print}' docs/rules/sir-combat.md > "$model_file"
+quint test "$model_file" --main SirCombatTests --backend rust --seed 352 --match representativeDamageIsTwenty --verbosity 3
+rm "$model_file"
 ```
 
-The repository gate performs that extraction for you, requires Quint `0.32.0`, and also restores green after its deliberate negative controls.
+The focused command reports the [witness](#def-witness) pass; it does not print a state trace. The repository gate performs the same extraction, requires Quint `0.32.0`, and restores green after its deliberate negative controls. To inspect durable trace data rather than infer it from the test summary, open the committed exact ITF and select the initialized state plus the first representative-[damage](#stat-damage) state:
+
+```sh
+jq '.states | [.[0], (map(select(.last.damage["#bigint"] == "20"))[0])]' tests/fixtures/rules-corpus/quint-q4/trace_0.itf.json
+```
 
 #### Observe
 
@@ -953,10 +976,14 @@ command-line grouping cannot silently upgrade their logical kind.
 <a id="chapter-37-what-sampled-runs-establish-and-what-exhaustive-"></a>
 ### 37. What sampled runs establish and what exhaustive checks add
 
-Use simulation first for fast learning and trace variety:
+Use simulation first for fast learning and trace variety. Recreate the [generated projection](#def-generated-projection) from the literate authority in the same shell, retain its path for both commands, and remove it when finished:
 
-```text
-quint run sir-combat.qnt --main SirCombat --backend rust --seed 352 \
+```sh
+model_file="$(mktemp)"
+trap 'rm -f "$model_file"' EXIT
+awk '/^```quint sir-combat.qnt \+=$/{inside=1;next} /^```$/{if(inside){inside=0;next}} inside{print}' \
+  docs/rules/sir-combat.md > "$model_file"
+quint run "$model_file" --main SirCombat --backend rust --seed 352 \
   --max-samples 64 --max-steps 8 --invariants boundedCombatState
 ```
 
@@ -966,8 +993,8 @@ choice sequence, or longer history violates the predicate.
 
 Use the model checker when the question is universal inside an explicit finite search:
 
-```text
-quint verify sir-combat.qnt --main SirCombat --init init --step step \
+```sh
+quint verify "$model_file" --main SirCombat --init init --step step \
   --invariant boundedCombatState --max-steps 8
 ```
 
@@ -996,7 +1023,7 @@ production entry point; `external-contract` when only an identity/interface boun
 | Stable rule | Quint subject | Current F# subject | Evidence and scope | Status |
 |---|---|---|---|---|
 | [CONTENT-WEAPON-RIFLE-001](#rule-content-weapon-rifle-001) | [rifleDamageRaw](#qnt-rifle-damage-raw), [representativeAttack](#qnt-representative-attack) | `CombatRules.registry`; `QuintQ4ReplayFixtures.attackInput` | exact representative fixture and sampled attack inputs | exact |
-| [CONTENT-BODY-HUMAN-001](#rule-content-body-human-001) | [humanArmorRetentionRaw](#qnt-human-armor-retention-raw) | `CombatRules.registry`; `attackInput.ArmorRetention` | exact representative/sample projection; not all body types | exact |
+| [CONTENT-BODY-HUMAN-001](#rule-content-body-human-001) | [humanArmorRetentionRaw](#qnt-human-armor-retention-raw) | `CombatRules.registry` | exact registry/body fact; representative replay retention belongs to [COMBAT-ARMOR-004](#rule-combat-armor-004) | exact |
 | [COMBAT-ENGAGEMENT-001](#rule-combat-engagement-001) | [preparationRaw](#qnt-preparation-raw) | `CombatRules.resolveAttack`; `AttackOutcome.Preparation` | [`last.preparationRaw`](#qnt-preparation-raw) in exact and sampled replay | exact |
 | [COMBAT-TRACE-002](#rule-combat-trace-002) | [traceAlgorithm](#qnt-trace-algorithm), [traceRaw](#qnt-trace-raw) | `FS.GG.Game.Core.Los.lineOfSightBy`; `CombatRules.resolveAttack` | fingerprint plus supplied visible/total count replay; geometry generation itself is not replayed | external-contract |
 | [COMBAT-ARMOR-004](#rule-combat-armor-004) | [retainedEffect](#qnt-retained-effect) | `AttackInput.ArmorRetention`; `AttackOutcome.ArmorRetention` | [`last.retentionRaw`](#qnt-last) exact/sample comparison | exact |
@@ -1160,7 +1187,7 @@ are catalogue metadata; they are not additional model variables or actions.
 <a id="chapter-45-quint-declaration-reference"></a>
 ### 45. Quint declaration reference
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+The canonical alphabetical reference in chapter 50 contains every top-level declaration from both literate modules. Use its declaration locus to move from a linked name to `SirCombat` or `SirCombatTests`, then classify it as a [type](#def-type)/[variant](#def-variant), fixed [constant](#def-constant), [pure function](#def-pure-function), [state variable](#def-state-variable), [action](#def-action), [property](#def-property), or [run](#def-run). The M6 audit reconciles all 74 top-level declarations against those entries and rejects missing, duplicate, wrongly located, or insubstantial definitions. Local `let` bindings are implementation details and intentionally have no independent index entries.
 
 <a id="chapter-46-traceability-matrix"></a>
 ### 46. Traceability matrix
@@ -1216,12 +1243,41 @@ claim of coverage.
 <a id="chapter-47-command-reference"></a>
 ### 47. Command reference
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+Run commands from the repository root with the committed locks intact:
+
+| Intent | Command | Honest result |
+|---|---|---|
+| Restore repository tools | `dotnet tool restore` | Installs the committed local .NET tools; does not install Quint. |
+| Check the model/runtime slice | `./scripts/qualify-quint-q4-sir-combat.sh` | Typecheck, named runs/properties, mutations, exact ITF, and deterministic sampled [correspondence](#def-correspondence). |
+| Check definitions and links | `node work/375-handbook-m6/audit-handbook-structure.mjs --self-test` | Reconciles 188 terms, 74 declarations, 16 rules, 50 chapters, and deliberate structural defects. |
+| Check the six diagrams | `node work/377-handbook-m6v/audit-visual-explanations.mjs --self-test` | Re-derives source/glyph/accessibility/fallback/fingerprint/budget bindings. |
+| Render and inspect M6V | `work/377-handbook-m6v/qualify-handbook-m6v.sh` | Strict docs, 48 retained renders, accessibility/fallback inspection, and the existing decoded-readiness budget. |
+| Build the maintained publication | `work/380-handbook-m7/qualify-handbook-m7.sh` | Runs the complete M7 review, identity, maintenance, regression, [mutation](#def-mutation), lifecycle, and publication-preflight boundary. |
+
+The M6V performance line is a six-diagram load/decode measurement, not a compositor or frame-pacing claim.
 
 <a id="chapter-48-known-limits-and-future-experiments"></a>
 ### 48. Known limits and future experiments
 
-*Scheduled content:* this chapter's substantive walkthrough and executable evidence land in the roadmap milestone assigned to it.
+The model is bounded and intentionally omits supercover internals, full catalogues, UI, networking, persistence, and unrelated simulation state. Deterministic sampled traces are not exhaustive proof; model success is not automatic production equivalence; the headless render route does not observe a live compositor. Future experiments may widen bounds, add independently justified [properties](#def-property), or adopt the canonical Typed SDD consumer profile, but each change must preserve those [claim boundaries](#def-claim-boundary) and earn new evidence.
+
+#### Last verified publication
+
+The schema-v1 [record](#def-record) at `work/380-handbook-m7/publication-record.json` identifies the exact source blobs, tool pins, M6/M6V evidence, owner, and reviewed routes for this edition. `work/380-handbook-m7/publication-reviews.json` carries separate domain, Quint/modeling, beginner, and rendered-document approvals. Both are evidence projections; neither defines combat or Quint semantics.
+
+#### Maintenance and owner handoff
+
+The S.I.R. documentation owner is the S.I.R. repository maintainer responsible for `docs/rules/sir-combat.md` and this handbook. Any change to the model, combat design/registry, vocabulary/links, six diagram bindings/assets, Q4/runtime qualification, tool pins, or publication route triggers this order:
+
+1. Review the semantic change in its owning source and preserve distinct domain, model, and runtime authorities.
+2. Re-extract/typecheck Quint and update named [runs](#def-run), [properties](#def-property), exact/sample ITF, and observed-red controls.
+3. Reconcile the 16 rules, 74 declarations, 188 definitions, [traceability](#reading-path-review-traceability), and chapter links.
+4. Re-derive all six diagram bindings; inspect accessible normal, reduced-motion, print, effects-off, CSS-disabled/static, and non-WebGL meaning.
+5. Rerun the existing M6V six-diagram performance workload without changing its budgets or upgrading its no-compositor claim.
+6. Obtain fresh domain, Quint/modeling, beginner, and rendered-document approvals bound to the changed sources.
+7. Regenerate the publication [record](#def-record), [run](#def-run) strict docs and M7 qualification, merge relevant-only CI green, and verify the exact merged SHA on Pages.
+
+The same trigger and owner appear beside the authoritative model so a model-only edit cannot miss this checklist.
 
 <a id="chapter-49-exercises-and-solutions"></a>
 ### 49. Exercises and solutions
@@ -1586,7 +1642,7 @@ alias drift, and coordinated term/index cardinality loss each observe red before
 **MinorWound** — variant. The `MinorWound` case of the authoritative `Wound` sum type used in completed observations. **Declared at:** handbook combat walkthroughs and controlled rule catalogue. **Related terms:** [variant](#def-variant), [Wound](#qnt-wound). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
 
 <a id="qnt-missed-attack"></a>
-**missedAttack** — value. Invalid-target attack fixture used to witness that a miss applies neither damage nor suppression. **Declared at:** literate model `SirCombat.missedAttack`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
+**missedAttack** — value. Valid-target, zero-visible-samples attack fixture used to witness that a miss applies neither damage nor suppression. **Declared at:** literate model `SirCombat.missedAttack`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
 
 <a id="def-module"></a>
 **module** — keyword. A named Quint namespace containing declarations and an explicit public surface. **Declared at:** handbook formal-reasoning chapters 18 and 33–45. **Related terms:** [SirCombat](#qnt-sir-combat), [state transition](#def-state-transition). **Runtime correspondence:** model/method term, not an independent production-equivalence claim; see the chapter 38 correspondence map for any named runtime subject.
@@ -1814,7 +1870,7 @@ alias drift, and coordinated term/index cardinality loss each observe red before
 **trace probability** — stat. Ratio of visible to total samples after trace validity; representative `10/10` is raw `10000` (`1.0`). **Declared at:** `traceRaw`. **Related terms:** [traceRaw](#qnt-trace-raw), [samples](#unit-samples), [expected damage](#stat-expected-damage). **Runtime correspondence:** trace counts come from the registered external line-of-sight boundary.
 
 <a id="qnt-trace-algorithm"></a>
-**traceAlgorithm** — value. Registered metadata contract for `FS.GG.Game.Core.Los.supercover.v1`, including sample units, first-collision tie break, and source fingerprint. **Declared at:** literate model `SirCombat.traceAlgorithm`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** scoped by the chapter 38 correspondence map and its named F# subject/evidence; missing mappings remain explicit.
+**traceAlgorithm** — value. Registered metadata contract for `FS.GG.Game.Core.Los.lineOfSightBy`, fingerprinted as `FS.GG.Game.Core@0.13.0:Los.lineOfSightBy:Supercover`, with visible/total sample inputs, a fixed-point trace result, and named explanation fields. **Declared at:** literate model `SirCombat.traceAlgorithm`. **Related terms:** [pure value](#def-pure-value), [SirCombat](#qnt-sir-combat). **Runtime correspondence:** geometry and tie-break behavior remain external/missing; scoped correspondence covers only the registered contract and supplied sample/result fields.
 
 <a id="qnt-trace-raw"></a>
 **traceRaw** — function. Converts valid visible/total integer samples into a scale-10,000 ratio with fixed-point rounding. **Declared at:** `SirCombat.traceRaw`. **Related terms:** [trace probability](#stat-trace-probability), [validTrace](#qnt-valid-trace), [fromRatio](#qnt-from-ratio). **Runtime correspondence:** models the output contract, not the external supercover traversal.

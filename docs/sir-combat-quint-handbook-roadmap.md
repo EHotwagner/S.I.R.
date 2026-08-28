@@ -391,7 +391,7 @@ Completion evidence:
   Pages proof, issue closure, and project status Done remain required before it becomes landed
   completion history. M7 remains pending unchanged.
 
-### - [ ] M7 — Review, publication, and maintenance handoff
+### - [x] M7 — Review, publication, and maintenance handoff
 
 **Outcome:** the handbook is published as maintained S.I.R. documentation.
 
@@ -412,6 +412,34 @@ Exit criteria:
 - reviewers approve the domain and model boundaries;
 - the S.I.R. docs build is green; and
 - the maintenance trigger is documented beside the authoritative model.
+
+Completion evidence:
+
+- Four independent approvals bind exact handbook blob `6a2a2c5c44da82bef28c459497786f35017d17e4`,
+  unchanged literate-model blob `2347769cf18c278b27e4af4322580cd50719fe3f`, and diagram-manifest blob
+  `7a84db6af105d3653243828e4828beea451e69ea`: domain, Quint/modeling, beginner walkthrough,
+  and rendered-document review. Their structured scopes, evidence routes, and limits are retained in
+  `work/380-handbook-m7/publication-reviews.json`.
+- The maintained handbook now has no scheduled placeholders. Its setup-to-explanation route names exact
+  prerequisites, gives copyable literate extraction, witness, sampled-run, and ITF observation commands,
+  and keeps bounded-model, runtime-correspondence, and external-geometry claims separate.
+- `work/380-handbook-m7/publication-record.json` binds eight exact source blobs, seven pinned tool versions,
+  the M6 structure/link gate, immutable M6V visual evidence, and the current successor render replay.
+  `docs/rules/sir-combat-handbook-maintenance.md` names the S.I.R. repository maintainer beside the
+  authoritative model and supplies an ordered trigger/checklist without changing the model bytes.
+- Fresh strict FsDocs output and all six diagrams passed normal, reduced-motion, print, effects-off, and
+  CSS-disabled inspection. The 48 receipt-bound captures retain accessible static meaning; 100 warm
+  browser-native load/decode samples measured p95 71.4 ms and p99 76.8 ms under the unchanged M6V
+  100/200 ms budgets. Evidence remains headless with `liveCompositor:false` and
+  `framePacingMeasured:false`; it makes no FPS or compositor claim.
+- `work/380-handbook-m7/audit-publication-handoff.mjs` observed red and restored green for eight isolated
+  review, identity, owner, placeholder, M6/M6V linkage, budget, and capability mutations. Lifecycle and
+  aggregate qualification receipts live under `work/380-handbook-m7/` and `readiness/380-handbook-m7/`;
+  feedback cycle: `roadmap-sir-combat-quint-handbook-m7-publication-handoff`; delivery issue: #380.
+- Delivery boundary: this checked entry is the merge-candidate ledger update. Exact-head implementation
+  and feedback acceptance, green relevant hosted CI, merge, exact-main CI, exact-SHA Pages/live-content
+  proof, issue closure, and Project 6 Done remain required before it becomes landed completion history.
+  The parent roadmap host retains the separate final cross-cycle roll-up.
 
 ## M0 source and authority inventory
 

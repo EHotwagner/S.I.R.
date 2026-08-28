@@ -51,7 +51,14 @@ cd "$repo_root"
 
 build_site_projection() {
   node work/375-handbook-m6/audit-handbook-structure.mjs
-  node work/377-handbook-m6v/audit-visual-explanations.mjs
+  if [[ -f work/380-handbook-m7/publication-record.json ]]; then
+    # M7 is the successor publication boundary. It preserves the immutable M6V
+    # capture and validates current handbook review/identity/evidence instead of
+    # pretending the earlier candidate-input digest covers later handbook bytes.
+    node work/380-handbook-m7/audit-publication-handoff.mjs --pre-render
+  else
+    node work/377-handbook-m6v/audit-visual-explanations.mjs
+  fi
 
   if [[ -d "$repo_root/.fsdocs" ]]; then
     rm -rf -- "$repo_root/.fsdocs"
