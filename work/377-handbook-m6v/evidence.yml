@@ -11,11 +11,11 @@ sourceAnalysis: readiness/377-handbook-m6v/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/377-handbook-m6v/analysis.json
-    digest: 9c210bedb63f66657b18b770b2f4dddd395ff9239f7d34687814d6975eebbb15
+    digest: 6aa2c90aedaa6dff537ccb8d4a608f8034cc035840e0dc359d8ac001530f0b46
     schemaVersion: 1
   - label: checklist
     path: work/377-handbook-m6v/checklist.md
-    digest: d10a95c4875909931786aae45732a40881ea61a75e258b147db962c4e15b2ef8
+    digest: a50d9919c75faa31addd377e32f3d09ab407df471af267d73a1e1e2ccd377e79
     schemaVersion: 1
   - label: clarifications
     path: work/377-handbook-m6v/clarifications.md
@@ -23,15 +23,15 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/377-handbook-m6v/plan.md
-    digest: 9d8bdb80e11a8ad52ad95100f0a9ac552fd3785987278a5d39e07babbeae693a
+    digest: 3d91f5860392e1ddd2d4fc61a5d5ef4663c02f8516f3864a5ca680bfef141625
     schemaVersion: 1
   - label: spec
     path: work/377-handbook-m6v/spec.md
-    digest: ceff14d7ee6fc263d738202eb64f73f46d8421da516889309924e6bf8d0590be
+    digest: 0b6109c8ea68bc0df5aae89275a34e32600b64d10901bda398bb99c5d9a4ea77
     schemaVersion: 1
   - label: tasks
     path: work/377-handbook-m6v/tasks.yml
-    digest: 9f18145e551b6c0219fc5b865abb939eac429c400447428ccc1c47119fdfa646
+    digest: ca897553ac997282f77d01cd812984e9cfa7d8bec95af146e56a773afee65f97
     schemaVersion: 1
 evidence:
   - id: EV001
