@@ -370,14 +370,16 @@ Completion evidence:
   restored green for authority, glyph, accessibility, fallback, fingerprint, structural-budget, and
   decoded-readiness timing mutations.
 - Static geometry and text own meaning. CSS dash motion and SVG-filter glow are progressive only;
-  the same six diagrams passed actual Chromium inspection in normal, reduced-motion, print, and
-  effects-off modes with stable semantic fingerprints, zero console/page errors, and retained
-  non-WebGL meaning. Screenshot inspection also repaired a clipped caption and print-contrast defect.
-- Typed performance evidence covers the declared six-diagram, 138-element, 16,561-byte,
-  eight-animated-element workload. Thirty warm, no-store navigations reached browser-native decoded
-  diagram readiness at p95 53.6 ms and p99 56.1 ms within the typed-spec 100/200 ms
-  budgets. Browser launch (125.142 ms), cold-site decode (141.2 ms), unrelated template completion,
-  and the lack of a live compositor are reported separately; no frame-pacing claim is made.
+  the same six diagrams passed actual Chromium inspection in normal, reduced-motion, print, effects-off, css-disabled
+  modes with stable semantic fingerprints, zero console/page errors, and
+  retained non-WebGL meaning. The retained evidence contains 30 standalone and 18 handbook-image screenshots;
+  human inspection repaired clipping, print contrast, edge/text collisions, and internal label/border collisions.
+- Typed performance evidence covers the declared six-diagram, 153-element, 26,274-byte,
+  7-animated-element workload. 100 warm, no-store navigations reached browser-native decoded
+  diagram readiness at p95 74.1 ms and p99 84.6 ms within the typed-spec 100/200 ms budgets.
+  The retained 350 ms response-delay control observed red at p95 385 ms and p99 387.2 ms before
+  untouched restoration. Browser launch (129.54 ms), cold-site decode (128.5 ms), unrelated template
+  completion, and the lack of a live compositor are reported separately; no frame-pacing claim is made.
 - Focused receipts, screenshots, and qualification live under `work/377-handbook-m6v/` and
   `readiness/377-handbook-m6v/`; feedback cycle:
   `roadmap-sir-combat-quint-handbook-m6v-visual-explanations`; delivery issue: #377.

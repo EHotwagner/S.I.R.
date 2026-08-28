@@ -8,637 +8,637 @@
   "timings": {
     "subject": "warm same-browser navigation start until the six external SVG image resources are loaded and decoded with non-zero intrinsic dimensions; unrelated template CDN load is observed but is not diagram readiness",
     "gatingClock": "browser performance timeline; decodedReadyAtMs after HTMLImageElement.decode()",
-    "browserLaunchObservationMs": 127.036,
+    "browserLaunchObservationMs": 129.54,
     "coldSiteNavigationObservation": {
-      "readinessMs": 309.9,
-      "wallObservationMs": 670.015
+      "readinessMs": 128.5,
+      "wallObservationMs": 539.298
     },
     "warmupNavigations": 3,
     "sampleCount": 100,
     "samples": [
       {
-        "readinessMs": 47.1,
-        "wallObservationMs": 142.689,
-        "loadEventEndMs": 121,
-        "slowestSvgResponseEndMs": 32.1
+        "readinessMs": 47.9,
+        "wallObservationMs": 150.835,
+        "loadEventEndMs": 121.1,
+        "slowestSvgResponseEndMs": 33.1
       },
       {
-        "readinessMs": 51.4,
-        "wallObservationMs": 158.622,
-        "loadEventEndMs": 125.1,
-        "slowestSvgResponseEndMs": 36.5
-      },
-      {
-        "readinessMs": 50.3,
-        "wallObservationMs": 156.123,
-        "loadEventEndMs": 124.7,
-        "slowestSvgResponseEndMs": 35.3
-      },
-      {
-        "readinessMs": 48.7,
-        "wallObservationMs": 156.694,
-        "loadEventEndMs": 124.4,
-        "slowestSvgResponseEndMs": 33.4
-      },
-      {
-        "readinessMs": 55.6,
-        "wallObservationMs": 169.08,
-        "loadEventEndMs": 134.4,
-        "slowestSvgResponseEndMs": 39.1
-      },
-      {
-        "readinessMs": 45.2,
-        "wallObservationMs": 146.81,
-        "loadEventEndMs": 123.7,
-        "slowestSvgResponseEndMs": 30.4
-      },
-      {
-        "readinessMs": 44.1,
-        "wallObservationMs": 152.231,
-        "loadEventEndMs": 122.2,
-        "slowestSvgResponseEndMs": 28.9
-      },
-      {
-        "readinessMs": 47.3,
-        "wallObservationMs": 161.407,
-        "loadEventEndMs": 129.9,
-        "slowestSvgResponseEndMs": 31.6
-      },
-      {
-        "readinessMs": 52.8,
-        "wallObservationMs": 166.916,
-        "loadEventEndMs": 134.1,
-        "slowestSvgResponseEndMs": 37
-      },
-      {
-        "readinessMs": 49.4,
-        "wallObservationMs": 158.938,
-        "loadEventEndMs": 127.7,
-        "slowestSvgResponseEndMs": 34
-      },
-      {
-        "readinessMs": 55.4,
-        "wallObservationMs": 171.115,
-        "loadEventEndMs": 138.9,
-        "slowestSvgResponseEndMs": 40
-      },
-      {
-        "readinessMs": 51.3,
-        "wallObservationMs": 161.119,
-        "loadEventEndMs": 132,
-        "slowestSvgResponseEndMs": 35.6
-      },
-      {
-        "readinessMs": 46.1,
-        "wallObservationMs": 158.242,
-        "loadEventEndMs": 127.6,
-        "slowestSvgResponseEndMs": 30.5
-      },
-      {
-        "readinessMs": 48.6,
-        "wallObservationMs": 155.47,
-        "loadEventEndMs": 125.3,
-        "slowestSvgResponseEndMs": 33
-      },
-      {
-        "readinessMs": 47.8,
-        "wallObservationMs": 158.11,
-        "loadEventEndMs": 129.5,
-        "slowestSvgResponseEndMs": 31.5
-      },
-      {
-        "readinessMs": 51.3,
-        "wallObservationMs": 158.966,
-        "loadEventEndMs": 129.8,
-        "slowestSvgResponseEndMs": 35.6
-      },
-      {
-        "readinessMs": 46.5,
-        "wallObservationMs": 164.114,
-        "loadEventEndMs": 130.1,
-        "slowestSvgResponseEndMs": 30.8
+        "readinessMs": 48.1,
+        "wallObservationMs": 152.171,
+        "loadEventEndMs": 122.3,
+        "slowestSvgResponseEndMs": 33.1
       },
       {
         "readinessMs": 49.2,
-        "wallObservationMs": 160.628,
-        "loadEventEndMs": 131.8,
-        "slowestSvgResponseEndMs": 33.2
-      },
-      {
-        "readinessMs": 53.1,
-        "wallObservationMs": 164.775,
-        "loadEventEndMs": 132,
-        "slowestSvgResponseEndMs": 36.7
-      },
-      {
-        "readinessMs": 46.3,
-        "wallObservationMs": 157.337,
-        "loadEventEndMs": 127.3,
-        "slowestSvgResponseEndMs": 30
-      },
-      {
-        "readinessMs": 51.8,
-        "wallObservationMs": 161.07,
-        "loadEventEndMs": 130,
-        "slowestSvgResponseEndMs": 35.2
-      },
-      {
-        "readinessMs": 46.5,
-        "wallObservationMs": 161.005,
-        "loadEventEndMs": 127.6,
-        "slowestSvgResponseEndMs": 29.9
-      },
-      {
-        "readinessMs": 47,
-        "wallObservationMs": 154.323,
-        "loadEventEndMs": 125.8,
-        "slowestSvgResponseEndMs": 30.3
-      },
-      {
-        "readinessMs": 52.3,
-        "wallObservationMs": 163.302,
-        "loadEventEndMs": 132.8,
-        "slowestSvgResponseEndMs": 35.7
-      },
-      {
-        "readinessMs": 48.8,
-        "wallObservationMs": 159.453,
-        "loadEventEndMs": 130.7,
-        "slowestSvgResponseEndMs": 31.7
-      },
-      {
-        "readinessMs": 51.3,
-        "wallObservationMs": 164.577,
-        "loadEventEndMs": 135.5,
-        "slowestSvgResponseEndMs": 34.7
-      },
-      {
-        "readinessMs": 49.3,
-        "wallObservationMs": 165.727,
-        "loadEventEndMs": 136.3,
-        "slowestSvgResponseEndMs": 32.2
-      },
-      {
-        "readinessMs": 54.9,
-        "wallObservationMs": 166.784,
-        "loadEventEndMs": 138,
-        "slowestSvgResponseEndMs": 38.1
-      },
-      {
-        "readinessMs": 53.6,
-        "wallObservationMs": 164.926,
-        "loadEventEndMs": 135.8,
-        "slowestSvgResponseEndMs": 36.4
-      },
-      {
-        "readinessMs": 51.1,
-        "wallObservationMs": 162.71,
-        "loadEventEndMs": 130.7,
-        "slowestSvgResponseEndMs": 33.6
-      },
-      {
-        "readinessMs": 57.7,
-        "wallObservationMs": 171.923,
-        "loadEventEndMs": 141,
-        "slowestSvgResponseEndMs": 39.4
-      },
-      {
-        "readinessMs": 52.3,
-        "wallObservationMs": 164.223,
-        "loadEventEndMs": 134.4,
-        "slowestSvgResponseEndMs": 34.3
-      },
-      {
-        "readinessMs": 57.1,
-        "wallObservationMs": 174.162,
-        "loadEventEndMs": 141.7,
-        "slowestSvgResponseEndMs": 39
-      },
-      {
-        "readinessMs": 50.2,
-        "wallObservationMs": 166.561,
-        "loadEventEndMs": 133.2,
-        "slowestSvgResponseEndMs": 32
-      },
-      {
-        "readinessMs": 50.7,
-        "wallObservationMs": 166.68,
-        "loadEventEndMs": 134.6,
-        "slowestSvgResponseEndMs": 33
-      },
-      {
-        "readinessMs": 56.6,
-        "wallObservationMs": 168.003,
-        "loadEventEndMs": 137.6,
-        "slowestSvgResponseEndMs": 36.7
-      },
-      {
-        "readinessMs": 53.9,
-        "wallObservationMs": 167.588,
-        "loadEventEndMs": 137.6,
-        "slowestSvgResponseEndMs": 34.2
-      },
-      {
-        "readinessMs": 56.5,
-        "wallObservationMs": 172.111,
-        "loadEventEndMs": 139.7,
-        "slowestSvgResponseEndMs": 37.3
-      },
-      {
-        "readinessMs": 53.1,
-        "wallObservationMs": 175.8,
-        "loadEventEndMs": 140,
-        "slowestSvgResponseEndMs": 32.9
-      },
-      {
-        "readinessMs": 54,
-        "wallObservationMs": 174.711,
-        "loadEventEndMs": 141.4,
-        "slowestSvgResponseEndMs": 33.5
-      },
-      {
-        "readinessMs": 60.3,
-        "wallObservationMs": 245.25,
-        "loadEventEndMs": 162.2,
-        "slowestSvgResponseEndMs": 39.8
-      },
-      {
-        "readinessMs": 61.1,
-        "wallObservationMs": 210.536,
-        "loadEventEndMs": 164.6,
-        "slowestSvgResponseEndMs": 41.7
-      },
-      {
-        "readinessMs": 57.3,
-        "wallObservationMs": 213.547,
-        "loadEventEndMs": 162.6,
-        "slowestSvgResponseEndMs": 35
-      },
-      {
-        "readinessMs": 56.7,
-        "wallObservationMs": 204.156,
-        "loadEventEndMs": 156,
-        "slowestSvgResponseEndMs": 34.2
-      },
-      {
-        "readinessMs": 60.2,
-        "wallObservationMs": 220.276,
-        "loadEventEndMs": 165.3,
-        "slowestSvgResponseEndMs": 36.5
-      },
-      {
-        "readinessMs": 55.6,
-        "wallObservationMs": 210.027,
-        "loadEventEndMs": 159.4,
-        "slowestSvgResponseEndMs": 31
-      },
-      {
-        "readinessMs": 54.6,
-        "wallObservationMs": 163.422,
-        "loadEventEndMs": 130.5,
+        "wallObservationMs": 150.357,
+        "loadEventEndMs": 121.1,
         "slowestSvgResponseEndMs": 33.9
       },
       {
-        "readinessMs": 47.3,
-        "wallObservationMs": 159.332,
-        "loadEventEndMs": 124.3,
-        "slowestSvgResponseEndMs": 30.4
-      },
-      {
-        "readinessMs": 48.5,
-        "wallObservationMs": 156.383,
-        "loadEventEndMs": 124.7,
-        "slowestSvgResponseEndMs": 31.7
-      },
-      {
-        "readinessMs": 51.4,
-        "wallObservationMs": 159.37,
-        "loadEventEndMs": 129.4,
-        "slowestSvgResponseEndMs": 34.7
-      },
-      {
-        "readinessMs": 51.7,
-        "wallObservationMs": 160.313,
-        "loadEventEndMs": 128.8,
-        "slowestSvgResponseEndMs": 33.2
-      },
-      {
-        "readinessMs": 54.6,
-        "wallObservationMs": 162.805,
-        "loadEventEndMs": 130.8,
-        "slowestSvgResponseEndMs": 35.8
-      },
-      {
-        "readinessMs": 50.3,
-        "wallObservationMs": 165.675,
-        "loadEventEndMs": 131.6,
+        "readinessMs": 47,
+        "wallObservationMs": 149.397,
+        "loadEventEndMs": 119.8,
         "slowestSvgResponseEndMs": 31.9
       },
       {
+        "readinessMs": 50.8,
+        "wallObservationMs": 160.592,
+        "loadEventEndMs": 128.4,
+        "slowestSvgResponseEndMs": 35.7
+      },
+      {
+        "readinessMs": 49.6,
+        "wallObservationMs": 157.47,
+        "loadEventEndMs": 126.6,
+        "slowestSvgResponseEndMs": 34.4
+      },
+      {
+        "readinessMs": 48,
+        "wallObservationMs": 148.463,
+        "loadEventEndMs": 125.3,
+        "slowestSvgResponseEndMs": 32.7
+      },
+      {
+        "readinessMs": 45.2,
+        "wallObservationMs": 151.358,
+        "loadEventEndMs": 123.9,
+        "slowestSvgResponseEndMs": 29.7
+      },
+      {
+        "readinessMs": 50.1,
+        "wallObservationMs": 161.609,
+        "loadEventEndMs": 131,
+        "slowestSvgResponseEndMs": 34.3
+      },
+      {
+        "readinessMs": 50,
+        "wallObservationMs": 156.911,
+        "loadEventEndMs": 127,
+        "slowestSvgResponseEndMs": 34.3
+      },
+      {
+        "readinessMs": 45.4,
+        "wallObservationMs": 161.588,
+        "loadEventEndMs": 126.8,
+        "slowestSvgResponseEndMs": 30.1
+      },
+      {
+        "readinessMs": 45.7,
+        "wallObservationMs": 153.971,
+        "loadEventEndMs": 124,
+        "slowestSvgResponseEndMs": 30.3
+      },
+      {
+        "readinessMs": 48.9,
+        "wallObservationMs": 157.958,
+        "loadEventEndMs": 129.6,
+        "slowestSvgResponseEndMs": 33.3
+      },
+      {
+        "readinessMs": 45.4,
+        "wallObservationMs": 153.751,
+        "loadEventEndMs": 125.1,
+        "slowestSvgResponseEndMs": 29.8
+      },
+      {
+        "readinessMs": 51.5,
+        "wallObservationMs": 161.75,
+        "loadEventEndMs": 130.4,
+        "slowestSvgResponseEndMs": 35.9
+      },
+      {
+        "readinessMs": 46.8,
+        "wallObservationMs": 161.439,
+        "loadEventEndMs": 127.5,
+        "slowestSvgResponseEndMs": 30.3
+      },
+      {
+        "readinessMs": 46.3,
+        "wallObservationMs": 156.525,
+        "loadEventEndMs": 128.3,
+        "slowestSvgResponseEndMs": 30.3
+      },
+      {
+        "readinessMs": 52.2,
+        "wallObservationMs": 167.493,
+        "loadEventEndMs": 135.5,
+        "slowestSvgResponseEndMs": 35.2
+      },
+      {
+        "readinessMs": 47.2,
+        "wallObservationMs": 160.996,
+        "loadEventEndMs": 129.8,
+        "slowestSvgResponseEndMs": 30.7
+      },
+      {
+        "readinessMs": 51.3,
+        "wallObservationMs": 162.12,
+        "loadEventEndMs": 131.3,
+        "slowestSvgResponseEndMs": 35
+      },
+      {
+        "readinessMs": 46.3,
+        "wallObservationMs": 159.182,
+        "loadEventEndMs": 128.4,
+        "slowestSvgResponseEndMs": 30.3
+      },
+      {
+        "readinessMs": 54.5,
+        "wallObservationMs": 167.494,
+        "loadEventEndMs": 133.2,
+        "slowestSvgResponseEndMs": 37.3
+      },
+      {
+        "readinessMs": 54.5,
+        "wallObservationMs": 167.932,
+        "loadEventEndMs": 137.6,
+        "slowestSvgResponseEndMs": 37.6
+      },
+      {
+        "readinessMs": 49.9,
+        "wallObservationMs": 169.566,
+        "loadEventEndMs": 134.4,
+        "slowestSvgResponseEndMs": 32.6
+      },
+      {
+        "readinessMs": 56,
+        "wallObservationMs": 171.212,
+        "loadEventEndMs": 141,
+        "slowestSvgResponseEndMs": 37.9
+      },
+      {
+        "readinessMs": 55.1,
+        "wallObservationMs": 178.603,
+        "loadEventEndMs": 144.1,
+        "slowestSvgResponseEndMs": 36.9
+      },
+      {
+        "readinessMs": 57.2,
+        "wallObservationMs": 174.942,
+        "loadEventEndMs": 143.6,
+        "slowestSvgResponseEndMs": 38.5
+      },
+      {
+        "readinessMs": 54.3,
+        "wallObservationMs": 180.578,
+        "loadEventEndMs": 145,
+        "slowestSvgResponseEndMs": 36.5
+      },
+      {
+        "readinessMs": 53.3,
+        "wallObservationMs": 176.517,
+        "loadEventEndMs": 139.6,
+        "slowestSvgResponseEndMs": 34.8
+      },
+      {
+        "readinessMs": 58.8,
+        "wallObservationMs": 183.486,
+        "loadEventEndMs": 147,
+        "slowestSvgResponseEndMs": 39.2
+      },
+      {
+        "readinessMs": 55.3,
+        "wallObservationMs": 176.917,
+        "loadEventEndMs": 143.7,
+        "slowestSvgResponseEndMs": 35.9
+      },
+      {
+        "readinessMs": 59.3,
+        "wallObservationMs": 186.255,
+        "loadEventEndMs": 151.3,
+        "slowestSvgResponseEndMs": 40.6
+      },
+      {
+        "readinessMs": 52.4,
+        "wallObservationMs": 178.972,
+        "loadEventEndMs": 142.4,
+        "slowestSvgResponseEndMs": 33.8
+      },
+      {
+        "readinessMs": 55.1,
+        "wallObservationMs": 179.548,
+        "loadEventEndMs": 145.9,
+        "slowestSvgResponseEndMs": 35.6
+      },
+      {
+        "readinessMs": 57.2,
+        "wallObservationMs": 179.234,
+        "loadEventEndMs": 147.2,
+        "slowestSvgResponseEndMs": 38
+      },
+      {
+        "readinessMs": 58,
+        "wallObservationMs": 190.455,
+        "loadEventEndMs": 158.3,
+        "slowestSvgResponseEndMs": 38.5
+      },
+      {
+        "readinessMs": 63.9,
+        "wallObservationMs": 197.635,
+        "loadEventEndMs": 161.4,
+        "slowestSvgResponseEndMs": 43
+      },
+      {
+        "readinessMs": 66.7,
+        "wallObservationMs": 192.576,
+        "loadEventEndMs": 161.5,
+        "slowestSvgResponseEndMs": 46.4
+      },
+      {
+        "readinessMs": 65.8,
+        "wallObservationMs": 202.297,
+        "loadEventEndMs": 166.8,
+        "slowestSvgResponseEndMs": 45.7
+      },
+      {
+        "readinessMs": 62.7,
+        "wallObservationMs": 273.478,
+        "loadEventEndMs": 227.5,
+        "slowestSvgResponseEndMs": 41.3
+      },
+      {
+        "readinessMs": 70.7,
+        "wallObservationMs": 246.521,
+        "loadEventEndMs": 193.1,
+        "slowestSvgResponseEndMs": 44.9
+      },
+      {
+        "readinessMs": 64.8,
+        "wallObservationMs": 233.548,
+        "loadEventEndMs": 177,
+        "slowestSvgResponseEndMs": 39.4
+      },
+      {
+        "readinessMs": 67.4,
+        "wallObservationMs": 235.13,
+        "loadEventEndMs": 182.8,
+        "slowestSvgResponseEndMs": 41.5
+      },
+      {
+        "readinessMs": 74.1,
+        "wallObservationMs": 266.228,
+        "loadEventEndMs": 206.7,
+        "slowestSvgResponseEndMs": 46
+      },
+      {
+        "readinessMs": 70,
+        "wallObservationMs": 254.849,
+        "loadEventEndMs": 199.1,
+        "slowestSvgResponseEndMs": 40.3
+      },
+      {
+        "readinessMs": 62.9,
+        "wallObservationMs": 205.164,
+        "loadEventEndMs": 167.6,
+        "slowestSvgResponseEndMs": 38.4
+      },
+      {
+        "readinessMs": 60.6,
+        "wallObservationMs": 179.256,
+        "loadEventEndMs": 145.8,
+        "slowestSvgResponseEndMs": 41
+      },
+      {
         "readinessMs": 53.4,
-        "wallObservationMs": 164.03,
+        "wallObservationMs": 171.686,
+        "loadEventEndMs": 137.4,
+        "slowestSvgResponseEndMs": 35.9
+      },
+      {
+        "readinessMs": 57.9,
+        "wallObservationMs": 180.84,
+        "loadEventEndMs": 147.3,
+        "slowestSvgResponseEndMs": 39.6
+      },
+      {
+        "readinessMs": 52.5,
+        "wallObservationMs": 167.974,
         "loadEventEndMs": 133.2,
         "slowestSvgResponseEndMs": 34.1
       },
       {
-        "readinessMs": 53.4,
-        "wallObservationMs": 166.518,
-        "loadEventEndMs": 136.2,
-        "slowestSvgResponseEndMs": 36.3
-      },
-      {
-        "readinessMs": 53.4,
-        "wallObservationMs": 175.676,
-        "loadEventEndMs": 142.5,
-        "slowestSvgResponseEndMs": 35.5
-      },
-      {
-        "readinessMs": 53.6,
-        "wallObservationMs": 169.976,
-        "loadEventEndMs": 138.5,
-        "slowestSvgResponseEndMs": 36
-      },
-      {
-        "readinessMs": 51.9,
-        "wallObservationMs": 171.161,
-        "loadEventEndMs": 137.8,
-        "slowestSvgResponseEndMs": 33
-      },
-      {
-        "readinessMs": 58,
-        "wallObservationMs": 178.523,
-        "loadEventEndMs": 142.8,
-        "slowestSvgResponseEndMs": 37.9
-      },
-      {
-        "readinessMs": 62.6,
-        "wallObservationMs": 190.048,
-        "loadEventEndMs": 156.4,
-        "slowestSvgResponseEndMs": 42.6
-      },
-      {
-        "readinessMs": 56.7,
-        "wallObservationMs": 177.771,
-        "loadEventEndMs": 143.1,
-        "slowestSvgResponseEndMs": 37.5
-      },
-      {
-        "readinessMs": 64.7,
-        "wallObservationMs": 188.41,
-        "loadEventEndMs": 154.5,
-        "slowestSvgResponseEndMs": 43.6
-      },
-      {
-        "readinessMs": 58.5,
-        "wallObservationMs": 178.466,
-        "loadEventEndMs": 146.8,
-        "slowestSvgResponseEndMs": 38.1
-      },
-      {
-        "readinessMs": 59.3,
-        "wallObservationMs": 179.547,
-        "loadEventEndMs": 147.5,
-        "slowestSvgResponseEndMs": 40.9
-      },
-      {
-        "readinessMs": 62.6,
-        "wallObservationMs": 208.354,
-        "loadEventEndMs": 170.9,
-        "slowestSvgResponseEndMs": 43.6
-      },
-      {
-        "readinessMs": 57.4,
-        "wallObservationMs": 179.106,
-        "loadEventEndMs": 146.3,
-        "slowestSvgResponseEndMs": 35.7
-      },
-      {
-        "readinessMs": 63.1,
-        "wallObservationMs": 184.588,
-        "loadEventEndMs": 150.1,
-        "slowestSvgResponseEndMs": 42.6
-      },
-      {
-        "readinessMs": 65.7,
-        "wallObservationMs": 195.803,
-        "loadEventEndMs": 160.5,
-        "slowestSvgResponseEndMs": 43.3
-      },
-      {
-        "readinessMs": 67.9,
-        "wallObservationMs": 187.893,
-        "loadEventEndMs": 153.2,
-        "slowestSvgResponseEndMs": 46.2
-      },
-      {
-        "readinessMs": 56.6,
-        "wallObservationMs": 184.796,
-        "loadEventEndMs": 148.3,
-        "slowestSvgResponseEndMs": 36.2
-      },
-      {
-        "readinessMs": 57.1,
-        "wallObservationMs": 176.325,
-        "loadEventEndMs": 143.2,
-        "slowestSvgResponseEndMs": 37
-      },
-      {
-        "readinessMs": 60.2,
-        "wallObservationMs": 178.182,
-        "loadEventEndMs": 144.2,
-        "slowestSvgResponseEndMs": 39.2
-      },
-      {
-        "readinessMs": 54.3,
-        "wallObservationMs": 172.027,
-        "loadEventEndMs": 139.4,
-        "slowestSvgResponseEndMs": 33.8
-      },
-      {
-        "readinessMs": 58.6,
-        "wallObservationMs": 173.853,
-        "loadEventEndMs": 142.5,
-        "slowestSvgResponseEndMs": 38.4
-      },
-      {
         "readinessMs": 58.1,
-        "wallObservationMs": 183.103,
-        "loadEventEndMs": 144.8,
+        "wallObservationMs": 180.125,
+        "loadEventEndMs": 145.3,
+        "slowestSvgResponseEndMs": 38.9
+      },
+      {
+        "readinessMs": 57.9,
+        "wallObservationMs": 194.61,
+        "loadEventEndMs": 151.5,
         "slowestSvgResponseEndMs": 38
       },
       {
-        "readinessMs": 55.2,
-        "wallObservationMs": 173.828,
-        "loadEventEndMs": 140,
-        "slowestSvgResponseEndMs": 34.6
+        "readinessMs": 69.3,
+        "wallObservationMs": 208.471,
+        "loadEventEndMs": 173.1,
+        "slowestSvgResponseEndMs": 46.1
       },
       {
-        "readinessMs": 61.8,
-        "wallObservationMs": 181.613,
-        "loadEventEndMs": 147.8,
-        "slowestSvgResponseEndMs": 41.7
+        "readinessMs": 63.3,
+        "wallObservationMs": 188.508,
+        "loadEventEndMs": 151.9,
+        "slowestSvgResponseEndMs": 39.7
+      },
+      {
+        "readinessMs": 53.1,
+        "wallObservationMs": 170.847,
+        "loadEventEndMs": 137.5,
+        "slowestSvgResponseEndMs": 34.3
       },
       {
         "readinessMs": 58.3,
-        "wallObservationMs": 177.13,
-        "loadEventEndMs": 145.8,
-        "slowestSvgResponseEndMs": 37.9
-      },
-      {
-        "readinessMs": 64.1,
-        "wallObservationMs": 185.404,
-        "loadEventEndMs": 153,
-        "slowestSvgResponseEndMs": 42.9
-      },
-      {
-        "readinessMs": 65.7,
-        "wallObservationMs": 312.281,
-        "loadEventEndMs": 263.8,
-        "slowestSvgResponseEndMs": 38.9
-      },
-      {
-        "readinessMs": 70.8,
-        "wallObservationMs": 229.793,
-        "loadEventEndMs": 176.5,
-        "slowestSvgResponseEndMs": 46.4
-      },
-      {
-        "readinessMs": 58.2,
-        "wallObservationMs": 221.501,
-        "loadEventEndMs": 166,
-        "slowestSvgResponseEndMs": 34.8
-      },
-      {
-        "readinessMs": 59.4,
-        "wallObservationMs": 212.538,
-        "loadEventEndMs": 165.7,
-        "slowestSvgResponseEndMs": 35.7
-      },
-      {
-        "readinessMs": 65.8,
-        "wallObservationMs": 227.133,
-        "loadEventEndMs": 174.8,
-        "slowestSvgResponseEndMs": 41.2
-      },
-      {
-        "readinessMs": 62.5,
-        "wallObservationMs": 227.329,
-        "loadEventEndMs": 177.1,
-        "slowestSvgResponseEndMs": 37.3
-      },
-      {
-        "readinessMs": 62.6,
-        "wallObservationMs": 179.311,
-        "loadEventEndMs": 149.4,
+        "wallObservationMs": 180.01,
+        "loadEventEndMs": 145.5,
         "slowestSvgResponseEndMs": 40.3
       },
       {
-        "readinessMs": 51.6,
-        "wallObservationMs": 159.577,
-        "loadEventEndMs": 127.2,
-        "slowestSvgResponseEndMs": 32.3
+        "readinessMs": 53.1,
+        "wallObservationMs": 176.019,
+        "loadEventEndMs": 139.2,
+        "slowestSvgResponseEndMs": 33.8
       },
       {
-        "readinessMs": 48.6,
-        "wallObservationMs": 157.773,
-        "loadEventEndMs": 127,
-        "slowestSvgResponseEndMs": 31.4
+        "readinessMs": 56.2,
+        "wallObservationMs": 173.795,
+        "loadEventEndMs": 142.3,
+        "slowestSvgResponseEndMs": 38.3
       },
       {
-        "readinessMs": 52.5,
-        "wallObservationMs": 163.295,
-        "loadEventEndMs": 132.7,
-        "slowestSvgResponseEndMs": 34.9
+        "readinessMs": 57.5,
+        "wallObservationMs": 180.668,
+        "loadEventEndMs": 140.1,
+        "slowestSvgResponseEndMs": 38.7
       },
       {
-        "readinessMs": 50.6,
-        "wallObservationMs": 158.118,
-        "loadEventEndMs": 127,
-        "slowestSvgResponseEndMs": 33.5
+        "readinessMs": 55.7,
+        "wallObservationMs": 175.081,
+        "loadEventEndMs": 141.8,
+        "slowestSvgResponseEndMs": 36.3
+      },
+      {
+        "readinessMs": 58.7,
+        "wallObservationMs": 174.895,
+        "loadEventEndMs": 142,
+        "slowestSvgResponseEndMs": 40.1
+      },
+      {
+        "readinessMs": 57.1,
+        "wallObservationMs": 175.099,
+        "loadEventEndMs": 142.1,
+        "slowestSvgResponseEndMs": 38
+      },
+      {
+        "readinessMs": 64.1,
+        "wallObservationMs": 183.059,
+        "loadEventEndMs": 148.7,
+        "slowestSvgResponseEndMs": 43.2
+      },
+      {
+        "readinessMs": 62.9,
+        "wallObservationMs": 193.083,
+        "loadEventEndMs": 157.5,
+        "slowestSvgResponseEndMs": 42.7
+      },
+      {
+        "readinessMs": 60.4,
+        "wallObservationMs": 187.98,
+        "loadEventEndMs": 151.4,
+        "slowestSvgResponseEndMs": 39.9
+      },
+      {
+        "readinessMs": 65.1,
+        "wallObservationMs": 191.676,
+        "loadEventEndMs": 154.8,
+        "slowestSvgResponseEndMs": 43.8
+      },
+      {
+        "readinessMs": 58.7,
+        "wallObservationMs": 180.273,
+        "loadEventEndMs": 146.1,
+        "slowestSvgResponseEndMs": 38.7
+      },
+      {
+        "readinessMs": 68.6,
+        "wallObservationMs": 201.229,
+        "loadEventEndMs": 163.7,
+        "slowestSvgResponseEndMs": 47.4
+      },
+      {
+        "readinessMs": 68.5,
+        "wallObservationMs": 208.053,
+        "loadEventEndMs": 166.1,
+        "slowestSvgResponseEndMs": 45.3
+      },
+      {
+        "readinessMs": 66.6,
+        "wallObservationMs": 213.526,
+        "loadEventEndMs": 172.6,
+        "slowestSvgResponseEndMs": 41.7
+      },
+      {
+        "readinessMs": 74.3,
+        "wallObservationMs": 215.014,
+        "loadEventEndMs": 175.7,
+        "slowestSvgResponseEndMs": 50.9
+      },
+      {
+        "readinessMs": 67.5,
+        "wallObservationMs": 223.476,
+        "loadEventEndMs": 182.1,
+        "slowestSvgResponseEndMs": 41.2
+      },
+      {
+        "readinessMs": 72.9,
+        "wallObservationMs": 218.374,
+        "loadEventEndMs": 178.4,
+        "slowestSvgResponseEndMs": 47.2
+      },
+      {
+        "readinessMs": 67.7,
+        "wallObservationMs": 218.848,
+        "loadEventEndMs": 171.6,
+        "slowestSvgResponseEndMs": 43.8
+      },
+      {
+        "readinessMs": 66.6,
+        "wallObservationMs": 231.102,
+        "loadEventEndMs": 185.7,
+        "slowestSvgResponseEndMs": 42.1
+      },
+      {
+        "readinessMs": 72.4,
+        "wallObservationMs": 219.937,
+        "loadEventEndMs": 183.8,
+        "slowestSvgResponseEndMs": 46.5
+      },
+      {
+        "readinessMs": 62.7,
+        "wallObservationMs": 209.514,
+        "loadEventEndMs": 167.8,
+        "slowestSvgResponseEndMs": 41
+      },
+      {
+        "readinessMs": 81.5,
+        "wallObservationMs": 224.961,
+        "loadEventEndMs": 187.4,
+        "slowestSvgResponseEndMs": 53.8
+      },
+      {
+        "readinessMs": 146.7,
+        "wallObservationMs": 368.157,
+        "loadEventEndMs": 315.4,
+        "slowestSvgResponseEndMs": 40.7
+      },
+      {
+        "readinessMs": 66.5,
+        "wallObservationMs": 250.058,
+        "loadEventEndMs": 195.5,
+        "slowestSvgResponseEndMs": 38.5
+      },
+      {
+        "readinessMs": 73.5,
+        "wallObservationMs": 256.956,
+        "loadEventEndMs": 198.1,
+        "slowestSvgResponseEndMs": 44.8
+      },
+      {
+        "readinessMs": 71.3,
+        "wallObservationMs": 246.186,
+        "loadEventEndMs": 195.6,
+        "slowestSvgResponseEndMs": 42.1
+      },
+      {
+        "readinessMs": 72.4,
+        "wallObservationMs": 247.035,
+        "loadEventEndMs": 191.2,
+        "slowestSvgResponseEndMs": 43.7
+      },
+      {
+        "readinessMs": 72.2,
+        "wallObservationMs": 271.66,
+        "loadEventEndMs": 215.4,
+        "slowestSvgResponseEndMs": 44
+      },
+      {
+        "readinessMs": 66.4,
+        "wallObservationMs": 197.332,
+        "loadEventEndMs": 162.7,
+        "slowestSvgResponseEndMs": 40.6
       },
       {
         "readinessMs": 57.6,
-        "wallObservationMs": 171.372,
-        "loadEventEndMs": 137.8,
+        "wallObservationMs": 185.179,
+        "loadEventEndMs": 150.8,
+        "slowestSvgResponseEndMs": 38.3
+      },
+      {
+        "readinessMs": 61.7,
+        "wallObservationMs": 192.244,
+        "loadEventEndMs": 155.3,
+        "slowestSvgResponseEndMs": 39.6
+      },
+      {
+        "readinessMs": 62.6,
+        "wallObservationMs": 187.902,
+        "loadEventEndMs": 150.1,
+        "slowestSvgResponseEndMs": 42.1
+      },
+      {
+        "readinessMs": 59.5,
+        "wallObservationMs": 186.811,
+        "loadEventEndMs": 153.9,
+        "slowestSvgResponseEndMs": 39.4
+      },
+      {
+        "readinessMs": 62.8,
+        "wallObservationMs": 194.092,
+        "loadEventEndMs": 155.8,
+        "slowestSvgResponseEndMs": 43.1
+      },
+      {
+        "readinessMs": 62.5,
+        "wallObservationMs": 192.978,
+        "loadEventEndMs": 152.9,
+        "slowestSvgResponseEndMs": 42.2
+      },
+      {
+        "readinessMs": 60.5,
+        "wallObservationMs": 189.715,
+        "loadEventEndMs": 151.6,
         "slowestSvgResponseEndMs": 39.5
       },
       {
-        "readinessMs": 51.8,
-        "wallObservationMs": 165.861,
-        "loadEventEndMs": 129.5,
-        "slowestSvgResponseEndMs": 34
+        "readinessMs": 68,
+        "wallObservationMs": 207.937,
+        "loadEventEndMs": 166.5,
+        "slowestSvgResponseEndMs": 45.9
       },
       {
-        "readinessMs": 59.3,
-        "wallObservationMs": 172.62,
-        "loadEventEndMs": 141.2,
-        "slowestSvgResponseEndMs": 40.4
+        "readinessMs": 62.5,
+        "wallObservationMs": 196.057,
+        "loadEventEndMs": 156.9,
+        "slowestSvgResponseEndMs": 39.5
       },
       {
-        "readinessMs": 55.5,
-        "wallObservationMs": 169.299,
-        "loadEventEndMs": 139.8,
-        "slowestSvgResponseEndMs": 36.9
+        "readinessMs": 67.9,
+        "wallObservationMs": 206.217,
+        "loadEventEndMs": 169.2,
+        "slowestSvgResponseEndMs": 44.3
       },
       {
-        "readinessMs": 53,
-        "wallObservationMs": 168.369,
-        "loadEventEndMs": 137.9,
-        "slowestSvgResponseEndMs": 34.2
+        "readinessMs": 67.6,
+        "wallObservationMs": 206.194,
+        "loadEventEndMs": 166.5,
+        "slowestSvgResponseEndMs": 48
       },
       {
-        "readinessMs": 64.8,
-        "wallObservationMs": 182.079,
-        "loadEventEndMs": 149.1,
-        "slowestSvgResponseEndMs": 42.4
+        "readinessMs": 64.2,
+        "wallObservationMs": 212.333,
+        "loadEventEndMs": 174,
+        "slowestSvgResponseEndMs": 41.8
       },
       {
-        "readinessMs": 52.2,
-        "wallObservationMs": 180.784,
-        "loadEventEndMs": 140.9,
-        "slowestSvgResponseEndMs": 33.6
+        "readinessMs": 76.6,
+        "wallObservationMs": 221.459,
+        "loadEventEndMs": 183.8,
+        "slowestSvgResponseEndMs": 52.8
       },
       {
-        "readinessMs": 59.2,
-        "wallObservationMs": 180.709,
-        "loadEventEndMs": 146.4,
-        "slowestSvgResponseEndMs": 38.9
+        "readinessMs": 67.4,
+        "wallObservationMs": 231.157,
+        "loadEventEndMs": 184.9,
+        "slowestSvgResponseEndMs": 45
       },
       {
-        "readinessMs": 62.1,
-        "wallObservationMs": 182.804,
-        "loadEventEndMs": 147,
-        "slowestSvgResponseEndMs": 42.3
-      },
-      {
-        "readinessMs": 61.6,
-        "wallObservationMs": 185.097,
-        "loadEventEndMs": 149.6,
-        "slowestSvgResponseEndMs": 41.4
+        "readinessMs": 84.6,
+        "wallObservationMs": 231.334,
+        "loadEventEndMs": 194.3,
+        "slowestSvgResponseEndMs": 57.3
       }
     ],
     "distribution": {
-      "minMs": 44.1,
-      "p50Ms": 54,
-      "p90Ms": 62.6,
-      "p95Ms": 64.8,
-      "p99Ms": 67.9,
-      "maxMs": 70.8,
-      "overP95BudgetCount": 0,
+      "minMs": 45.2,
+      "p50Ms": 58.8,
+      "p90Ms": 72.2,
+      "p95Ms": 74.1,
+      "p99Ms": 84.6,
+      "maxMs": 146.7,
+      "overP95BudgetCount": 1,
       "overP99BudgetCount": 0
     },
-    "p95LoadMs": 64.8,
-    "p99LoadMs": 67.9,
+    "p95LoadMs": 74.1,
+    "p99LoadMs": 84.6,
     "maxP95Ms": 100,
     "maxP99Ms": 200
   },
   "provenance": {
-    "sourceRevisionAtCapture": "f3ac87d52dec3e0f3713ff1f8fa0b6b3cc49de4b",
-    "sourceTreeAtCapture": "60356fa9fec87c9914a0450dbec7c18018968c9a",
+    "sourceRevisionAtCapture": "fff11d62463b2720ecfc0e70be5a5304f2784a62",
+    "sourceTreeAtCapture": "aea178f5a4ffe2efb3974ed7e5d21b0e0532a2a6",
     "sourceTreeCleanAtCapture": true,
     "candidateSourceInputsSha256": "7695590064376a9e3df772b9c5a90d6a59fee01b1749cc208ab199251cf07c51",
     "renderBaselineSha256": "37d9c1e7875e997d43ddbb8ca349056b83ae95d5a4415c2414b9a4b168836e67",
-    "renderBaselineRecordedDuringCapture": true,
+    "renderBaselineRecordedDuringCapture": false,
     "generatedSiteSha256": "adf94767d9057fc93a7b09a0c292a3a1b44efe0bddd813dc4b70e725d9cff12c",
     "browserPreflightSha256": "e00254873ca6801a58d6dc6bd246511540127800dfa2345b200b90037c05c687",
     "browserPreflightMeasurementSubject": false,
@@ -817,7 +817,7 @@
           "handbookCaption": "The safety boundary encloses checked reachable states; one mutated transition escapes to a concrete violating path. effects-off view",
           "transcriptSummary": "Safety-boundary diagram transcript",
           "transcript": "The safe region contains reachable combat states from one hundred vitality through zero vitality with incapacity aligned. A deliberately mutated bound permits vitality minus one, placing the successor outside the boundary. The diagram explains a checked predicate and adds no model state.",
-          "handbookScreenshotSha256": "5ebef91b19dce9c9aa874382f44abe7dd53ce9a6ac4d82bbc4f10af64f8294e4",
+          "handbookScreenshotSha256": "f35423be5414d93995c1282926a7572c36faa9fcceddfeb25f8f83d428811cc7",
           "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
           "renderedFingerprint": "bb926bb257873abbda7dd8b951a383071a8c7b5dcb2e9142d544f10f734a6795",
           "screenshotSha256": "5e03ecf4288ab7a82ce50355e4ab9c2c005778ca08d50182446e7944b1eed6df"
@@ -902,7 +902,7 @@
           "handbookCaption": "The safety boundary encloses checked reachable states; one mutated transition escapes to a concrete violating path. effects-off view",
           "transcriptSummary": "Safety-boundary diagram transcript",
           "transcript": "The safe region contains reachable combat states from one hundred vitality through zero vitality with incapacity aligned. A deliberately mutated bound permits vitality minus one, placing the successor outside the boundary. The diagram explains a checked predicate and adds no model state.",
-          "handbookScreenshotSha256": "d715723d896049e83b96db43ba59e6ebd932949aa3b67f173962d64b830c32c5",
+          "handbookScreenshotSha256": "e282e27d76ae71e5a54cb3e5c31c1cae61234ae3f5b55ab4752d31af5271e653",
           "semanticFingerprint": "00910ef108b69df37b69925a62f45199c410d87dd43a165042de206a9feee8f5",
           "renderedFingerprint": "e1eb1851f961b8b05a5235ea905f09c8a5b5a181e95d306f835a79b49ec524cf",
           "screenshotSha256": "df55489ef62facc605c1f8683919c41d0b1d366aa83594068250d302696da7bf"
@@ -925,7 +925,7 @@
           "handbookScreenshotSha256": null,
           "semanticFingerprint": "2d9f229abff442cced5bbe82a256ee906f37f2bf54362f68e3e4c3eaec44aca0",
           "renderedFingerprint": "6352906a431359895c38d13e84317a073afca5178f00a1a44d810c8dbf38469d",
-          "screenshotSha256": "c73b7fa66e57bc75eaeb290eb439a5068357dccda4b96f63a061cfb0015b1458"
+          "screenshotSha256": "72965725b291abe31ebfc3eb0744bff771428c8bb2484a156c6ac2375d8ce7ab"
         },
         {
           "id": "state-action",
@@ -977,7 +977,7 @@
           "handbookScreenshotSha256": null,
           "semanticFingerprint": "b5b32aa0df67814040f595e830b9c1db7af4aa85c8968833cbd7419350b3517a",
           "renderedFingerprint": "73d4b86b6a70eb6d8439243534aa46c5d4e085b2fd67bff280baea4b4ec70e75",
-          "screenshotSha256": "d9829f34596a3474a1981cc3dfe3a047f829a07d505262af2f2e25937e15813a"
+          "screenshotSha256": "d03758ac5c9aae30855adc702af5321cfe2dcac6119034ba9d538f7035046843"
         },
         {
           "id": "invariant-boundary",

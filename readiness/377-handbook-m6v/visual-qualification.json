@@ -2,12 +2,12 @@
   "schema": "sir.handbook.visual-qualification/v1",
   "workloadId": "handbook-m6v-six-diagram-render-v1",
   "workloadDefinitionDigest": "sha256:158170af5de2d37e3d10982e2bdce2dc25cb13cfb9c7d76b186f1cef6a51a86b",
-  "sourceTreeDigest": "9224f1ebab54529ab554dcdd0810fb3bc0e07c0058147336ab2ab718135549f6",
+  "sourceTreeDigest": "a264e3bc8b1d9a1e4ec0ad765bed0984a836f480390e2764bd3feeb5297bb7e5",
   "result": "pass",
   "counters": {
     "diagrams": 6,
-    "elements": 151,
-    "bytes": 25169,
+    "elements": 153,
+    "bytes": 26274,
     "animatedElements": 7
   },
   "budgets": {
@@ -28,17 +28,17 @@
       "id": "attack-pipeline",
       "kind": "concrete-mechanics",
       "elements": 30,
-      "bytes": 4942,
+      "bytes": 5866,
       "animatedElements": 1,
-      "sha256": "9e27b14150b951148e14069753f80aa9598d5d0cafd91d0658ec6959d3dce66d"
+      "sha256": "800d3f53b0540ecaedc0169d658570c590c7c31d902fc969af92bfad63f280a5"
     },
     {
       "id": "state-action",
       "kind": "abstract-state",
       "elements": 27,
-      "bytes": 4144,
+      "bytes": 4174,
       "animatedElements": 2,
-      "sha256": "98919980c0a21a06a673eccd68c62385b8b28312e4da49a19fd4a166ed490904"
+      "sha256": "b1802dbc15cc80a20bc777d24c375e47106787fc50c9496cd392b5ad8daf0153"
     },
     {
       "id": "rule-dependency",
@@ -59,18 +59,18 @@
     {
       "id": "trace-counterexample",
       "kind": "abstract-trace",
-      "elements": 20,
-      "bytes": 3708,
+      "elements": 22,
+      "bytes": 3845,
       "animatedElements": 1,
-      "sha256": "58c793303271ad967dc874f012ae08d9c2523055c59f5d2595d19684591a8222"
+      "sha256": "006dc86a444dbf6f5e1ad78307977a8bc54585deb73380f9d63cf612c6eb5adf"
     },
     {
       "id": "invariant-boundary",
       "kind": "abstract-invariant",
       "elements": 20,
-      "bytes": 3451,
+      "bytes": 3465,
       "animatedElements": 1,
-      "sha256": "edd6e01b847e7486887fc3fd49774b0d49e0527bfd52f998d424636b5e1a5ff6"
+      "sha256": "208bd14ba9c48e417e645bafb11b9eee66c6f1ba1ac72e0beb406b0f7c12ffa2"
     }
   ]
 }
