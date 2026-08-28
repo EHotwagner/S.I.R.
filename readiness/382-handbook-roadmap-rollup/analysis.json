@@ -37,6 +37,16 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/382-handbook-roadmap-rollup/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "6fdcf97668b32c1a868707fa221745b1911a78bae17d60452a3a55a9ed36dfee"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/382-handbook-roadmap-rollup/checklist.md",
       "kind": "checklist",
       "digest": {
@@ -51,7 +61,7 @@
       "kind": "clarification",
       "digest": {
         "algorithm": "sha256",
-        "value": "7de53340b13604d5c8fec01805c18e516f8ee67dcc6b1dc8c5de6fbc8a84c3a0"
+        "value": "1bcc0cbd3f6091bbe976fddb3089caf0ee0f01e7e6794e7b7a26ae8e7fb40d7e"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +71,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "21df815d19025f3219c023bd6cf94d72be1b8e32dc0c5c4c75979ec302a26c01"
+        "value": "b3781d491017993b3df8ca8d83117c888eff7530354b7a7bb4285ddbe23ac62d"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -71,7 +81,7 @@
       "kind": "specification",
       "digest": {
         "algorithm": "sha256",
-        "value": "43bce9d48150ca86e4af21fb6f58eab2a2aa248521f82507c1d4a23904f906a3"
+        "value": "0c1e4a290076521f0d4df4472bc7d8ca021108c56b1241b3ecf2ef97cf67dadd"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "47292ee0ddf5a1ec9780a0da27040357134c615279042d384e88c6c847b40588"
+        "value": "9e8d968985c64d6d55597cea2d98b8433bf50ae47a3f8c81de5c4664428045eb"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -726,7 +736,7 @@
     {
       "path": "readiness/382-handbook-roadmap-rollup/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],

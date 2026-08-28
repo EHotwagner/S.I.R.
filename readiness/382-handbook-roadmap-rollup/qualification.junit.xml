@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuite name="sir-handbook-roadmap-rollup" tests="4" failures="0" errors="0" skipped="0">
   <testcase classname="SIR.HandbookRoadmapRollup" name="complete-cycle-and-checkpoint-coverage"/>
-  <testcase classname="SIR.HandbookRoadmapRollup" name="six-observed-red-restored-green-controls"/>
+  <testcase classname="SIR.HandbookRoadmapRollup" name="nine-observed-red-restored-green-controls"/>
   <testcase classname="SIR.HandbookRoadmapRollup" name="twelve-feedback-state-bindings"/>
   <testcase classname="SIR.HandbookRoadmapRollup" name="strict-documentation-build"/>
 </testsuite>

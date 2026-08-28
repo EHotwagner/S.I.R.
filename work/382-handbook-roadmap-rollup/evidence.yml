@@ -11,7 +11,7 @@ sourceAnalysis: readiness/382-handbook-roadmap-rollup/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/382-handbook-roadmap-rollup/analysis.json
-    digest: c80582c18ba6f74bb14359dbe6d768dbfb53c51a69b15c1d97e107f68a6ac4bc
+    digest: 8e273606078347d5ea1c53acac1bda043fd5ba6a1aa96494fa4af5332d52ab59
     schemaVersion: 1
   - label: checklist
     path: work/382-handbook-roadmap-rollup/checklist.md
@@ -19,15 +19,15 @@ sourceSnapshots:
     schemaVersion: 1
   - label: clarifications
     path: work/382-handbook-roadmap-rollup/clarifications.md
-    digest: 7de53340b13604d5c8fec01805c18e516f8ee67dcc6b1dc8c5de6fbc8a84c3a0
+    digest: 1bcc0cbd3f6091bbe976fddb3089caf0ee0f01e7e6794e7b7a26ae8e7fb40d7e
     schemaVersion: 1
   - label: plan
     path: work/382-handbook-roadmap-rollup/plan.md
-    digest: 21df815d19025f3219c023bd6cf94d72be1b8e32dc0c5c4c75979ec302a26c01
+    digest: b3781d491017993b3df8ca8d83117c888eff7530354b7a7bb4285ddbe23ac62d
     schemaVersion: 1
   - label: spec
     path: work/382-handbook-roadmap-rollup/spec.md
-    digest: 43bce9d48150ca86e4af21fb6f58eab2a2aa248521f82507c1d4a23904f906a3
+    digest: 0c1e4a290076521f0d4df4472bc7d8ca021108c56b1241b3ecf2ef97cf67dadd
     schemaVersion: 1
   - label: tasks
     path: work/382-handbook-roadmap-rollup/tasks.yml
@@ -54,7 +54,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -81,7 +81,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -108,7 +108,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -135,7 +135,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -162,7 +162,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -189,7 +189,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -216,7 +216,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -243,7 +243,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -270,7 +270,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -297,7 +297,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -324,7 +324,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -351,7 +351,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -378,7 +378,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -405,7 +405,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -432,7 +432,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -459,7 +459,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -486,7 +486,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -513,7 +513,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -540,7 +540,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -567,7 +567,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -594,7 +594,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -621,7 +621,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -648,7 +648,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4
@@ -675,7 +675,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/382-handbook-roadmap-rollup/qualification.junit.xml
-      digest: "sha256:408a9c65de5ba39f69d598d144eb965f80f6fac83a54bd941e46085e69a2d909"
+      digest: "sha256:05dc60a0113d8398cb25cfca906364c1dabe498beafd1267e05a5572dc34bc10"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 4

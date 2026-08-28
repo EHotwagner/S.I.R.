@@ -25,13 +25,33 @@ const delivery = {
   "m7-publication-handoff": [380, "381", "fd0b3d7", "33139897624 (success)", "33140097398 (success)"],
 };
 
-const deduplicated = new Map([
-  ["ci-handoff-repair#1", "Existing S.I.R. issue #368 owned the missing protected handoff and delivered PR #369."],
-  ["m2-representative-attack#5", "Duplicate of the unchanged-main invalidation cause routed by the bound report to FS-GG/.github#2852."],
-  ["m3-complete-rules#5", "Duplicate of the same unchanged-main invalidation cause routed by the bound reports to FS-GG/.github#2852."],
-  ["pages-timeout-repair#1", "Existing S.I.R. issue #370 owned the external Pages timeout and delivered PR #371."],
+const nonPositiveJudgements = new Map([
+  ["ci-handoff-repair#1", ["deduplicated existing issue", "The bound report and audit classify the missing protected site handoff as a new defect already owned by S.I.R. #368; PR #369 repaired that exact output-identity route, so this roll-up deduplicates rather than reopens it."]],
+  ["ci-main-routing#2", ["accepted observation", "The bound report accepts this authoring friction because analyze rejected every placeholder and the cycle replaced them with concrete route, receipt, Pages, migration, and verification decisions before implementation; no residual defect or external owner remained."]],
+  ["ci-main-routing#4", ["accepted observation", "The bound report keeps the optional refresh side effect as confidence-limited cycle friction: readiness was generated, unrelated projections were removed, and retained evidence is insufficient to assign a distinct actionable root cause."]],
+  ["m0-authority-inventory#1", ["accepted observation", "The bound report treats the main-versus-candidate authority distinction as resolved cycle orchestration: M0 inventoried both identities explicitly and the Q4 authority dependency subsequently landed, leaving no independent follow-up."]],
+  ["m0-authority-inventory#3", ["accepted observation", "The bound report accepts this first-build prerequisite because locked npm installation restored the documented Vite route in the isolated worktree; it records onboarding cost without claiming a separate product defect."]],
+  ["m0-authority-inventory#4", ["deduplicated existing issue", "The bound report says existing issue and its audit says duplicate: the identical seventeen-error unchanged-main result was routed through FS-GG/.github#2856 to the distribution-authority successor FS-GG/.github#2852, so it is not an M0-specific finding."]],
+  ["m1-linked-skeleton#1", ["accepted observation", "The bound report accepts the fresh-worktree restore prerequisite as onboarding friction: locked restore made prepare-site-only pass, while the cycle retained the prerequisite rather than attributing a new semantic or renderer defect."]],
+  ["m1-linked-skeleton#4", ["structured finding", "The bound report records a product fix and the audit confirms the pre-merge defect: the in-app manifest omitted explicit HTML anchors, then M1 repaired fragment inventory and retained a detector that rejects the original escape."]],
+  ["m1-linked-skeleton#5", ["structured finding", "The bound report records a product fix and the audit verifies both hosted policy failures; M1 removed the redundant S.I.R. prefixes and preserved the hosted documentation gate that exposed the bounded local-route gap."]],
+  ["m2-representative-attack#3", ["deduplicated existing issue", "The bound report marks this an existing duplicate of the M0/M1 SDK-host envelope and related item 277 analysis; clearing the inherited resolver variables restored rendering, so M2 adds evidence but no new scope."]],
+  ["m2-representative-attack#4", ["structured finding", "The bound report accepts the repaired quality gap and its audit verifies the corrected receipts: exact-head review caught over-attribution, then M2 split docs, links, focused mutation, and runtime evidence before emitting the aggregate."]],
+  ["m2-representative-attack#5", ["deduplicated existing issue", "The bound report says existing issue and the audit confirms the duplicate unchanged-main invalidation cause; FS-GG/.github#2852 remains the distribution-authority successor, so no M2-specific issue is created."]],
+  ["m3-complete-rules#1", ["accepted observation", "The bound report accepts this bounded orchestration exception because the host explicitly dispatched outside pnext, the missing receipt was not fabricated, and the cycle proceeded under that declared boundary without weakening claim semantics."]],
+  ["m3-complete-rules#5", ["deduplicated existing issue", "The bound report identifies the same historical invalidation baseline already carried by M2 and the audit accepts that attribution; FS-GG/.github#2852 owns the root cause, so M3 contributes no distinct finding."]],
+  ["m3-complete-rules#6", ["structured finding", "The bound report and audit accept the repaired exact-head quality gap: review found a nonexistent recovery subject, stale forward wording, and ambiguous receipt language, all corrected before merge and covered by the final qualification."]],
+  ["m4-formal-reasoning#2", ["deduplicated existing issue", "The bound report says existing issue and its audit says duplicate: the absent consumer-relative lifecycle examples recur from earlier S.I.R. reports and closed FS-GG/FS.GG.SDD#539; the M3 corpus supplied the bounded fallback."]],
+  ["m4-formal-reasoning#4", ["accepted observation", "The bound report deliberately does not promote the refresh incident: seven transient files were cleaned, but no command transcript or exact before/after inventory was retained, so actionable attribution would exceed the evidence."]],
+  ["m5-runtime-correspondence#1", ["structured finding", "The bound report classifies this as an actionable product fix and the audit verifies the milestone-local assertion: inherited semantic gates pass, but the M4 aggregate rejects a descendant solely because M4 is no longer newly checked; this remains an explicit harness finding rather than accepted friction."]],
+  ["m5-runtime-correspondence#4", ["accepted observation", "The bound report records procedural friction rather than a product defect: verify correctly rejected self-attestation, and the documented test-report import produced twenty-one observed receipts and shipReady without weakening evidence policy."]],
+  ["m6-index-link-enforcement#1", ["accepted observation", "The bound report accepts the recurring SDK resolver friction because no matching open or closed issue owns this exact docs route; the explicit environment cleanup is retained as the bounded qualification envelope rather than falsely deduplicated."]],
+  ["m6v-visual-explanations#1", ["accepted observation", "The bound report and audit call the cause a recurrence of closed FS-GG/.github#2698 but explicitly accept the residual gap: that issue added Ready-transition refusal, while neither it nor #2728 owns automatic route authoring, so there is no live issue to deduplicate to."]],
+  ["m6v-visual-explanations#3", ["structured finding", "The bound report accepts the repaired quality gap and the audit verifies its measurement boundary: browser-init decode timing plus an in-subject delay control replaced nested-context and caller-delay measurements before landing."]],
+  ["m7-publication-handoff#1", ["accepted observation", "The bound report and audit identify recurrence of the closed #2698 residual route-authoring cause yet retain an accepted observation: the recorder still lacks digest authoring, but no current issue owns that bounded CLI gap and the final route is valid."]],
+  ["m7-publication-handoff#3", ["accepted observation", "The bound report accepts this self-owned one-cycle orchestration error because issue and route history verify widening before further edits, no external duplicate exists, and the final claim/touch-set is exact."]],
+  ["pages-timeout-repair#1", ["deduplicated existing issue", "The bound report and audit classify the external deployment timeout as a new defect already owned by S.I.R. #370; PR #371 raised the bounded Pages timeout and proved deployment, so this roll-up deduplicates it."]],
 ]);
-const structured = new Set(["m1-linked-skeleton#4", "m1-linked-skeleton#5", "m2-representative-attack#4", "m3-complete-rules#6", "m6v-visual-explanations#3"]);
 
 function need(condition, message) {
   if (!condition) throw new Error(message);
@@ -60,10 +80,12 @@ function marker(name, value) {
 function dispositionFor(short, sequence, row) {
   const key = `${short}#${sequence}`;
   if (row.kind === "positive-pattern") return ["positive pattern", `Accepted from the ${row.phase} checkpoint; retained evidence: ${row.evidence}`];
-  if (deduplicated.has(key)) return ["deduplicated existing issue", `${deduplicated.get(key)} Retained evidence: ${row.evidence}`];
-  if (structured.has(key)) return ["structured finding", `The originating cycle repaired this ${row.kind} before landing; retained repair evidence: ${row.evidence}`];
-  return ["accepted observation", `Accepted as a cycle-bounded ${row.kind} after the bound schema-v2 audit; retained evidence: ${row.evidence}`];
+  const judgement = nonPositiveJudgements.get(key);
+  need(judgement, `missing checkpoint-specific non-positive judgement: ${key}`);
+  return [judgement[0], `${judgement[1]} Retained evidence: ${row.evidence}`];
 }
+
+function occurrences(text, value) { return text.split(value).length - 1; }
 
 function load(root, overrides = new Map()) {
   const read = rel => overrides.has(rel) ? overrides.get(rel) : readFileSync(join(root, rel), "utf8");
@@ -125,6 +147,7 @@ function validate(root, reportOverride, overrides = new Map()) {
   const expectedCount = state.cycles.reduce((sum, cycle) => sum + cycle.rows.length, 0);
   need(checkpointRows.length === expectedCount, `omitted checkpoint: report=${checkpointRows.length} actual=${expectedCount}`);
   const keys = new Set();
+  const nonPositiveRationales = new Set();
   const counts = Object.fromEntries([...dispositions].map(value => [value, 0]));
   for (const cycle of state.cycles) {
     cycle.rows.forEach((source, index) => {
@@ -136,8 +159,21 @@ function validate(root, reportOverride, overrides = new Map()) {
       need(row.phase === source.phase && row.kind === source.kind && row.summary === source.summary && row.evidence === source.evidence, `checkpoint binding mismatch: ${key}`);
       need(dispositions.has(row.disposition), `invalid disposition: ${key}=${row.disposition}`);
       need(typeof row.rationale === "string" && row.rationale.includes(source.evidence), `checkpoint rationale does not cite retained evidence: ${key}`);
+      const expected = dispositionFor(cycle.short, index + 1, source);
+      need(row.disposition === expected[0] && row.rationale === expected[1], `checkpoint-specific rationale mismatch: ${key}`);
+      if (source.kind !== "positive-pattern") {
+        need(!row.rationale.startsWith("Accepted as a cycle-bounded"), `generic non-positive rationale: ${key}`);
+        const judgementText = row.rationale.slice(0, row.rationale.lastIndexOf(" Retained evidence:"));
+        need(judgementText.length > 0, `missing checkpoint-specific judgement: ${key}`);
+        need(!nonPositiveRationales.has(judgementText), `duplicated non-positive rationale: ${key}`);
+        nonPositiveRationales.add(judgementText);
+      }
+      const visible = checkpointLine(cycle.short, index + 1, source, row.disposition, row.rationale);
+      need(occurrences(report, visible) === 1, `visible checkpoint row drift: ${key}`);
       counts[row.disposition] += 1;
     });
+    const visibleCycle = cycleLine(cycle);
+    need(occurrences(report, visibleCycle) === 1, `visible delivery row drift: ${cycle.cycle}`);
   }
   const declaredCycles = Number(report.match(/^- \*\*Cycles:\*\* (\d+)$/m)?.[1]);
   const declaredCheckpoints = Number(report.match(/^- \*\*Checkpoint records:\*\* (\d+)$/m)?.[1]);
@@ -153,6 +189,14 @@ function linkIssue(number) { return `[S.I.R. #${number}](https://github.com/EHot
 function linkPr(value) { return value.split(" + ").map(part => { const n = part.match(/\d+/)?.[0]; return n ? `[${part}](https://github.com/EHotwagner/S.I.R./pull/${n})` : part; }).join(" + "); }
 function linkRun(value) { const n = value.match(/^\d+/)?.[0]; return n ? `[${value}](https://github.com/EHotwagner/S.I.R./actions/runs/${n})` : value; }
 function linkFile(label, path) { return `[${label}](https://github.com/EHotwagner/S.I.R./blob/main/${path})`; }
+function cycleLine(cycle) {
+  const d = delivery[cycle.short];
+  need(d, `missing delivery mapping: ${cycle.short}`);
+  return `| \`${cycle.short}\` | ${linkFile("report", cycle.report)} / ${linkFile("audit", cycle.audit)} / ${linkFile("checkpoints", cycle.checkpoint)} | ${cycle.rows.length} | ${cycle.phases} | ${linkIssue(d[0])} / ${linkPr(d[1])} | \`${d[2]}\` | ${linkRun(d[3])} | ${linkRun(d[4])} |`;
+}
+function checkpointLine(short, sequence, row, disposition, rationale) {
+  return `- **\`${short}#${sequence}\` — ${disposition}.** ${row.summary} Evidence: \`${row.evidence}\` Rationale: ${rationale}`;
+}
 
 function render(root) {
   const state = load(root);
@@ -163,14 +207,12 @@ function render(root) {
   const checkpointLines = [];
   const checkpointMarkers = [];
   for (const cycle of state.cycles) {
-    const d = delivery[cycle.short];
-    need(d, `missing delivery mapping: ${cycle.short}`);
-    cycleLines.push(`| \`${cycle.short}\` | ${linkFile("report", cycle.report)} / ${linkFile("audit", cycle.audit)} / ${linkFile("checkpoints", cycle.checkpoint)} | ${cycle.rows.length} | ${cycle.phases} | ${linkIssue(d[0])} / ${linkPr(d[1])} | \`${d[2]}\` | ${linkRun(d[3])} | ${linkRun(d[4])} |`);
+    cycleLines.push(cycleLine(cycle));
     cycleMarkers.push(marker("roadmap-rollup-cycle", { cycle: cycle.cycle, report: cycle.report, audit: cycle.audit, checkpoint: cycle.checkpoint, count: cycle.rows.length, phases: cycle.phases }));
     cycle.rows.forEach((row, index) => {
       const [disposition, rationale] = dispositionFor(cycle.short, index + 1, row);
       counts[disposition] += 1;
-      checkpointLines.push(`- **\`${cycle.short}#${index + 1}\` — ${disposition}.** ${row.summary} Evidence: \`${row.evidence}\` Rationale: ${rationale}`);
+      checkpointLines.push(checkpointLine(cycle.short, index + 1, row, disposition, rationale));
       checkpointMarkers.push(marker("roadmap-rollup-checkpoint", { cycle: cycle.cycle, sequence: index + 1, phase: row.phase, kind: row.kind, summary: row.summary, evidence: row.evidence, disposition, rationale }));
     });
   }
@@ -240,8 +282,9 @@ node work/382-handbook-roadmap-rollup/audit-roadmap-rollup.mjs --self-test
 bash work/382-handbook-roadmap-rollup/qualify-roadmap-rollup.sh
 \`\`\`
 
-The self-test isolates six defects: omitted cycle, omitted checkpoint, wrong report/audit binding,
-count mismatch, invalid disposition, and unchecked milestone. Each must observe its named red before
+The self-test isolates nine defects: omitted cycle, omitted checkpoint, wrong report/audit binding,
+count mismatch, invalid disposition, unchecked milestone, reader-visible delivery drift, generic
+rationale, and duplicated rationale. Each must observe its named red before
 the untouched repository restores green. The owner qualifier also reruns all three existing feedback
 validators for every derived cycle and the strict documentation build.
 
@@ -260,9 +303,22 @@ if (process.argv.includes("--write-report")) {
   console.log(`roadmap-rollup: wrote ${reportPath}`);
 } else if (process.argv.includes("--self-test")) {
   const pristine = readFileSync(join(root, reportPath), "utf8");
-  const firstPositive = markers(pristine, "roadmap-rollup-checkpoint").find(row => row.disposition === "positive pattern");
+  const pristineRows = markers(pristine, "roadmap-rollup-checkpoint");
+  const firstPositive = pristineRows.find(row => row.disposition === "positive pattern");
   const invalid = { ...firstPositive, disposition: "closed" };
   const invalidDispositionReport = pristine.replace(marker("roadmap-rollup-checkpoint", firstPositive), marker("roadmap-rollup-checkpoint", invalid));
+  const nonPositive = pristineRows.filter(row => row.disposition !== "positive pattern");
+  const genericRationale = `Accepted as a cycle-bounded ${nonPositive[0].kind} after the bound schema-v2 audit; retained evidence: ${nonPositive[0].evidence}`;
+  const genericRow = { ...nonPositive[0], rationale: genericRationale };
+  const genericRationaleReport = pristine
+    .replace(checkpointLine(nonPositive[0].cycle.slice(cyclePrefix.length), nonPositive[0].sequence, nonPositive[0], nonPositive[0].disposition, nonPositive[0].rationale), checkpointLine(nonPositive[0].cycle.slice(cyclePrefix.length), nonPositive[0].sequence, nonPositive[0], nonPositive[0].disposition, genericRationale))
+    .replace(marker("roadmap-rollup-checkpoint", nonPositive[0]), marker("roadmap-rollup-checkpoint", genericRow));
+  const firstJudgement = nonPositive[0].rationale.slice(0, nonPositive[0].rationale.lastIndexOf(" Retained evidence:"));
+  const duplicatedRationale = `${firstJudgement} Retained evidence: ${nonPositive[1].evidence}`;
+  const duplicatedRow = { ...nonPositive[1], rationale: duplicatedRationale };
+  const duplicatedRationaleReport = pristine
+    .replace(checkpointLine(nonPositive[1].cycle.slice(cyclePrefix.length), nonPositive[1].sequence, nonPositive[1], nonPositive[1].disposition, nonPositive[1].rationale), checkpointLine(nonPositive[1].cycle.slice(cyclePrefix.length), nonPositive[1].sequence, nonPositive[1], nonPositive[1].disposition, duplicatedRationale))
+    .replace(marker("roadmap-rollup-checkpoint", nonPositive[1]), marker("roadmap-rollup-checkpoint", duplicatedRow));
   const cases = [
     ["omitted-cycle", pristine.replace(/^<!-- roadmap-rollup-cycle .*? -->\n/m, ""), new Map(), /omitted cycle/],
     ["omitted-checkpoint", pristine.replace(/^<!-- roadmap-rollup-checkpoint .*? -->\n/m, ""), new Map(), /omitted checkpoint/],
@@ -270,6 +326,9 @@ if (process.argv.includes("--write-report")) {
     ["count-mismatch", pristine.replace("- **Checkpoint records:** 48", "- **Checkpoint records:** 47"), new Map(), /checkpoint total mismatch/],
     ["invalid-disposition", invalidDispositionReport, new Map(), /invalid disposition/],
     ["unchecked-milestone", pristine, new Map([[roadmapPath, readFileSync(join(root, roadmapPath), "utf8").replace("### - [x] M7", "### - [ ] M7")]]), /unchecked milestone/],
+    ["visible-delivery-drift", pristine.replace("[S.I.R. #368](https://github.com/EHotwagner/S.I.R./issues/368)", "[S.I.R. #999](https://github.com/EHotwagner/S.I.R./issues/999)"), new Map(), /visible delivery row drift/],
+    ["generic-rationale", genericRationaleReport, new Map(), /checkpoint-specific rationale mismatch|generic non-positive rationale/],
+    ["duplicated-rationale", duplicatedRationaleReport, new Map(), /checkpoint-specific rationale mismatch|duplicated non-positive rationale/],
   ];
   for (const [name, report, overrides, expected] of cases) {
     let observed = "";

@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/382-handbook-roadmap-rollup/ship.json",
-      "digest": "sha256:371001dee5e7bb171ed2c7a2333f88bc738db4de6e60d1133be8d068275e73b9",
+      "digest": "sha256:e51f0b7a2ae81953f715730d665d689dd75b395500cacc6327f9e902ef853754",
       "schemaVersion": 1
     },
     {
       "path": "readiness/382-handbook-roadmap-rollup/verify.json",
-      "digest": "sha256:64e950b05835755cb39db97bdee2052d593dcd07e835d9cfe5dcd8718a3b00fd",
+      "digest": "sha256:8705d2ff5b78c361dabdd4e3e1a14c849fed8d27a5c58f0dacba6967e6c013f8",
       "schemaVersion": 1
     },
     {
       "path": "readiness/382-handbook-roadmap-rollup/work-model.json",
-      "digest": "sha256:d2f1d33efd00facfb0a9a0aeefa1906ccf7522822ebaab04ed7f1481470b1f5f",
+      "digest": "sha256:33a0e2c0f9b8419afb2944f4a60763bdcbb81425ceee32e10573cf096a0bc6b2",
       "schemaVersion": 1
     }
   ],

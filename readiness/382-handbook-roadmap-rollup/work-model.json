@@ -65,7 +65,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "7de53340b13604d5c8fec01805c18e516f8ee67dcc6b1dc8c5de6fbc8a84c3a0"
+        "value": "1bcc0cbd3f6091bbe976fddb3089caf0ee0f01e7e6794e7b7a26ae8e7fb40d7e"
       }
     },
     {
@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "8159b5e5892d49e7c9afe1613bd3f47f6ff04b0cc1f6b7df05d963c5082a4e82"
+        "value": "4a498d7d3158fc8c5a0e22866131107a4b5572e30fe8bf4d67a4ba2006a225ae"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "21df815d19025f3219c023bd6cf94d72be1b8e32dc0c5c4c75979ec302a26c01"
+        "value": "b3781d491017993b3df8ca8d83117c888eff7530354b7a7bb4285ddbe23ac62d"
       }
     },
     {
@@ -101,7 +101,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "43bce9d48150ca86e4af21fb6f58eab2a2aa248521f82507c1d4a23904f906a3"
+        "value": "0c1e4a290076521f0d4df4472bc7d8ca021108c56b1241b3ecf2ef97cf67dadd"
       }
     },
     {
@@ -171,8 +171,8 @@
     },
     {
       "id": "FR-003",
-      "title": "The final report MUST disposition every checkpoint individually as exactly one of \u0060structured finding\u0060, \u0060positive pattern\u0060, \u0060accepted observation\u0060, or \u0060deduplicated existing issue\u0060, with cycle, sequence, phase, kind, summary, evidence, and rationale. (covers AC-003)",
-      "text": "The final report MUST disposition every checkpoint individually as exactly one of \u0060structured finding\u0060, \u0060positive pattern\u0060, \u0060accepted observation\u0060, or \u0060deduplicated existing issue\u0060, with cycle, sequence, phase, kind, summary, evidence, and rationale. (covers AC-003)",
+      "title": "The final report MUST disposition every checkpoint individually as exactly one of \u0060structured finding\u0060, \u0060positive pattern\u0060, \u0060accepted observation\u0060, or \u0060deduplicated existing issue\u0060, with cycle, sequence, phase, kind, summary, evidence, and a unique checkpoint-specific rationale reconciled to the bound report/audit; reader-visible rows and machine markers MUST agree exactly. (covers AC-003)",
+      "text": "The final report MUST disposition every checkpoint individually as exactly one of \u0060structured finding\u0060, \u0060positive pattern\u0060, \u0060accepted observation\u0060, or \u0060deduplicated existing issue\u0060, with cycle, sequence, phase, kind, summary, evidence, and a unique checkpoint-specific rationale reconciled to the bound report/audit; reader-visible rows and machine markers MUST agree exactly. (covers AC-003)",
       "acceptanceCriteria": [
         "AC-003"
       ],
@@ -215,8 +215,8 @@
     },
     {
       "id": "FR-005",
-      "title": "The owning audit MUST prove six isolated observed-red/restored-green controls for omitted cycle, omitted checkpoint, wrong report/audit binding, count mismatch, invalid disposition, and unchecked milestone. (covers AC-005)",
-      "text": "The owning audit MUST prove six isolated observed-red/restored-green controls for omitted cycle, omitted checkpoint, wrong report/audit binding, count mismatch, invalid disposition, and unchecked milestone. (covers AC-005)",
+      "title": "The owning audit MUST prove nine isolated observed-red/restored-green controls for omitted cycle, omitted checkpoint, wrong report/audit binding, count mismatch, invalid disposition, unchecked milestone, reader-visible delivery drift, generic rationale, and duplicated rationale. (covers AC-005)",
+      "text": "The owning audit MUST prove nine isolated observed-red/restored-green controls for omitted cycle, omitted checkpoint, wrong report/audit binding, count mismatch, invalid disposition, unchecked milestone, reader-visible delivery drift, generic rationale, and duplicated rationale. (covers AC-005)",
       "acceptanceCriteria": [
         "AC-005"
       ],
@@ -342,8 +342,8 @@
     },
     {
       "id": "DEC-003",
-      "title": "Each disposition row is keyed by cycle plus one-based JSONL line and copies only machine-compared checkpoint fields; rationale is explicitly roll-up judgement.",
-      "decision": "Each disposition row is keyed by cycle plus one-based JSONL line and copies only machine-compared checkpoint fields; rationale is explicitly roll-up judgement.",
+      "title": "Each disposition row is keyed by cycle plus one-based JSONL line; its reader-visible text and machine marker copy machine-compared checkpoint fields exactly, while every non-positive rationale is a unique roll-up judgement that explicitly reconciles the bound report/audit classification.",
+      "decision": "Each disposition row is keyed by cycle plus one-based JSONL line; its reader-visible text and machine marker copy machine-compared checkpoint fields exactly, while every non-positive rationale is a unique roll-up judgement that explicitly reconciles the bound report/audit classification.",
       "requirementRefs": [
         "FR-003"
       ],
@@ -1652,7 +1652,7 @@
           "path": "work/382-handbook-roadmap-rollup/clarifications.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "7de53340b13604d5c8fec01805c18e516f8ee67dcc6b1dc8c5de6fbc8a84c3a0"
+            "value": "1bcc0cbd3f6091bbe976fddb3089caf0ee0f01e7e6794e7b7a26ae8e7fb40d7e"
           },
           "schemaVersion": 1
         },
@@ -1660,7 +1660,7 @@
           "path": "work/382-handbook-roadmap-rollup/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "8159b5e5892d49e7c9afe1613bd3f47f6ff04b0cc1f6b7df05d963c5082a4e82"
+            "value": "4a498d7d3158fc8c5a0e22866131107a4b5572e30fe8bf4d67a4ba2006a225ae"
           },
           "schemaVersion": 1
         },
@@ -1668,7 +1668,7 @@
           "path": "work/382-handbook-roadmap-rollup/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "21df815d19025f3219c023bd6cf94d72be1b8e32dc0c5c4c75979ec302a26c01"
+            "value": "b3781d491017993b3df8ca8d83117c888eff7530354b7a7bb4285ddbe23ac62d"
           },
           "schemaVersion": 1
         },
@@ -1676,7 +1676,7 @@
           "path": "work/382-handbook-roadmap-rollup/spec.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "43bce9d48150ca86e4af21fb6f58eab2a2aa248521f82507c1d4a23904f906a3"
+            "value": "0c1e4a290076521f0d4df4472bc7d8ca021108c56b1241b3ecf2ef97cf67dadd"
           },
           "schemaVersion": 1
         },
@@ -1691,7 +1691,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "0c0d96f66ab2e82ee7e05f03da5a6212cc9116e37162247bf70204bc1cc89c34"
+        "value": "ea5c1356a378561125b33d57507a6d4dfdae02cc7ad91d724880711628adc79f"
       },
       "currency": "current"
     }

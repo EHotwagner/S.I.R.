@@ -45,12 +45,12 @@ printf '%s\n' \
   '<?xml version="1.0" encoding="UTF-8"?>' \
   '<testsuite name="sir-handbook-roadmap-rollup" tests="4" failures="0" errors="0" skipped="0">' \
   '  <testcase classname="SIR.HandbookRoadmapRollup" name="complete-cycle-and-checkpoint-coverage"/>' \
-  '  <testcase classname="SIR.HandbookRoadmapRollup" name="six-observed-red-restored-green-controls"/>' \
+  '  <testcase classname="SIR.HandbookRoadmapRollup" name="nine-observed-red-restored-green-controls"/>' \
   '  <testcase classname="SIR.HandbookRoadmapRollup" name="twelve-feedback-state-bindings"/>' \
   '  <testcase classname="SIR.HandbookRoadmapRollup" name="strict-documentation-build"/>' \
   '</testsuite>' > "$receipt_root/qualification.junit.xml"
 
-printf '{"schema":"sir.handbook-roadmap-rollup-qualification/v1","result":"pass","cycles":%s,"checkpoints":%s,"checkedUnits":10,"mutations":6,"dispositions":{"structuredFinding":5,"positivePattern":23,"acceptedObservation":16,"deduplicatedExistingIssue":4}}\n' \
+printf '{"schema":"sir.handbook-roadmap-rollup-qualification/v1","result":"pass","cycles":%s,"checkpoints":%s,"checkedUnits":10,"mutations":9,"dispositions":{"structuredFinding":6,"positivePattern":23,"acceptedObservation":12,"deduplicatedExistingIssue":7}}\n' \
   "$cycle_count" "$checkpoint_count" > "$receipt_root/qualification.json"
 
-printf 'handbook roadmap roll-up qualification: PASS (%s cycles, %s checkpoints, 10 checked units, 6 mutations, strict docs)\n' "$cycle_count" "$checkpoint_count"
+printf 'handbook roadmap roll-up qualification: PASS (%s cycles, %s checkpoints, 10 checked units, 9 mutations, strict docs)\n' "$cycle_count" "$checkpoint_count"

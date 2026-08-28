@@ -27,7 +27,7 @@ publicOrToolFacingImpact: true
 ## Decisions
 - DEC-001 [CQ-001] [AMB:AMB-001] [FR-001] [AC-001]: Filesystem enumeration is authoritative for membership; the observed total of twelve is a checked result and a mismatched report-front-matter inventory is an error.
 - DEC-002 [CQ-002] [AMB:AMB-002] [FR-004] [AC-004]: Delivery cells use exact retained identifiers or the literal `not retained`; absence is never upgraded into proof.
-- DEC-003 [CQ-003] [AMB:AMB-003] [FR-003] [AC-003]: Each disposition row is keyed by cycle plus one-based JSONL line and copies only machine-compared checkpoint fields; rationale is explicitly roll-up judgement.
+- DEC-003 [CQ-003] [AMB:AMB-003] [FR-003] [AC-003]: Each disposition row is keyed by cycle plus one-based JSONL line; its reader-visible text and machine marker copy machine-compared checkpoint fields exactly, while every non-positive rationale is a unique roll-up judgement that explicitly reconciles the bound report/audit classification.
 - DEC-004 [FR-008] [AC-008]: The terminal item participates in SDD and review but creates no feedback artifacts whose cycle matches the roadmap prefix.
 
 ## Accepted Deferrals
