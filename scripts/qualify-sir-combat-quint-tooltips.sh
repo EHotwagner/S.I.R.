@@ -24,6 +24,8 @@ for id in "${diagram_ids[@]}"; do
   grep -F "data-diagram-embed=\"$id\"" "$handbook" >/dev/null || fail "handbook embed missing: $id"
   grep -F "<object type=\"image/svg+xml\" data=\"assets/sir-combat-quint-interactive/$id.svg\"" "$handbook" >/dev/null \
     || fail "interactive object missing: $id"
+  grep -F "<img src=\"assets/sir-combat-quint-interactive/$id.svg\"" "$handbook" >/dev/null \
+    || fail "repository-rendered image fallback missing: $id"
   grep -F "id=\"diagram-transcript-$id\"" "$handbook" >/dev/null || fail "transcript missing: $id"
 done
 
