@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="sir-handbook-m7" tests="8" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.HandbookM7" name="publication-review"/>
+  <testcase classname="SIR.HandbookM7" name="source-tool-identities"/>
+  <testcase classname="SIR.HandbookM7" name="maintenance-owner-trigger"/>
+  <testcase classname="SIR.HandbookM7" name="m6-structure-links"/>
+  <testcase classname="SIR.HandbookM7" name="m6v-render-accessibility-fallback"/>
+  <testcase classname="SIR.HandbookM7" name="m6v-performance-binding"/>
+  <testcase classname="SIR.HandbookM7" name="quint-runtime-regression"/>
+  <testcase classname="SIR.HandbookM7" name="lifecycle-feedback-roadmap"/>
+</testsuite>

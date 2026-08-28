@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "reviewedSourceBlobs": {
+    "handbook": "a8f6b9ac8cd0dd969935ea4c288c90fa82efaa45",
+    "model": "2347769cf18c278b27e4af4322580cd50719fe3f",
+    "diagramManifest": "7a84db6af105d3653243828e4828beea451e69ea"
+  },
+  "reviews": [
+    {
+      "subject": "domain",
+      "reviewer": "/root/handbook_m7/m7_domain_rereview",
+      "verdict": "approve",
+      "checked": [
+        "sixteen-rule semantics and aggregate/focused transition boundaries",
+        "registry body fact versus representative armor-retention correspondence",
+        "authority precedence, external geometry boundary, and maintenance handoff"
+      ],
+      "evidence": ["docs/sir-combat-quint-handbook.md", "docs/rules/sir-combat-handbook-maintenance.md", "src/SIR.Simulation/CombatRules.fs"],
+      "limits": ["Read-only domain review; execution, rendering, CI, and deployment use separate evidence."]
+    },
+    {
+      "subject": "quint-modeling",
+      "reviewer": "/root/handbook_m7/m7_quint_rereview",
+      "verdict": "approve",
+      "checked": [
+        "Quint 0.32.0 extraction, typecheck, witness, and sampled invariant command",
+        "action nondeterminism and declaration explanations against the literate model",
+        "witness, invariant, counterexample, correspondence, and bounded-verification limits"
+      ],
+      "evidence": ["docs/rules/sir-combat.md", "scripts/qualify-quint-q4-sir-combat.sh", "readiness/373-handbook-m5/sir-combat-q4.junit.xml"],
+      "limits": ["Apalache was not rerun because Java is absent; the optional Java 17+ route and bounded claim are reviewed, not newly proven."]
+    },
+    {
+      "subject": "beginner-walkthrough",
+      "reviewer": "/root/handbook_m7/m7_beginner_rereview",
+      "verdict": "approve",
+      "checked": [
+        "prerequisites, installation, and unambiguous beginner reading order",
+        "copyable extraction, named witness, simulation, and committed-ITF query",
+        "exercise answers plus internal link, declaration, and index navigation"
+      ],
+      "evidence": ["docs/sir-combat-quint-handbook.md", "readiness/373-handbook-m5/quint-q4-runtime.itf.json", "work/375-handbook-m6/audit-handbook-structure.mjs"],
+      "limits": ["Repository-local walkthrough; bare-OS provisioning, optional Apalache execution, and visual inspection are separate scopes."]
+    },
+    {
+      "subject": "rendered-document",
+      "reviewer": "/root/handbook_m7/m7_render_rereview",
+      "verdict": "approve",
+      "checked": [
+        "six SVG identities, accessible text routes, and five-mode semantic fingerprints",
+        "all 48 fresh screenshots for normal, reduced-motion, print, effects-off, CSS-disabled, and handbook routes",
+        "strict FsDocs output and unchanged 100/200 ms decoded-readiness workload boundaries"
+      ],
+      "evidence": ["readiness/380-handbook-m7/rendered/inspection.json", "readiness/380-handbook-m7/rendered/performance-replay.json", "docs/sir-combat-quint-diagrams.json"],
+      "limits": ["Headless warm SVG load/decode evidence only; no live-compositor, FPS, frame-pacing, physical-printer, or Pages claim."]
+    }
+  ]
+}

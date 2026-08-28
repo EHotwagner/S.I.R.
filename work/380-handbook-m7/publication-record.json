@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "authorityPosture": "publication evidence only; combat, model, runtime, and diagram authorities remain distinct",
+  "editionDate": "2026-08-28",
+  "verificationBase": "318f07a7ae30e98d86a5d5780126cab1e105b7f2",
+  "m6Merge": "c47286a",
+  "m6vMerge": "e5e02f4",
+  "m6vProvenanceRepair": "318f07a",
+  "owner": {
+    "repository": "EHotwagner/S.I.R.",
+    "role": "repository maintainer responsible for docs/rules/sir-combat.md and docs/sir-combat-quint-handbook.md",
+    "triggerLocation": "docs/rules/sir-combat-handbook-maintenance.md"
+  },
+  "sourceBlobs": [
+    {"path": "docs/sir-combat-quint-handbook.md", "gitBlob": "a8f6b9ac8cd0dd969935ea4c288c90fa82efaa45", "owns": "pedagogy, navigation, and claim boundaries"},
+    {"path": "docs/rules/sir-combat.md", "gitBlob": "2347769cf18c278b27e4af4322580cd50719fe3f", "owns": "bounded literate Quint model"},
+    {"path": "docs/combat-resolution.md", "gitBlob": "a5a0779a089705f082c5f8e7420e813adc9a6d89", "owns": "physical combat design"},
+    {"path": "src/SIR.Simulation/CombatRules.fs", "gitBlob": "8908afcc7c62413696c701c6009f24ebdbb378e1", "owns": "production rule registry and entry points"},
+    {"path": "docs/sir-combat-quint-vocabulary.json", "gitBlob": "13ee988255acdb22dbd842430de80f4041f09a1e", "owns": "controlled terms and anchors"},
+    {"path": "docs/sir-combat-quint-diagrams.json", "gitBlob": "7a84db6af105d3653243828e4828beea451e69ea", "owns": "source-bound diagram projection"},
+    {"path": "docs/rules/sir-combat-handbook-maintenance.md", "gitBlob": "151395f4e8286d3099f16a050ec41f9ac26153f6", "owns": "model-adjacent maintenance routing"},
+    {"path": "scripts/build-docs.sh", "gitBlob": "1c154fa80ba2e89d8c53f14e8bb1506db3082607", "owns": "successor publication selection"}
+  ],
+  "toolchain": [
+    {"tool": ".NET SDK", "version": "10.0.302", "source": "global.json"},
+    {"tool": "Node.js", "version": "26.5.0", "source": "package.json engines.node"},
+    {"tool": "Quint", "version": "0.32.0", "source": "scripts/qualify-quint-q4-sir-combat.sh"},
+    {"tool": "FsDocs", "version": "22.1.0", "source": ".config/dotnet-tools.json"},
+    {"tool": "Playwright", "version": "1.62.1", "source": "package-lock.json"},
+    {"tool": "FS.GG.SDD.Cli", "version": "1.4.0", "source": "M7 qualification local exact tool"},
+    {"tool": "FS.GG.Coord.Cli", "version": "0.72.0", "source": ".config/dotnet-tools.json"}
+  ],
+  "inheritedEvidence": {
+    "m6StructureAudit": {"path": "work/375-handbook-m6/audit-handbook-structure.mjs", "gitBlob": "61a42eeb6f59dc8fa1fcc60fe22d22748b040a5f"},
+    "m6vVisualAudit": {"path": "work/377-handbook-m6v/audit-visual-explanations.mjs", "gitBlob": "a1f76f61f504a66d2efbd2997f6faf3624cc50f7"},
+    "m6vPerformance": {"path": "readiness/377-handbook-m6v/performance-evidence.json", "gitBlob": "942b53140f17311d1444cacb7325559552e3e2cc", "workload": "handbook-m6v-six-diagram-render-v1", "maxP95Ms": 100, "maxP99Ms": 200, "liveCompositorRequired": false},
+    "m6vRenderedInspection": {"path": "readiness/377-handbook-m6v/rendered/inspection.json", "gitBlob": "783d24c3dfc13c13a3457456aef3757c401aca35", "diagramCount": 6, "standaloneRenders": 30, "handbookRenders": 18}
+  },
+  "currentRenderEvidence": {
+    "inspection": {"path": "readiness/380-handbook-m7/rendered/inspection.json", "gitBlob": "1b631c5640cb83b455afe024834eeb8e38feefca"},
+    "performance": {"path": "readiness/380-handbook-m7/rendered/performance-replay.json", "gitBlob": "5fcdf8b95af7cf3d10649782baddab9cc9df8eb7"},
+    "candidateSourceInputsSha256": "8bd0a685dfd5ad3a6393f1ed31b87547210f5c92c4aec898591d38463835d68b",
+    "diagrams": 6,
+    "modes": 5,
+    "screenshots": 48,
+    "p95LoadMs": 64.9,
+    "p99LoadMs": 68.1,
+    "maxP95Ms": 100,
+    "maxP99Ms": 200,
+    "liveCompositor": false,
+    "framePacingMeasured": false
+  },
+  "measurementValidity": {
+    "path": "readiness/380-handbook-m7/render-measurement-validity.json",
+    "schema": "sir.handbook.render-measurement-validity/v1",
+    "exactNode": "v26.5.0",
+    "observedNode": "v26.5.0",
+    "batches": 2,
+    "samplesPerBatch": 100,
+    "warmupsPerBatch": 3,
+    "preflightSamples": 5,
+    "preflightIntervalMs": 500,
+    "maxCpuUtilization": 0.5,
+    "maxCpuPressureSomeAvg10": 10,
+    "competingBrowserOrRenderProcessesAllowed": false,
+    "maxP95Ms": 100,
+    "maxP99Ms": 200,
+    "performanceIntent": "unchanged M6V warm same-browser SVG load/decode gate"
+  },
+  "maintenanceTriggers": [
+    "docs/rules/sir-combat.md", "docs/rules/sir-combat-handbook-maintenance.md", "docs/combat-resolution.md", "src/SIR.Simulation/CombatRules.fs",
+    "docs/sir-combat-quint-handbook.md", "docs/sir-combat-quint-vocabulary.json",
+    "docs/sir-combat-quint-diagrams.json", "docs/assets/sir-combat-quint/",
+    "scripts/qualify-quint-q4-sir-combat.sh", "scripts/build-docs.sh", ".config/dotnet-tools.json",
+    "global.json", "package.json", "package-lock.json"
+  ],
+  "reviewSubjects": ["domain", "quint-modeling", "beginner-walkthrough", "rendered-document"],
+  "livePath": "https://ehotwagner.github.io/S.I.R./sir-combat-quint-handbook.html"
+}

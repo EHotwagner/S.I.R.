@@ -1,0 +1,71 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-28-sir-handbook-m7-publication-handoff.md",
+  "reportSha256": "cd23e69345c679255b1e47a4049a20ac76c06b330efc3971390c6c5d890b5371",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "file:feedback/checkpoints/roadmap-sir-combat-quint-handbook-m7-publication-handoff.jsonl", "result": "claim-only", "sha256": "eea5f7c98d8b0c4de9a696cfd4da54605429ecbc4fa136dd2d5eafad2ea415ca"},
+        {"locator": "issue:EHotwagner/S.I.R.#380", "result": "verified"},
+        {"locator": "command:scripts/fsgg-coord delivery-route show 380 --json", "result": "verified"}
+      ],
+      "confidenceLimits": [
+        "The raw digest-free refusal and exact attempt output were not retained; those details remain explicitly identified as checkpoint testimony.",
+        "Issue chronology and the current route command independently verify the later digest-valid route revisions, successful claim chronology, final revision 3, and digest c96118cf92caedabe99879a6d37e2da9ee879562559678ecb5b3b90af50ddfe6.",
+        "Closed FS-GG/.github#2698 and M6V feedback §4.1 establish the recurring residual route-authoring cause; this report does not claim a new root cause."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "file:work/380-handbook-m7/plan.md", "result": "verified", "sha256": "e3ab288742fed4dfeaa3d4fa44cd474172251fc67051f7037ea5c17415798ca4"},
+        {"locator": "file:readiness/380-handbook-m7/analysis.json", "result": "verified", "sha256": "36e45c11f35b222d0171b5f39dde4dca89f5a164847ba1df0ba40aa2ee90cdb7"},
+        {"locator": "command:artifacts/tools/fsgg-sdd-1.4.0/fsgg-sdd analyze --work 380-handbook-m7 --text", "result": "verified"}
+      ],
+      "confidenceLimits": [
+        "The initial PM-001 rejection view was not retained and is explicitly presented as checkpoint testimony.",
+        "The committed plan independently verifies the concrete additive compatibility posture.",
+        "The committed analysis and fresh command independently verify the repaired implementationReady state with 68 of 68 relationships ready and no blockers."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "issue:EHotwagner/S.I.R.#380", "result": "verified"},
+        {"locator": "command:scripts/fsgg-coord delivery-route show 380 --json", "result": "verified"}
+      ],
+      "confidenceLimits": [
+        "No exact pre-widen tree or claim-touch-set receipt was retained; the first-write ordering and claim widen remain explicitly identified as checkpoint testimony.",
+        "Issue route history independently verifies that revision 1 omitted the maintenance path and revision 2 added it.",
+        "The current route command independently verifies final revision 3 and sdd-required routing, but makes no claim about the historical claim touch-set or overlap state."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "file:work/380-handbook-m7/publication-reviews.json", "result": "verified", "sha256": "e27636e8c5286b445ea39466042f03eb541a4240787c9d8fa8a035b536aac06c"},
+        {"locator": "file:work/380-handbook-m7/publication-record.json", "result": "verified", "sha256": "dc6f928292022e8db4157527972ccc4031838bb8c1451428b87b12a2e96a9b5c"},
+        {"locator": "file:readiness/380-handbook-m7/rendered/inspection.json", "result": "verified", "sha256": "11e40c27a1785dbd30d4cbc0d4ce232ef796c17f36eba043dbcdc56af62169c0"},
+        {"locator": "file:readiness/380-handbook-m7/render-measurement-validity.json", "result": "verified", "sha256": "f6463ea341b214e7169cfc9e75423a830e9bb05ffb3b19bd225fea94870beaa8"},
+        {"locator": "command:node work/380-handbook-m7/audit-publication-handoff.mjs --self-test", "result": "verified"}
+      ],
+      "confidenceLimits": [
+        "The three retired candidates and four replay count are explicitly identified as checkpoint testimony because discarded outputs were not retained.",
+        "Committed evidence independently verifies four final approvals bound to handbook blob a8f6b9ac8cd0dd969935ea4c288c90fa82efaa45, model blob 2347769cf18c278b27e4af4322580cd50719fe3f, and manifest blob 7a84db6af105d3653243828e4828beea451e69ea.",
+        "Current render evidence independently verifies candidate digest 8bd0a685dfd5ad3a6393f1ed31b87547210f5c92c4aec898591d38463835d68b, 48 screenshots, six diagrams in five modes, 100 measured samples after three warmups, p95 64.9 ms, p99 68.1 ms, and the explicit absence of live-compositor and frame-pacing claims.",
+        "The committed validity receipt independently verifies observed exact Node v26.5.0, two source-identical quiescent 100-sample batches at p95/p99 61.0/66.5 ms and 63.0/64.6 ms, and zero invalid samples or competing browser/render processes."
+      ]
+    }
+  ]
+}
