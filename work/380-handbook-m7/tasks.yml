@@ -30,8 +30,8 @@ sources:
 tasks:
   - id: T001
     title: Implement requirement FR-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: []
     requirements: [FR-001]
     decisions: []
@@ -40,8 +40,8 @@ tasks:
     requiredEvidence: [EV001]
   - id: T002
     title: Implement requirement FR-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: []
     requirements: [FR-002]
     decisions: []
@@ -50,8 +50,8 @@ tasks:
     requiredEvidence: [EV002]
   - id: T003
     title: Implement requirement FR-003
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: []
     requirements: [FR-003]
     decisions: []
@@ -60,8 +60,8 @@ tasks:
     requiredEvidence: [EV003]
   - id: T004
     title: Implement requirement FR-004
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: []
     requirements: [FR-004]
     decisions: []
@@ -70,8 +70,8 @@ tasks:
     requiredEvidence: [EV004]
   - id: T005
     title: Implement requirement FR-005
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: []
     requirements: [FR-005]
     decisions: []
@@ -80,8 +80,8 @@ tasks:
     requiredEvidence: [EV005]
   - id: T006
     title: Implement requirement FR-006
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: []
     requirements: [FR-006]
     decisions: []
@@ -90,8 +90,8 @@ tasks:
     requiredEvidence: [EV006]
   - id: T007
     title: Implement requirement FR-007
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: []
     requirements: [FR-007]
     decisions: []
@@ -100,8 +100,8 @@ tasks:
     requiredEvidence: [EV007]
   - id: T008
     title: Implement requirement FR-008
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: []
     requirements: [FR-008]
     decisions: []
@@ -110,8 +110,8 @@ tasks:
     requiredEvidence: [EV008]
   - id: T009
     title: Implement clarification decision DEC-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: [DEC-001]
@@ -120,8 +120,8 @@ tasks:
     requiredEvidence: [EV009]
   - id: T010
     title: Implement clarification decision DEC-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: [DEC-002]
@@ -130,8 +130,8 @@ tasks:
     requiredEvidence: [EV010]
   - id: T011
     title: Implement clarification decision DEC-003
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: [DEC-003]
@@ -140,8 +140,8 @@ tasks:
     requiredEvidence: [EV011]
   - id: T012
     title: Implement plan decision PD-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -150,8 +150,8 @@ tasks:
     requiredEvidence: [EV012]
   - id: T013
     title: Implement plan decision PD-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -160,8 +160,8 @@ tasks:
     requiredEvidence: [EV013]
   - id: T014
     title: Implement plan decision PD-003
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -170,8 +170,8 @@ tasks:
     requiredEvidence: [EV014]
   - id: T015
     title: Implement plan decision PD-004
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -180,8 +180,8 @@ tasks:
     requiredEvidence: [EV015]
   - id: T016
     title: Implement plan decision PD-005
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -190,8 +190,8 @@ tasks:
     requiredEvidence: [EV016]
   - id: T017
     title: Implement plan decision PD-006
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -200,8 +200,8 @@ tasks:
     requiredEvidence: [EV017]
   - id: T018
     title: Update contract surface PC-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -210,8 +210,8 @@ tasks:
     requiredEvidence: [EV018]
   - id: T019
     title: Update contract surface PC-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -220,8 +220,8 @@ tasks:
     requiredEvidence: [EV019]
   - id: T020
     title: Update contract surface PC-003
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -230,8 +230,8 @@ tasks:
     requiredEvidence: [EV020]
   - id: T021
     title: Record verification evidence VO-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -240,8 +240,8 @@ tasks:
     requiredEvidence: [EV021]
   - id: T022
     title: Record verification evidence VO-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -250,8 +250,8 @@ tasks:
     requiredEvidence: [EV022]
   - id: T023
     title: Record verification evidence VO-003
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -260,8 +260,8 @@ tasks:
     requiredEvidence: [EV023]
   - id: T024
     title: Record verification evidence VO-004
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -270,8 +270,8 @@ tasks:
     requiredEvidence: [EV024]
   - id: T025
     title: Record verification evidence VO-005
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -280,8 +280,8 @@ tasks:
     requiredEvidence: [EV025]
   - id: T026
     title: Handle migration posture PM-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -290,8 +290,8 @@ tasks:
     requiredEvidence: [EV026]
   - id: T027
     title: Refresh generated view impact GV-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -300,8 +300,8 @@ tasks:
     requiredEvidence: [EV027]
   - id: T028
     title: Refresh generated view impact GV-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: swift-49fe
     dependencies: [T001]
     requirements: []
     decisions: []

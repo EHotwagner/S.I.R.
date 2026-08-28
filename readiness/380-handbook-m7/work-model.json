@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "b5492ff687aaee4b46ce602bed629bfff25a848faeb01529e4ba82e1dfd63489"
+        "value": "c280e770ba61f4e0b6f1a25c89c777e263bd1dc0f922a0c6b02ffe34afe1b756"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "b8a1dd0e7a5ec44a12926f65a982d002d54b0706ea31653f84ffead01b629832"
+        "value": "236497f7c390bbece364345aac0795d008762b1374187b1ef50d77dd81b50047"
       }
     }
   ],
@@ -364,8 +364,8 @@
     {
       "id": "T001",
       "title": "Implement requirement FR-001",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [],
       "requirements": [
         "FR-001"
@@ -391,8 +391,8 @@
     {
       "id": "T002",
       "title": "Implement requirement FR-002",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [],
       "requirements": [
         "FR-002"
@@ -418,8 +418,8 @@
     {
       "id": "T003",
       "title": "Implement requirement FR-003",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [],
       "requirements": [
         "FR-003"
@@ -445,8 +445,8 @@
     {
       "id": "T004",
       "title": "Implement requirement FR-004",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [],
       "requirements": [
         "FR-004"
@@ -472,8 +472,8 @@
     {
       "id": "T005",
       "title": "Implement requirement FR-005",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [],
       "requirements": [
         "FR-005"
@@ -499,8 +499,8 @@
     {
       "id": "T006",
       "title": "Implement requirement FR-006",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [],
       "requirements": [
         "FR-006"
@@ -526,8 +526,8 @@
     {
       "id": "T007",
       "title": "Implement requirement FR-007",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [],
       "requirements": [
         "FR-007"
@@ -554,8 +554,8 @@
     {
       "id": "T008",
       "title": "Implement requirement FR-008",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [],
       "requirements": [
         "FR-008"
@@ -582,8 +582,8 @@
     {
       "id": "T009",
       "title": "Implement clarification decision DEC-001",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -610,8 +610,8 @@
     {
       "id": "T010",
       "title": "Implement clarification decision DEC-002",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -638,8 +638,8 @@
     {
       "id": "T011",
       "title": "Implement clarification decision DEC-003",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -666,8 +666,8 @@
     {
       "id": "T012",
       "title": "Implement plan decision PD-001",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -695,8 +695,8 @@
     {
       "id": "T013",
       "title": "Implement plan decision PD-002",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -724,8 +724,8 @@
     {
       "id": "T014",
       "title": "Implement plan decision PD-003",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -753,8 +753,8 @@
     {
       "id": "T015",
       "title": "Implement plan decision PD-004",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -782,8 +782,8 @@
     {
       "id": "T016",
       "title": "Implement plan decision PD-005",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -811,8 +811,8 @@
     {
       "id": "T017",
       "title": "Implement plan decision PD-006",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -840,8 +840,8 @@
     {
       "id": "T018",
       "title": "Update contract surface PC-001",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -868,8 +868,8 @@
     {
       "id": "T019",
       "title": "Update contract surface PC-002",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -895,8 +895,8 @@
     {
       "id": "T020",
       "title": "Update contract surface PC-003",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -922,8 +922,8 @@
     {
       "id": "T021",
       "title": "Record verification evidence VO-001",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -952,8 +952,8 @@
     {
       "id": "T022",
       "title": "Record verification evidence VO-002",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -981,8 +981,8 @@
     {
       "id": "T023",
       "title": "Record verification evidence VO-003",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -1009,8 +1009,8 @@
     {
       "id": "T024",
       "title": "Record verification evidence VO-004",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -1037,8 +1037,8 @@
     {
       "id": "T025",
       "title": "Record verification evidence VO-005",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -1065,8 +1065,8 @@
     {
       "id": "T026",
       "title": "Handle migration posture PM-001",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -1091,8 +1091,8 @@
     {
       "id": "T027",
       "title": "Refresh generated view impact GV-001",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -1117,8 +1117,8 @@
     {
       "id": "T028",
       "title": "Refresh generated view impact GV-002",
-      "status": "pending",
-      "owner": "sdd",
+      "status": "done",
+      "owner": "swift-49fe",
       "dependencies": [
         "T001"
       ],
@@ -1146,7 +1146,7 @@
   "evidence": [
     {
       "id": "EV001",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T001",
       "taskRefs": [
@@ -1155,8 +1155,18 @@
       "requirementRefs": [
         "FR-001"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1170,7 +1180,7 @@
     },
     {
       "id": "EV002",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T002",
       "taskRefs": [
@@ -1179,8 +1189,18 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1194,7 +1214,7 @@
     },
     {
       "id": "EV003",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T003",
       "taskRefs": [
@@ -1203,8 +1223,18 @@
       "requirementRefs": [
         "FR-003"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1218,7 +1248,7 @@
     },
     {
       "id": "EV004",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T004",
       "taskRefs": [
@@ -1227,8 +1257,18 @@
       "requirementRefs": [
         "FR-004"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1242,7 +1282,7 @@
     },
     {
       "id": "EV005",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T005",
       "taskRefs": [
@@ -1251,8 +1291,18 @@
       "requirementRefs": [
         "FR-005"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1266,7 +1316,7 @@
     },
     {
       "id": "EV006",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T006",
       "taskRefs": [
@@ -1275,8 +1325,18 @@
       "requirementRefs": [
         "FR-006"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1290,7 +1350,7 @@
     },
     {
       "id": "EV007",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T007",
       "taskRefs": [
@@ -1299,8 +1359,18 @@
       "requirementRefs": [
         "FR-007"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1314,7 +1384,7 @@
     },
     {
       "id": "EV008",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T008",
       "taskRefs": [
@@ -1323,8 +1393,18 @@
       "requirementRefs": [
         "FR-008"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1338,15 +1418,25 @@
     },
     {
       "id": "EV009",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T009",
       "taskRefs": [
         "T009"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1360,15 +1450,25 @@
     },
     {
       "id": "EV010",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T010",
       "taskRefs": [
         "T010"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1382,15 +1482,25 @@
     },
     {
       "id": "EV011",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T011",
       "taskRefs": [
         "T011"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1404,7 +1514,7 @@
     },
     {
       "id": "EV012",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T012",
       "taskRefs": [
@@ -1413,8 +1523,18 @@
       "requirementRefs": [
         "FR-001"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1428,7 +1548,7 @@
     },
     {
       "id": "EV013",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T013",
       "taskRefs": [
@@ -1437,8 +1557,18 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1452,7 +1582,7 @@
     },
     {
       "id": "EV014",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T014",
       "taskRefs": [
@@ -1461,8 +1591,18 @@
       "requirementRefs": [
         "FR-003"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1476,7 +1616,7 @@
     },
     {
       "id": "EV015",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T015",
       "taskRefs": [
@@ -1485,8 +1625,18 @@
       "requirementRefs": [
         "FR-004"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1500,7 +1650,7 @@
     },
     {
       "id": "EV016",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T016",
       "taskRefs": [
@@ -1509,8 +1659,18 @@
       "requirementRefs": [
         "FR-005"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1524,7 +1684,7 @@
     },
     {
       "id": "EV017",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T017",
       "taskRefs": [
@@ -1533,8 +1693,18 @@
       "requirementRefs": [
         "FR-006"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1548,15 +1718,25 @@
     },
     {
       "id": "EV018",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T018",
       "taskRefs": [
         "T018"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1570,15 +1750,25 @@
     },
     {
       "id": "EV019",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T019",
       "taskRefs": [
         "T019"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1592,15 +1782,25 @@
     },
     {
       "id": "EV020",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T020",
       "taskRefs": [
         "T020"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1614,15 +1814,25 @@
     },
     {
       "id": "EV021",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T021",
       "taskRefs": [
         "T021"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1636,15 +1846,25 @@
     },
     {
       "id": "EV022",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T022",
       "taskRefs": [
         "T022"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1658,15 +1878,25 @@
     },
     {
       "id": "EV023",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T023",
       "taskRefs": [
         "T023"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1680,15 +1910,25 @@
     },
     {
       "id": "EV024",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T024",
       "taskRefs": [
         "T024"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1702,15 +1942,25 @@
     },
     {
       "id": "EV025",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T025",
       "taskRefs": [
         "T025"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1724,15 +1974,25 @@
     },
     {
       "id": "EV026",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T026",
       "taskRefs": [
         "T026"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1746,15 +2006,25 @@
     },
     {
       "id": "EV027",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T027",
       "taskRefs": [
         "T027"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1768,15 +2038,25 @@
     },
     {
       "id": "EV028",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T028",
       "taskRefs": [
         "T028"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "docs/rules/sir-combat-handbook-maintenance.md",
+        "docs/sir-combat-quint-handbook-roadmap.md",
+        "docs/sir-combat-quint-handbook.md",
+        "readiness/380-handbook-m7/qualification.junit.xml",
+        "readiness/380-handbook-m7/rendered/inspection.json",
+        "readiness/380-handbook-m7/rendered/performance-replay.json",
+        "work/380-handbook-m7/audit-publication-handoff.mjs",
+        "work/380-handbook-m7/publication-record.json",
+        "work/380-handbook-m7/publication-reviews.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1843,7 +2123,7 @@
           "path": "work/380-handbook-m7/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "b5492ff687aaee4b46ce602bed629bfff25a848faeb01529e4ba82e1dfd63489"
+            "value": "c280e770ba61f4e0b6f1a25c89c777e263bd1dc0f922a0c6b02ffe34afe1b756"
           },
           "schemaVersion": 1
         },
@@ -1867,14 +2147,14 @@
           "path": "work/380-handbook-m7/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "b8a1dd0e7a5ec44a12926f65a982d002d54b0706ea31653f84ffead01b629832"
+            "value": "236497f7c390bbece364345aac0795d008762b1374187b1ef50d77dd81b50047"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "9964bdb47223f54a9783e88ff8127c1e186afdcc671046f9a9ec0f346e030899"
+        "value": "abed2264320c90cb0855e14729c1d88ec937b9fc4206250da77dbed84acd24ea"
       },
       "currency": "current"
     }

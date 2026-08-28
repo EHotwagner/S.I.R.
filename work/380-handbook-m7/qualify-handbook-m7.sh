@@ -5,6 +5,9 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo_root"
 receipt_root="readiness/380-handbook-m7"
 mkdir -p "$receipt_root"
+mkdir -p artifacts
+render_replay="$(mktemp -d artifacts/m7-render-replay.XXXXXX)"
+trap 'rm -rf "$render_replay"' EXIT
 
 dotnet_bin="$(type -P dotnet)"
 export DOTNET_ROOT="$(dirname "$(readlink -f "$dotnet_bin")")"
@@ -37,7 +40,7 @@ node work/375-handbook-m6/audit-handbook-structure.mjs --self-test
 node work/380-handbook-m7/audit-publication-handoff.mjs --self-test
 ./scripts/build-docs.sh --prepare-site-only
 SIR_M6V_BROWSER_PREFLIGHT_RECEIPT="$receipt_root/browser-preflight.json" \
-SIR_M6V_RENDER_OUTPUT="$receipt_root/rendered" \
+SIR_M6V_RENDER_OUTPUT="$render_replay" \
   node work/377-handbook-m6v/inspect-rendered-visuals.mjs
 ./scripts/qualify-quint-q4-sir-combat.sh
 

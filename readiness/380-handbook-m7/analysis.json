@@ -37,6 +37,16 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/380-handbook-m7/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "70f71cc09f282bf0a40cea93c180e87badaa609e7c1faac4b128f67f738f19be"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/380-handbook-m7/checklist.md",
       "kind": "checklist",
       "digest": {
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "b8a1dd0e7a5ec44a12926f65a982d002d54b0706ea31653f84ffead01b629832"
+        "value": "236497f7c390bbece364345aac0795d008762b1374187b1ef50d77dd81b50047"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -786,7 +796,7 @@
     {
       "path": "readiness/380-handbook-m7/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],
