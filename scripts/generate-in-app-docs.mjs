@@ -70,7 +70,7 @@ function segmentsOf(text, sourcePath) {
 }
 
 function interactiveDiagramOf(line) {
-  const match = line.match(/^<figure class="combat-quint-diagram" data-diagram-embed="([a-z0-9-]+)"><object type="image\/svg\+xml" data="(assets\/(?:sir-visibility-quint|sir-combat-quint-interactive)\/([a-z0-9-]+)\.svg)" aria-label="([^"]+)" style="width:100%;aspect-ratio:\d+\/\d+;display:block"><a href="\2">[^<]+<\/a><\/object><figcaption>([\s\S]+)<\/figcaption><\/figure>$/);
+  const match = line.match(/^<figure class="combat-quint-diagram" data-diagram-embed="([a-z0-9-]+)"><object type="image\/svg\+xml" data="(assets\/(?:sir-visibility-quint|sir-combat-quint-interactive)\/([a-z0-9-]+)\.svg)" aria-label="([^"]+)" style="width:100%;aspect-ratio:\d+\/\d+;display:block"><a href="\2"><img src="\2" alt="\4" \/><\/a><\/object><figcaption>([\s\S]+)<\/figcaption><\/figure>$/);
   if (!match || match[1] !== match[3]) return undefined;
   const captionWithoutSafeLink = match[5].replace(/<a href="assets\/(?:sir-visibility-quint|sir-combat-quint-interactive)\/[a-z0-9-]+\.svg#effects-off">[^<]+<\/a>/g, "");
   if (/<[^>]+>|javascript:|\son\w+\s*=/i.test(captionWithoutSafeLink)) return undefined;

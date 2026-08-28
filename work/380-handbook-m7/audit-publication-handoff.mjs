@@ -113,7 +113,7 @@ function verify(overrides = new Map(), options = {}) {
     const id = source.path.split("/").at(-1).replace(".svg", "");
     need(handbook.includes(`data-diagram-embed="${id}"`), `visibility SVG handbook embed missing: ${id}`);
     need(handbook.includes(`<object type="image/svg+xml" data="${source.path.replace("docs/", "")}"`), `visibility SVG interactive object missing: ${id}`);
-    need(!handbook.includes(`<img src="${source.path.replace("docs/", "")}"`), `visibility SVG degraded to non-interactive image: ${id}`);
+    need(handbook.includes(`<img src="${source.path.replace("docs/", "")}"`), `visibility SVG repository fallback missing: ${id}`);
     need(handbook.includes(`id="diagram-transcript-${id}"`), `visibility SVG transcript missing: ${id}`);
   }
   need(tooltipHotspots === extension.qualification.tooltipHotspots, "visibility tooltip count does not match publication evidence");
@@ -130,6 +130,7 @@ function verify(overrides = new Map(), options = {}) {
     need(titleCount >= tooltipCount + 1, `combat SVG tooltip titles incomplete: ${source.path}`);
     need(withoutNativeTooltips(svg) === text(canonicalPath), `combat SVG changes reviewed visual bytes: ${id}`);
     need(handbook.includes(`<object type="image/svg+xml" data="${source.path.replace("docs/", "")}"`), `combat SVG interactive object missing: ${id}`);
+    need(handbook.includes(`<img src="${source.path.replace("docs/", "")}"`), `combat SVG repository fallback missing: ${id}`);
     need(handbook.includes(`id="diagram-transcript-${id}"`), `combat SVG transcript missing: ${id}`);
     combatTooltipHotspots += tooltipCount;
   }
@@ -248,10 +249,18 @@ if (process.argv.includes("--self-test")) {
     "This maintained first edition combines",
     "This altered maintained first edition combines"
   );
-  const recordForHandbook = handbook => JSON.stringify({
-    ...record,
-    sourceBlobs: record.sourceBlobs.map(source => source.path === paths.handbook ? {...source, gitBlob: blobForText(handbook)} : source)
-  });
+  const recordForHandbook = handbook => {
+    const gitBlob = blobForText(handbook);
+    return JSON.stringify({
+      ...record,
+      sourceBlobs: record.sourceBlobs.map(source => source.path === paths.handbook ? {...source, gitBlob} : source),
+      contentExtensions: record.contentExtensions.map(extension => ({
+        ...extension,
+        publishedHandbookBlob: gitBlob,
+        handbookSha256: sha256(handbook)
+      }))
+    });
+  };
   const cases = [
     ["missing-domain-review", new Map([[paths.reviews, JSON.stringify({...reviews, reviews: reviews.reviews.filter(x => x.subject !== "domain")})]])],
     ["rejected-model-review", new Map([[paths.reviews, JSON.stringify({...reviews, reviews: reviews.reviews.map(x => x.subject === "quint-modeling" ? {...x, verdict: "changes-required"} : x)})]])],
@@ -266,6 +275,10 @@ if (process.argv.includes("--self-test")) {
     ["visibility-static-fallback-missing", mutated("docs/assets/sir-visibility-quint/supercover-walk.svg", value => value.replace("prefers-reduced-motion:reduce", "motion-fallback-removed"))],
     ["visibility-tooltip-density-regressed", mutated("docs/assets/sir-visibility-quint/canonical-symmetry.svg", value => value.replaceAll("data-tooltip=", "data-detail="))],
     ["visibility-interactive-embed-missing", mutated(paths.handbook, value => value.replace('<object type="image/svg+xml" data="assets/sir-visibility-quint/supercover-walk.svg"', '<img src="assets/sir-visibility-quint/supercover-walk.svg"'))],
+    ["visibility-repository-fallback-missing", (() => {
+      const handbook = read(paths.handbook).replace(/<img src="assets\/sir-visibility-quint\/supercover-walk\.svg" alt="[^"]+" \/>/, "Repository fallback removed");
+      return new Map([[paths.handbook, handbook], [paths.record, recordForHandbook(handbook)]]);
+    })()],
     ["combat-tooltip-density-regressed", mutated("docs/assets/sir-combat-quint-interactive/state-action.svg", value => value.replaceAll("data-tooltip=", "data-detail="))],
     ["unsafe-yaml-title-spacing", new Map([[paths.handbook, unsafeTitleHandbook], [paths.record, recordForHandbook(unsafeTitleHandbook)]])],
     ["broadened-successor-repair", new Map([[paths.handbook, broadenedHandbook], [paths.record, recordForHandbook(broadenedHandbook)]])]

@@ -44,10 +44,9 @@ for id in "${diagram_ids[@]}"; do
   grep -F "<object type=\"image/svg+xml\" data=\"assets/sir-visibility-quint/$id.svg\"" \
     "$repo_root/docs/sir-combat-quint-handbook.md" >/dev/null \
     || fail "handbook interactive SVG object missing: $id"
-  if grep -F "<img src=\"assets/sir-visibility-quint/$id.svg\"" \
-      "$repo_root/docs/sir-combat-quint-handbook.md" >/dev/null; then
-    fail "handbook uses a non-interactive image embed: $id"
-  fi
+  grep -F "<img src=\"assets/sir-visibility-quint/$id.svg\"" \
+    "$repo_root/docs/sir-combat-quint-handbook.md" >/dev/null \
+    || fail "handbook repository-rendered image fallback missing: $id"
   grep -F "id=\"diagram-transcript-$id\"" "$repo_root/docs/sir-combat-quint-handbook.md" >/dev/null \
     || fail "handbook transcript missing: $id"
 done
