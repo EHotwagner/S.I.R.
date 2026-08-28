@@ -12,7 +12,7 @@
     "triggerLocation": "docs/rules/sir-combat-handbook-maintenance.md"
   },
   "sourceBlobs": [
-    {"path": "docs/sir-combat-quint-handbook.md", "gitBlob": "6a2a2c5c44da82bef28c459497786f35017d17e4", "owns": "pedagogy, navigation, and claim boundaries"},
+    {"path": "docs/sir-combat-quint-handbook.md", "gitBlob": "a8f6b9ac8cd0dd969935ea4c288c90fa82efaa45", "owns": "pedagogy, navigation, and claim boundaries"},
     {"path": "docs/rules/sir-combat.md", "gitBlob": "2347769cf18c278b27e4af4322580cd50719fe3f", "owns": "bounded literate Quint model"},
     {"path": "docs/combat-resolution.md", "gitBlob": "a5a0779a089705f082c5f8e7420e813adc9a6d89", "owns": "physical combat design"},
     {"path": "src/SIR.Simulation/CombatRules.fs", "gitBlob": "8908afcc7c62413696c701c6009f24ebdbb378e1", "owns": "production rule registry and entry points"},
@@ -37,18 +37,29 @@
     "m6vRenderedInspection": {"path": "readiness/377-handbook-m6v/rendered/inspection.json", "gitBlob": "783d24c3dfc13c13a3457456aef3757c401aca35", "diagramCount": 6, "standaloneRenders": 30, "handbookRenders": 18}
   },
   "currentRenderEvidence": {
-    "inspection": {"path": "readiness/380-handbook-m7/rendered/inspection.json", "gitBlob": "f06c7f2faa09790fbb6254058195e1b6f556fee6"},
-    "performance": {"path": "readiness/380-handbook-m7/rendered/performance-replay.json", "gitBlob": "8d2b1da7d4761c89eb5a20ad5d3d2dc80f543091"},
-    "candidateSourceInputsSha256": "a794b7b8132cc237946de5bf2c37cfd803630a265f4d81bddd4b7715b58ea90f",
+    "inspection": {"path": "readiness/380-handbook-m7/rendered/inspection.json", "gitBlob": "1b631c5640cb83b455afe024834eeb8e38feefca"},
+    "performance": {"path": "readiness/380-handbook-m7/rendered/performance-replay.json", "gitBlob": "5fcdf8b95af7cf3d10649782baddab9cc9df8eb7"},
+    "candidateSourceInputsSha256": "8bd0a685dfd5ad3a6393f1ed31b87547210f5c92c4aec898591d38463835d68b",
     "diagrams": 6,
     "modes": 5,
     "screenshots": 48,
-    "p95LoadMs": 71.4,
-    "p99LoadMs": 76.8,
+    "p95LoadMs": 64.9,
+    "p99LoadMs": 68.1,
     "maxP95Ms": 100,
     "maxP99Ms": 200,
     "liveCompositor": false,
     "framePacingMeasured": false
+  },
+  "measurementValidity": {
+    "path": "readiness/380-handbook-m7/render-measurement-validity.json",
+    "schema": "sir.handbook.render-measurement-validity/v1",
+    "exactNode": "v26.5.0",
+    "batches": 2,
+    "samplesPerBatch": 100,
+    "warmupsPerBatch": 3,
+    "maxP95Ms": 100,
+    "maxP99Ms": 200,
+    "performanceIntent": "unchanged M6V warm same-browser SVG load/decode gate"
   },
   "maintenanceTriggers": [
     "docs/rules/sir-combat.md", "docs/rules/sir-combat-handbook-maintenance.md", "docs/combat-resolution.md", "src/SIR.Simulation/CombatRules.fs",

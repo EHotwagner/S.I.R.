@@ -17,7 +17,7 @@ export DOTNET_HOST_PATH="$dotnet_bin"
 dotnet tool restore
 [[ "$(dotnet --version)" == "10.0.302" ]]
 [[ "$(quint --version)" == "0.32.0" ]]
-[[ "$(node --version)" == v26.* ]]
+[[ "$(node --version)" == "v26.5.0" ]]
 
 sdd="artifacts/tools/fsgg-sdd-1.4.0/fsgg-sdd"
 if [[ ! -x "$sdd" ]]; then
@@ -39,9 +39,9 @@ SIR_M6V_BROWSER_PREFLIGHT_RECEIPT="$receipt_root/browser-preflight.json" \
 node work/375-handbook-m6/audit-handbook-structure.mjs --self-test
 node work/380-handbook-m7/audit-publication-handoff.mjs --self-test
 ./scripts/build-docs.sh --prepare-site-only
-SIR_M6V_BROWSER_PREFLIGHT_RECEIPT="$receipt_root/browser-preflight.json" \
-SIR_M6V_RENDER_OUTPUT="$render_replay" \
-  node work/377-handbook-m6v/inspect-rendered-visuals.mjs
+node work/380-handbook-m7/qualify-render-replay.mjs --self-test
+node work/380-handbook-m7/qualify-render-replay.mjs \
+  "$render_replay" "$receipt_root/render-measurement-validity.json"
 ./scripts/qualify-quint-q4-sir-combat.sh
 
 node work/380-handbook-m7/audit-roadmap-m7.mjs
@@ -73,4 +73,4 @@ cat > "$receipt_root/qualification.junit.xml" <<'XML'
   <testcase classname="SIR.HandbookM7" name="lifecycle-feedback-roadmap"/>
 </testsuite>
 XML
-printf 'handbook-m7 qualification: PASS (4 reviews, 6 diagrams, 48 fresh renders, inherited 100/200ms budgets, 8 M7 mutations, strict docs, Q4/runtime, SDD, feedback)\n'
+printf 'handbook-m7 qualification: PASS (4 reviews, 6 diagrams, two quiescent 100-sample render batches, inherited 100/200ms budgets, 8 publication + 3 host-validity mutations, strict docs, Q4/runtime, SDD, feedback)\n'

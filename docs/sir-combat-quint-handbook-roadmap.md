@@ -415,7 +415,7 @@ Exit criteria:
 
 Completion evidence:
 
-- Four independent approvals bind exact handbook blob `6a2a2c5c44da82bef28c459497786f35017d17e4`,
+- Four independent approvals bind exact handbook blob `a8f6b9ac8cd0dd969935ea4c288c90fa82efaa45`,
   unchanged literate-model blob `2347769cf18c278b27e4af4322580cd50719fe3f`, and diagram-manifest blob
   `7a84db6af105d3653243828e4828beea451e69ea`: domain, Quint/modeling, beginner walkthrough,
   and rendered-document review. Their structured scopes, evidence routes, and limits are retained in
@@ -429,9 +429,13 @@ Completion evidence:
   authoritative model and supplies an ordered trigger/checklist without changing the model bytes.
 - Fresh strict FsDocs output and all six diagrams passed normal, reduced-motion, print, effects-off, and
   CSS-disabled inspection. The 48 receipt-bound captures retain accessible static meaning; 100 warm
-  browser-native load/decode samples measured p95 71.4 ms and p99 76.8 ms under the unchanged M6V
+  browser-native load/decode samples measured p95 64.9 ms and p99 68.1 ms under the unchanged M6V
   100/200 ms budgets. Evidence remains headless with `liveCompositor:false` and
   `framePacingMeasured:false`; it makes no FPS or compositor claim.
+- Because a concurrent-host replay exposed scheduler-sensitive tail variance, M7 also retains two
+  exact-Node-26.5 quiescent 100-sample batches at p95/p99 64.1/66.4 ms and 64.7/81.9 ms. The validity
+  wrapper rejects competing render/browser work or sustained host CPU pressure and has three
+  observed-red/restored-green controls; it preserves the M6V workload and 100/200 ms budgets.
 - `work/380-handbook-m7/audit-publication-handoff.mjs` observed red and restored green for eight isolated
   review, identity, owner, placeholder, M6/M6V linkage, budget, and capability mutations. Lifecycle and
   aggregate qualification receipts live under `work/380-handbook-m7/` and `readiness/380-handbook-m7/`;

@@ -1250,8 +1250,7 @@ Run commands from the repository root with the committed locks intact:
 | Restore repository tools | `dotnet tool restore` | Installs the committed local .NET tools; does not install Quint. |
 | Check the model/runtime slice | `./scripts/qualify-quint-q4-sir-combat.sh` | Typecheck, named runs/properties, mutations, exact ITF, and deterministic sampled [correspondence](#def-correspondence). |
 | Check definitions and links | `node work/375-handbook-m6/audit-handbook-structure.mjs --self-test` | Reconciles 188 terms, 74 declarations, 16 rules, 50 chapters, and deliberate structural defects. |
-| Check the six diagrams | `node work/377-handbook-m6v/audit-visual-explanations.mjs --self-test` | Re-derives source/glyph/accessibility/fallback/fingerprint/budget bindings. |
-| Render and inspect M6V | `work/377-handbook-m6v/qualify-handbook-m6v.sh` | Strict docs, 48 retained renders, accessibility/fallback inspection, and the existing decoded-readiness budget. |
+| Check the current six-diagram publication | `node work/380-handbook-m7/audit-publication-handoff.mjs --self-test` | Checks four exact-source approvals, six diagram bindings, current and inherited render evidence, unchanged budgets and capability limits, and eight deliberate publication defects. |
 | Build the maintained publication | `work/380-handbook-m7/qualify-handbook-m7.sh` | Runs the complete M7 review, identity, maintenance, regression, [mutation](#def-mutation), lifecycle, and publication-preflight boundary. |
 
 The M6V performance line is a six-diagram load/decode measurement, not a compositor or frame-pacing claim.

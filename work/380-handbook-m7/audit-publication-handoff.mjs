@@ -89,6 +89,18 @@ function verify(overrides = new Map(), options = {}) {
   need(record.currentRenderEvidence.maxP95Ms === 100 && record.currentRenderEvidence.maxP99Ms === 200, "current render budgets drift");
   need(record.currentRenderEvidence.p95LoadMs <= 100 && record.currentRenderEvidence.p99LoadMs <= 200, "current render measurements exceed budget");
   need(record.currentRenderEvidence.liveCompositor === false && record.currentRenderEvidence.framePacingMeasured === false, "current render record overclaims compositor evidence");
+  const validity = parsed(record.measurementValidity.path);
+  need(validity.schema === record.measurementValidity.schema && validity.status === "pass", "render measurement validity receipt is not passing");
+  need(validity.policy?.exactNode === record.measurementValidity.exactNode && validity.policy?.batches === record.measurementValidity.batches, "render validity execution identity drift");
+  need(validity.policy?.maxP95Ms === record.measurementValidity.maxP95Ms && validity.policy?.maxP99Ms === record.measurementValidity.maxP99Ms, "render validity budgets drift");
+  need(validity.policy?.performanceIntent === record.measurementValidity.performanceIntent, "render validity invented a new performance intent");
+  need(validity.batches?.length === 2, "render validity requires two comparable batches");
+  for (const batch of validity.batches) {
+    need(batch.candidateSourceInputsSha256 === record.currentRenderEvidence.candidateSourceInputsSha256, `render validity source drift: ${batch.id}`);
+    need(batch.sampleCount === record.measurementValidity.samplesPerBatch && batch.warmupNavigations === record.measurementValidity.warmupsPerBatch, `render validity workload drift: ${batch.id}`);
+    need(batch.p95LoadMs <= 100 && batch.p99LoadMs <= 200, `render validity budget exceeded: ${batch.id}`);
+    need(batch.environment?.invalidSampleCount === 0 && batch.environment?.competitors?.length === 0, `render validity host was not quiescent: ${batch.id}`);
+  }
 
   need(reviews.schemaVersion === 1, "review manifest schema mismatch");
   need(reviews.reviewedSourceBlobs.handbook === record.sourceBlobs.find(x => x.path === paths.handbook).gitBlob, "review handbook binding drift");
