@@ -72,6 +72,24 @@ is a **runtime** property, not a materialization gate. So before the loop, check
    with an explicit `FSGG_COORD_OWNER` for a named account, or `FSGG_COORD_OWNER_TYPE=user` with **no**
    `FSGG_COORD_OWNER` to drive the token's **own** `viewer` board with no login in config (the CLI labels
    it `@me`). Unset / `org` keeps the org default, byte-identical.
+4. **The board governs this repository.** After the successful read, prove that the board has recorded at
+   least one row for this repository, in any Status and whether its issue is open or closed. Capture the
+   scoped read's stderr as well as its JSON — `ready` deliberately returns `[]` and exit `0` for a board
+   it can read that names no such repository, and puts the useful “check the spelling, or this repo has
+   no items” advisory on stderr. For example, run `scripts/fsgg-coord ready --repo <this-repo> --all
+   --json >rows.json 2>ready.stderr`; only a successful command with a non-empty `rows.json` is proof of
+   governance. If it is empty, stop cleanly without a board write, print `ready.stderr` verbatim, and say
+   that the board does not yet govern this repository; point the operator to the coordination-kit/board
+   retrofit path above. An entirely empty board cannot emit the scoped advisory (there is no known-repo
+   set to compare), so say that explicitly rather than mistaking `[]` for a governed empty queue. An
+   operator may explicitly acknowledge this ungoverned state and direct the run to continue; do not infer
+   acknowledgement from a green exit code, an empty batch, or a later loop result.
+
+   A leg that can fail: against a real reachable board whose history has no row for the checkout's repo,
+   the command above exits `0`, writes `[]` to `rows.json`, and writes the scope advisory to
+   `ready.stderr` (or has no advisory only when the whole board is empty). The fourth precondition must
+   stop at this gate with that diagnostic, not enter the scheduling loop. Add a row for the repo and the
+   same read becomes the positive control.
 
 That is the whole of "or fail gracefully": the skill lands everywhere, and decides at runtime whether the
 workspace is board-capable. A miss is a clean stop with a pointer, not an error.
@@ -148,9 +166,12 @@ Repeat until §5 says the board is genuinely done:
    shared rate budget (§6). Do **not** pass the item numbers to the workers — `batch` is the host's
    *sizing* read and `take` is the worker's *claiming* read, and keeping them separate is what preserves
    `take`'s lost-race guarantee (drive-board §2).
-4. **Spawn a fresh subagent per slot** (using the host's available worker/subagent mechanism; request an isolated worktree when supported), one per slot, each running
+4. **Spawn fresh implementers within the cap** (using the host's available worker/subagent mechanism; request an isolated worktree when supported), each running
    the worker brief (§3). One subagent, one `take`-loop-of-one: it takes an item, works it to done-stamp,
-   and returns. Concurrency is bounded — one repo, one shared account (§6).
+   and returns. Reserve critic capacity instead of filling the cap with implementers. At each review
+   handoff, spawn a fresh critic, keep the implementer alive for up to three numbered repair/review
+   rounds, and require the same critic to confirm each exact head. An exhausted third round parks for
+   human action instead of merging. Concurrency is bounded — one repo, one shared account (§6).
 5. **Collect each worker as it returns, and verify — do not trust (§4).** A worker reports the item it
    took, the PR it merged, and anything it filed or found. The subagent is now dead; its context is gone,
    which is deliberate.
@@ -163,22 +184,17 @@ Never let the host "just finish one quickly" itself — the whole value is that 
 worker that runs the full pnext-item loop, and a host that starts editing has no worktree, no claim, and
 no touch-set reservation, in the one tree every worker shares.
 
-## 3. The worker: a pnext-item envelope, SDD-lifecycle escalation *by complexity* (ADR-0064 §4.3)
+## 3. The worker: a pnext-item envelope with explicit delivery-route receipt
 
 The invariant per-item harness is **`pnext-item`** (already materialized): mint a
 distinct worker id, `take` (gate on exit code 0), read the item's comments, worktree from `origin/main`,
-implement within the declared `Paths:`, open a PR, review, merge on green, `done --flip`. Inside that one
-claim/merge/done-stamp envelope, **the depth of the implementation scales with the item's complexity** —
-this is the decision ADR-0064 records:
-
-- **Simple item** (Effort `S`/`M`, no `needs-sdd` signal): implement directly inside pnext-item — a
-  focused change, PR, merge. No lifecycle overhead.
-- **Complex item** (Effort `L`/`XL`, or a `needs-sdd` label / a `Blocked by`-a-charter signal): the worker
-  runs the full **`fs-gg-sdd-*` lifecycle** (charter/specify → clarify → plan → tasks → implement →
-  verify/validate → ship) for the implementation phase, **still inside** pnext-item's one claim/merge
-  envelope. Both skill sets are present in a wired workspace, so this is a **documented branch, not new
-  machinery** — one claim/merge/done-stamp discipline whether the item is a one-line fix or a heavyweight
-  feature that deserves the lifecycle.
+implement within the declared `Paths:`, open a PR, obtain independent critique, merge on green,
+`done --flip`. Inside that one
+claim/merge/done-stamp envelope, the worker consumes a **current, explicit agent-authored delivery-route
+receipt**. The fixed checklist records multi-repo, public-contract, migration/release/security/recovery,
+coordinated-provider, and independent-evidence facts, but it never infers the route. A `lightweight`
+receipt permits focused delivery; an `sdd-required` receipt binds the governing `fsgg-sdd` work, canonical
+spec home, and current SDD receipts. Both remain inside one claim/merge/done-stamp envelope.
 
 ### The per-worker subagent brief
 
@@ -197,11 +213,14 @@ The host hands each subagent essentially this, with `<REPO>` (this workspace's r
 >    before you start (a prior worker's "do not do this" is the highest-signal thing on the board),
 >    `git fetch` then worktree from `origin/main` by name, implement **inside your declared `Paths:`** (in
 >    a shared tree, a path you did not declare is one another worker may be editing). Pause before
->    opening the PR for steps 3–4, then resume pnext-item: open, review, merge on green, and
->    `done --flip` to earn the stamp.
-> 3. **Scale the implementation to the item.** A simple item (Effort `S`/`M`) you implement directly. A
->    **complex** one (Effort `L`/`XL`, or a `needs-sdd` signal) you take through the full `fs-gg-sdd-*`
->    lifecycle — still inside this one claim → PR → merge → done-stamp envelope. Both skill sets are here.
+>    opening the PR for steps 3–4, then resume pnext-item: push and open the candidate, pause for the host's
+>    independent critic, implement up to three numbered repairs, merge only after the same critic
+>    confirms the current head, and `done --flip` to earn the stamp. If round three still fails, never
+>    start round four: close that PR without merging and automatically enter one fresh repair phase.
+>    Park for human action and release the claim only if the repair phase exhausts or its route is unavailable.
+> 3. **Consume the route receipt.** Do not infer from effort, size, labels, or prose. A current
+>    `lightweight` receipt permits direct implementation; an `sdd-required` receipt requires its named
+>    `fsgg-sdd` work/spec/readiness bindings before implementation — still inside this one envelope.
 > 4. **Checkpoint and finalize development feedback before opening the PR.** Use one stable cycle id
 >    based on the item number and slug. Checkpoint only material observations at: onboarding/first
 >    build; lifecycle authoring when used; first implementation/test/evidence loop; and
@@ -213,8 +232,10 @@ The host hands each subagent essentially this, with `<REPO>` (this workspace's r
 >    lands, file that work at its **root cause** (pnext-item §4), set `Blocked by` on this item to the
 >    blocker, and `release --status Blocked` so the board tells the truth. Report the blocker you filed —
 >    the host schedules around it next wave.
-> 6. **Findings you make, you FIX in the same PR when that keeps it reviewable**, or file at the root cause
->    — pnext-item §4 is the authority. Do **not** recurse into a second item yourself: you are one worker
+> 6. **Implementation findings you make, you FIX in the same PR when that keeps it reviewable**, or file
+>    at the root cause — pnext-item §4 is the authority. Once independent review begins, the critic
+>    exclusively owns review-discovered root-cause search, dedupe, and direct filing, and may file only
+>    material unresolved work. Do **not** recurse into a second item yourself: you are one worker
 >    in a wave, and the host owns what comes next. Report what you filed; the host pops it.
 > 7. **If `take` exits 5 (nothing schedulable) or 75 (rate budget exhausted)**, do not spin. Report the
 >    exit code and stop — 5 means the repo is dry for now, 75 means the shared budget is gone and the host
@@ -247,6 +268,10 @@ scripts/fsgg-coord ready --repo <this-repo> --all --json   # the always-fresh TR
 - The **rate budget** did not silently strand a write. If any worker returned 75, run
   `scripts/fsgg-coord flush --dry-run` before the next wave — a queued board write that nothing replays
   reads later as drift you will "find" and duplicate.
+- The PR carries `<!-- fsgg:review-decision/v2 -->` for the exact reviewed/confirmed head, the
+  critic is not the implementer, every material finding has a terminal disposition, and every filed
+  issue is directly verified. No nonmaterial observation created an issue, board row, blocker edge, or
+  follow-up entry.
 
 Do not take a merge you can check on the worker's say-so. Read `ready`, not the report.
 

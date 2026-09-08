@@ -7,8 +7,9 @@ This page exists because the packed coordination skills documented a review prot
 not accept, and the protocol it does accept appeared in no skill at all. `S.I.R.#255` recorded the
 consequence: no PR in this workspace could reach a `landable` green verdict by following the packed
 guidance. What follows is the contract the engine actually enforces, recovered from the engine's own
-encoders and validators and from its decompiled command gates, at `fs.gg.coord.cli` **0.71.0**
-(the version pinned in `.config/dotnet-tools.json`).
+encoders and validators and from its decompiled command gates, originally at `fs.gg.coord.cli`
+**0.71.0**. The live coherence probes now run against **0.87.0**, the version pinned in
+`.config/dotnet-tools.json`; historical examples retain their original identities and evidence.
 
 ---
 
@@ -283,7 +284,11 @@ The `reviewGeneration` token does not — it embeds the head SHA. After a rebase
 **Optional** — may be omitted entirely:
 
 `previousDigest`, `claimGeneration`, `baseSha`, `initialReview`, `precedingReview`,
-`diffAuditRequired`, `diffAuditReceipts`, `succession`
+`diffAuditRequired`, `diffAuditReceipts`, `succession`, `repairPhaseReceipt`
+
+`repairPhaseReceipt` may be absent from historical records. Current repair-phase writers require
+the structured receipt binding the exhausted PR, escalation comment, new claim, branch/PR,
+implementer, critic, and candidate head; omission is not permission to start an unbound repair phase.
 
 Remember that four of the required keys (`revision`, `digest`, and — where present — `claimGeneration`
 and `baseSha`) are required to be *present* and are then *ignored*.

@@ -476,7 +476,8 @@ let baseRec : ReviewRecord =
     RouteApplicability = "not-meaningful"; RouteEvidence = [ "documentation-only change" ]
     PolicyVersion = "structured-decisions/1"; Kind = ReviewKind.Initial; Round = 0
     InitialReview = None; PrecedingReview = None; DiffAuditRequired = false
-    DiffAuditReceipts = []; Succession = None; Timestamp = "2026-08-22T21:40:00Z"; Digest = "" }
+    DiffAuditReceipts = []; Succession = None; RepairPhaseReceipt = None
+    Timestamp = "2026-08-22T21:40:00Z"; Digest = "" }
 let initial = seal baseRec
 let accepts recs =
   match StructuredDecision.validateReviewLedger subject recs with Ok _ -> true | Error _ -> false
@@ -501,7 +502,7 @@ let draftKeys =
     "routeApplicability", "\"not-meaningful\""; "routeEvidence", "[\"x\"]"
     "policyVersion", "\"structured-decisions/1\""; "kind", "\"initial\""; "round", "0"
     "initialReview", "null"; "precedingReview", "null"; "diffAuditRequired", "false"
-    "diffAuditReceipts", "[]"; "succession", "null"
+    "diffAuditReceipts", "[]"; "succession", "null"; "repairPhaseReceipt", "null"
     "timestamp", "\"2026-08-22T21:40:00Z\""; "digest", "\"\"" ]
 let render xs = "{" + (xs |> List.map (fun (n, v) -> sprintf "\"%s\":%s" n v) |> String.concat ",") + "}"
 let engineRequired, engineOptional =
