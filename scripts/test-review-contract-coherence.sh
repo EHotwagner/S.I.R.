@@ -66,7 +66,11 @@ set -euo pipefail
 
 # `--inner <doc>` re-enters this script against a mutated copy of the document (STEP 3).
 inner=""
-if [[ "${1:-}" == "--inner" ]]; then inner="${2:?--inner needs a document path}"; fi
+compiled_probe=""
+if [[ "${1:-}" == "--inner" ]]; then
+  inner="${2:?--inner needs a document path}"
+  compiled_probe="${3:-}"
+fi
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 doc="${inner:-$repo_root/docs/coordination-engine-contracts.md}"
@@ -937,19 +941,46 @@ check "known-blind:validator-cannot-check-the-subject"
 exit (if failures = 0 then 0 else 1)
 FSX
 
-python3 - "$tmp/probe.fsx" "$core" "$tmp/expected.json" <<'PY'
-import sys, pathlib
+python3 - "$tmp/probe.fsx" "$core" "$tmp/expected.json" "$inner" <<'PY'
+import sys, pathlib, html
 p = pathlib.Path(sys.argv[1])
-p.write_text(p.read_text().replace("@@CORE@@", sys.argv[2]).replace("@@EXPECTED@@", sys.argv[3]))
+source = p.read_text()
+if not sys.argv[4]:
+    # The same probe, compiled once. Each process still parses its own mutant's expectations
+    # and initializes all probe state afresh; no engine verdict or expectation is cached.
+    p.with_name("Program.fs").write_text(source.replace('#r "@@CORE@@"\n', '')
+        .replace('"@@EXPECTED@@"', '(System.Environment.GetCommandLineArgs().[1])'))
+    core = html.escape(sys.argv[2])
+    fsharp = html.escape(str(pathlib.Path(sys.argv[2]).with_name("FSharp.Core.dll")))
+    p.with_name("Probe.fsproj").write_text(f'''<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    <NuGetAudit>false</NuGetAudit></PropertyGroup>
+  <ItemGroup><Compile Include="Program.fs" />
+    <Reference Include="FS.GG.Coord.Core"><HintPath>{core}</HintPath></Reference>
+    <Reference Include="FSharp.Core"><HintPath>{fsharp}</HintPath></Reference>
+  </ItemGroup>
+</Project>''')
+p.write_text(source.replace("@@CORE@@", sys.argv[2]).replace("@@EXPECTED@@", sys.argv[3]))
 PY
 
 if [[ -n "$inner" ]]; then
   # Inner run: only the engine comparison matters, and quietly.
-  exec dotnet fsi "$tmp/probe.fsx"
+  if [[ -n "$compiled_probe" ]]; then
+    dotnet "$compiled_probe" "$tmp/expected.json"
+  else
+    dotnet fsi "$tmp/probe.fsx"
+  fi
+  exit 0
 fi
 
+dotnet build "$tmp/Probe.fsproj" --configuration Release --verbosity quiet > "$tmp/probe-build.log" 2>&1 || {
+  cat "$tmp/probe-build.log" >&2
+  exit 1
+}
+compiled_probe="$tmp/bin/Release/net10.0/Probe.dll"
 echo "engine conformance (pinned fs.gg.coord.cli $pinned) — expectations parsed from the document:"
-if ! dotnet fsi "$tmp/probe.fsx" | tee "$tmp/clean.txt"; then
+if ! dotnet "$compiled_probe" "$tmp/expected.json" | tee "$tmp/clean.txt"; then
   echo "docs/coordination-engine-contracts.md disagrees with the engine it documents." >&2
   exit 1
 fi
@@ -1374,14 +1405,14 @@ print("  %d mutations (%d derived from the document, %d exact) — %d widening, 
          sum(1 for m in manifest if m[1] == WIDEN), sum(1 for m in manifest if m[1] == NARROW)))
 PY
 
-# The mutants are independent, so run them concurrently. Parallelism is bounded rather than `nproc`:
-# each run starts a `dotnet fsi` host, and the memory ceiling binds well before the core count does.
+# The mutants are independent, so run them concurrently with a bounded process count.
+# Reuse only the compiled probe bytes, never expectations, mutable state, or verdicts.
 jobs=${SIR_COHERENCE_JOBS:-6}
 find "$mutants" -name '*.md' -print0 | xargs -0 -P "$jobs" -I{} bash -c '
-  out=$("$0" --inner "$1" 2>&1) && rc=0 || rc=$?
-  printf "%s\n" "$out" | sed -n "s/^  FAILED  \(.*\)$/\1/p" > "$1.failed"
-  printf "%s" "$rc" > "$1.rc"
-' "$repo_root/scripts/test-review-contract-coherence.sh" {}
+  out=$("$0" --inner "$2" "$1" 2>&1) && rc=0 || rc=$?
+  printf "%s\n" "$out" | sed -n "s/^  FAILED  \(.*\)$/\1/p" > "$2.failed"
+  printf "%s" "$rc" > "$2.rc"
+' "$repo_root/scripts/test-review-contract-coherence.sh" "$compiled_probe" {}
 
 status=0
 narrowed="$tmp/narrowed.txt"; : > "$narrowed"
