@@ -2,52 +2,78 @@
 set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-cd "$repo_root"
-
+task_root=$(mktemp -d)
+trap 'rm -rf -- "$task_root"' EXIT
 model=readiness/184-scenario-catalog/work-model.json
+
 snapshot() {
-  git ls-files -z readiness/184-scenario-catalog \
-    | sort -z \
-    | xargs -0 sha256sum
+  local root=$1
+  while IFS= read -r -d '' relative; do
+    printf '%s  %s\n' "$(sha256sum "$root/$relative" | cut -d' ' -f1)" "$relative"
+  done < <(git -C "$repo_root" ls-files -z readiness/184-scenario-catalog | sort -z)
 }
-before_model=$(sha256sum "$model" | cut -d' ' -f1)
-before_views=$(snapshot)
 
-# FS-GG/FS.GG.SDD#857: 1.0.1's analyze path currently emits the
-# pre-evidence projection into the same work-model path that verify/ship use for
-# the evidence-enriched projection. Keep that producer defect explicit and
-# bounded: analyze must expose the known alternation, then verify must restore
-# the exact canonical final model and ship must preserve it.
-dotnet fsgg-sdd analyze --work 184-scenario-catalog --text
-analyze_model=$(sha256sum "$model" | cut -d' ' -f1)
-if [[ "$analyze_model" == "$before_model" ]]; then
-  echo "FS.GG.SDD#857 no longer reproduces; remove the consumer workaround and require full analyze -> verify -> ship stability." >&2
+historical_before=$(snapshot "$repo_root")
+historical_model=$(sha256sum "$repo_root/$model" | cut -d' ' -f1)
+# Historical accepted output belongs to its producing SDD version. Exercise the current
+# installed generator in a disposable workspace, including the original source/evidence
+# paths, rather than requiring a tool upgrade to reproduce an older generator's bytes.
+mkdir -p "$task_root/workspace"
+tar -C "$repo_root" --exclude=.git --exclude=node_modules --exclude=artifacts \
+  --exclude=bin --exclude=obj -cf - . | tar -C "$task_root/workspace" -xf -
+cd "$task_root/workspace"
+git init --quiet
+git add --all
+git -c user.name='SDD compatibility fixture' -c user.email='fixture@example.invalid' \
+  -c commit.gpgsign=false commit --quiet -m 'Snapshot receiver fixture'
+
+run_stage() {
+  local stage=$1
+  if ! dotnet fsgg-sdd "$stage" --work 184-scenario-catalog --root . --json > "$task_root/$stage.json"; then
+    jq '{outcome, diagnostics}' "$task_root/$stage.json" >&2
+    return 1
+  fi
+  jq -e --arg version "$(jq -r '.tools["fs.gg.sdd.cli"].version' .config/dotnet-tools.json)" \
+    '.toolVersion == $version and (.outcome == "succeeded" or .outcome == "succeededWithWarnings" or .outcome == "noChange")' \
+    "$task_root/$stage.json" >/dev/null
+}
+
+# Establish a baseline produced by the currently pinned tool. The first pass reports
+# stale input while regenerating it; the second must settle without that diagnostic.
+# FS.GG.SDD#857's pre-evidence analyze projection remains bounded: current verify/ship
+# must restore their own stable final projection, not an older release's bytes.
+run_stage analyze
+run_stage analyze
+run_stage verify
+run_stage verify
+run_stage ship
+run_stage ship
+current_model=$(sha256sum "$model" | cut -d' ' -f1)
+current_views=$(snapshot "$task_root/workspace")
+run_stage verify
+run_stage ship
+[[ "$(snapshot "$task_root/workspace")" == "$current_views" ]] || {
+  echo "current SDD verify -> ship did not preserve its own generated baseline" >&2
+  diff -u <(printf '%s\n' "$current_views") <(snapshot "$task_root/workspace") >&2 || true
   exit 1
-fi
-
-# The first analyze diagnoses its own just-rewritten view as stale; the second
-# reaches implementationReady over that pre-evidence projection.
-dotnet fsgg-sdd analyze --work 184-scenario-catalog --text
-
-dotnet fsgg-sdd verify --work 184-scenario-catalog --text
-verify_model=$(sha256sum "$model" | cut -d' ' -f1)
-if [[ "$verify_model" != "$before_model" ]]; then
-  printf 'item 184 verify did not restore the canonical work model: %s -> %s\n' "$before_model" "$verify_model" >&2
+}
+run_stage analyze
+run_stage analyze
+run_stage verify
+run_stage verify
+run_stage ship
+run_stage ship
+[[ "$(sha256sum "$model" | cut -d' ' -f1)" == "$current_model" ]] || {
+  echo "current SDD analyze -> verify -> ship did not restore its own work-model baseline" >&2
   exit 1
-fi
-
-dotnet fsgg-sdd ship --work 184-scenario-catalog --text
-ship_model=$(sha256sum "$model" | cut -d' ' -f1)
-if [[ "$ship_model" != "$before_model" ]]; then
-  printf 'item 184 ship rewrote the verified canonical work model: %s -> %s\n' "$before_model" "$ship_model" >&2
+}
+[[ "$(snapshot "$task_root/workspace")" == "$current_views" ]] || {
+  echo "current SDD analyze -> verify -> ship changed generated readiness views" >&2
   exit 1
-fi
-
-after_views=$(snapshot)
-if [[ "$after_views" != "$before_views" ]]; then
-  echo "item 184 analyze -> verify -> ship rewrote committed readiness views" >&2
-  diff -u <(printf '%s\n' "$before_views") <(printf '%s\n' "$after_views") >&2 || true
+}
+[[ "$(snapshot "$repo_root")" == "$historical_before" ]] || {
+  echo "SDD compatibility verification modified historical receiver evidence" >&2
   exit 1
-fi
-
-echo "Item 184 SDD final-projection gate passed: FS.GG.SDD#857 remained bounded and verify -> ship restored/preserved canonical readiness bytes."
+}
+printf 'SDD current-version stability passed; historical model %s preserved, current model %s verified.\n' \
+  "$historical_model" "$current_model"

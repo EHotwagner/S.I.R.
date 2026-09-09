@@ -16,6 +16,13 @@ feedback envelope, plus the shared
 control-plane provenance guidance in the `pnext-item` contract. Do not hand it a second item. It MAY, after its done stamp, drain its OWN follow-up
 queue sequentially — one claim at a time, never interleaved.
 
+Every specific, checkable assertion included in a worker dispatch, worker report, or host relay must
+carry `Verification:` with the command, `file:line`, API call, or URL that established it, or exactly
+`unverified` when it was not checked. The latter is a valid, non-pejorative value. Before forwarding a
+handoff, check that each assertion has one of those two forms; a missing field is detectable incomplete
+evidence, not permission for the receiver to assume the claim was verified. This binds the host when it
+relays a worker's or critic's assertion as well as the original author.
+
 <!-- BEGIN GENERATED: fsgg-protocol:wave-policy -->
 *Generated operational fact: the parser and driver consume this policy; do not restate its numbers.*
 
@@ -27,6 +34,59 @@ queue sequentially — one claim at a time, never interleaved.
 
 Critic reservation is **RESERVED, not advisory**; assigning it to an implementer is a contract
 violation, not an efficiency gain.
+
+**The host owns critic dispatch; a worker does not dispatch its own.** Assigning a fresh critic in
+response to a worker's review handoff is a request the worker owes the host (`pnext-item` §5); a
+worker calling the `Agent` tool with `subagent_type: fsgg-critic-normal`, `fsgg-critic-best`, or any
+other `fsgg-critic-<route>` type to spawn and confirm its own critic is exactly the contract violation
+the reservation above forbids — measured twice in one run (`.github#2462`), and correctly disclosed
+both times, which does not make the mechanism sound on its own. The one stated exception is a **solo
+`pnext-item` invocation with no host to ask**; that mode has no reservation to violate, because no host
+is dispatching in it.
+
+Detection here is **by convention, not by construction**: host and worker share one GitHub account
+(rate-limit note below — "every worker still authenticates as the one account"), so no marker field can
+prove who dispatched a critic, and this loop does not claim otherwise. The reservation is enforced by
+the host verifying the dispatch it itself made, not by a field the review chain carries.
+
+**Collect the finding packets, then dispatch the analyst — at the re-plan boundary, not inside a wave.**
+`pnext-item`'s findings-and-filing contract routes a finder that has established a distinct cause to post
+an `fsgg:finding-packet` comment INSTEAD of filing, wherever a `board-analyst` resolves. Nothing waits on
+that packet, by design — which is exactly why a loop with no collection step is worse than the filing it
+replaced: the finding becomes a comment with no reader and no owner, where before it became a row a
+scheduler could see (`.github#2675`). So the step is owned here, beside critic dispatch, and it runs on
+the same boundary as the post-wave reconcile and re-triage: after this wave's merges are verified, before
+the next wave is sized. Hand the analyst the packets you collected and nothing else — it adjudicates what
+it is handed, it never re-derives a packet, and it never dispatches, claims, or merges.
+
+- **Collect without a board scan, and paginate — `--paginate` is not optional.** The repository-wide
+  issue-comments listing reaches every packet, anchored to the last collection that actually SUCCEEDED:
+  `gh api --paginate -X GET repos/<owner>/<repo>/issues/comments -f since=<last-successful-collection> -f per_page=100`.
+  It returns comments on issues AND on pull requests — both of the surfaces a packet is allowed to live
+  on — and it never fans out per issue. Two spellings here are load-bearing, and this row got both wrong
+  the first time. Without `--paginate`, `gh api` returns ONE page, and `per_page=100` caps that page
+  rather than lifting it: measured on this repository, a `since` of midnight the same day returned 100
+  comments against 275 paginated, and the previous midnight 100 against 408 — roughly two thirds of a
+  boundary-sized window dropped in silence. And the anchor is the last SUCCESSFUL collection, never "the
+  previous boundary": a pass skipped under the backoff below would otherwise orphan its window
+  permanently, because no later pass ever looks that far back again. `scripts/fsgg-coord issues` cannot
+  stand in for any of it — that command reads the issue LIST endpoint, which carries a comment COUNT and
+  no comment bodies, and it drops pull requests outright (`src/FS.GG.Coord.GitHub/Reads.fs`).
+- **The analyst occupies no slot, and that is a stated exemption with its cost, not silence.** It holds no
+  claim, takes no lane, and blocks no chain — `board-analyst` may never `claim`, `take`, or `release` — so
+  it can consume neither an implementer slot nor one of the reserved critic slots, and the generated
+  policy above is unchanged by it. What it does spend is the one shared REST budget that also holds the
+  claim lock, counted in REST CALLS rather than in scans: the collection above is one paginated listing,
+  a handful of calls over a boundary-sized window, and the pass it feeds spends whatever `board-analyst`'s
+  own skill permits it — that budget is bounded there, not here. Nothing in this step authorises a board
+  `scan` to decide whether to dispatch, which is the cost the step exists to avoid. Bound it exactly
+  there: at most one analyst pass per boundary, never two at once, and none at all while an `EX_RATE`
+  backoff is in effect — and when a pass is skipped, record that the collection did not happen, so the
+  next one still starts from the last successful window rather than from this boundary.
+- **Where no analyst resolves, the step is a no-op and there are no packets to collect.** `board-analyst`
+  is `scope: operator` and materializes nowhere, so it resolves only in an operator checkout; everywhere
+  else findings-and-filing's other branch governs and the finder files its own row. An empty collection is
+  that branch reporting itself, not a broken loop.
 
 `batch` reads the machine declaration above and emits `activeItems`, `waveCapacity`, and `openSlots`
 beside its scheduling answer. When schedulable work and open slots coexist it also emits `WAVE
@@ -70,42 +130,19 @@ supports slash-based skill selection.
 
 At each worker's review handoff, spawn a fresh critic under the `independent-review` contract loaded
 by `$pnext-item`, route
-up to three numbered repairs back to the still-live worker, and require a confirmation for each
-repair — from the same critic while it is available, or from a **fresh successor** when it is not.
-A successor is legal: the engine accepts a `confirmation` bound to a different critic after a
-`changes-required` verdict, and `review <ref> --pr <n>` actively returns `dispatchSuccessor` on a
-repaired head. It is refused only after a `pass`, with `every record in one review generation must
-bind the same critic`. Do not read "the same critic" as a hard requirement — a rule stricter than the
-engine is obeyed silently and produces a chain the ledger will not accept. Before merge, verify PR state/head/checks, the durable review marker, the ordered
+up to three numbered repairs back to the still-live worker, write a bounded review-wait receipt, and require a fresh successor critic's full review
+after each repair. Before merge, verify PR state/head/checks, the durable review marker, the ordered
 round/URL/SHA chain, critic independence, each material finding's disposition, and newly filed work.
+The queue write is `scripts/fsgg-coord review wait <ref> <event.json> --pr <n> --json`; do not dispatch
+until its entry marker is durable, and consume it with the matching completion/cancel/timeout event.
+Use `<head>:initial-review:0` or `<head>:repair-confirmation:<round>` as the generation token; critic
+records require the matching waiting entry, and acceptance requires its completed critic-record evidence.
 Validate the chain and confirm its latest round is less than three before routing each repair.
 A critic may file review-discovered work only when
 materiality, distinct root cause, dedupe, and actionability are evidenced; nonmaterial observations
 must not create issues, board rows, blocker edges, or follow-up entries. Post the exact-SHA
-`fsgg:review-accepted:v1` marker only after these pre-merge checks pass; the worker may not merge
-before it observes that marker.
-
-**Then record the acceptance the engine gates on.** The marker is human-readable review evidence;
-`landable` reads the structured `fsgg.coord.review-decision/v2` ledger, and refuses a PR that carries
-only the marker. Host acceptance is a record you write, not a marker you post:
-
-```sh
-scripts/fsgg-coord review record <ref> accept.json --pr <n>   # kind: acceptance, verdict: accepted
-```
-
-Three things about that draft are invisible from its field names, and each costs a wasted round:
-
-- **`critic` carries the CRITIC's worker id, not yours.** Every record in one review generation must
-  bind the same critic; your own id is refused with `every record in one review generation must bind
-  the same critic`, which reads like a complaint about the critic's record rather than your own.
-- **`precedingReview` must equal the `complete` wait event's `evidenceRef`, exactly** — the critic
-  record's comment URL is the natural value for both.
-- **You author no digest, `revision`, `previousDigest`, `claimGeneration` or `baseSha`.** The engine
-  derives all five from live state and discards the draft's values, so a placeholder is correct. An
-  acceptance draft is also pre-validated against the resulting chain before anything is posted, so a
-  wrong draft costs an error message rather than a corrupted ledger.
-
-The full contract is [`docs/coordination-engine-contracts.md`](../../../../docs/coordination-engine-contracts.md). If material findings remain after round three, verify the escalation
+`fsgg:review-decision/v2` marker only after these pre-merge checks pass; the worker may not merge
+before it observes that marker. If material findings remain after round three, verify the escalation
 marker, close the ordinary PR without merging, and automatically enter the repair phase; do not post
 acceptance, merge, or permit round four on the exhausted chain.
 
@@ -120,7 +157,7 @@ automatically. Reserve the same two review slots for its critic
 that every wave already reserves; an implementer may never fill one, in the repair phase either. Verify
 the repair-phase chain under the identical rules — durable markers, ordered round/URL/SHA chain, critic
 independence — but against `repair-phase-max-rounds: 10`, not `max-automated-repair-rounds: 3`, and
-require the `fsgg:independent-review-repair-phase:v1` marker naming the exhausted PR and its escalation
+require the `fsgg:review-decision/v2` marker naming the exhausted PR and its escalation
 marker before treating any repair-phase pass as landable. If the required route is unavailable, or once
 the repair phase itself exhausts its own round ceiling, verify the escalation marker, `Blocked on:
 human/action` sentinel, `Blocked` status, and released claim; do not post acceptance, merge, start a
@@ -141,3 +178,31 @@ Terminate only from a fresh read. Distinguish empty from blocked, contended, sta
 An empty Ready batch is not completion while Backlog is actionable or untriaged, or while any completed
 cycle lacks validated feedback and roll-up disposition. Report deliberately parked and human-blocked
 Backlog without repeatedly dispatching or spinning on it.
+
+The stopping test is **no startable `defect`**, not an empty board: a run in which fixing one thing files
+two can never reach an empty board, and every row it files is real. `hardening` is drained deliberately as
+ordinary backlog; `decision` is surfaced and never dispatched. **An unclassed row is a possible defect, not
+a minor one** — you may stop with some outstanding, but report them by number and do not claim the board is
+defect-free. Read classes from `scripts/fsgg-coord ready --repo <this-repo> --json`'s `class` field *after*
+`reconcile --apply` (the column is a projection, current only as of the last reconcile) plus `lint`'s
+`CLASS-UNSET` for the rest; the authority is the item's own `Class:` body line, so never hand-edit the
+column. This test is additional to, never a substitute for, the validated feedback roll-up above: a
+workspace run stops only when both are satisfied.
+
+## Deliberately not carried from `drive-board`
+
+This loop and `drive-board`'s share most of one worker contract, so a paragraph present there and absent
+here should be a divergence a reader can check rather than guess at. One is deliberate:
+
+- **The "I am refused the shared checkout, and the engine is N commits behind" escalation.** In
+  `FS-GG/.github` the engine is a *source build* under a checkout every worker shares, so a worktree-
+  isolated worker can be refused the very repair its own `pnext-item` §1 currency check demands, and
+  `drive-board`'s host owns serialising that repair. A coordination-wired product workspace does not have
+  that shape: its engine arrives vendored — the kit's `scripts/fsgg-coord` shim plus the pinned
+  `fs.gg.coord.cli` tool — so bringing it current is a pin bump inside the workspace's own tree, not a
+  mutation of a checkout N workers share. The wiring preconditions in [deep detail](deep-detail.md)
+  already stop a wave on an engine that cannot be read.
+
+The three contracts `.github#2511` restored — the `Verification:` discipline, the critic-dispatch
+ownership rule, and the class-based stopping test above — are **not** workspace-specific, which is why
+they are stated here rather than listed above. Their absence had been silent since `.github#2201`.

@@ -17,14 +17,14 @@
       "rollForward": false
     },
     "fs.gg.sdd.cli": {
-      "version": "1.0.1",
+      "version": "1.6.0",
       "commands": [
         "fsgg-sdd"
       ],
       "rollForward": false
     },
     "fs.gg.coord.cli": {
-      "version": "0.72.0",
+      "version": "0.87.0",
       "commands": [
         "fsgg-coord-engine"
       ]

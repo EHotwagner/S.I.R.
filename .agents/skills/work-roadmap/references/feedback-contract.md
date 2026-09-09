@@ -4,11 +4,20 @@ The worker must explicitly invoke `fs-gg-feedback-report` and keep one stable lo
 `roadmap-<roadmap-slug>-m<milestone>-<slug>`. Give that id to the worker in its initial brief; do not
 derive a different id after work begins.
 
+> If `.agents/skills/fs-gg-feedback-report/` (and its `.claude/` twin) is absent even though
+> `fs-gg-sdd-*` is present, this tree is a **partial product materialization**, not the wrong tree —
+> see `deep-detail.md`'s "Where this runs" for the exact, non-blocking remedy (do not stop, do not
+> fabricate a substitute out-of-workspace tool path; record the zero-event reason below and
+> raise/dedupe one finding against the tree's scaffold provenance, `.github#2366`).
+
 At onboarding/first build, lifecycle authoring, the first implementation-test-evidence loop, and
 verify/ship/PR orchestration, invoke the feedback skill and decide whether a material checkpoint
 qualifies. Append qualifying friction, rework, capability gaps, documentation defects, orchestration
 failures, and unexpectedly effective patterns with its documented `checkpoint` command. Routine green
-commands are not findings.
+commands are not findings. Keep implementation critique in the critique artifact: feedback captures
+development-system observations, not product/code review findings. If the critique cycle itself exposes
+material workflow friction or an unexpectedly effective pattern, checkpoint that process observation
+without duplicating the critic's implementation finding.
 
 Before handoff, finalize one schema-v2 report for the cycle. In §1 include this activation envelope:
 
@@ -32,14 +41,29 @@ envelope and the same audit/report binding:
 ```sh
 dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- \
   validate feedback/<report>.md --audit feedback/audits/<report-stem>.audit.json
-python3 .agents/skills/work-roadmap/scripts/validate-feedback-state.py \
-  --root . --cycle <cycle-id> --report feedback/<report>.md \
+scripts/fsgg-coord telemetry feedback validate \
+  --cycle <cycle-id> --report feedback/<report>.md \
   --audit feedback/audits/<report-stem>.audit.json \
   --phases onboarding-first-build,lifecycle-authoring,implementation-test-evidence,verify-ship-pr
 ```
 
 The host repeats all applicable commands against the worker's exact merged paths before accepting the
-milestone. An `incomplete` or `unsupported` audit finding is unresolved and blocks actionable handoff.
+milestone. A command passes only when the validator itself exits `0`; capture its output, then capture
+and test that exit status immediately. For example:
+
+```sh
+validation_output="$(scripts/fsgg-coord telemetry feedback validate \
+  --cycle <cycle-id> --report feedback/<report>.md \
+  --audit feedback/audits/<report-stem>.audit.json \
+  --phases onboarding-first-build,lifecycle-authoring,implementation-test-evidence,verify-ship-pr)"
+validation_status=$?
+printf '%s\n' "$validation_output"
+[ "$validation_status" -eq 0 ] || exit "$validation_status"
+```
+
+Never pipe a validator through `tail`, `tee`, or another command when deciding whether it passed: a
+pipeline reports the last element's status, so a validator exit `1` can be replaced by exit `0` and turn
+a failed validation into a false pass. An `incomplete` or `unsupported` audit finding is unresolved and blocks actionable handoff.
 Missing, unreadable, malformed, wrong-cycle, count-mismatched, unbound-audit, or unvalidated state fails
 closed and the host reports the exact path plus the command above that repairs or verifies it.
 

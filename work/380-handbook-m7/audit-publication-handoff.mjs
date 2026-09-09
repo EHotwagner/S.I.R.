@@ -136,6 +136,10 @@ function verify(overrides = new Map(), options = {}) {
   }
   need(combatTooltipHotspots === extension.qualification.combatTooltipHotspots, "combat tooltip count does not match publication evidence");
 
+  // This receipt describes its named historical verification, not today's tool restore.
+  // Resolve the original manifest through the already-checked verification base so an
+  // ordinary tool upgrade cannot rewrite (or falsely invalidate) accepted evidence.
+  const historicalTools = JSON.parse(execFileSync("git", ["show", `${record.verificationBase}:.config/dotnet-tools.json`], {encoding: "utf8"})).tools;
   const expectedTools = new Map([
     [".NET SDK", json("global.json").sdk.version],
     ["Node.js", json("package.json").engines.node],
@@ -143,7 +147,7 @@ function verify(overrides = new Map(), options = {}) {
     ["FsDocs", json(".config/dotnet-tools.json").tools["fsdocs-tool"].version],
     ["Playwright", json("package-lock.json").packages["node_modules/@playwright/test"].version],
     ["FS.GG.SDD.Cli", "1.4.0"],
-    ["FS.GG.Coord.Cli", json(".config/dotnet-tools.json").tools["fs.gg.coord.cli"].version]
+    ["FS.GG.Coord.Cli", historicalTools["fs.gg.coord.cli"].version]
   ]);
   need(record.toolchain.length === expectedTools.size, "toolchain cardinality drift");
   for (const tool of record.toolchain) need(expectedTools.get(tool.tool) === tool.version, `tool identity drift: ${tool.tool}`);
@@ -262,6 +266,7 @@ if (process.argv.includes("--self-test")) {
     });
   };
   const cases = [
+    ["historical-tool-identity-rewritten", new Map([[paths.record, JSON.stringify({...record, toolchain: record.toolchain.map(tool => tool.tool === "FS.GG.Coord.Cli" ? {...tool, version: "99.0.0"} : tool)})]])],
     ["missing-domain-review", new Map([[paths.reviews, JSON.stringify({...reviews, reviews: reviews.reviews.filter(x => x.subject !== "domain")})]])],
     ["rejected-model-review", new Map([[paths.reviews, JSON.stringify({...reviews, reviews: reviews.reviews.map(x => x.subject === "quint-modeling" ? {...x, verdict: "changes-required"} : x)})]])],
     ["stale-handbook-identity", new Map([[paths.record, JSON.stringify({...record, sourceBlobs: record.sourceBlobs.map(x => x.path === paths.handbook ? {...x, gitBlob: "0".repeat(40)} : x)})]])],

@@ -91,7 +91,7 @@
     {
       "path": ".agents/skills/padd-item/SKILL.md",
       "owner": "driver",
-      "sha256": "f77540a387627a13ed88133e259eee6fc8d956213a23b18097977bcc07520aca"
+      "sha256": "60938ac4fc0f147de8be89f125a4a78a958be52ef1b879c33876f901d6486247"
     },
     {
       "path": ".agents/skills/padd-item/agents/openai.yaml",
@@ -101,7 +101,7 @@
     {
       "path": ".agents/skills/work-board-best/SKILL.md",
       "owner": "driver",
-      "sha256": "2b0577726f7cab6aa27169888c0f47370ad26ddadbcb6fda300acf1a00e754e3"
+      "sha256": "4c9bb3aec9531684cd09734f82c63c3ea1864a978b97e72be890f6f396579058"
     },
     {
       "path": ".agents/skills/work-board-best/agents/openai.yaml",
@@ -111,7 +111,7 @@
     {
       "path": ".agents/skills/work-board-normal/SKILL.md",
       "owner": "driver",
-      "sha256": "4649b17f1e05e2302626927b77462eee91ba41ceb3eb7b72df8d933fbd5863db"
+      "sha256": "4eb0b7e76a2f63a7d6e7240bded3289363b3cebef0cc5d9c82b38e16bb9a5749"
     },
     {
       "path": ".agents/skills/work-board-normal/agents/openai.yaml",
@@ -121,7 +121,7 @@
     {
       "path": ".agents/skills/work-board/SKILL.md",
       "owner": "driver",
-      "sha256": "0e44ecccfb46537cdb40296c7351dd08a0e5494ea6144ff13ceefd27872a8855"
+      "sha256": "8f15a538826c91fde11fcd18d293b8568d27b638bbd8cb41c0e9cf1f6c650e82"
     },
     {
       "path": ".agents/skills/work-board/agents/openai.yaml",
@@ -131,22 +131,22 @@
     {
       "path": ".agents/skills/work-board/references/backlog-triage.md",
       "owner": "driver",
-      "sha256": "6e9601d6e752be4ca3f3e5f5a2a5837b6fb5e0b6f4a1722aac8a6731ad0ebc44"
+      "sha256": "2fc359707e81ff48a197931d0baae4c2fb8e6af036954024641198bd6407c354"
     },
     {
       "path": ".agents/skills/work-board/references/deep-detail.md",
       "owner": "driver",
-      "sha256": "4fb060eef5a291f53118aefa546b187d4b1c929703ce56910030af0f066180ad"
+      "sha256": "87aae5dbb5834e6ecf98c3a656eddca573f8fe5af35c8adf77323a4e03981893"
     },
     {
       "path": ".agents/skills/work-board/references/feedback-contract.md",
       "owner": "driver",
-      "sha256": "cca471febecbd3f63cd29a5ec81c3af3ea1542a4e40ba1075208ec8416632f86"
+      "sha256": "902d8d2ded50626492e6254a80c5ba0bb080bd47c3d23795ec5700982ee1bd41"
     },
     {
       "path": ".agents/skills/work-board/references/host-loop.md",
       "owner": "driver",
-      "sha256": "66b3c7763aeeaf7d30e872cc31dea31fa5c4515b7637bc9eb397acbde1d70ed9"
+      "sha256": "88c5d8152eb7861b01806954539c175b69f853796f5bacfa49aabe2279cbbea3"
     },
     {
       "path": ".agents/skills/work-board/references/workspace-scope.md",
@@ -154,14 +154,9 @@
       "sha256": "9435aa1fcc975aba3c3f22066b708a3061b13e9181f4c03fce6dc0526807e245"
     },
     {
-      "path": ".agents/skills/work-board/scripts/validate-feedback-state.py",
-      "owner": "driver",
-      "sha256": "8a28ff24719a11204f168456974b4941026111d498039bf88a679cbca5f11a07"
-    },
-    {
       "path": ".agents/skills/work-roadmap/SKILL.md",
       "owner": "driver",
-      "sha256": "7eb9f056104bdbcfdcbd6a73cc82199f481b46864f762a8f0f041d6757529c4f"
+      "sha256": "1a3810842ca9f9ad7ecdf6198aa78fd368e90f419a6046655861510b25b98f31"
     },
     {
       "path": ".agents/skills/work-roadmap/agents/openai.yaml",
@@ -169,34 +164,39 @@
       "sha256": "d15ec5205fcd2d3698bcfb5b82237036ed115c1a28bf4acd03aa4a8dd55def22"
     },
     {
+      "path": ".agents/skills/work-roadmap/references/critique-contract.md",
+      "owner": "driver",
+      "sha256": "a5a6268aba163e1a735370de3114105eee9cc67dddfa4f41431c48ba884545d4"
+    },
+    {
       "path": ".agents/skills/work-roadmap/references/deep-detail.md",
       "owner": "driver",
-      "sha256": "b0d8ebf3ae0a3209b4879f88396f17871a6b3dd702b87e2df82659a835565b11"
+      "sha256": "8ebce8de2de77b8eb75de68eafe4dc68fd202557df1b0e47aff182c4c3dafa82"
     },
     {
       "path": ".agents/skills/work-roadmap/references/feedback-contract.md",
       "owner": "driver",
-      "sha256": "2baee136dbcad2e40a51d28b8389feb7dfe7e1f7c85774c04ad78b0230012f02"
+      "sha256": "7342aa0c2c86d2f157b360741426f2769d901c67e1f6ef4549ddbd83f12937f1"
     },
     {
       "path": ".agents/skills/work-roadmap/references/host-loop.md",
       "owner": "driver",
-      "sha256": "daac46a07bc1eece70cf60c89d8739ec9c9c0899ddff26b25ed9afd163a04b44"
+      "sha256": "4307c49c060eb20e864cd982a39fcecdad91763acfe4218a3259e3fb783a448e"
+    },
+    {
+      "path": ".agents/skills/work-roadmap/references/lifecycle-log.md",
+      "owner": "driver",
+      "sha256": "86452edc1985dd73b77ce06c1623306100ddc7fd415127d7b2394f7d32103700"
     },
     {
       "path": ".agents/skills/work-roadmap/references/roadmap-ledger.md",
       "owner": "driver",
-      "sha256": "1c06635c0a51dc5d1decae33231b93157647672d2c5c3ae791fb6b750682981f"
-    },
-    {
-      "path": ".agents/skills/work-roadmap/scripts/validate-feedback-state.py",
-      "owner": "driver",
-      "sha256": "8a28ff24719a11204f168456974b4941026111d498039bf88a679cbca5f11a07"
+      "sha256": "fd7b535511327319467da7c4082afdf4b5bd7ca46c258a7129eba14c3fe6c679"
     },
     {
       "path": ".claude/skills/padd-item/SKILL.md",
       "owner": "driver",
-      "sha256": "f77540a387627a13ed88133e259eee6fc8d956213a23b18097977bcc07520aca"
+      "sha256": "60938ac4fc0f147de8be89f125a4a78a958be52ef1b879c33876f901d6486247"
     },
     {
       "path": ".claude/skills/padd-item/agents/openai.yaml",
@@ -206,7 +206,7 @@
     {
       "path": ".claude/skills/work-board-best/SKILL.md",
       "owner": "driver",
-      "sha256": "2b0577726f7cab6aa27169888c0f47370ad26ddadbcb6fda300acf1a00e754e3"
+      "sha256": "4c9bb3aec9531684cd09734f82c63c3ea1864a978b97e72be890f6f396579058"
     },
     {
       "path": ".claude/skills/work-board-best/agents/openai.yaml",
@@ -216,7 +216,7 @@
     {
       "path": ".claude/skills/work-board-normal/SKILL.md",
       "owner": "driver",
-      "sha256": "4649b17f1e05e2302626927b77462eee91ba41ceb3eb7b72df8d933fbd5863db"
+      "sha256": "4eb0b7e76a2f63a7d6e7240bded3289363b3cebef0cc5d9c82b38e16bb9a5749"
     },
     {
       "path": ".claude/skills/work-board-normal/agents/openai.yaml",
@@ -226,7 +226,7 @@
     {
       "path": ".claude/skills/work-board/SKILL.md",
       "owner": "driver",
-      "sha256": "0e44ecccfb46537cdb40296c7351dd08a0e5494ea6144ff13ceefd27872a8855"
+      "sha256": "8f15a538826c91fde11fcd18d293b8568d27b638bbd8cb41c0e9cf1f6c650e82"
     },
     {
       "path": ".claude/skills/work-board/agents/openai.yaml",
@@ -236,22 +236,22 @@
     {
       "path": ".claude/skills/work-board/references/backlog-triage.md",
       "owner": "driver",
-      "sha256": "6e9601d6e752be4ca3f3e5f5a2a5837b6fb5e0b6f4a1722aac8a6731ad0ebc44"
+      "sha256": "2fc359707e81ff48a197931d0baae4c2fb8e6af036954024641198bd6407c354"
     },
     {
       "path": ".claude/skills/work-board/references/deep-detail.md",
       "owner": "driver",
-      "sha256": "4fb060eef5a291f53118aefa546b187d4b1c929703ce56910030af0f066180ad"
+      "sha256": "87aae5dbb5834e6ecf98c3a656eddca573f8fe5af35c8adf77323a4e03981893"
     },
     {
       "path": ".claude/skills/work-board/references/feedback-contract.md",
       "owner": "driver",
-      "sha256": "cca471febecbd3f63cd29a5ec81c3af3ea1542a4e40ba1075208ec8416632f86"
+      "sha256": "902d8d2ded50626492e6254a80c5ba0bb080bd47c3d23795ec5700982ee1bd41"
     },
     {
       "path": ".claude/skills/work-board/references/host-loop.md",
       "owner": "driver",
-      "sha256": "66b3c7763aeeaf7d30e872cc31dea31fa5c4515b7637bc9eb397acbde1d70ed9"
+      "sha256": "88c5d8152eb7861b01806954539c175b69f853796f5bacfa49aabe2279cbbea3"
     },
     {
       "path": ".claude/skills/work-board/references/workspace-scope.md",
@@ -259,14 +259,9 @@
       "sha256": "9435aa1fcc975aba3c3f22066b708a3061b13e9181f4c03fce6dc0526807e245"
     },
     {
-      "path": ".claude/skills/work-board/scripts/validate-feedback-state.py",
-      "owner": "driver",
-      "sha256": "8a28ff24719a11204f168456974b4941026111d498039bf88a679cbca5f11a07"
-    },
-    {
       "path": ".claude/skills/work-roadmap/SKILL.md",
       "owner": "driver",
-      "sha256": "7eb9f056104bdbcfdcbd6a73cc82199f481b46864f762a8f0f041d6757529c4f"
+      "sha256": "1a3810842ca9f9ad7ecdf6198aa78fd368e90f419a6046655861510b25b98f31"
     },
     {
       "path": ".claude/skills/work-roadmap/agents/openai.yaml",
@@ -274,29 +269,34 @@
       "sha256": "d15ec5205fcd2d3698bcfb5b82237036ed115c1a28bf4acd03aa4a8dd55def22"
     },
     {
+      "path": ".claude/skills/work-roadmap/references/critique-contract.md",
+      "owner": "driver",
+      "sha256": "a5a6268aba163e1a735370de3114105eee9cc67dddfa4f41431c48ba884545d4"
+    },
+    {
       "path": ".claude/skills/work-roadmap/references/deep-detail.md",
       "owner": "driver",
-      "sha256": "b0d8ebf3ae0a3209b4879f88396f17871a6b3dd702b87e2df82659a835565b11"
+      "sha256": "8ebce8de2de77b8eb75de68eafe4dc68fd202557df1b0e47aff182c4c3dafa82"
     },
     {
       "path": ".claude/skills/work-roadmap/references/feedback-contract.md",
       "owner": "driver",
-      "sha256": "2baee136dbcad2e40a51d28b8389feb7dfe7e1f7c85774c04ad78b0230012f02"
+      "sha256": "7342aa0c2c86d2f157b360741426f2769d901c67e1f6ef4549ddbd83f12937f1"
     },
     {
       "path": ".claude/skills/work-roadmap/references/host-loop.md",
       "owner": "driver",
-      "sha256": "daac46a07bc1eece70cf60c89d8739ec9c9c0899ddff26b25ed9afd163a04b44"
+      "sha256": "4307c49c060eb20e864cd982a39fcecdad91763acfe4218a3259e3fb783a448e"
+    },
+    {
+      "path": ".claude/skills/work-roadmap/references/lifecycle-log.md",
+      "owner": "driver",
+      "sha256": "86452edc1985dd73b77ce06c1623306100ddc7fd415127d7b2394f7d32103700"
     },
     {
       "path": ".claude/skills/work-roadmap/references/roadmap-ledger.md",
       "owner": "driver",
-      "sha256": "1c06635c0a51dc5d1decae33231b93157647672d2c5c3ae791fb6b750682981f"
-    },
-    {
-      "path": ".claude/skills/work-roadmap/scripts/validate-feedback-state.py",
-      "owner": "driver",
-      "sha256": "8a28ff24719a11204f168456974b4941026111d498039bf88a679cbca5f11a07"
+      "sha256": "fd7b535511327319467da7c4082afdf4b5bd7ca46c258a7129eba14c3fe6c679"
     }
   ],
   "gameSkillPaths": [
